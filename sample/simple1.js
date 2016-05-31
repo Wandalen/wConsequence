@@ -1,6 +1,9 @@
 
 if( typeof module !== 'undefined' )
-require( 'wTools' );
+{
+  require( 'wTools' );
+  require( 'wConsequence' );
+}
 
 var _ = wTools;
 
