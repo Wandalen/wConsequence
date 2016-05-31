@@ -1,0 +1,40 @@
+{
+  "name": "wConsequence",
+  "version": "0.3.1",
+  "description": "Advanced synchronization mechanism. wConsequence is able to solve any asynchronous problem replacing and including functionality of many other mechanisms, such as: Callback, Event, Signal, Mutex, Semaphore, Async, Promise.",
+  "author": "Kostiantyn Wandalen <wtory.net@domainsbyproxy.com>",
+  "license": "MIT",
+  "main": "staging/Consequence.s",
+  "files": [
+    "staging/syn/Consequence.s",
+    "production"
+  ],
+  "scripts": {
+    "test": "node ./staging/z.test/All.s",
+    "make_doc": "./doc.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Wandalen/wConsequence.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Wandalen/wConsequence/issues"
+  },
+  "dependencies": {
+    "wTools": "",
+    "underscore": ""
+  },
+  "devDependencies": {
+    "wTesting": ""
+  },
+  "keywords": [
+    "wTools",
+    "Callback",
+    "Event",
+    "Signal",
+    "Mutex",
+    "Semaphore",
+    "Async",
+    "Promise"
+  ]
+}
