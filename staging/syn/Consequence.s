@@ -31,6 +31,7 @@ var Self = function wConsequence( options )
     if( errs.length )
     throw _.err( errs[ 0 ] );
 
+
 */
 
 //
