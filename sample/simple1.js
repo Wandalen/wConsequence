@@ -6,7 +6,6 @@ if( typeof module !== 'undefined' )
 }
 
 var _ = wTools;
-
 var con = new wConsequence();
 
 con.got( function( err,data )
