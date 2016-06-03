@@ -4,10 +4,14 @@
 
 if( typeof module !== 'undefined' )
 {
-  if( require( 'fs' ).existsSync( __dirname + '/../object/Testing.debug.s' ) )
-  require( '../object/Testing.debug.s' );
-  else
-  require( 'wTesting' );
+  try
+  {
+    require( 'wTesting' );
+  }
+  catch( err )
+  {
+    require( '../object/Testing.debug.s' );
+  }
 }
 
 _global_.wTests = _global_.wTests === undefined ? {} : _global_.wTests;

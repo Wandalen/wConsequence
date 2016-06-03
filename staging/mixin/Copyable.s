@@ -4,6 +4,18 @@
 
 var _ = wTools;
 
+if( typeof module !== 'undefined' )
+{
+  try
+  {
+    require( 'wProto' );
+  }
+  catch( err )
+  {
+    require( '../component/Proto.s' );
+  }
+}
+
 //
 
 /**
