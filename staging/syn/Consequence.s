@@ -2,20 +2,20 @@
 
 'use strict';
 
-if( typeof wCopyable === 'undefined' && typeof module !== 'undefined' )
+if( typeof module !== 'undefined' )
 {
-
-  if( require( 'fs' ).existsSync( __dirname + '/../wTools.s' ) )
+  try
+  {
+    require( 'wTools' );
+    require( 'wProto' );
+    require( 'wCopyable' );
+  }
+  catch( err )
   {
     require( '../wTools.s' );
     require( '../component/Proto.s' );
     require( '../mixin/Copyable.s' );
   }
-  else
-  {
-    require( 'wTools' );
-  }
-
 }
 
 var _ = wTools;
