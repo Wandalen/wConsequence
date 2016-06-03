@@ -7,12 +7,19 @@ if( typeof module !== 'undefined' )
   try
   {
     require( 'wTools' );
+  }
+  catch( err )
+  {
+    require( '../wTools.s' );
+  }
+
+  try
+  {
     require( 'wProto' );
     require( 'wCopyable' );
   }
   catch( err )
   {
-    require( '../wTools.s' );
     require( '../component/Proto.s' );
     require( '../mixin/Copyable.s' );
   }
