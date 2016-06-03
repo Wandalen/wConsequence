@@ -9,8 +9,6 @@ if( typeof wCopyable === 'undefined' && typeof module !== 'undefined' )
   {
     require( '../wTools.s' );
     require( '../component/Proto.s' );
-    require( '../component/Exec.s' );
-    require( '../object/printer/aPrinter.s' );
     require( '../mixin/Copyable.s' );
   }
   else
@@ -113,7 +111,7 @@ var _gotterAppend = function( o )
   if( _.routineIs( taker ) )
   {
     if( o.context !== undefined || o.argument !== undefined )
-    taker = _.routineBind( taker,o.context,o.argument );
+    taker = _.routineJoin( o.context,taker,o.argument );
   }
   else
   {
@@ -409,7 +407,6 @@ var _handleGot = function()
         {
           if( self.mark && self.mark.indexOf( err ) !== -1 )
           {
-            debugger;
             console.error( 'Uncaught error caught by Consequence:' );
             _.errLog( err );
           }

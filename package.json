@@ -6,7 +6,9 @@
   "license": "MIT",
   "main": "staging/syn/Consequence.s",
   "files": [
-    "staging/syn/Consequence.s",
+    "staging/component",
+    "staging/mixin",
+    "staging/syn",
     "production"
   ],
   "scripts": {
