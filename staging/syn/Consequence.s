@@ -1,9 +1,10 @@
-( function(){
+( function _Consequence_s_(){
 
 'use strict';
 
 if( typeof module !== 'undefined' )
 {
+
   try
   {
     require( 'wTools' );
@@ -23,6 +24,7 @@ if( typeof module !== 'undefined' )
     require( '../component/Proto.s' );
     require( '../mixin/Copyable.s' );
   }
+
 }
 
 var _ = wTools;
@@ -217,47 +219,47 @@ var ifNoErrorThen = function()
 {
 
   _.assert( arguments.length === 1 );
+  _.assert( this instanceof Self )
+  _.assert( arguments.length <= 3 );
 
-  if( this === Self )
+  return this._gotterAppend
+  ({
+    taker : Self.ifNoErrorThen( arguments[ 0 ] ),
+    context : arguments[ 1 ],
+    argument : arguments[ 2 ],
+    thenning : true,
+  });
+
+}
+
+//
+
+var ifNoErrorThenClass = function()
+{
+
+  _.assert( arguments.length === 1 );
+  _.assert( this === Self );
+
+  var onEnd = arguments[ 0 ];
+  _.assert( arguments.length === 1 );
+  _.assert( _.routineIs( onEnd ) );
+
+  return function ifNoErrorThen( err,data )
   {
 
-    var onEnd = arguments[ 0 ];
-    _.assert( arguments.length === 1 );
-    _.assert( _.routineIs( onEnd ) );
+    _.assert( arguments.length === 2 );
 
-    return function ifNoErrorThen( err,data )
+    if( !err )
     {
-
-      _.assert( arguments.length === 2 );
-
-      if( !err )
-      {
-        return onEnd( err,data );
-      }
-      else
-      {
-        debugger;
-        return wConsequence().error( _.err( err ) );
-      }
-
+      return onEnd( err,data );
+    }
+    else
+    {
+      debugger;
+      return wConsequence().error( _.err( err ) );
     }
 
   }
-  else if( this instanceof Self )
-  {
-
-    _.assert( arguments.length <= 3 );
-
-    return this._gotterAppend
-    ({
-      taker : Self.ifNoErrorThen( arguments[ 0 ] ),
-      context : arguments[ 1 ],
-      argument : arguments[ 2 ],
-      thenning : true,
-    });
-
-  }
-  else throw _.err( 'unexpected' );
 
 }
 
@@ -373,8 +375,6 @@ var _handleGot = function()
 
   _.assert( self._given.length );
 
-  var mark = self.mark;
-  self.mark = null;
   var _given = self._given[ 0 ];
   self._given.splice( 0,1 );
 
@@ -404,15 +404,15 @@ var _handleGot = function()
     {
       debugger;
       var err = _.err( err );
+      err.respected = 1;
       result = new wConsequence().error( err );
-      if( Config.debug ) // something wrong with the flag in server !!!
-      if( !self._taker.length )
+      if( Config.debug )
+      console.error( 'Consequence caught error' );
+      if( Config.debug )
       {
-        self.mark = self.mark || [];
-        self.mark.push( err );
         _.timeOut( 1, function()
         {
-          if( self.mark && self.mark.indexOf( err ) !== -1 )
+          if( err.respected )
           {
             console.error( 'Uncaught error caught by Consequence:' );
             _.errLog( err );
@@ -436,9 +436,6 @@ var _handleGot = function()
   {
 
     if( _taker.onGot === _onDebug )
-    debugger;
-
-    if( mark )
     debugger;
 
     if( _taker.onGot instanceof Self )
@@ -478,11 +475,9 @@ var _handleGot = function()
   return result;
 }
 
-// --
-// class
-// --
+//
 
-var _giveTo = function _giveTo( o )
+var _giveClass = function _giveClass( o )
 {
   var context;
 
@@ -553,13 +548,13 @@ var _giveTo = function _giveTo( o )
     }
 
   }
-  else throw _.err( 'Unknown type of consequence' );
+  else throw _.err( 'Unknown type of consequence : ' + _.strTypeOf( o.consequence ) );
 
 
 }
 
 //
-
+/*
 var giveWithContextTo = function giveWithContextTo( consequence,context,got )
 {
 
@@ -567,7 +562,7 @@ var giveWithContextTo = function giveWithContextTo( consequence,context,got )
   if( arguments.length > 3 )
   args = _.arraySlice( arguments,2 );
 
-  return _giveTo
+  return _giveClass
   ({
     consequence : consequence,
     context : context,
@@ -576,23 +571,32 @@ var giveWithContextTo = function giveWithContextTo( consequence,context,got )
   });
 
 }
-
+*/
 //
 
-var giveTo = function( consequence,got )
+var giveClass = function( consequence )
 {
 
-  _.assert( arguments.length === 2 );
+  _.assert( arguments.length === 2 || arguments.length === 3 );
+
+  var err,got;
+  if( arguments.length === 2 )
+  {
+    got = arguments[ 1 ];
+  }
+  else if( arguments.length === 3 )
+  {
+    err = arguments[ 1 ];
+    got = arguments[ 2 ];
+  }
 
   var args = [ got ];
-  if( arguments.length > 2 )
-  args = _.arraySlice( arguments,1 );
 
-  return _giveTo
+  return _giveClass
   ({
     consequence : consequence,
     context : undefined,
-    error : undefined,
+    error : err,
     args : args,
   });
 
@@ -600,12 +604,12 @@ var giveTo = function( consequence,got )
 
 //
 
-var errorTo = function( consequence,error )
+var errorClass = function( consequence,error )
 {
 
   _.assert( arguments.length === 2 );
 
-  return _giveTo
+  return _giveClass
   ({
     consequence : consequence,
     context : undefined,
@@ -627,32 +631,10 @@ var giveWithContextAndErrorTo = function giveWithContextAndErrorTo( consequence,
   if( arguments.length > 4 )
   args = _.arraySlice( arguments,3 );
 
-  return _giveTo
+  return _giveClass
   ({
     consequence : consequence,
     context : context,
-    error : err,
-    args : args,
-  });
-
-}
-
-//
-
-var giveWithErrorTo = function giveWithErrorTo( consequence,err,got )
-{
-
-  if( err === undefined )
-  err = null;
-
-  var args = [ got ];
-  if( arguments.length > 3 )
-  args = _.arraySlice( arguments,2 );
-
-  return _giveTo
-  ({
-    consequence : consequence,
-    context : undefined,
     error : err,
     args : args,
   });
@@ -768,7 +750,6 @@ var Aggregates =
 
 var Restricts =
 {
-  mark : null,
 }
 
 // --
@@ -806,19 +787,17 @@ var Proto =
   ping: ping,
 
   _handleGot: _handleGot,
-
+  _giveClass: _giveClass,
 
   //
-
-  _giveTo: _giveTo,
+/*
 
   giveWithContextTo: giveWithContextTo,
   giveTo: giveTo,
   errorTo: errorTo,
-
   giveWithContextAndErrorTo: giveWithContextAndErrorTo,
-  giveWithErrorTo: giveWithErrorTo,
 
+*/
 
   //
 
@@ -851,10 +830,12 @@ var Proto =
 var Static =
 {
 
-  giveWithContextTo: giveWithContextTo,
-  giveTo: giveTo,
-  errorTo: errorTo,
-  ifNoErrorThen: ifNoErrorThen,
+  give: giveClass,
+  error: errorClass,
+
+  giveWithContextAndErrorTo: giveWithContextAndErrorTo,
+
+  ifNoErrorThen: ifNoErrorThenClass,
 
 }
 
@@ -863,17 +844,9 @@ _.protoMake
   constructor : Self,
   parent : Parent,
   extend : Proto,
-  usingGlobalName : true,
-  wname : { Consequence : 'Consequence' },
 });
 
 _.mapExtend( Self,Static );
-
-/*
-_.mapExtend( Self,Proto );
-_.mapExtend( Self.prototype,Proto );
-_global_.wConsequence = wTools.Consequence = Self;
-*/
 
 if( _global_.wCopyable )
 wCopyable.mixin( Self.prototype );
@@ -909,7 +882,7 @@ if( typeof module !== 'undefined' )
 
 //
 
-_global_.wConsequence = Self;
+_global_.wConsequence = wTools.Consequence = Self;
 return Self;
 
 })();

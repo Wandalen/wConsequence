@@ -12,7 +12,7 @@
     "production"
   ],
   "scripts": {
-    "test": "node ./staging/z.test/Consequece.s",
+    "test": "node ./staging/z.test/Consequence.s",
     "make_doc": "./doc.sh"
   },
   "repository": {

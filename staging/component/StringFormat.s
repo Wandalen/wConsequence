@@ -830,8 +830,8 @@ var strInhalf = function( o )
 
   //logger.log( 'strInhalf.src :',o.src );
 
-  _.mapSupplement( o,strSplit.defaults );
-  _.assertMapOnly( o,strSplit.defaults );
+  _.mapSupplement( o,strInhalf.defaults );
+  _.assertMapOnly( o,strInhalf.defaults );
   _.assert( arguments.length === 1 );
   _.assert( _.strIs( o.src ) );
   _.assert( _.strIs( o.splitter ) || _.arrayIs( o.splitter ) );
@@ -862,7 +862,7 @@ var strInhalf = function( o )
 strInhalf.defaults =
 {
   src : null,
-  stripper : ' ',
+  splitter : ' ',
 }
 
 //
@@ -1686,7 +1686,7 @@ _.mapExtend( Self, Proto );
 //
 
 var toStrFine = Self.toStrFine = Self.toStrFine_gen();
-var toStr = Self.toStr = toStrFine;
+var toStr = Self.toStr = Self.strFrom = toStrFine;
 
 //
 

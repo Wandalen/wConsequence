@@ -111,6 +111,17 @@ var finit = function( Prototype )
 // register
 // --
 
+var eventHandlerInit = function()
+{
+  var self = this;
+
+  _.assert( arguments.length === 0 );
+
+  self._eventHandlerDescriptorsByKind( '' );
+}
+
+//
+
 var eventHandlerRegister = function( kind, onHandle )
 {
   var self = this;
@@ -515,6 +526,11 @@ var _eventHandle = function( event,options )
   var result = options.result = options.result || [];
   var untilFound = 0;
 
+/*
+  if( event.kind === 'finit' )
+  debugger;
+*/
+
   _.assert( arguments.length === 2 );
 
   if( event.type !== undefined || event.kind === undefined )
@@ -697,8 +713,17 @@ var eventProxyTo = function( dst,rename )
   var self = this;
 
   _.assert( arguments.length === 2 );
-  _.assert( _.objectIs( dst ) && _.routineIs( dst.eventHandle ) );
+  _.assert( _.objectIs( dst ) || _.arrayIs( dst ) );
   _.assert( _.mapIs( rename ) || _.strIs( rename ) );
+
+  if( _.arrayIs( dst ) )
+  {
+    for( var d = 0 ; d < dst.length ; d++ )
+    self.eventProxyTo( dst[ d ],rename );
+    return self;
+  }
+
+  _.assert( _.routineIs( dst.eventHandle ) );
 
   if( _.strIs( rename ) )
   {
@@ -729,6 +754,7 @@ var eventProxyTo = function( dst,rename )
 
   })();
 
+  return self;
 }
 
 //
@@ -738,6 +764,13 @@ var eventProxyFrom = function( src,rename )
   var self = this;
 
   _.assert( arguments.length === 2 );
+
+  if( _.arrayIs( src ) )
+  {
+    for( var s = 0 ; s < src.length ; s++ )
+    self.eventProxyFrom( src[ s ],rename );
+    return self;
+  }
 
   return src.eventProxyTo( self,rename );
 }
@@ -778,6 +811,8 @@ var Proto =
 
   // register
 
+  eventHandlerInit : eventHandlerInit,
+
   eventHandlerRegister : eventHandlerRegister,
   addEventListener : eventHandlerRegister,
   on : eventHandlerRegister,
@@ -787,6 +822,7 @@ var Proto =
   eventHandlerRegisterOneTime : eventHandlerRegisterOneTime,
   once : eventHandlerRegisterOneTime,
   _eventHandlerRegister: _eventHandlerRegister,
+
 
   // unregister
 
