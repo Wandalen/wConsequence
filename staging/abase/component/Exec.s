@@ -80,7 +80,7 @@ var execStages = function( stages,options )
   // begin
 
   if( options.onBegin )
-  wConsequence.prototype.giveWithContextAndErrorTo( options.onBegin,options.context,null,options );
+  wConsequence.giveWithContextAndErrorTo( options.onBegin,options.context,null,options );
 
   // end
 
@@ -94,7 +94,7 @@ var execStages = function( stages,options )
     }
 
     if( options.onEnd )
-    wConsequence.prototype.giveWithContextAndErrorTo( options.onEnd,options.context,err,options );
+    wConsequence.giveWithContextAndErrorTo( options.onEnd,options.context,err,options );
 
     conEnd.giveWithError( err,null );
 
