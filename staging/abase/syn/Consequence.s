@@ -2,40 +2,6 @@
 
 'use strict';
 
-if( typeof module !== 'undefined' )
-{
-
-  try
-  {
-    require( 'wTools' );
-  }
-  catch( err )
-  {
-    require( '../wTools.s' );
-  }
-
-  try
-  {
-    require( 'wProto' );
-    require( 'wCopyable' );
-  }
-  catch( err )
-  {
-    require( '../component/Proto.s' );
-    require( '../mixin/Copyable.s' );
-  }
-
-}
-
-var _ = wTools;
-var Parent = null;
-var Self = function wConsequence( options )
-{
-  if( !( this instanceof Self ) )
-  return new( _.routineJoin( Self, Self, arguments ) );
-  return Self.prototype.init.apply( this,arguments );
-}
-
 /*
 
  !!! move promise / event property from object to taker
@@ -51,6 +17,49 @@ var Self = function wConsequence( options )
 
 */
 
+if( typeof module !== 'undefined' )
+{
+
+  try
+  {
+    require( 'wTools' );
+  }
+  catch( err )
+  {
+    require( '../wTools.s' );
+  }
+
+  try
+  {
+    require( 'wCopyable' );
+  }
+  catch( err )
+  {
+    require( '../mixin/Copyable.s' );
+  }
+
+  try
+  {
+    require( 'wProto' );
+  }
+  catch( err )
+  {
+    require( '../component/Proto.s' );
+  }
+
+}
+
+//
+
+var _ = wTools;
+var Parent = null;
+var Self = function wConsequence( options )
+{
+  if( !( this instanceof Self ) )
+  return new( _.routineJoin( Self, Self, arguments ) );
+  return Self.prototype.init.apply( this,arguments );
+}
+
 //
 
 var init = function init( options )
@@ -63,9 +72,7 @@ var init = function init( options )
   _.mapExtendFiltering( _.filter.notAtomicCloningOwn(),self,Composes );
 
   if( options )
-  {
-    self.copy( options );
-  }
+  self.copy( options );
 
   _.assert( self.mode === 'promise' || self.mode === 'event' );
 
@@ -114,7 +121,7 @@ var _gotterAppend = function( o )
   var name = o.name || taker ? taker.name : null || null;
 
   _.assert( arguments.length === 1 );
-  _.assert( _.boolIs( o.thenning ) );
+  /*_.assert( _.boolIs( o.thenning ) );*/
   _.assert( _.routineIs( taker ) || taker instanceof Self );
 
   if( _.routineIs( taker ) )
@@ -130,7 +137,8 @@ var _gotterAppend = function( o )
   self._taker.push
   ({
     onGot : taker,
-    thenning : o.thenning,
+    thenning : !!o.thenning,
+    informing : !!o.informing,
     name : name,
   });
 
@@ -146,9 +154,9 @@ var got = function got( taker )
 {
   var self = this;
 
-  _.assert( arguments.length <= 3 );
+  _.assert( arguments.length === 0 || arguments.length === 1 );
 
-  if( arguments.length === 0 && taker === undefined )
+  if( arguments.length === 0 )
   {
     taker = function(){};
   }
@@ -160,6 +168,7 @@ var got = function got( taker )
     argument : arguments[ 2 ],
     thenning : false,
   });
+
 }
 
 //
@@ -196,7 +205,8 @@ var then_ = function then_( taker )
 {
   var self = this;
 
-  _.assert( arguments.length <= 3 );
+  _.assert( arguments.length === 1 );
+  _.assert( self instanceof Self )
 
   if( taker instanceof Self )
   {
@@ -211,6 +221,26 @@ var then_ = function then_( taker )
     argument : arguments[ 2 ],
     thenning : true,
   });
+}
+
+//
+
+var inform = function inform( taker )
+{
+  var self = this;
+
+  _.assert( arguments.length === 1 );
+  _.assert( self instanceof Self )
+
+  return self._gotterAppend
+  ({
+    taker : taker,
+    context : undefined,
+    argument : arguments[ 2 ],
+    thenning : false,
+    informing : true,
+  });
+
 }
 
 //
@@ -256,7 +286,7 @@ var ifNoErrorThenClass = function()
     else
     {
       debugger;
-      return wConsequence().error( _.err( err ) );
+      return wConsequence().error( err );
     }
 
   }
@@ -307,7 +337,10 @@ con.then_( _.routineSeal( _,_.timeOut,[ 8000,_.routineSeal( session, session.mak
 var give = function give( given )
 {
   var self = this;
-  _.assert( arguments.length === 1 || arguments.length === 0 );
+  _.assert( arguments.length === 2 || arguments.length === 1 || arguments.length === 0, 'expects 0, 1 or 2 arguments, got ' + arguments.length );
+  if( arguments.length === 2 )
+  return self.giveWithError( arguments[ 0 ],arguments[ 1 ] );
+  else
   return self.giveWithError( null,given );
 }
 
@@ -388,6 +421,11 @@ var _handleGot = function()
     {
       self.giveWithError( _given.error,_given.argument );
     }
+    else if( self.mode === 'promise' && _taker.informing )
+    {
+      debugger;
+      self.giveWithError( _given.error,_given.argument );
+    }
 
   }
 
@@ -414,18 +452,34 @@ var _handleGot = function()
         {
           if( err.respected )
           {
-            console.error( 'Uncaught error caught by Consequence:' );
+            console.error( 'Uncaught error caught by Consequence :' );
             _.errLog( err );
           }
         });
       }
     }
+
+    /**/
+
     if( self.mode === 'promise' && _taker.thenning )
     {
       if( result instanceof Self )
       result.got( self );
       else
       self.give( result );
+    }
+    else if( self.mode === 'promise' && _taker.informing )
+    {
+      if( result instanceof Self )
+      {
+        debugger;
+        result.got( function _informing(){ debugger; self.give( _given.error,_given.argument ); } );
+      }
+      else
+      {
+        debugger;
+        self.give( _given.error,_given.argument );
+      }
     }
 
   }
@@ -759,94 +813,100 @@ var Restricts =
 var Proto =
 {
 
-  init: init,
+  init : init,
 
   // mode
 
 /*
-  '_modeGet': _modeGet,
-  '_modeSet': _modeSet,
+  '_modeGet' : _modeGet,
+  '_modeSet' : _modeSet,
 */
 
 
   // mechanics
 
-  _gotterAppend: _gotterAppend,
+  _gotterAppend : _gotterAppend,
 
-  got: got,
-  done: got,
-  gotOnce: gotOnce,
-  then_: then_,
-  ifNoErrorThen: ifNoErrorThen,
-  thenDebug: thenDebug,
-  timeOut: timeOut,
+  got : got,
+  done : got,
+  gotOnce : gotOnce,
+  then_ : then_,
+  inform : inform,
+  ifNoErrorThen : ifNoErrorThen,
+  thenDebug : thenDebug,
+  timeOut : timeOut,
 
-  give: give,
-  error: error,
-  giveWithError: giveWithError,
-  ping: ping,
+  give : give,
+  error : error,
+  giveWithError : giveWithError,
+  ping : ping,
 
-  _handleGot: _handleGot,
-  _giveClass: _giveClass,
+  _handleGot : _handleGot,
+  _giveClass : _giveClass,
+
 
   //
 /*
 
-  giveWithContextTo: giveWithContextTo,
-  giveTo: giveTo,
-  errorTo: errorTo,
-  giveWithContextAndErrorTo: giveWithContextAndErrorTo,
+  giveWithContextTo : giveWithContextTo,
+  giveTo : giveTo,
+  errorTo : errorTo,
+  giveWithContextAndErrorTo : giveWithContextAndErrorTo,
 
 */
-
   //
 
-  takersGet: takersGet,
-  givenGet: givenGet,
-  toStr: toStr,
-
-
-  //
-
-  clearTakers: clearTakers,
-  clearGiven: clearGiven,
-  clear: clear,
+  takersGet : takersGet,
+  givenGet : givenGet,
+  toStr : toStr,
 
 
   //
 
-  _onDebug: _onDebug,
+  clearTakers : clearTakers,
+  clearGiven : clearGiven,
+  clear : clear,
+
+
+  //
+
+  _onDebug : _onDebug,
 
 
   // ident
 
-  constructor: Self,
-  Composes: Composes,
-  Aggregates: Aggregates,
-  Restricts: Restricts,
+  constructor : Self,
+  Composes : Composes,
+  Aggregates : Aggregates,
+  Restricts : Restricts,
 
 }
+
+//
 
 var Static =
 {
 
-  give: giveClass,
-  error: errorClass,
+  give : giveClass,
+  error : errorClass,
 
-  giveWithContextAndErrorTo: giveWithContextAndErrorTo,
+  giveWithContextAndErrorTo : giveWithContextAndErrorTo,
 
-  ifNoErrorThen: ifNoErrorThenClass,
+  ifNoErrorThen : ifNoErrorThenClass,
 
 }
+
+//
 
 _.protoMake
 ({
   constructor : Self,
   parent : Parent,
   extend : Proto,
+  static : Static,
 });
 
-_.mapExtend( Self,Static );
+//
 
 if( _global_.wCopyable )
 wCopyable.mixin( Self.prototype );
@@ -879,8 +939,6 @@ if( typeof module !== 'undefined' )
 {
   module[ 'exports' ] = Self;
 }
-
-//
 
 _global_.wConsequence = wTools.Consequence = Self;
 return Self;

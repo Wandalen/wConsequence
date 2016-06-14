@@ -12,6 +12,26 @@ var _ = wTools;
  * @param {object} dst - prototype of another object.
  * @method mixin
  * @memberof wInstancing#
+
+ * @example of constructor clonning source
+  var Self = function ClassName( o )
+  {
+    if( !( this instanceof Self ) )
+    return new( _.routineJoin( Self, Self, arguments ) );
+    return Self.prototype.init.apply( this,arguments );
+  }
+
+  * @example of constructor returning source if source is instance
+  var Self = function ClassName( o )
+  {
+    if( !( this instanceof Self ) )
+    if( o instanceof Self )
+    return o;
+    else
+    return new( _.routineJoin( Self, Self, arguments ) );
+    return Self.prototype.init.apply( this,arguments );
+  }
+
  */
 
 var mixin = function( dst )

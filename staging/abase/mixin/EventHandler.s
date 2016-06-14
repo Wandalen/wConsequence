@@ -787,14 +787,7 @@ var Restricts =
 {
   usingEventLogging : 0,
   _eventHandlerDescriptors : {},
-
-  //_eventHandlers : {},
-  //_eventHandlerOwners : [],
 }
-
-// --
-// proto
-// --
 
 var Functors =
 {
@@ -804,7 +797,9 @@ var Functors =
 
 }
 
-//
+// --
+// proto
+// --
 
 var Proto =
 {

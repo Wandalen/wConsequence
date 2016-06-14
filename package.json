@@ -23,7 +23,8 @@
     "url": "https://github.com/Wandalen/wConsequence/issues"
   },
   "dependencies": {
-    "wTools": ""
+    "wTools": "",
+    "wProto": ""
   },
   "devDependencies": {
     "wTesting": ""
