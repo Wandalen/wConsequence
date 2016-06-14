@@ -7,7 +7,6 @@
   "main": "staging/abase/syn/Consequence.s",
   "files": [
     "staging/abase/component",
-    "staging/abase/mixin",
     "staging/abase/syn",
     "production"
   ],
@@ -24,7 +23,8 @@
   },
   "dependencies": {
     "wTools": "",
-    "wProto": ""
+    "wProto": "",
+    "wCopyable": ""
   },
   "devDependencies": {
     "wTesting": ""
