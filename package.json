@@ -10,6 +10,7 @@
     "staging/abase/syn",
     "production"
   ],
+  
   "scripts": {
     "test": "node ./staging/abase/z.test/Consequence.test.s",
     "make_doc": "./doc.sh"
