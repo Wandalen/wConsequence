@@ -1,6 +1,6 @@
 {
   "name": "wConsequence",
-  "version": "0.3.12",
+  "version": "0.3.13",
   "description": "Advanced synchronization mechanism. wConsequence is able to solve any asynchronous problem replacing and including functionality of many other mechanisms, such as: Callback, Event, Signal, Mutex, Semaphore, Async, Promise.",
   "author": "Kostiantyn Wandalen <wtory.net@domainsbyproxy.com>",
   "license": "MIT",
@@ -10,7 +10,6 @@
     "staging/abase/syn",
     "production"
   ],
-  
   "scripts": {
     "test": "node ./staging/abase/z.test/Consequence.test.s",
     "make_doc": "./doc.sh"
