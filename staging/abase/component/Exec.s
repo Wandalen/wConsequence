@@ -146,18 +146,32 @@ var execStages = function( stages,options )
 
     // exec
 
-    if( options.onEach )
-    options.onEach.call( options.context,options,stage );
+    try
+    {
 
-    if( !options.manual )
-    var ret = routine.apply( options.context,args );
+      if( options.onEach )
+      options.onEach.call( options.context,options,stage );
+
+      if( !options.manual )
+      var ret = routine.apply( options.context,args );
+
+    }
+    catch( err )
+    {
+      handleEnd( _.err( err ) );
+    }
 
     // next
 
     var isSyn = stage.syn || ( options.syn && !stage.asyn );
 
     if( !isSyn && !( ret instanceof wConsequence ) )
-    throw _.err( 'Asynchronous stage should return wConsequence' );
+    {
+      isSyn = false;
+      //throw _.err( 'Asynchronous stage should return wConsequence' );
+    }
+    else if( isSyn && ( ret instanceof wConsequence ) )
+    throw _.err( 'Synchronous stage should not return wConsequence' );
 
     if( !isSyn || ret instanceof wConsequence  )
     {

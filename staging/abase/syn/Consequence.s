@@ -69,7 +69,7 @@ var init = function init( options )
   if( _.routineIs( options ) )
   options = { all : options };
 
-  _.mapExtendFiltering( _.filter.notAtomicCloningOwn(),self,Composes );
+  _.mapExtendFiltering( _.filter.notAtomicCloningSrcOwn(),self,Composes );
 
   if( options )
   self.copy( options );
@@ -184,7 +184,10 @@ var gotOnce = function gotOnce( taker )
   var i = _.arrayLeftIndexOf( self._taker,key,function( a )
   {
     if( a.name === key )
-    return true;
+    {
+      //debugger;
+      return true;
+    }
   });
 
   if( i >= 0 )
@@ -221,6 +224,20 @@ var then_ = function then_( taker )
     argument : arguments[ 2 ],
     thenning : true,
   });
+}
+
+//
+
+var thenClone = function thenClone()
+{
+  var self = this;
+
+  _.assert( arguments.length === 0 );
+
+  var result = new wConsequence();
+  self.then_( result );
+
+  return result;
 }
 
 //
@@ -285,7 +302,6 @@ var ifNoErrorThenClass = function()
     }
     else
     {
-      debugger;
       return wConsequence().error( err );
     }
 
@@ -464,7 +480,7 @@ var _handleGot = function()
     if( self.mode === 'promise' && _taker.thenning )
     {
       if( result instanceof Self )
-      result.got( self );
+      result.then_( self ); // !!! got?
       else
       self.give( result );
     }
@@ -473,11 +489,10 @@ var _handleGot = function()
       if( result instanceof Self )
       {
         debugger;
-        result.got( function _informing(){ debugger; self.give( _given.error,_given.argument ); } );
+        result.then_( function _informing(){ debugger; self.give( _given.error,_given.argument ); } ); // !!! got?
       }
       else
       {
-        debugger;
         self.give( _given.error,_given.argument );
       }
     }
@@ -830,7 +845,10 @@ var Proto =
   got : got,
   done : got,
   gotOnce : gotOnce,
+
   then_ : then_,
+  thenClone : thenClone,
+
   inform : inform,
   ifNoErrorThen : ifNoErrorThen,
   thenDebug : thenDebug,
@@ -933,7 +951,7 @@ _.accessorForbid( Self.prototype,
 
 //
 
-_.mapExtendFiltering( _.filter.atomicOwn(),Self.prototype,Composes );
+_.mapExtendFiltering( _.filter.atomicSrcOwn(),Self.prototype,Composes );
 
 if( typeof module !== 'undefined' )
 {
