@@ -1,4 +1,4 @@
-(function(){
+(function _Exec_s_(){
 
 'use strict';
 
@@ -144,42 +144,58 @@ var execStages = function( stages,options )
 
     /*args.push( handleNext ); */
 
+    // next
+
+    var handleStageEnd = function( err,ret )
+    {
+
+      var isSyn = stage.syn || ( options.syn && !stage.asyn );
+
+      if( !isSyn && !( ret instanceof wConsequence ) )
+      {
+        isSyn = false;
+      }
+      else if( isSyn && ( ret instanceof wConsequence ) )
+      throw _.err( 'Synchronous stage should not return wConsequence' );
+
+      if( !isSyn || ret instanceof wConsequence  )
+      {
+        ret.got( handleNext );
+      }
+      else
+      {
+        handleNext();
+      }
+
+    }
+
     // exec
 
     try
     {
 
+      var ret;
       if( options.onEach )
-      options.onEach.call( options.context,options,stage );
+      {
+        ret = options.onEach.call( options.context,options,stage );
+        debugger;
+      }
+
+      if( !( ret instanceof wConsequence ) )
+      ret = new wConsequence().give( ret );
 
       if( !options.manual )
-      var ret = routine.apply( options.context,args );
+      //if( ret instanceof wConsequence )
+      ret.then_( _.routineJoin( options.context,routine,args ) );
+      //else
+      //ret = routine.apply( options.context,args );
+
+      ret.then_( handleStageEnd );
 
     }
     catch( err )
     {
       handleEnd( _.err( err ) );
-    }
-
-    // next
-
-    var isSyn = stage.syn || ( options.syn && !stage.asyn );
-
-    if( !isSyn && !( ret instanceof wConsequence ) )
-    {
-      isSyn = false;
-      //throw _.err( 'Asynchronous stage should return wConsequence' );
-    }
-    else if( isSyn && ( ret instanceof wConsequence ) )
-    throw _.err( 'Synchronous stage should not return wConsequence' );
-
-    if( !isSyn || ret instanceof wConsequence  )
-    {
-      ret.got( handleNext );
-    }
-    else
-    {
-      handleNext();
     }
 
   }
