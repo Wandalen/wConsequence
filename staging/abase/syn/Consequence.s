@@ -1,3 +1,105 @@
+/**
+ *  draft description
+ *  some difference from regular Promises/A+ realisation
+ *
+ *  1. syntactic difference:
+ *  the wConsequence used in some different way, than standart promise. For example:
+ *  lets consist some simple promise:
+  function myPromise(value, delay) {
+    return new Promise(function(resolve, reject) {
+      try
+      {
+        setTimeout( function()
+        {
+          if ( value > 0 )
+          {
+            resolve( value )
+          }
+          else
+          {
+            reject( value );
+          }
+        }, delay )
+      }
+      catch( err )
+      {
+        reject( err );
+      }
+    })
+  }
+
+  var onSuccess = function(gotValue) {
+    console.log(gotValue);
+  };
+
+  var onError = function(reason) {
+    console.log('rejected');
+    console.log(reason);
+  }
+
+  myPromise(3, 2000).then(onSuccess, onError);
+
+  myPromise(-3, 500).then(onSuccess, onError);
+
+  myPromise(-9, 100).then(onSuccess).catch(onError);
+
+
+ * This code can be rewrite using wConsequence in next view:
+ *
+var onSuccess = function(errValue, gotValue) {
+  console.log(errValue);
+  console.log(gotValue);
+};
+
+
+ function myWCon(value, delay) {
+  var con = new wConsequence();
+  try
+  {
+    setTimeout( function()
+    {
+      if(value > 0)
+      {
+        con.give( value )
+      }
+      else
+      {
+        con.giveWithError(new Error('Negative value'), value );
+      }
+    }, delay )
+  } catch( err )
+  {
+    con.error(err);
+  }
+  return con;
+}
+
+ myWCon(3, 2000).got(onSuccess);
+
+ myWCon(-3, 500).got(onSuccess);
+
+ myWCon(-9, 100).then_(onSuccess);
+
+
+ * as you can see it has several differences:
+ * 1) wConsequence does not need callback with resolve/reject parameters.
+ * 2) instead `resolve( value )` we can use wConsequence give( value ), that works similar, but with some differences,
+ * for example: give() method returns wConsequence instance, so we can use it in chaining, also, unlike resolve() give
+ * can accepts two parameters, in this case the first parameter will be interpreted as reject reason value, what allow
+ * use give() also as reject() in Promise.
+ * wConsequence has several method, without give() that "resolve" values (details they will be described later):
+ *   - giveWithError: work similar as give with two parameters,
+ *   - ping: work as give, but return result of handling taker, if it was append before.
+ * 3) instead reject() we use error() method (that work similar), or giveWithError.
+ * 4) for handling resolved/rejected values of wConsequence we can use one of next approaches (analog of then/catch):
+ *   - got(): accepts callback with two parameters: error (null if wConsequence fulfilled successful) and resolved value,
+ *   instead two callback for fulfill/reject in Promise. instead then(), don`t pass handling result into next handlers.
+ *   - gotOnce(): work similar as got, but ignores passed handler, if it was already added to wConsequence before,
+ *   - then_(): work similar to got(), and accepts callback with same signature, but pass result of handling into next
+ *   taker.
+ *   And and several methods that will be described later.
+ */
+
 ( function _Consequence_s_(){
 
 'use strict';
