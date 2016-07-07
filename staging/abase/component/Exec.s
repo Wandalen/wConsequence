@@ -13,6 +13,13 @@ var _ObjectHasOwnProperty = Object.hasOwnProperty;
 var _assert = _.assert;
 var _arraySlice = _.arraySlice;
 
+/*
+
+  !!! rewrite or deprecate?
+  !!! introduce paramter to continue on error
+
+*/
+
 // --
 // exec
 // --
@@ -149,6 +156,9 @@ var execStages = function( stages,options )
     var handleStageEnd = function( err,ret )
     {
 
+      if( err )
+      return handleEnd( _.err( err ) );
+
       var isSyn = stage.syn || ( options.syn && !stage.asyn );
 
       if( !isSyn && !( ret instanceof wConsequence ) )
@@ -158,9 +168,12 @@ var execStages = function( stages,options )
       else if( isSyn && ( ret instanceof wConsequence ) )
       throw _.err( 'Synchronous stage should not return wConsequence' );
 
-      if( !isSyn || ret instanceof wConsequence  )
+      if( !isSyn || ret instanceof wConsequence )
       {
-        ret.got( handleNext );
+        if( ret instanceof wConsequence )
+        ret.then_( handleNext );
+        else
+        handleNext( null );
       }
       else
       {
@@ -178,7 +191,6 @@ var execStages = function( stages,options )
       if( options.onEach )
       {
         ret = options.onEach.call( options.context,options,stage );
-        debugger;
       }
 
       if( !( ret instanceof wConsequence ) )

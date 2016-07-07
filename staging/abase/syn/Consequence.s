@@ -74,54 +74,25 @@ var init = function init( options )
   if( options )
   self.copy( options );
 
-  _.assert( self.mode === 'promise' || self.mode === 'event' );
+  //_.assert( self.mode === 'promise' || self.mode === 'event' );
+  //_.constant( self,{ mode : self.mode } );
 
-  _.constant( self,{ mode : self.mode } );
+  if( self.constructor === Self )
+  Object.preventExtensions( self );
 
 }
-
-// --
-// mode
-// --
-
-/*
-var _modeGet = function _modeGet( value )
-{
-  var self = this;
-  var fieldSymbol = Symbol.for( 'mode' );
-  return self[ fieldSymbol ];
-}
-
-//
-
-var _modeSet = function _modeSet( value )
-{
-  var self = this;
-  var fieldSymbol = Symbol.for( 'mode' );
-
-  if( value === undefined )
-  value = true;
-  else
-  value = !!value;
-
-  self[ fieldSymbol ] = value;
-
-  return self;
-}
-*/
 
 // --
 // mechanics
 // --
 
-var _gotterAppend = function( o )
+var _takerAppend = function( o )
 {
   var self = this;
   var taker = o.taker;
   var name = o.name || taker ? taker.name : null || null;
 
   _.assert( arguments.length === 1 );
-  /*_.assert( _.boolIs( o.thenning ) );*/
   _.assert( _.routineIs( taker ) || taker instanceof Self );
 
   if( _.routineIs( taker ) )
@@ -134,6 +105,17 @@ var _gotterAppend = function( o )
     _.assert( o.context === undefined && o.argument === undefined );
   }
 
+  /* store */
+
+  if( o.persistent )
+  self._takerPersistent.push
+  ({
+    onGot : taker,
+    thenning : !!o.thenning,
+    informing : !!o.informing,
+    name : name,
+  });
+  else
   self._taker.push
   ({
     onGot : taker,
@@ -142,13 +124,30 @@ var _gotterAppend = function( o )
     name : name,
   });
 
-  if( self._given.length )
-  self._handleGot();
+  /* got */
+
+  if( self.usingAsyncTaker )
+  setTimeout( function()
+  {
+
+    if( self._given.length )
+    self._handleGot();
+
+  }, 0 );
+  else
+  {
+
+    if( self._given.length )
+    self._handleGot();
+
+  }
 
   return self;
 }
 
-//
+// --
+// taker
+// --
 
 var got = function got( taker )
 {
@@ -161,7 +160,7 @@ var got = function got( taker )
     taker = function(){};
   }
 
-  return self._gotterAppend
+  return self._takerAppend
   ({
     taker : taker,
     context : arguments[ 1 ],
@@ -178,22 +177,18 @@ var gotOnce = function gotOnce( taker )
   var self = this;
   var key = taker.name;
 
-  _.assert( _.strIs( key ) && key );
+  _.assert( _.strIsNotEmpty( key ) );
   _.assert( arguments.length === 1 );
 
   var i = _.arrayLeftIndexOf( self._taker,key,function( a )
   {
-    if( a.name === key )
-    {
-      //debugger;
-      return true;
-    }
+    return a.name;
   });
 
   if( i >= 0 )
   return self;
 
-  return self._gotterAppend
+  return self._takerAppend
   ({
     taker : taker,
     context : arguments[ 1 ],
@@ -211,13 +206,38 @@ var then_ = function then_( taker )
   _.assert( arguments.length === 1 );
   _.assert( self instanceof Self )
 
-  if( taker instanceof Self )
+  return self._takerAppend
+  ({
+    taker : taker,
+    context : arguments[ 1 ],
+    argument : arguments[ 2 ],
+    thenning : true,
+  });
+}
+
+//
+
+var thenOnce = function thenOnce( taker )
+{
+  var self = this;
+  var key = taker.name;
+
+  _.assert( _.strIsNotEmpty( key ) );
+  _.assert( arguments.length === 1 );
+
+  debugger;
+  var i = _.arrayLeftIndexOf( self._taker,key,function( a )
   {
-    //debugger;
-    //throw _.err( 'not tested' );
+    return a.name;
+  });
+
+  if( i >= 0 )
+  {
+    debugger;
+    return self;
   }
 
-  return self._gotterAppend
+  return self._takerAppend
   ({
     taker : taker,
     context : arguments[ 1 ],
@@ -249,7 +269,7 @@ var inform = function inform( taker )
   _.assert( arguments.length === 1 );
   _.assert( self instanceof Self )
 
-  return self._gotterAppend
+  return self._takerAppend
   ({
     taker : taker,
     context : undefined,
@@ -269,7 +289,7 @@ var ifNoErrorThen = function()
   _.assert( this instanceof Self )
   _.assert( arguments.length <= 3 );
 
-  return this._gotterAppend
+  return this._takerAppend
   ({
     taker : Self.ifNoErrorThen( arguments[ 0 ] ),
     context : arguments[ 1 ],
@@ -311,13 +331,61 @@ var ifNoErrorThenClass = function()
 
 //
 
+var ifErrorThen = function()
+{
+
+  _.assert( arguments.length === 1 );
+  _.assert( this instanceof Self );
+
+  return this._takerAppend
+  ({
+    taker : Self.ifErrorThen( arguments[ 0 ] ),
+    context : arguments[ 1 ],
+    argument : arguments[ 2 ],
+    thenning : true,
+  });
+
+}
+
+//
+
+var ifErrorThenClass = function()
+{
+
+  _.assert( arguments.length === 1 );
+  _.assert( this === Self );
+
+  var onEnd = arguments[ 0 ];
+  _.assert( arguments.length === 1 );
+  _.assert( _.routineIs( onEnd ) );
+
+  return function ifErrorThen( err,data )
+  {
+
+    _.assert( arguments.length === 2 );
+
+    if( err )
+    {
+      return onEnd( err,data );
+    }
+    else
+    {
+      return wConsequence().give( data );
+    }
+
+  }
+
+}
+
+//
+
 var thenDebug = function thenDebug()
 {
   var self = this;
 
   _.assert( arguments.length === 0 );
 
-  return self._gotterAppend
+  return self._takerAppend
   ({
     taker : _onDebug,
     thenning : true,
@@ -334,7 +402,7 @@ var timeOut = function timeOut( time,taker )
   _.assert( arguments.length === 2 );
   _.assert( _.routineIs( taker ),'not implemented' );
 
-  return self._gotterAppend
+  return self._takerAppend
   ({
     taker : function( err,data ){
       return _.timeOut( time,self,taker,[ err,data ] );
@@ -345,10 +413,27 @@ var timeOut = function timeOut( time,taker )
   });
 
 }
-/*
-con.then_( _.routineSeal( _,_.timeOut,[ 8000,_.routineSeal( session, session.makeAndSaveMinimal, [] ) ] ) );
-*/
+
 //
+
+var persist = function persist( taker )
+{
+  var self = this;
+
+  _.assert( arguments.length === 1 );
+
+  return self._takerAppend
+  ({
+    taker : taker,
+    thenning : true,
+    persistent : true,
+  });
+
+}
+
+// --
+// giver
+// --
 
 var give = function give( given )
 {
@@ -416,7 +501,6 @@ var ping = function( error,argument )
 var _handleGot = function()
 {
   var self = this;
-  var mutex = self.mutex;
   var result;
 
   if( !self._taker.length )
@@ -433,11 +517,11 @@ var _handleGot = function()
   {
 
     result = _taker.onGot.giveWithError.call( _taker.onGot,_given.error,_given.argument );
-    if( self.mode === 'promise' && _taker.thenning )
+    if( _taker.thenning )
     {
       self.giveWithError( _given.error,_given.argument );
     }
-    else if( self.mode === 'promise' && _taker.informing )
+    else if( _taker.informing )
     {
       debugger;
       self.giveWithError( _given.error,_given.argument );
@@ -458,7 +542,7 @@ var _handleGot = function()
     {
       debugger;
       var err = _.err( err );
-      err.respected = 1;
+      err.needAttention = 1;
       result = new wConsequence().error( err );
       if( Config.debug )
       console.error( 'Consequence caught error' );
@@ -466,7 +550,7 @@ var _handleGot = function()
       {
         _.timeOut( 1, function()
         {
-          if( err.respected )
+          if( err.needAttention )
           {
             console.error( 'Uncaught error caught by Consequence :' );
             _.errLog( err );
@@ -477,14 +561,14 @@ var _handleGot = function()
 
     /**/
 
-    if( self.mode === 'promise' && _taker.thenning )
+    if( _taker.thenning )
     {
       if( result instanceof Self )
       result.then_( self ); // !!! got?
       else
       self.give( result );
     }
-    else if( self.mode === 'promise' && _taker.informing )
+    else if( _taker.informing )
     {
       if( result instanceof Self )
       {
@@ -520,6 +604,7 @@ var _handleGot = function()
 
   //
 
+/*
   if( self.mode === 'promise' )
   {
 
@@ -536,8 +621,29 @@ var _handleGot = function()
 
   }
   else throw _.err( 'unexepected' );
+*/
 
-  /*if( mutex )*/
+//
+
+  /* persistent */
+
+  for( var i = 0 ; i < self._takerPersistent.length ; i++ )
+  {
+    var _taker = self._taker[ i ];
+    _giveTo( _taker );
+  }
+
+  /* ordinar */
+
+  if( self._taker.length > 0 )
+  {
+    var _taker = self._taker[ 0 ];
+    self._taker.splice( 0,1 );
+    _giveTo( _taker );
+  }
+
+  /**/
+
   if( self._given.length )
   self._handleGot();
 
@@ -546,7 +652,7 @@ var _handleGot = function()
 
 //
 
-var _giveClass = function _giveClass( o )
+var _give_class = function _give_class( o )
 {
   var context;
 
@@ -631,7 +737,7 @@ var giveWithContextTo = function giveWithContextTo( consequence,context,got )
   if( arguments.length > 3 )
   args = _.arraySlice( arguments,2 );
 
-  return _giveClass
+  return _give_class
   ({
     consequence : consequence,
     context : context,
@@ -661,7 +767,7 @@ var giveClass = function( consequence )
 
   var args = [ got ];
 
-  return _giveClass
+  return _give_class
   ({
     consequence : consequence,
     context : undefined,
@@ -678,7 +784,7 @@ var errorClass = function( consequence,error )
 
   _.assert( arguments.length === 2 );
 
-  return _giveClass
+  return _give_class
   ({
     consequence : consequence,
     context : undefined,
@@ -700,7 +806,7 @@ var giveWithContextAndErrorTo = function giveWithContextAndErrorTo( consequence,
   if( arguments.length > 4 )
   args = _.arraySlice( arguments,3 );
 
-  return _giveClass
+  return _give_class
   ({
     consequence : consequence,
     context : context,
@@ -708,40 +814,6 @@ var giveWithContextAndErrorTo = function giveWithContextAndErrorTo( consequence,
     args : args,
   });
 
-}
-
-// --
-// taker / given
-// --
-
-var takersGet = function()
-{
-  var self = this;
-  return self._taker;
-}
-
-//
-
-var givenGet = function()
-{
-  var self = this;
-  return self._given;
-}
-
-//
-
-var toStr = function()
-{
-  var self = this;
-  var result = self.nickName;
-
-  var names = _.entitySelect( self.takersGet(),'*.name' );
-
-  result += '\n  given : ' + self.givenGet().length;
-  result += '\n  takers : ' + self.takersGet().length;
-  result += '\n  takers : ' + names.join( ' ' );
-
-  return result;
 }
 
 // --
@@ -794,6 +866,50 @@ var clear = function clear( data )
 
 }
 
+// --
+// etc
+// --
+
+var hasGiven = function()
+{
+  var self = this;
+  if( self._given.length <= self._taker.length )
+  return 0;
+  return self._given.length - self._taker.length;
+}
+
+//
+
+var takersGet = function()
+{
+  var self = this;
+  return self._taker;
+}
+
+//
+
+var givenGet = function()
+{
+  var self = this;
+  return self._given;
+}
+
+//
+
+var toStr = function()
+{
+  var self = this;
+  var result = self.nickName;
+
+  var names = _.entitySelect( self.takersGet(),'*.name' );
+
+  result += '\n  given : ' + self.givenGet().length;
+  result += '\n  takers : ' + self.takersGet().length;
+  result += '\n  takers : ' + names.join( ' ' );
+
+  return result;
+}
+
 //
 
 var _onDebug = function()
@@ -809,8 +925,9 @@ var Composes =
 {
   name : '',
   _taker : [],
+  _takerPersistent : [],
   _given : [],
-  mode : 'promise',
+  //mode : 'promise',
 }
 
 var Aggregates =
@@ -830,29 +947,32 @@ var Proto =
 
   init : init,
 
-  // mode
-
-/*
-  '_modeGet' : _modeGet,
-  '_modeSet' : _modeSet,
-*/
-
 
   // mechanics
 
-  _gotterAppend : _gotterAppend,
+  _takerAppend : _takerAppend,
+
+
+  // taker
 
   got : got,
   done : got,
   gotOnce : gotOnce,
 
   then_ : then_,
+  thenOnce : thenOnce,
   thenClone : thenClone,
 
   inform : inform,
+  ifErrorThen : ifErrorThen,
   ifNoErrorThen : ifNoErrorThen,
   thenDebug : thenDebug,
   timeOut : timeOut,
+
+  persist : persist,
+
+
+  // giver
 
   give : give,
   error : error,
@@ -860,35 +980,28 @@ var Proto =
   ping : ping,
 
   _handleGot : _handleGot,
-  _giveClass : _giveClass,
+  _give_class : _give_class,
 
 
-  //
-/*
-
-  giveWithContextTo : giveWithContextTo,
-  giveTo : giveTo,
-  errorTo : errorTo,
-  giveWithContextAndErrorTo : giveWithContextAndErrorTo,
-
-*/
-  //
-
-  takersGet : takersGet,
-  givenGet : givenGet,
-  toStr : toStr,
-
-
-  //
+  // clear
 
   clearTakers : clearTakers,
   clearGiven : clearGiven,
   clear : clear,
 
 
-  //
+  // etc
 
+  hasGiven : hasGiven,
+  takersGet : takersGet,
+  givenGet : givenGet,
+  toStr : toStr,
   _onDebug : _onDebug,
+
+
+  // class var
+
+  usingAsyncTaker : 0,
 
 
   // ident
@@ -910,6 +1023,7 @@ var Static =
 
   giveWithContextAndErrorTo : giveWithContextAndErrorTo,
 
+  ifErrorThen : ifErrorThenClass,
   ifNoErrorThen : ifNoErrorThenClass,
 
 }
@@ -936,7 +1050,7 @@ _.accessor
   object : Self.prototype,
   names :
   {
-    mutex : 'mutex',
+    //mutex : 'mutex',
   }
 });
 
@@ -945,8 +1059,9 @@ _.accessor
 _.accessorForbid( Self.prototype,
   {
     every : 'every',
-  },
-  'please use "mutex" instead of "every"'
+    mutex : 'mutex',
+    mode : 'mode',
+  }
 );
 
 //
