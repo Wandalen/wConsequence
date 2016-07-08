@@ -112,6 +112,23 @@ var onSuccess = function(errValue, gotValue) {
  *
  * This is only few described syntactic difference list, that will be supplemented later.
  *
+ * II. behavior difference:
+ *  1) unlike Promise, wConsequence can resolve values unlimited times, while Promise can resolve/reject one value only
+ *  once per Promise instance. For example:
+ *   function printValue( err, val )
+     {
+       console.log(val);
+     }
+     var con = new wConsequence();
+
+     con.got( printValue ).give(1).give(3).give(4).got( printValue ).got( printValue )
+     .then_( function(err, value)
+     {
+       return ++value;
+     }).then_( printValue ).give(5);
+
+     // prints 1 3 4 6
+ *
  */
 
 ( function _Consequence_s_(){
