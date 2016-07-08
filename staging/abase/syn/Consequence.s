@@ -2,7 +2,7 @@
  *  draft description
  *  some difference from regular Promises/A+ realisation
  *
- *  1. syntactic difference:
+ *  I. syntactic difference:
  *  the wConsequence used in some different way, than standart promise. For example:
  *  lets consist some simple promise:
   function myPromise(value, delay) {
@@ -94,10 +94,24 @@ var onSuccess = function(errValue, gotValue) {
  * 4) for handling resolved/rejected values of wConsequence we can use one of next approaches (analog of then/catch):
  *   - got(): accepts callback with two parameters: error (null if wConsequence fulfilled successful) and resolved value,
  *   instead two callback for fulfill/reject in Promise. instead then(), don`t pass handling result into next handlers.
+ *   - done() is the alias for got().
  *   - gotOnce(): work similar as got, but ignores passed handler, if it was already added to wConsequence before,
  *   - then_(): work similar to got(), and accepts callback with same signature, but pass result of handling into next
  *   taker.
- *   And and several methods that will be described later.
+ *   - thenOnce_(): is similar to gotOnce, but pass result of handling into next taker, what allow use it in chaining.
+ *   And  several methods that will be described later.
+ * 5) unlike Promise then(), all method mentioned above, can accepts context and arguments as second and third arguments
+ *   for binding to taker function passed as first argument.
+ * 6) instead Promise catch() method, wConsequence provides several method for exception recovering:
+ *   - ifErrorThen(): accepts taker function - explicitly error handler, that will be invoked only if error occurred and
+ *   pas result into next takers.
+ *   - ifNoErrorThen(): has the opposite behavior: accepted taker was invoked only if wConsequence was resolve value
+ *   without errors.
+ *   Note: all taker handlers passed to wConsequence using such method as got() or then_(), accepts error as first
+ *   parameters, what give us ability to handle errors directly in takers.
+ *
+ * This is only few described syntactic difference list, that will be supplemented later.
+ *
  */
 
 ( function _Consequence_s_(){
