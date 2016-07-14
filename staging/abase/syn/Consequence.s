@@ -462,7 +462,9 @@ var persist = function persist( taker )
   return self._takerAppend
   ({
     taker : taker,
-    thenning : true,
+    // !!! temporary hack, to avoid RangeError: Maximum call stack size exceeded
+    // thenning : true,
+    thenning: false,
     persistent : true,
   });
 
@@ -666,7 +668,9 @@ var _handleGot = function()
 
   for( var i = 0 ; i < self._takerPersistent.length ; i++ )
   {
-    var _taker = self._taker[ i ];
+    // !!! maybe misstake
+    // var _taker = self._taker[ i ];
+    var _taker = self._takerPersistent[ i ];
     _giveTo( _taker );
   }
 
