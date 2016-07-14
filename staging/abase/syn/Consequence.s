@@ -218,6 +218,7 @@ var _takerAppend = function( o )
   /**
    * Method appends resolved value and error handler to wConsequence takers sequence. That handler accept only one
       value or error reason only once, and don't pass result of it computation to next handler (unlike Promise 'then').
+      if got() called without argument, an empty handler will be appended.
       Returns current wConsequence instance.
    * @example
        var gotHandler1 = function( error, value )
