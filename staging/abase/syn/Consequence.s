@@ -542,7 +542,9 @@ var _handleGot = function()
   var self = this;
   var result;
 
-  if( !self._taker.length )
+  // !!! also check _takerPersistent array
+  // if( !self._taker.length )
+  if( !( self._taker.length || self._takerPersistent.length ) )
   return;
 
   _.assert( self._given.length );
