@@ -3,6 +3,12 @@
 
 'use strict';
 
+  /**
+   * @file Consequence.s - Advanced synchronization mechanism. wConsequence is able to solve any asynchronous problem
+     replacing and including functionality of many other mechanisms, such as: Callback, Event, Signal, Mutex, Semaphore,
+     Async, Promise.
+   */
+
 /*
 
  !!! move promise / event property from object to taker
@@ -54,6 +60,28 @@ if( typeof module !== 'undefined' )
 
 var _ = wTools;
 var Parent = null;
+
+  /**
+   * Class wConsequence creates objects that used for asynchronous computations. It represent the queue of results that
+   * can computation asynchronously, and has a wide range of tools to implement this process.
+   * @class wConsequence
+   */
+
+  /**
+   * Creates instance of wConsequence
+   * @example
+     var con = new wConsequence();
+     con.give( 'hello' ).got( function( err, value) { console.log( value ); } ); // hello
+
+     var con = wConsequence();
+     con.got( function( err, value) { console.log( value ); } ).give('world'); // world
+   * @param {Object|Function|wConsequence} options
+   * @returns {wConsequence}
+   * @constructor
+   * @see {@link wConsequence}
+   */
+  
+    
 var Self = function wConsequence( options )
 {
   if( !( this instanceof Self ) )
