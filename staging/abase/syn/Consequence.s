@@ -214,6 +214,53 @@ var _takerAppend = function( o )
 // taker
 // --
 
+
+  /**
+   * Method appends resolved value and error handler to wConsequence takers sequence. That handler accept only one
+      value or error reason only once, and don't pass result of it computation to next handler (unlike Promise 'then').
+      Returns current wConsequence instance.
+   * @example
+       var gotHandler1 = function( error, value )
+       {
+         console.log( 'handler 1: ' + value );
+       };
+
+       var gotHandler2 = function( error, value )
+       {
+         console.log( 'handler 2: ' + value );
+       };
+
+       var con1 = new wConsequence();
+
+       con1.got( gotHandler1 );
+       con1.give( 'hello' ).give( 'world' );
+
+       // prints only " handler 1: hello ",
+
+       var con2 = new wConsequence();
+
+       con2.got( gotHandler1 ).got( gotHandler2 );
+       con2.give( 'foo' );
+
+       // prints only " handler 1: foo "
+
+       var con3 = new wConsequence();
+
+       con3.got( gotHandler1 ).got( gotHandler2 );
+       con3.give( 'bar' ).give( 'baz' );
+
+       // prints
+       // handler 1: bar
+       // handler 2: baz
+       //
+   * @param {wConsequence~taker|wConsequence} [taker] callback, that accepts resolved value or exception reason.
+   * @returns {wConsequence}
+   * @see {@link wConsequence~taker} taker callback
+   * @throws {Error} if passed more than one argument.
+   * @method got
+   * @memberof wConsequence
+   */
+
 var got = function got( taker )
 {
   var self = this;
