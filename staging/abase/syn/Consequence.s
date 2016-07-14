@@ -68,6 +68,15 @@ var Parent = null;
    */
 
   /**
+   * Function that accepts result of wConsequence value computation. Used as parameter in methods such as got(), then_(),
+    etc.
+   * @param {*} err Error object, or any other type, that represent or describe an error reason. If during resolving
+      value no exception occurred, it will be set to null;
+     @param {*} value resolved by wConsequence value;
+   * @callback wConsequence~taker
+   */
+
+  /**
    * Creates instance of wConsequence
    * @example
      var con = new wConsequence();
@@ -122,6 +131,25 @@ var init = function init( options )
 // --
 // mechanics
 // --
+
+  /**
+   * Method created and appends taker object, based on passed options into wConsequence takers queue.
+   *
+   * @param {Object} o options object
+   * @param {wConsequence~taker|wConsequence} o.onGot taker callback
+   * @param {Object} [o.context] if defined, it uses as 'this' context in taker function.
+   * @param {Array<*>|ArrayLike} [o.argument] values, that will be used as binding arguments in taker.
+   * @param {string} [o.name=null] name for taker function
+   * @param {boolean} [o.thenning=false] If sets to true, then result of current taker will be passed to the next taker
+      in takers queue.
+   * @param {boolean} [o.persistent=false] If sets to true, then taker will be work as queue listener ( it will be
+   * processed every value resolved by wConsequence).
+   * @param {boolean} [o.informing=false] enabled some breakpoints in debug mode;
+   * @returns {wConsequence}
+   * @private
+   * @method _takerAppend
+   * @memberof wConsequence
+   */
 
 var _takerAppend = function( o )
 {
