@@ -75,7 +75,7 @@ var Parent = null;
 
      var con = wConsequence();
      con.got( function( err, value) { console.log( value ); } ).give('world'); // world
-   * @param {Object|Function|wConsequence} options
+   * @param {Object|Function|wConsequence} [options] initialization options
    * @returns {wConsequence}
    * @constructor
    * @see {@link wConsequence}
@@ -90,6 +90,14 @@ var Self = function wConsequence( options )
 }
 
 //
+
+  /**
+   * Initialises instance of wConsequence
+   * @param {Object|Function|wConsequence} [options] initialization options
+   * @private
+   * @method pathCurrent
+   * @memberof wConsequence
+   */
 
 var init = function init( options )
 {
