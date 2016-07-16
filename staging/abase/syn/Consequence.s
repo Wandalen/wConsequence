@@ -219,6 +219,7 @@ var _takerAppend = function( o )
    * Method appends resolved value and error handler to wConsequence takers sequence. That handler accept only one
       value or error reason only once, and don't pass result of it computation to next handler (unlike Promise 'then').
       if got() called without argument, an empty handler will be appended.
+      After invocation, taker will be removed from takers queue.
       Returns current wConsequence instance.
    * @example
        var gotHandler1 = function( error, value )
@@ -284,6 +285,57 @@ var got = function got( taker )
 }
 
 //
+
+  /**
+   * Works like got() method, but adds taker to queue only if function with same name not exist in queue yet.
+   * Note: this is experimental tool.
+   * @example
+   *
+
+     function gotHandler1( error, value )
+     {
+       console.log( 'handler 1: ' + value );
+     };
+
+     function gotHandler2( error, value )
+     {
+       console.log( 'handler 2: ' + value );
+     };
+
+     var con1 = new wConsequence();
+
+     con1.gotOnce( gotHandler1 ).gotOnce( gotHandler1 ).gotOnce( gotHandler2 );
+     con1.give( 'foo' ).give( 'bar' );
+
+     // logs:
+     // handler 1: foo 
+     // handler 2: bar
+     // taker gotHandler1 has ben invoked only once, because second taker was not added to takers queue.
+   
+     // but:
+
+     var con2 = new wConsequence();
+
+     con2.give( 'foo' ).give( 'bar' ).give('baz');
+     con2.gotOnce( gotHandler1 ).gotOnce( gotHandler1 ).gotOnce( gotHandler2 );
+
+     // logs:
+     // handler 1: foo
+     // handler 1: bar
+     // handler 2: baz
+     // in this case first gotHandler1 has been removed from takers queue immediately after the invocation, so adding
+     // second gotHandler1 is legitimate.
+
+   *
+   * @param {wConsequence~taker|wConsequence} taker callback, that accepts resolved value or exception reason.
+   * @returns {wConsequence}
+   * @throws {Error} if passed more than one argument.
+   * @throws {Error} if taker.name is not string.
+   * @see {@link wConsequence~taker} taker callback
+   * @see {@link wConsequence#got} got method
+   * @method gotOnce
+   * @memberof wConsequence
+   */
 
 var gotOnce = function gotOnce( taker )
 {
