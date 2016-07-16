@@ -89,8 +89,8 @@ var Parent = null;
    * @constructor
    * @see {@link wConsequence}
    */
-  
-    
+
+
 var Self = function wConsequence( options )
 {
   if( !( this instanceof Self ) )
@@ -590,9 +590,7 @@ var persist = function persist( taker )
   return self._takerAppend
   ({
     taker : taker,
-    // !!! temporary hack, to avoid RangeError: Maximum call stack size exceeded
-    // thenning : true,
-    thenning: false,
+    thenning : false,
     persistent : true,
   });
 
@@ -670,9 +668,7 @@ var _handleGot = function()
   var self = this;
   var result;
 
-  // !!! also check _takerPersistent array
-  // if( !self._taker.length )
-  if( !( self._taker.length || self._takerPersistent.length ) )
+  if( !self._taker.length && !self._takerPersistent.length )
   return;
 
   _.assert( self._given.length );
@@ -773,33 +769,11 @@ var _handleGot = function()
 
   //
 
-/*
-  if( self.mode === 'promise' )
-  {
-
-    var _taker = self._taker[ 0 ];
-    self._taker.splice( 0,1 );
-    _giveTo( _taker );
-
-  }
-  else if( self.mode === 'event' )
-  {
-
-    for( var i = 0 ; i < self._taker.length ; i++ )
-    _giveTo( self._taker[ i ] );
-
-  }
-  else throw _.err( 'unexepected' );
-*/
-
-//
 
   /* persistent */
 
   for( var i = 0 ; i < self._takerPersistent.length ; i++ )
   {
-    // !!! maybe misstake
-    // var _taker = self._taker[ i ];
     var _taker = self._takerPersistent[ i ];
     _giveTo( _taker );
   }
@@ -1098,11 +1072,6 @@ var Composes =
   _taker : [],
   _takerPersistent : [],
   _given : [],
-  //mode : 'promise',
-}
-
-var Aggregates =
-{
 }
 
 var Restricts =
@@ -1128,19 +1097,19 @@ var Proto =
 
   got : got,
   done : got,
-  gotOnce : gotOnce,
+  gotOnce : gotOnce, /* experimental */
 
   then_ : then_,
-  thenOnce : thenOnce,
+  thenOnce : thenOnce, /* experimental */
   thenClone : thenClone,
 
   inform : inform,
   ifErrorThen : ifErrorThen,
   ifNoErrorThen : ifNoErrorThen,
-  thenDebug : thenDebug,
+  thenDebug : thenDebug, /* experimental */
   timeOut : timeOut,
 
-  persist : persist,
+  persist : persist, /* experimental */
 
 
   // giver
@@ -1148,7 +1117,7 @@ var Proto =
   give : give,
   error : error,
   giveWithError : giveWithError,
-  ping : ping,
+  ping : ping, /* experimental */
 
   _handleGot : _handleGot,
   _give_class : _give_class,
@@ -1179,7 +1148,6 @@ var Proto =
 
   constructor : Self,
   Composes : Composes,
-  Aggregates : Aggregates,
   Restricts : Restricts,
 
 }
@@ -1221,7 +1189,6 @@ _.accessor
   object : Self.prototype,
   names :
   {
-    //mutex : 'mutex',
   }
 });
 
