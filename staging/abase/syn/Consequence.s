@@ -68,6 +68,15 @@ var Parent = null;
    */
 
   /**
+   * Function that accepts result of wConsequence value computation. Used as parameter in methods such as got(), then_(),
+    etc.
+   * @param {*} err Error object, or any other type, that represent or describe an error reason. If during resolving
+      value no exception occurred, it will be set to null;
+     @param {*} value resolved by wConsequence value;
+   * @callback wConsequence~taker
+   */
+
+  /**
    * Creates instance of wConsequence
    * @example
      var con = new wConsequence();
@@ -75,7 +84,7 @@ var Parent = null;
 
      var con = wConsequence();
      con.got( function( err, value) { console.log( value ); } ).give('world'); // world
-   * @param {Object|Function|wConsequence} options
+   * @param {Object|Function|wConsequence} [options] initialization options
    * @returns {wConsequence}
    * @constructor
    * @see {@link wConsequence}
@@ -90,6 +99,14 @@ var Self = function wConsequence( options )
 }
 
 //
+
+  /**
+   * Initialises instance of wConsequence
+   * @param {Object|Function|wConsequence} [options] initialization options
+   * @private
+   * @method pathCurrent
+   * @memberof wConsequence
+   */
 
 var init = function init( options )
 {
@@ -114,6 +131,25 @@ var init = function init( options )
 // --
 // mechanics
 // --
+
+  /**
+   * Method created and appends taker object, based on passed options into wConsequence takers queue.
+   *
+   * @param {Object} o options object
+   * @param {wConsequence~taker|wConsequence} o.onGot taker callback
+   * @param {Object} [o.context] if defined, it uses as 'this' context in taker function.
+   * @param {Array<*>|ArrayLike} [o.argument] values, that will be used as binding arguments in taker.
+   * @param {string} [o.name=null] name for taker function
+   * @param {boolean} [o.thenning=false] If sets to true, then result of current taker will be passed to the next taker
+      in takers queue.
+   * @param {boolean} [o.persistent=false] If sets to true, then taker will be work as queue listener ( it will be
+   * processed every value resolved by wConsequence).
+   * @param {boolean} [o.informing=false] enabled some breakpoints in debug mode;
+   * @returns {wConsequence}
+   * @private
+   * @method _takerAppend
+   * @memberof wConsequence
+   */
 
 var _takerAppend = function( o )
 {
@@ -177,6 +213,54 @@ var _takerAppend = function( o )
 // --
 // taker
 // --
+
+
+  /**
+   * Method appends resolved value and error handler to wConsequence takers sequence. That handler accept only one
+      value or error reason only once, and don't pass result of it computation to next handler (unlike Promise 'then').
+      if got() called without argument, an empty handler will be appended.
+      Returns current wConsequence instance.
+   * @example
+       var gotHandler1 = function( error, value )
+       {
+         console.log( 'handler 1: ' + value );
+       };
+
+       var gotHandler2 = function( error, value )
+       {
+         console.log( 'handler 2: ' + value );
+       };
+
+       var con1 = new wConsequence();
+
+       con1.got( gotHandler1 );
+       con1.give( 'hello' ).give( 'world' );
+
+       // prints only " handler 1: hello ",
+
+       var con2 = new wConsequence();
+
+       con2.got( gotHandler1 ).got( gotHandler2 );
+       con2.give( 'foo' );
+
+       // prints only " handler 1: foo "
+
+       var con3 = new wConsequence();
+
+       con3.got( gotHandler1 ).got( gotHandler2 );
+       con3.give( 'bar' ).give( 'baz' );
+
+       // prints
+       // handler 1: bar
+       // handler 2: baz
+       //
+   * @param {wConsequence~taker|wConsequence} [taker] callback, that accepts resolved value or exception reason.
+   * @returns {wConsequence}
+   * @see {@link wConsequence~taker} taker callback
+   * @throws {Error} if passed more than one argument.
+   * @method got
+   * @memberof wConsequence
+   */
 
 var got = function got( taker )
 {
@@ -454,7 +538,9 @@ var persist = function persist( taker )
   return self._takerAppend
   ({
     taker : taker,
-    thenning : true,
+    // !!! temporary hack, to avoid RangeError: Maximum call stack size exceeded
+    // thenning : true,
+    thenning: false,
     persistent : true,
   });
 
@@ -532,7 +618,9 @@ var _handleGot = function()
   var self = this;
   var result;
 
-  if( !self._taker.length )
+  // !!! also check _takerPersistent array
+  // if( !self._taker.length )
+  if( !( self._taker.length || self._takerPersistent.length ) )
   return;
 
   _.assert( self._given.length );
@@ -658,7 +746,9 @@ var _handleGot = function()
 
   for( var i = 0 ; i < self._takerPersistent.length ; i++ )
   {
-    var _taker = self._taker[ i ];
+    // !!! maybe misstake
+    // var _taker = self._taker[ i ];
+    var _taker = self._takerPersistent[ i ];
     _giveTo( _taker );
   }
 
