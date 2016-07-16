@@ -1045,16 +1045,16 @@ var Proto =
 
   got : got,
   done : got,
-  gotOnce : gotOnce,
+  gotOnce : gotOnce, /* experimental */
 
   then_ : then_,
-  thenOnce : thenOnce,
+  thenOnce : thenOnce, /* experimental */
   thenClone : thenClone,
 
   inform : inform,
   ifErrorThen : ifErrorThen,
   ifNoErrorThen : ifNoErrorThen,
-  thenDebug : thenDebug,
+  thenDebug : thenDebug, /* experimental */
   timeOut : timeOut,
 
   persist : persist, /* experimental */
@@ -1065,7 +1065,7 @@ var Proto =
   give : give,
   error : error,
   giveWithError : giveWithError,
-  ping : ping,
+  ping : ping, /* experimental */
 
   _handleGot : _handleGot,
   _give_class : _give_class,
