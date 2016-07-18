@@ -364,6 +364,44 @@ var gotOnce = function gotOnce( taker )
 
 //
 
+  /**
+   * Method accepts handler for resolved value/error. This handler method then_ adds to wConsequence takers sequence.
+      After processing accepted value, taker return value will be pass to the next handler in takers queue.
+      Returns current wConsequence instance.
+
+   * @example
+     function gotHandler1( error, value )
+     {
+       console.log( 'handler 1: ' + value );
+       value++;
+       return value;
+     };
+
+     function gotHandler3( error, value )
+     {
+       console.log( 'handler 3: ' + value );
+     };
+
+     var con1 = new wConsequence();
+
+     con1.then_( gotHandler1 ).then_( gotHandler1 ).got(gotHandler3);
+     con1.give( 4 ).give( 10 );
+
+     // prints:
+     // handler 1: 4
+     // handler 1: 5
+     // handler 3: 6
+
+   * @param {wConsequence~taker|wConsequence} taker callback, that accepts resolved value or exception reason.
+   * @returns {wConsequence}
+   * @throws {Error} if missed taker.
+   * @throws {Error} if passed more than one argument.
+   * @see {@link wConsequence~taker} taker callback
+   * @see {@link wConsequence#got} got method
+   * @method then_
+   * @memberof wConsequence
+   */
+
 var then_ = function then_( taker )
 {
   var self = this;
