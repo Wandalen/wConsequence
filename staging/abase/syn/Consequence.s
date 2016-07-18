@@ -418,6 +418,48 @@ var then_ = function then_( taker )
 
 //
 
+  /**
+   * Works like then_() method, but adds taker to queue only if function with same name not exist in queue yet.
+   * Note: this is an experimental tool.
+   *
+   * @example
+     function gotHandler1( error, value )
+     {
+       console.log( 'handler 1: ' + value );
+       value++;
+       return value;
+     };
+
+     function gotHandler2( error, value )
+     {
+       console.log( 'handler 2: ' + value );
+     };
+
+     function gotHandler3( error, value )
+     {
+       console.log( 'handler 3: ' + value );
+     };
+
+     var con1 = new wConsequence();
+
+     con1.thenOnce( gotHandler1 ).thenOnce( gotHandler1 ).got(gotHandler3);
+     con1.give( 4 ).give( 10 );
+
+     // prints
+     // handler 1: 4
+     // handler 3: 5
+
+   * @param taker
+   * @returns {*}
+   * @throws {Error} if passed more than one argument.
+   * @throws {Error} if taker is defined as anonymous function including anonymous function expression.
+   * @see {@link wConsequence~taker} taker callback
+   * @see {@link wConsequence#then_} then_ method
+   * @see {@link wConsequence#gotOnce} gotOnce method
+   * @method thenOnce
+   * @memberof wConsequence
+   */
+
 var thenOnce = function thenOnce( taker )
 {
   var self = this;
