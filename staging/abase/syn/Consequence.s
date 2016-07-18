@@ -1,4 +1,3 @@
-
 ( function _Consequence_s_(){
 
 'use strict';
@@ -211,9 +210,8 @@ var _takerAppend = function( o )
 }
 
 // --
-// taker
+// chainer
 // --
-
 
   /**
    * Method appends resolved value and error handler to wConsequence takers sequence. That handler accept only one
@@ -308,10 +306,10 @@ var got = function got( taker )
      con1.give( 'foo' ).give( 'bar' );
 
      // logs:
-     // handler 1: foo 
+     // handler 1: foo
      // handler 2: bar
      // taker gotHandler1 has ben invoked only once, because second taker was not added to takers queue.
-   
+
      // but:
 
      var con2 = new wConsequence();
@@ -635,7 +633,67 @@ var persist = function persist( taker )
 }
 
 // --
-// giver
+// reverse chainer
+// --
+
+var and = function and( srcs )
+{
+  var self = this;
+  var got,anyErr;
+
+  _.assert( arguments.length === 1 );
+
+  if( !_.arrayIs( srcs ) )
+  srcs = [ srcs ];
+
+  /**/
+
+  var give = function()
+  {
+    if( anyErr && !got[ 0 ] )
+    self.error( anyErr );
+    else
+    self.give( got[ 0 ],got[ 1 ] );
+  }
+
+  /**/
+
+  var count = srcs.length
+  var collect = function( err,data )
+  {
+    count -= 1;
+    if( err )
+    anyErr = anyErr;
+    if( count === 0 && got )
+    _.timeOut( 1,give );
+    if( err )
+    throw _.err( err );
+    return data;
+  }
+
+  /**/
+
+  self.got( function( err,data )
+  {
+    got = [ err,data ];
+    if( count === 0 )
+    give();
+  });
+
+  /**/
+
+  for( var a = 0 ; a < srcs.length ; a++ )
+  {
+    var src = srcs[ a ];
+    _.assert( _.objectIs( src ) && _.routineIs( src.then_ ) )
+    src.then_( collect );
+  }
+
+  return self;
+}
+
+// --
+// messager
 // --
 
 var give = function give( given )
@@ -710,7 +768,6 @@ var _handleGot = function()
   return;
 
   _.assert( self._given.length );
-
   var _given = self._given[ 0 ];
   self._given.splice( 0,1 );
 
@@ -719,15 +776,18 @@ var _handleGot = function()
   var _giveToConsequence = function( _taker )
   {
 
-    result = _taker.onGot.giveWithError.call( _taker.onGot,_given.error,_given.argument );
-    if( _taker.thenning )
+    /* need to have massage in the first consequence before executing the second one */
+
+    if( _taker.thenning || _taker.informing )
     {
-      self.giveWithError( _given.error,_given.argument );
+      self._given.unshift( _given );
     }
-    else if( _taker.informing )
+
+    result = _taker.onGot.giveWithError.call( _taker.onGot,_given.error,_given.argument );
+
+    if( _taker.thenning || _taker.informing )
     {
-      debugger;
-      self.giveWithError( _given.error,_given.argument );
+      self._handleGot();
     }
 
   }
@@ -790,9 +850,6 @@ var _handleGot = function()
 
   var _giveTo = function( _taker )
   {
-
-    if( _taker.onGot === _onDebug )
-    debugger;
 
     if( _taker.onGot instanceof Self )
     {
@@ -1095,9 +1152,12 @@ var toStr = function()
 
 //
 
-var _onDebug = function()
+var _onDebug = function( err,data )
 {
   debugger;
+  if( err )
+  throw _.err( err );
+  return data;
 }
 
 // --
@@ -1131,7 +1191,7 @@ var Proto =
   _takerAppend : _takerAppend,
 
 
-  // taker
+  // chainer
 
   got : got,
   done : got,
@@ -1150,7 +1210,12 @@ var Proto =
   persist : persist, /* experimental */
 
 
-  // giver
+  // reverse chainer
+
+  and : and,
+
+
+  // messager
 
   give : give,
   error : error,
