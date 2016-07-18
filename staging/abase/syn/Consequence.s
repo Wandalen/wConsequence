@@ -1,4 +1,3 @@
-
 ( function _Consequence_s_(){
 
 'use strict';
@@ -307,10 +306,10 @@ var got = function got( taker )
      con1.give( 'foo' ).give( 'bar' );
 
      // logs:
-     // handler 1: foo 
+     // handler 1: foo
      // handler 2: bar
      // taker gotHandler1 has ben invoked only once, because second taker was not added to takers queue.
-   
+
      // but:
 
      var con2 = new wConsequence();
