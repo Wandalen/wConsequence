@@ -928,7 +928,6 @@ var _handleGot = function _handleGot()
   {
 
     result = taker.onGot.giveWithError( _given.error,_given.argument );
-*/
 
     if( ordinary )
     if( taker.thenning || taker.tapping )
