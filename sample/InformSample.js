@@ -31,7 +31,7 @@ var con1 = new wConsequence();
 
 con1.give( 1 ).give( 4 );
 
-con1.inform( gotHandler1 );
+con1.tap( gotHandler1 );
 con1.got( gotHandler2 );
 con1.got( gotHandler3 );
 
@@ -43,7 +43,7 @@ console.log( 'case 2' );
 
 var con1 = new wConsequence();
 
-con1.inform( gotHandler1 );
+con1.tap( gotHandler1 );
 con1.got( gotHandler2 );
 con1.got( gotHandler3 );
 

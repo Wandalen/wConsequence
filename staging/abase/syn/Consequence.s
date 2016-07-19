@@ -540,7 +540,7 @@ var thenClone = function thenClone()
 
 //
 
-var inform = function inform( taker )
+var tap = function tap( taker )
 {
   var self = this;
 
@@ -1279,7 +1279,7 @@ var Proto =
   thenOnce : thenOnce, /* experimental */
   thenClone : thenClone,
 
-  inform : inform,
+  tap : tap,
   ifErrorThen : ifErrorThen,
   ifNoErrorThen : ifNoErrorThen,
   thenDebug : thenDebug, /* experimental */
