@@ -573,11 +573,11 @@ var thenClone = function thenClone()
    * @returns {wConsequence}
    * @throws {Error} if passed more than one arguments
    * @see {@link wConsequence#got} got method
-   * @method inform
+   * @method tap
    * @memberof wConsequenc
    */
 
-var inform = function inform( taker )
+var tap = function tap( taker )
 {
   var self = this;
 
@@ -919,7 +919,8 @@ var _handleGot = function()
     {
       debugger;
       var err = _.err( err );
-      err.needAttention = 1;
+      if( !err.attentionGiven )
+      err.attentionNeeded = 1;
       result = new wConsequence().error( err );
       if( Config.debug )
       console.error( 'Consequence caught error' );
@@ -927,7 +928,7 @@ var _handleGot = function()
       {
         _.timeOut( 1, function()
         {
-          if( err.needAttention )
+          if( err.attentionNeeded )
           {
             console.error( 'Uncaught error caught by Consequence :' );
             _.errLog( err );
@@ -1315,7 +1316,7 @@ var Proto =
   thenOnce : thenOnce, /* experimental */
   thenClone : thenClone,
 
-  inform : inform,
+  tap : tap,
   ifErrorThen : ifErrorThen,
   ifNoErrorThen : ifNoErrorThen,
   thenDebug : thenDebug, /* experimental */

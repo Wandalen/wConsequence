@@ -27,17 +27,15 @@
   {
     var conseqTester = wConsequence(); // for correct testing async aspects of wConsequence
 
-
     var testCases =
       [
         {
-          givSequence:
-            [ 5 ],
+          givSequence: [ 5 ],
           gotSequence: [],
           expectedSequence:
-            [
-             { err: null, value: 5, takerId: 'taker1' }
-            ],
+          [
+           { err: null, value: 5, takerId: 'taker1' }
+          ],
         },
         {
           givSequence: [
@@ -50,8 +48,7 @@
           ]
         },
         {
-          givSequence:
-            [ 5, 4  ],
+          givSequence: [ 5, 4  ],
           gotSequence: [],
           expectedSequence:
             [
@@ -60,29 +57,28 @@
             ],
         },
         {
-          givSequence:
-            [ 5, 4, 6 ],
+          givSequence: [ 5, 4, 6 ],
           gotSequence: [],
           expectedSequence:
-            [
-              { err: null, value: 5, takerId: 'taker1' },
-              { err: null, value: 4, takerId: 'taker1' },
-              { err: null, value: 6, takerId: 'taker2' }
-            ],
+          [
+            { err: null, value: 5, takerId: 'taker1' },
+            { err: null, value: 4, takerId: 'taker1' },
+            { err: null, value: 6, takerId: 'taker2' }
+          ],
         },
         {
-          givSequence:
-            [ 5, 4, 6 ],
+          givSequence: [ 5, 4, 6 ],
           gotSequence: [],
           expectedSequence:
-            [
-              { err: null, value: 5, takerId: 'taker1' },
-              { err: null, value: 4, takerId: 'taker2' },
-            ],
+          [
+            { err: null, value: 5, takerId: 'taker1' },
+            { err: null, value: 4, takerId: 'taker2' },
+          ],
         },
       ];
 
-    // common wConsequence goter tests.
+    /* common wConsequence goter tests. */
+
     test.description = 'single value in give sequence, and single taker: attached taker after value resolved';
     ( function ( { givSequence, gotSequence, expectedSequence }  )
     {
@@ -98,6 +94,8 @@
       test.identical( gotSequence, expectedSequence );
     } )( testCases[ 0 ] );
 
+    /**/
+
     test.description = 'single err in give sequence, and single taker: attached taker after value resolved';
     ( function ( { givSequence, gotSequence, expectedSequence }  )
     {
@@ -112,6 +110,8 @@
       con.gotOnce( testTaker1 );
       test.identical( gotSequence, expectedSequence );
     } )( testCases[ 1 ] );
+
+    /**/
 
     test.description = 'test gotOnce in chain';
 
@@ -140,7 +140,8 @@
       test.identical( gotSequence, expectedSequence );
     } )( testCases[ 2 ] );
 
-    // test particular gotOnce features test.
+    /* test particular gotOnce features test. */
+
     test.description = 'several takers with same name: appending after given values are resolved';
     ( function ( { givSequence, gotSequence, expectedSequence }  )
     {
@@ -168,6 +169,8 @@
       con.gotOnce( testTaker2 );
       test.identical( gotSequence, expectedSequence );
     } )( testCases[ 3 ] );
+
+    /**/
 
     test.description = 'several takers with same name: appending before given values are resolved';
     ( function ( { givSequence, gotSequence, expectedSequence }  )
@@ -197,6 +200,8 @@
 
       test.identical( gotSequence, expectedSequence );
     } )( testCases[ 4 ] );
+
+    /**/
 
     if( Config.debug )
     {
