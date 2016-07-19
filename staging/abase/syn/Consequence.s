@@ -1151,7 +1151,7 @@ var giveWithContextAndErrorTo = function giveWithContextAndErrorTo( consequence,
 }
 
 // --
-// clear
+// correspondent
 // --
 
 var correspondentsClear = function correspondentsClear( correspondent )
@@ -1172,6 +1172,16 @@ var correspondentsClear = function correspondentsClear( correspondent )
 
 //
 
+var correspondentsGet = function()
+{
+  var self = this;
+  return self._correspondent;
+}
+
+// --
+// message
+// --
+
 var messagesClear = function messagesClear( data )
 {
   var self = this;
@@ -1190,20 +1200,6 @@ var messagesClear = function messagesClear( data )
 
 //
 
-var clear = function clear( data )
-{
-  var self = this;
-  _.assert( arguments.length === 0 );
-
-  self.correspondentsClear();
-  self.messagesClear();
-
-}
-
-// --
-// etc
-// --
-
 var hasMessage = function()
 {
   var self = this;
@@ -1214,18 +1210,24 @@ var hasMessage = function()
 
 //
 
-var correspondentsGet = function()
-{
-  var self = this;
-  return self._correspondent;
-}
-
-//
-
 var messageGet = function()
 {
   var self = this;
   return self._message;
+}
+
+// --
+// etc
+// --
+
+var clear = function clear( data )
+{
+  var self = this;
+  _.assert( arguments.length === 0 );
+
+  self.correspondentsClear();
+  self.messagesClear();
+
 }
 
 //
@@ -1325,19 +1327,23 @@ var Proto =
   _handleGot : _handleGot,
 
 
-  // clear
+  // correspondent
 
   correspondentsClear : correspondentsClear,
+  correspondentsGet : correspondentsGet,
+
+
+  // message
+
   messagesClear : messagesClear,
-  clear : clear,
+  hasMessage : hasMessage,
+  messageHas : hasMessage,
+  messageGet : messageGet,
 
 
   // etc
 
-  hasMessage : hasMessage,
-  messageHas : hasMessage,
-  correspondentsGet : correspondentsGet,
-  messageGet : messageGet,
+  clear : clear,
   toStr : toStr,
   _onDebug : _onDebug,
 
