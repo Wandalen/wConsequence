@@ -966,14 +966,6 @@ var _handleGot = function _handleGot()
       else
       self.give( result );
     }
-      //   //debugger;
-      //   //throw _.err( 'not implemented' ); /* have not seen use case yet */
-      //   //result.then_( function _tapping(){ debugger; self.give( _given.error,_given.argument ); } );
-      // }
-      // else
-      // {
-      //   self.give( _given.error,_given.argument );
-      // }
 
   }
 
@@ -994,6 +986,7 @@ var _handleGot = function _handleGot()
   }
 
   /* ordinary */
+
   var taker;
   if( self._taker.length > 0 )
   {
@@ -1001,6 +994,7 @@ var _handleGot = function _handleGot()
     self._taker.splice( 0,1 );
     __giveTo( taker,1 );
   }
+
   /* persistent */
 
   if( !taker || ( taker && !taker.tapping ) )
@@ -1016,11 +1010,6 @@ var _handleGot = function _handleGot()
     self._given.splice( 0,1 );
 
   }
-
-  /* persistent splice */
-
-  if( !spliced && self._takerPersistent.length )
-  self._given.splice( 0,1 );
 
   /* */
 
