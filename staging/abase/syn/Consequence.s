@@ -646,6 +646,43 @@ var ifNoErrorThenClass = function()
 
 //
 
+  /**
+   * ifErrorThen method pushed `correspondent` callback into wConsequence correspondents queue. That callback will
+     trigger only in that case if accepted error parameter will be defined and not null. Else accepted parameters will
+     be passed to the next correspondent in queue.
+   * @example
+   *
+     function gotHandler1( error, value )
+     {
+       console.log( 'handler 1: ' + value );
+       value++;
+       return value;
+     }
+
+     function gotHandler3( error, value )
+     {
+       console.log( 'handler 3 err: ' + error );
+       console.log( 'handler 3 val: ' + value );
+     }
+
+     var con2 = new wConsequence();
+
+     con2.giveWithError( 'error msg', 8 ).give( 14 );
+     con2.ifErrorThen( gotHandler3 ).got( gotHandler1 );
+
+     // prints:
+     // handler 3 err: error msg
+     // handler 3 val: 8
+     // handler 1: 14
+
+   * @param {wConsequence~correspondent|wConsequence} correspondent callback, that accepts exception  reason and value .
+   * @returns {wConsequence}
+   * @throws {Error} if passed more than one arguments
+   * @see {@link wConsequence#got} got method
+   * @method ifErrorThen
+   * @memberof wConsequenc
+   */
+
 var ifErrorThen = function()
 {
 
