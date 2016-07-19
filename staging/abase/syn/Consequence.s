@@ -143,7 +143,7 @@ var init = function init( options )
       in takers queue.
    * @param {boolean} [o.persistent=false] If sets to true, then taker will be work as queue listener ( it will be
    * processed every value resolved by wConsequence).
-   * @param {boolean} [o.informing=false] enabled some breakpoints in debug mode;
+   * @param {boolean} [o.tapping=false] enabled some breakpoints in debug mode;
    * @returns {wConsequence}
    * @private
    * @method _takerAppend
@@ -176,7 +176,7 @@ var _takerAppend = function( o )
   ({
     onGot : taker,
     thenning : !!o.thenning,
-    informing : !!o.informing,
+    tapping : !!o.tapping,
     name : name,
   });
   else
@@ -184,7 +184,7 @@ var _takerAppend = function( o )
   ({
     onGot : taker,
     thenning : !!o.thenning,
-    informing : !!o.informing,
+    tapping : !!o.tapping,
     name : name,
   });
 
@@ -553,7 +553,7 @@ var tap = function tap( taker )
     context : undefined,
     argument : arguments[ 2 ],
     thenning : false,
-    informing : true,
+    tapping : true,
   });
 
 }
@@ -828,15 +828,52 @@ var ping = function( error,argument )
     argument : argument,
   }
 
+  debugger;
+
   self._given.push( given );
   var result = self._handleGot();
 
   return result;
 }
 
+// --
+// mechanism
+// --
+
+var _handleError = function _handleError( err )
+{
+  var self = this;
+
+  debugger;
+
+  var err = _.err( err );
+
+  if( !err.attentionGiven )
+  err.attentionNeeded = 1;
+
+  var result = new wConsequence().error( err );
+
+  if( Config.debug )
+  console.error( 'Consequence caught error' );
+
+  if( Config.debug )
+  {
+    _.timeOut( 1, function()
+    {
+      if( err.attentionNeeded )
+      {
+        console.error( 'Uncaught error caught by Consequence :' );
+        _.errLog( err );
+      }
+    });
+  }
+
+  return result;
+}
+
 //
 
-var _handleGot = function()
+var _handleGot = function _handleGot()
 {
   var self = this;
   var result;
@@ -846,33 +883,37 @@ var _handleGot = function()
 
   _.assert( self._given.length );
   var _given = self._given[ 0 ];
-  self._given.splice( 0,1 );
 
-  //
+  /**/
 
-  var _giveToConsequence = function( _taker )
+  var _giveToConsequence = function( _taker,ordinary )
   {
 
     /* need to have massage in the first consequence before executing the second one */
-
-    if( _taker.thenning || _taker.informing )
+/*
+    if( _taker.thenning )
     {
       self._given.unshift( _given );
     }
+*/
 
     result = _taker.onGot.giveWithError.call( _taker.onGot,_given.error,_given.argument );
 
-    if( _taker.thenning || _taker.informing )
+    if( ordinary )
+    if( _taker.thenning || _taker.tapping )
     {
       self._handleGot();
     }
 
   }
 
-  //
+  /**/
 
-  var _giveToRoutine = function( _taker )
+  var _giveToRoutine = function( _taker,ordinary )
   {
+
+    if( !_taker.tapping && ordinary )
+    self._given.splice( 0,1 );
 
     try
     {
@@ -880,24 +921,7 @@ var _handleGot = function()
     }
     catch( err )
     {
-      debugger;
-      var err = _.err( err );
-      if( !err.attentionGiven )
-      err.attentionNeeded = 1;
-      result = new wConsequence().error( err );
-      if( Config.debug )
-      console.error( 'Consequence caught error' );
-      if( Config.debug )
-      {
-        _.timeOut( 1, function()
-        {
-          if( err.attentionNeeded )
-          {
-            console.error( 'Uncaught error caught by Consequence :' );
-            _.errLog( err );
-          }
-        });
-      }
+      result = self._handleError( err );
     }
 
     /**/
@@ -905,59 +929,57 @@ var _handleGot = function()
     if( _taker.thenning )
     {
       if( result instanceof Self )
-      result.then_( self ); // !!! got?
+      result.then_( self );
       else
       self.give( result );
     }
-    else if( _taker.informing )
+    else if( _taker.tapping )
     {
-      if( result instanceof Self )
-      {
-        debugger;
-        result.then_( function _informing(){ debugger; self.give( _given.error,_given.argument ); } ); // !!! got?
-      }
-      else
-      {
-        self.give( _given.error,_given.argument );
-      }
+      // if( result instanceof Self )
+      // {
+      //   //debugger;
+      //   //throw _.err( 'not implemented' ); /* have not seen use case yet */
+      //   //result.then_( function _tapping(){ debugger; self.give( _given.error,_given.argument ); } );
+      // }
+      // else
+      // {
+      //   self.give( _given.error,_given.argument );
+      // }
     }
 
   }
 
-  //
+  /**/
 
-  var _giveTo = function( _taker )
+  var _giveTo = function( _taker,ordinary )
   {
 
     if( _taker.onGot instanceof Self )
     {
-      _giveToConsequence( _taker );
+      _giveToConsequence( _taker,ordinary );
     }
     else
     {
-      _giveToRoutine( _taker );
+      _giveToRoutine( _taker,ordinary );
     }
 
   }
-
-  //
-
 
   /* persistent */
 
   for( var i = 0 ; i < self._takerPersistent.length ; i++ )
   {
     var _taker = self._takerPersistent[ i ];
-    _giveTo( _taker );
+    _giveTo( _taker,0 );
   }
 
-  /* ordinar */
+  /* ordinary */
 
   if( self._taker.length > 0 )
   {
     var _taker = self._taker[ 0 ];
     self._taker.splice( 0,1 );
-    _giveTo( _taker );
+    _giveTo( _taker,1 );
   }
 
   /**/
@@ -1293,15 +1315,20 @@ var Proto =
   and : and,
 
 
-  // messager
+  // messanger
 
   give : give,
   error : error,
   giveWithError : giveWithError,
   ping : ping, /* experimental */
 
-  _handleGot : _handleGot,
   _give_class : _give_class,
+
+
+  // mechanism
+
+  _handleError : _handleError,
+  _handleGot : _handleGot,
 
 
   // clear
