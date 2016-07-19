@@ -491,6 +491,41 @@ var thenOnce = function thenOnce( taker )
 
 //
 
+  /**
+   * Returns new wConsequence instance. If on cloning moment current wConsequence has unhandled resolved values in queue
+     the first of them would be handled by new wConsequence.
+   * @example
+     function gotHandler1( error, value )
+     {
+       console.log( 'handler 1: ' + value );
+       value++;
+       return value;
+     };
+
+     function gotHandler2( error, value )
+     {
+       console.log( 'handler 2: ' + value );
+     };
+
+     var con1 = new wConsequence();
+     con1.give(1).give(2).give(3);
+     var con2 = con1.thenClone();
+     con2.got( gotHandler2 );
+     con2.got( gotHandler2 );
+     con1.got( gotHandler1 );
+     con1.got( gotHandler1 );
+
+      // prints:
+      // handler 2: 1 // only first value copied into cloned wConsequence
+      // handler 1: 1
+      // handler 1: 2
+
+   * @returns {wConsequence}
+   * @throws {Error} if passed any argument.
+   * @method thenClone
+   * @memberof wConsequence
+   */
+
 var thenClone = function thenClone()
 {
   var self = this;
