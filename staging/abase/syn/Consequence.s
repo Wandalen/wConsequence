@@ -767,7 +767,8 @@ var _handleGot = function()
     {
       debugger;
       var err = _.err( err );
-      err.needAttention = 1;
+      if( !err.attentionGiven )
+      err.attentionNeeded = 1;
       result = new wConsequence().error( err );
       if( Config.debug )
       console.error( 'Consequence caught error' );
@@ -775,7 +776,7 @@ var _handleGot = function()
       {
         _.timeOut( 1, function()
         {
-          if( err.needAttention )
+          if( err.attentionNeeded )
           {
             console.error( 'Uncaught error caught by Consequence :' );
             _.errLog( err );
