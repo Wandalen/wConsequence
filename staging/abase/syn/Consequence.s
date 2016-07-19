@@ -194,14 +194,14 @@ var _takerAppend = function( o )
   setTimeout( function()
   {
 
-    if( self._given.length )
+    if( self._message.length )
     self._handleGot();
 
   }, 0 );
   else
   {
 
-    if( self._given.length )
+    if( self._message.length )
     self._handleGot();
 
   }
@@ -808,7 +808,7 @@ var giveWithError = function( error,argument )
     argument : argument,
   }
 
-  self._given.push( given );
+  self._message.push( given );
   self._handleGot();
 
   return self;
@@ -830,7 +830,7 @@ var ping = function( error,argument )
 
   debugger;
 
-  self._given.push( given );
+  self._message.push( given );
   var result = self._handleGot();
 
   return result;
@@ -882,15 +882,15 @@ var _handleGot = function _handleGot()
   if( !self._taker.length && !self._takerPersistent.length )
   return;
 
-  _.assert( self._given.length );
-  var _given = self._given[ 0 ];
+  _.assert( self._message.length );
+  var _message = self._message[ 0 ];
 
-  /**/
+  /* give message to taker consequence */
 
   var __giveToConsequence = function( taker,ordinary )
   {
 
-    result = taker.onGot.giveWithError( _given.error,_given.argument );
+    result = taker.onGot.giveWithError( _message.error,_message.argument );
 
     if( ordinary )
     if( taker.thenning || taker.tapping )
@@ -900,7 +900,7 @@ var _handleGot = function _handleGot()
 
   }
 
-  /**/
+  /* give message to taker routine */
 
   var __giveToRoutine = function( taker,ordinary )
   {
@@ -908,12 +908,14 @@ var _handleGot = function _handleGot()
     if( !taker.tapping && ordinary )
     {
       spliced = 1;
-      self._given.splice( 0,1 );
+      self._message.splice( 0,1 );
     }
+
+    /**/
 
     try
     {
-      result = taker.onGot.call( self,_given.error,_given.argument );
+      result = taker.onGot.call( self,_message.error,_message.argument );
     }
     catch( err )
     {
@@ -970,13 +972,13 @@ var _handleGot = function _handleGot()
     }
 
     if( !spliced && self._takerPersistent.length )
-    self._given.splice( 0,1 );
+    self._message.splice( 0,1 );
 
   }
 
-  /* */
+  /* next message */
 
-  if( self._given.length )
+  if( self._message.length )
   self._handleGot();
 
   return result;
@@ -1177,11 +1179,11 @@ var clearGiven = function clearGiven( data )
   _.assert( arguments.length === 0 || arguments.length === 1 );
 
   if( arguments.length === 0 )
-  self._given.splice( 0,self._given.length );
+  self._message.splice( 0,self._message.length );
   else
   {
     throw _.err( 'not tested' );
-    _.arrayRemoveOnce( self._given,data );
+    _.arrayRemoveOnce( self._message,data );
   }
 
 }
@@ -1205,9 +1207,9 @@ var clear = function clear( data )
 var hasGiven = function()
 {
   var self = this;
-  if( self._given.length <= self._taker.length )
+  if( self._message.length <= self._taker.length )
   return 0;
-  return self._given.length - self._taker.length;
+  return self._message.length - self._taker.length;
 }
 
 //
@@ -1223,7 +1225,7 @@ var takersGet = function()
 var givenGet = function()
 {
   var self = this;
-  return self._given;
+  return self._message;
 }
 
 //
@@ -1261,7 +1263,7 @@ var Composes =
   name : '',
   _taker : [],
   _takerPersistent : [],
-  _given : [],
+  _message : [],
 }
 
 var Restricts =
