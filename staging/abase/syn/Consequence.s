@@ -806,6 +806,47 @@ var and = function and( srcs )
   return self;
 }
 
+//
+
+var first = function first( src )
+{
+  var self = this;
+
+/*
+  if( onReady )
+  con.first( onReady );
+  else
+  con.give();
+*/
+
+  if( _.routineIs( src ) )
+  {
+    var result;
+
+    try
+    {
+      result = src();
+    }
+    catch( err )
+    {
+      result = self._handleError( err );
+    }
+
+    if( result instanceof wConsequence )
+    result.then_( self );
+    else
+    self.give( result );
+  }
+  else if( src instanceof wConsequence )
+  {
+    src.then_( self );
+    src.give();
+  }
+  else throw _.err( 'unexpected' );
+
+  return self;
+}
+
 // --
 // messager
 // --
@@ -890,12 +931,11 @@ var _handleError = function _handleError( err )
 
   var result = new wConsequence().error( err );
 
-  if( Config.debug )
-  console.error( 'Consequence caught error' );
-
-  if( Config.debug )
+  if( Config.debug && err.attentionNeeded )
   {
-    _.timeOut( 1, function()
+    console.error( 'Consequence caught error' );
+
+    _.timeOut( 0, function()
     {
       if( err.attentionNeeded )
       {
@@ -1343,9 +1383,10 @@ var Proto =
   persist : persist, /* experimental */
 
 
-  // reverse chainer
+  // advanced
 
   and : and,
+  first : first,
 
 
   // messanger
