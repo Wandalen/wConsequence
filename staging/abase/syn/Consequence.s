@@ -914,6 +914,7 @@ var _handleGot = function _handleGot()
 {
   var self = this;
   var result;
+  var spliced = 0;
 
   if( !self._taker.length && !self._takerPersistent.length )
   return;
@@ -950,7 +951,10 @@ var _handleGot = function _handleGot()
   {
 
     if( !_taker.tapping && ordinary )
-    self._given.splice( 0,1 );
+    {
+      spliced = 1;
+      self._given.splice( 0,1 );
+    }
 
     try
     {
@@ -1018,6 +1022,11 @@ var _handleGot = function _handleGot()
     self._taker.splice( 0,1 );
     _giveTo( _taker,1 );
   }
+
+  /* persistent splice */
+
+  if( !spliced && self._takerPersistent.length )
+  self._given.splice( 0,1 );
 
   /**/
 
