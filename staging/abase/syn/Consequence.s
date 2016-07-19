@@ -991,7 +991,7 @@ var _handleGot = function _handleGot()
   if( !spliced && self._takerPersistent.length )
   self._given.splice( 0,1 );
 
-  /**/
+  /* */
 
   if( self._given.length )
   self._handleGot();
