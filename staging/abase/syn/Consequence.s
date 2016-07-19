@@ -449,7 +449,7 @@ var then_ = function then_( taker )
      // handler 1: 4
      // handler 3: 5
 
-   * @param taker
+   * @param {wConsequence~taker|wConsequence} taker callback, that accepts resolved value or exception reason.
    * @returns {*}
    * @throws {Error} if passed more than one argument.
    * @throws {Error} if taker is defined as anonymous function including anonymous function expression.
@@ -539,6 +539,43 @@ var thenClone = function thenClone()
 }
 
 //
+
+  /**
+   * Works like got() method, but value that accepts taker, passes to the next taker in takers queue without modification.
+   * @example
+   *
+     function gotHandler1( error, value )
+     {
+       console.log( 'handler 1: ' + value );
+       value++;
+       return value;
+     }
+
+     function gotHandler2( error, value )
+     {
+       console.log( 'handler 2: ' + value );
+     }
+
+     function gotHandler3( error, value )
+     {
+       console.log( 'handler 3: ' + value );
+     }
+
+     var con1 = new wConsequence();
+     con1.give(1).give(4);
+
+     // prints:
+     // handler 1: 1
+     // handler 2: 1
+     // handler 3: 4
+
+   * @param {wConsequence~taker|wConsequence} taker callback, that accepts resolved value or exception reason.
+   * @returns {wConsequence}
+   * @throws {Error} if passed more than one arguments
+   * @see {@link wConsequence#got} got method
+   * @method inform
+   * @memberof wConsequenc
+   */
 
 var inform = function inform( taker )
 {
