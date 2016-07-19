@@ -924,21 +924,14 @@ var _handleGot = function _handleGot()
 
   /**/
 
-  var _giveToConsequence = function( _taker,ordinary )
+  var __giveToConsequence = function( taker,ordinary )
   {
 
-    /* need to have massage in the first consequence before executing the second one */
-/*
-    if( _taker.thenning )
-    {
-      self._given.unshift( _given );
-    }
+    result = taker.onGot.giveWithError( _given.error,_given.argument );
 */
 
-    result = _taker.onGot.giveWithError.call( _taker.onGot,_given.error,_given.argument );
-
     if( ordinary )
-    if( _taker.thenning || _taker.tapping )
+    if( taker.thenning || taker.tapping )
     {
       self._handleGot();
     }
@@ -947,10 +940,10 @@ var _handleGot = function _handleGot()
 
   /**/
 
-  var _giveToRoutine = function( _taker,ordinary )
+  var __giveToRoutine = function( taker,ordinary )
   {
 
-    if( !_taker.tapping && ordinary )
+    if( !taker.tapping && ordinary )
     {
       spliced = 1;
       self._given.splice( 0,1 );
@@ -958,7 +951,7 @@ var _handleGot = function _handleGot()
 
     try
     {
-      result = _taker.onGot.call( self,_given.error,_given.argument );
+      result = taker.onGot.call( self,_given.error,_given.argument );
     }
     catch( err )
     {
@@ -967,17 +960,13 @@ var _handleGot = function _handleGot()
 
     /**/
 
-    if( _taker.thenning )
+    if( taker.thenning )
     {
       if( result instanceof Self )
       result.then_( self );
       else
       self.give( result );
     }
-    else if( _taker.tapping )
-    {
-      // if( result instanceof Self )
-      // {
       //   //debugger;
       //   //throw _.err( 'not implemented' ); /* have not seen use case yet */
       //   //result.then_( function _tapping(){ debugger; self.give( _given.error,_given.argument ); } );
@@ -986,41 +975,47 @@ var _handleGot = function _handleGot()
       // {
       //   self.give( _given.error,_given.argument );
       // }
-    }
 
   }
 
-  /**/
+  /* give to */
 
-  var _giveTo = function( _taker,ordinary )
+  var __giveTo = function( taker,ordinary )
   {
 
-    if( _taker.onGot instanceof Self )
+    if( taker.onGot instanceof Self )
     {
-      _giveToConsequence( _taker,ordinary );
+      __giveToConsequence( taker,ordinary );
     }
     else
     {
-      _giveToRoutine( _taker,ordinary );
+      __giveToRoutine( taker,ordinary );
     }
 
   }
 
-  /* persistent */
-
-  for( var i = 0 ; i < self._takerPersistent.length ; i++ )
-  {
-    var _taker = self._takerPersistent[ i ];
-    _giveTo( _taker,0 );
-  }
-
   /* ordinary */
-
+  var taker;
   if( self._taker.length > 0 )
   {
-    var _taker = self._taker[ 0 ];
+    taker = self._taker[ 0 ];
     self._taker.splice( 0,1 );
-    _giveTo( _taker,1 );
+    __giveTo( taker,1 );
+  }
+  /* persistent */
+
+  if( !taker || ( taker && !taker.tapping ) )
+  {
+
+    for( var i = 0 ; i < self._takerPersistent.length ; i++ )
+    {
+      var pTaker = self._takerPersistent[ i ];
+      __giveTo( pTaker,0 );
+    }
+
+    if( !spliced && self._takerPersistent.length )
+    self._given.splice( 0,1 );
+
   }
 
   /* persistent splice */
