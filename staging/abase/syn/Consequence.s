@@ -362,6 +362,44 @@ var gotOnce = function gotOnce( taker )
 
 //
 
+  /**
+   * Method accepts handler for resolved value/error. This handler method then_ adds to wConsequence takers sequence.
+      After processing accepted value, taker return value will be pass to the next handler in takers queue.
+      Returns current wConsequence instance.
+
+   * @example
+     function gotHandler1( error, value )
+     {
+       console.log( 'handler 1: ' + value );
+       value++;
+       return value;
+     };
+
+     function gotHandler3( error, value )
+     {
+       console.log( 'handler 3: ' + value );
+     };
+
+     var con1 = new wConsequence();
+
+     con1.then_( gotHandler1 ).then_( gotHandler1 ).got(gotHandler3);
+     con1.give( 4 ).give( 10 );
+
+     // prints:
+     // handler 1: 4
+     // handler 1: 5
+     // handler 3: 6
+
+   * @param {wConsequence~taker|wConsequence} taker callback, that accepts resolved value or exception reason.
+   * @returns {wConsequence}
+   * @throws {Error} if missed taker.
+   * @throws {Error} if passed more than one argument.
+   * @see {@link wConsequence~taker} taker callback
+   * @see {@link wConsequence#got} got method
+   * @method then_
+   * @memberof wConsequence
+   */
+
 var then_ = function then_( taker )
 {
   var self = this;
@@ -379,6 +417,48 @@ var then_ = function then_( taker )
 }
 
 //
+
+  /**
+   * Works like then_() method, but adds taker to queue only if function with same name not exist in queue yet.
+   * Note: this is an experimental tool.
+   *
+   * @example
+     function gotHandler1( error, value )
+     {
+       console.log( 'handler 1: ' + value );
+       value++;
+       return value;
+     };
+
+     function gotHandler2( error, value )
+     {
+       console.log( 'handler 2: ' + value );
+     };
+
+     function gotHandler3( error, value )
+     {
+       console.log( 'handler 3: ' + value );
+     };
+
+     var con1 = new wConsequence();
+
+     con1.thenOnce( gotHandler1 ).thenOnce( gotHandler1 ).got(gotHandler3);
+     con1.give( 4 ).give( 10 );
+
+     // prints
+     // handler 1: 4
+     // handler 3: 5
+
+   * @param taker
+   * @returns {*}
+   * @throws {Error} if passed more than one argument.
+   * @throws {Error} if taker is defined as anonymous function including anonymous function expression.
+   * @see {@link wConsequence~taker} taker callback
+   * @see {@link wConsequence#then_} then_ method
+   * @see {@link wConsequence#gotOnce} gotOnce method
+   * @method thenOnce
+   * @memberof wConsequence
+   */
 
 var thenOnce = function thenOnce( taker )
 {
@@ -410,6 +490,41 @@ var thenOnce = function thenOnce( taker )
 }
 
 //
+
+  /**
+   * Returns new wConsequence instance. If on cloning moment current wConsequence has unhandled resolved values in queue
+     the first of them would be handled by new wConsequence.
+   * @example
+     function gotHandler1( error, value )
+     {
+       console.log( 'handler 1: ' + value );
+       value++;
+       return value;
+     };
+
+     function gotHandler2( error, value )
+     {
+       console.log( 'handler 2: ' + value );
+     };
+
+     var con1 = new wConsequence();
+     con1.give(1).give(2).give(3);
+     var con2 = con1.thenClone();
+     con2.got( gotHandler2 );
+     con2.got( gotHandler2 );
+     con1.got( gotHandler1 );
+     con1.got( gotHandler1 );
+
+      // prints:
+      // handler 2: 1 // only first value copied into cloned wConsequence
+      // handler 1: 1
+      // handler 1: 2
+
+   * @returns {wConsequence}
+   * @throws {Error} if passed any argument.
+   * @method thenClone
+   * @memberof wConsequence
+   */
 
 var thenClone = function thenClone()
 {
