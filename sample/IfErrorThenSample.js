@@ -22,6 +22,7 @@ function gotHandler3( error, value )
 {
   console.log( 'handler 3 err: ' + error );
   console.log( 'handler 3 val: ' + value );
+  return ++value
 }
 
 /**/
@@ -42,6 +43,7 @@ con1.ifErrorThen( gotHandler3 ).got( gotHandler1 ).got( gotHandler2 );
 
 /**/
 
+console.log( 'case 3' );
 var con2 = new wConsequence();
 
 con2.giveWithError( 'error msg', 8 ).give( 14 );
