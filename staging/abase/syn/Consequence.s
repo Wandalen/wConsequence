@@ -10,7 +10,7 @@
 
 /*
 
- !!! move promise / event property from object to taker
+ !!! move promise / event property from object to correspondent
 
  !!! test difference :
 
@@ -72,7 +72,7 @@ var Parent = null;
    * @param {*} err Error object, or any other type, that represent or describe an error reason. If during resolving
       value no exception occurred, it will be set to null;
      @param {*} value resolved by wConsequence value;
-   * @callback wConsequence~taker
+   * @callback wConsequence~correspondent
    */
 
   /**
@@ -132,37 +132,37 @@ var init = function init( options )
 // --
 
   /**
-   * Method created and appends taker object, based on passed options into wConsequence takers queue.
+   * Method created and appends correspondent object, based on passed options into wConsequence correspondents queue.
    *
    * @param {Object} o options object
-   * @param {wConsequence~taker|wConsequence} o.onGot taker callback
-   * @param {Object} [o.context] if defined, it uses as 'this' context in taker function.
-   * @param {Array<*>|ArrayLike} [o.argument] values, that will be used as binding arguments in taker.
-   * @param {string} [o.name=null] name for taker function
-   * @param {boolean} [o.thenning=false] If sets to true, then result of current taker will be passed to the next taker
-      in takers queue.
-   * @param {boolean} [o.persistent=false] If sets to true, then taker will be work as queue listener ( it will be
+   * @param {wConsequence~correspondent|wConsequence} o.onGot correspondent callback
+   * @param {Object} [o.context] if defined, it uses as 'this' context in correspondent function.
+   * @param {Array<*>|ArrayLike} [o.argument] values, that will be used as binding arguments in correspondent.
+   * @param {string} [o.name=null] name for correspondent function
+   * @param {boolean} [o.thenning=false] If sets to true, then result of current correspondent will be passed to the next correspondent
+      in correspondents queue.
+   * @param {boolean} [o.persistent=false] If sets to true, then correspondent will be work as queue listener ( it will be
    * processed every value resolved by wConsequence).
    * @param {boolean} [o.tapping=false] enabled some breakpoints in debug mode;
    * @returns {wConsequence}
    * @private
-   * @method _takerAppend
+   * @method _correspondentAppend
    * @memberof wConsequence
    */
 
-var _takerAppend = function( o )
+var _correspondentAppend = function( o )
 {
   var self = this;
-  var taker = o.taker;
-  var name = o.name || taker ? taker.name : null || null;
+  var correspondent = o.correspondent;
+  var name = o.name || correspondent ? correspondent.name : null || null;
 
   _.assert( arguments.length === 1 );
-  _.assert( _.routineIs( taker ) || taker instanceof Self );
+  _.assert( _.routineIs( correspondent ) || correspondent instanceof Self );
 
-  if( _.routineIs( taker ) )
+  if( _.routineIs( correspondent ) )
   {
     if( o.context !== undefined || o.argument !== undefined )
-    taker = _.routineJoin( o.context,taker,o.argument );
+    correspondent = _.routineJoin( o.context,correspondent,o.argument );
   }
   else
   {
@@ -172,17 +172,17 @@ var _takerAppend = function( o )
   /* store */
 
   if( o.persistent )
-  self._takerPersistent.push
+  self._correspondentPersistent.push
   ({
-    onGot : taker,
+    onGot : correspondent,
     thenning : !!o.thenning,
     tapping : !!o.tapping,
     name : name,
   });
   else
-  self._taker.push
+  self._correspondent.push
   ({
-    onGot : taker,
+    onGot : correspondent,
     thenning : !!o.thenning,
     tapping : !!o.tapping,
     name : name,
@@ -214,10 +214,10 @@ var _takerAppend = function( o )
 // --
 
   /**
-   * Method appends resolved value and error handler to wConsequence takers sequence. That handler accept only one
+   * Method appends resolved value and error handler to wConsequence correspondents sequence. That handler accept only one
       value or error reason only once, and don't pass result of it computation to next handler (unlike Promise 'then').
       if got() called without argument, an empty handler will be appended.
-      After invocation, taker will be removed from takers queue.
+      After invocation, correspondent will be removed from correspondents queue.
       Returns current wConsequence instance.
    * @example
        var gotHandler1 = function( error, value )
@@ -253,15 +253,15 @@ var _takerAppend = function( o )
        // handler 1: bar
        // handler 2: baz
        //
-   * @param {wConsequence~taker|wConsequence} [taker] callback, that accepts resolved value or exception reason.
+   * @param {wConsequence~correspondent|wConsequence} [correspondent] callback, that accepts resolved value or exception reason.
    * @returns {wConsequence}
-   * @see {@link wConsequence~taker} taker callback
+   * @see {@link wConsequence~correspondent} correspondent callback
    * @throws {Error} if passed more than one argument.
    * @method got
    * @memberof wConsequence
    */
 
-var got = function got( taker )
+var got = function got( correspondent )
 {
   var self = this;
 
@@ -269,12 +269,12 @@ var got = function got( taker )
 
   if( arguments.length === 0 )
   {
-    taker = function(){};
+    correspondent = function(){};
   }
 
-  return self._takerAppend
+  return self._correspondentAppend
   ({
-    taker : taker,
+    correspondent : correspondent,
     context : arguments[ 1 ],
     argument : arguments[ 2 ],
     thenning : false,
@@ -285,7 +285,7 @@ var got = function got( taker )
 //
 
   /**
-   * Works like got() method, but adds taker to queue only if function with same name not exist in queue yet.
+   * Works like got() method, but adds correspondent to queue only if function with same name not exist in queue yet.
    * Note: this is experimental tool.
    * @example
    *
@@ -308,7 +308,7 @@ var got = function got( taker )
      // logs:
      // handler 1: foo
      // handler 2: bar
-     // taker gotHandler1 has ben invoked only once, because second taker was not added to takers queue.
+     // correspondent gotHandler1 has ben invoked only once, because second correspondent was not added to correspondents queue.
 
      // but:
 
@@ -321,29 +321,29 @@ var got = function got( taker )
      // handler 1: foo
      // handler 1: bar
      // handler 2: baz
-     // in this case first gotHandler1 has been removed from takers queue immediately after the invocation, so adding
+     // in this case first gotHandler1 has been removed from correspondents queue immediately after the invocation, so adding
      // second gotHandler1 is legitimate.
 
    *
-   * @param {wConsequence~taker|wConsequence} taker callback, that accepts resolved value or exception reason.
+   * @param {wConsequence~correspondent|wConsequence} correspondent callback, that accepts resolved value or exception reason.
    * @returns {wConsequence}
    * @throws {Error} if passed more than one argument.
-   * @throws {Error} if taker.name is not string.
-   * @see {@link wConsequence~taker} taker callback
+   * @throws {Error} if correspondent.name is not string.
+   * @see {@link wConsequence~correspondent} correspondent callback
    * @see {@link wConsequence#got} got method
    * @method gotOnce
    * @memberof wConsequence
    */
 
-var gotOnce = function gotOnce( taker )
+var gotOnce = function gotOnce( correspondent )
 {
   var self = this;
-  var key = taker.name;
+  var key = correspondent.name;
 
   _.assert( _.strIsNotEmpty( key ) );
   _.assert( arguments.length === 1 );
 
-  var i = _.arrayLeftIndexOf( self._taker,key,function( a )
+  var i = _.arrayLeftIndexOf( self._correspondent,key,function( a )
   {
     return a.name;
   });
@@ -351,9 +351,9 @@ var gotOnce = function gotOnce( taker )
   if( i >= 0 )
   return self;
 
-  return self._takerAppend
+  return self._correspondentAppend
   ({
-    taker : taker,
+    correspondent : correspondent,
     context : arguments[ 1 ],
     argument : arguments[ 2 ],
     thenning : false,
@@ -363,8 +363,8 @@ var gotOnce = function gotOnce( taker )
 //
 
   /**
-   * Method accepts handler for resolved value/error. This handler method then_ adds to wConsequence takers sequence.
-      After processing accepted value, taker return value will be pass to the next handler in takers queue.
+   * Method accepts handler for resolved value/error. This handler method then_ adds to wConsequence correspondents sequence.
+      After processing accepted value, correspondent return value will be pass to the next handler in correspondents queue.
       Returns current wConsequence instance.
 
    * @example
@@ -390,26 +390,26 @@ var gotOnce = function gotOnce( taker )
      // handler 1: 5
      // handler 3: 6
 
-   * @param {wConsequence~taker|wConsequence} taker callback, that accepts resolved value or exception reason.
+   * @param {wConsequence~correspondent|wConsequence} correspondent callback, that accepts resolved value or exception reason.
    * @returns {wConsequence}
-   * @throws {Error} if missed taker.
+   * @throws {Error} if missed correspondent.
    * @throws {Error} if passed more than one argument.
-   * @see {@link wConsequence~taker} taker callback
+   * @see {@link wConsequence~correspondent} correspondent callback
    * @see {@link wConsequence#got} got method
    * @method then_
    * @memberof wConsequence
    */
 
-var then_ = function then_( taker )
+var then_ = function then_( correspondent )
 {
   var self = this;
 
   _.assert( arguments.length === 1 );
   _.assert( self instanceof Self )
 
-  return self._takerAppend
+  return self._correspondentAppend
   ({
-    taker : taker,
+    correspondent : correspondent,
     context : arguments[ 1 ],
     argument : arguments[ 2 ],
     thenning : true,
@@ -419,7 +419,7 @@ var then_ = function then_( taker )
 //
 
   /**
-   * Works like then_() method, but adds taker to queue only if function with same name not exist in queue yet.
+   * Works like then_() method, but adds correspondent to queue only if function with same name not exist in queue yet.
    * Note: this is an experimental tool.
    *
    * @example
@@ -449,27 +449,27 @@ var then_ = function then_( taker )
      // handler 1: 4
      // handler 3: 5
 
-   * @param taker
+   * @param correspondent
    * @returns {*}
    * @throws {Error} if passed more than one argument.
-   * @throws {Error} if taker is defined as anonymous function including anonymous function expression.
-   * @see {@link wConsequence~taker} taker callback
+   * @throws {Error} if correspondent is defined as anonymous function including anonymous function expression.
+   * @see {@link wConsequence~correspondent} correspondent callback
    * @see {@link wConsequence#then_} then_ method
    * @see {@link wConsequence#gotOnce} gotOnce method
    * @method thenOnce
    * @memberof wConsequence
    */
 
-var thenOnce = function thenOnce( taker )
+var thenOnce = function thenOnce( correspondent )
 {
   var self = this;
-  var key = taker.name;
+  var key = correspondent.name;
 
   _.assert( _.strIsNotEmpty( key ) );
   _.assert( arguments.length === 1 );
 
   debugger;
-  var i = _.arrayLeftIndexOf( self._taker,key,function( a )
+  var i = _.arrayLeftIndexOf( self._correspondent,key,function( a )
   {
     return a.name;
   });
@@ -480,9 +480,9 @@ var thenOnce = function thenOnce( taker )
     return self;
   }
 
-  return self._takerAppend
+  return self._correspondentAppend
   ({
-    taker : taker,
+    correspondent : correspondent,
     context : arguments[ 1 ],
     argument : arguments[ 2 ],
     thenning : true,
@@ -540,16 +540,16 @@ var thenClone = function thenClone()
 
 //
 
-var tap = function tap( taker )
+var tap = function tap( correspondent )
 {
   var self = this;
 
   _.assert( arguments.length === 1 );
   _.assert( self instanceof Self )
 
-  return self._takerAppend
+  return self._correspondentAppend
   ({
-    taker : taker,
+    correspondent : correspondent,
     context : undefined,
     argument : arguments[ 2 ],
     thenning : false,
@@ -567,9 +567,9 @@ var ifNoErrorThen = function()
   _.assert( this instanceof Self )
   _.assert( arguments.length <= 3 );
 
-  return this._takerAppend
+  return this._correspondentAppend
   ({
-    taker : Self.ifNoErrorThen( arguments[ 0 ] ),
+    correspondent : Self.ifNoErrorThen( arguments[ 0 ] ),
     context : arguments[ 1 ],
     argument : arguments[ 2 ],
     thenning : true,
@@ -615,9 +615,9 @@ var ifErrorThen = function()
   _.assert( arguments.length === 1 );
   _.assert( this instanceof Self );
 
-  return this._takerAppend
+  return this._correspondentAppend
   ({
-    taker : Self.ifErrorThen( arguments[ 0 ] ),
+    correspondent : Self.ifErrorThen( arguments[ 0 ] ),
     context : arguments[ 1 ],
     argument : arguments[ 2 ],
     thenning : true,
@@ -663,9 +663,9 @@ var thenDebug = function thenDebug()
 
   _.assert( arguments.length === 0 );
 
-  return self._takerAppend
+  return self._correspondentAppend
   ({
-    taker : _onDebug,
+    correspondent : _onDebug,
     thenning : true,
   });
 
@@ -673,17 +673,17 @@ var thenDebug = function thenDebug()
 
 //
 
-var timeOut = function timeOut( time,taker )
+var timeOut = function timeOut( time,correspondent )
 {
   var self = this;
 
   _.assert( arguments.length === 2 );
-  _.assert( _.routineIs( taker ),'not implemented' );
+  _.assert( _.routineIs( correspondent ),'not implemented' );
 
-  return self._takerAppend
+  return self._correspondentAppend
   ({
-    taker : function( err,data ){
-      return _.timeOut( time,self,taker,[ err,data ] );
+    correspondent : function( err,data ){
+      return _.timeOut( time,self,correspondent,[ err,data ] );
     },
     context : arguments[ 1 ],
     argument : arguments[ 2 ],
@@ -694,15 +694,15 @@ var timeOut = function timeOut( time,taker )
 
 //
 
-var persist = function persist( taker )
+var persist = function persist( correspondent )
 {
   var self = this;
 
   _.assert( arguments.length === 1 );
 
-  return self._takerAppend
+  return self._correspondentAppend
   ({
-    taker : taker,
+    correspondent : correspondent,
     thenning : false,
     persistent : true,
   });
@@ -879,33 +879,33 @@ var _handleGot = function _handleGot()
   var result;
   var spliced = 0;
 
-  if( !self._taker.length && !self._takerPersistent.length )
+  if( !self._correspondent.length && !self._correspondentPersistent.length )
   return;
 
   _.assert( self._message.length );
   var _message = self._message[ 0 ];
 
-  /* give message to taker consequence */
+  /* give message to correspondent consequence */
 
-  var __giveToConsequence = function( taker,ordinary )
+  var __giveToConsequence = function( correspondent,ordinary )
   {
 
-    result = taker.onGot.giveWithError( _message.error,_message.argument );
+    result = correspondent.onGot.giveWithError( _message.error,_message.argument );
 
     if( ordinary )
-    if( taker.thenning || taker.tapping )
+    if( correspondent.thenning || correspondent.tapping )
     {
       self._handleGot();
     }
 
   }
 
-  /* give message to taker routine */
+  /* give message to correspondent routine */
 
-  var __giveToRoutine = function( taker,ordinary )
+  var __giveToRoutine = function( correspondent,ordinary )
   {
 
-    if( !taker.tapping && ordinary )
+    if( !correspondent.tapping && ordinary )
     {
       spliced = 1;
       self._message.splice( 0,1 );
@@ -915,7 +915,7 @@ var _handleGot = function _handleGot()
 
     try
     {
-      result = taker.onGot.call( self,_message.error,_message.argument );
+      result = correspondent.onGot.call( self,_message.error,_message.argument );
     }
     catch( err )
     {
@@ -924,7 +924,7 @@ var _handleGot = function _handleGot()
 
     /**/
 
-    if( taker.thenning )
+    if( correspondent.thenning )
     {
       if( result instanceof Self )
       result.then_( self );
@@ -936,42 +936,42 @@ var _handleGot = function _handleGot()
 
   /* give to */
 
-  var __giveTo = function( taker,ordinary )
+  var __giveTo = function( correspondent,ordinary )
   {
 
-    if( taker.onGot instanceof Self )
+    if( correspondent.onGot instanceof Self )
     {
-      __giveToConsequence( taker,ordinary );
+      __giveToConsequence( correspondent,ordinary );
     }
     else
     {
-      __giveToRoutine( taker,ordinary );
+      __giveToRoutine( correspondent,ordinary );
     }
 
   }
 
   /* ordinary */
 
-  var taker;
-  if( self._taker.length > 0 )
+  var correspondent;
+  if( self._correspondent.length > 0 )
   {
-    taker = self._taker[ 0 ];
-    self._taker.splice( 0,1 );
-    __giveTo( taker,1 );
+    correspondent = self._correspondent[ 0 ];
+    self._correspondent.splice( 0,1 );
+    __giveTo( correspondent,1 );
   }
 
   /* persistent */
 
-  if( !taker || ( taker && !taker.tapping ) )
+  if( !correspondent || ( correspondent && !correspondent.tapping ) )
   {
 
-    for( var i = 0 ; i < self._takerPersistent.length ; i++ )
+    for( var i = 0 ; i < self._correspondentPersistent.length ; i++ )
     {
-      var pTaker = self._takerPersistent[ i ];
+      var pTaker = self._correspondentPersistent[ i ];
       __giveTo( pTaker,0 );
     }
 
-    if( !spliced && self._takerPersistent.length )
+    if( !spliced && self._correspondentPersistent.length )
     self._message.splice( 0,1 );
 
   }
@@ -1154,25 +1154,25 @@ var giveWithContextAndErrorTo = function giveWithContextAndErrorTo( consequence,
 // clear
 // --
 
-var clearTakers = function clearTakers( taker )
+var correspondentsClear = function correspondentsClear( correspondent )
 {
   var self = this;
 
-  _.assert( arguments.length === 0 || _.routineIs( taker ) );
+  _.assert( arguments.length === 0 || _.routineIs( correspondent ) );
 
   if( arguments.length === 0 )
-  self._taker.splice( 0,self._taker.length );
+  self._correspondent.splice( 0,self._correspondent.length );
   else
   {
     throw _.err( 'not tested' );
-    _.arrayRemoveOnce( self._taker,taker );
+    _.arrayRemoveOnce( self._correspondent,correspondent );
   }
 
 }
 
 //
 
-var clearGiven = function clearGiven( data )
+var messagesClear = function messagesClear( data )
 {
   var self = this;
 
@@ -1195,8 +1195,8 @@ var clear = function clear( data )
   var self = this;
   _.assert( arguments.length === 0 );
 
-  self.clearTakers();
-  self.clearGiven();
+  self.correspondentsClear();
+  self.messagesClear();
 
 }
 
@@ -1204,25 +1204,25 @@ var clear = function clear( data )
 // etc
 // --
 
-var hasGiven = function()
+var hasMessage = function()
 {
   var self = this;
-  if( self._message.length <= self._taker.length )
+  if( self._message.length <= self._correspondent.length )
   return 0;
-  return self._message.length - self._taker.length;
+  return self._message.length - self._correspondent.length;
 }
 
 //
 
-var takersGet = function()
+var correspondentsGet = function()
 {
   var self = this;
-  return self._taker;
+  return self._correspondent;
 }
 
 //
 
-var givenGet = function()
+var messageGet = function()
 {
   var self = this;
   return self._message;
@@ -1235,11 +1235,11 @@ var toStr = function()
   var self = this;
   var result = self.nickName;
 
-  var names = _.entitySelect( self.takersGet(),'*.name' );
+  var names = _.entitySelect( self.correspondentsGet(),'*.name' );
 
-  result += '\n  given : ' + self.givenGet().length;
-  result += '\n  takers : ' + self.takersGet().length;
-  result += '\n  takers : ' + names.join( ' ' );
+  result += '\n  given : ' + self.messageGet().length;
+  result += '\n  correspondents : ' + self.correspondentsGet().length;
+  result += '\n  correspondents : ' + names.join( ' ' );
 
   return result;
 }
@@ -1261,8 +1261,8 @@ var _onDebug = function( err,data )
 var Composes =
 {
   name : '',
-  _taker : [],
-  _takerPersistent : [],
+  _correspondent : [],
+  _correspondentPersistent : [],
   _message : [],
 }
 
@@ -1282,7 +1282,7 @@ var Proto =
 
   // mechanics
 
-  _takerAppend : _takerAppend,
+  _correspondentAppend : _correspondentAppend,
 
 
   // chainer
@@ -1327,16 +1327,17 @@ var Proto =
 
   // clear
 
-  clearTakers : clearTakers,
-  clearGiven : clearGiven,
+  correspondentsClear : correspondentsClear,
+  messagesClear : messagesClear,
   clear : clear,
 
 
   // etc
 
-  hasGiven : hasGiven,
-  takersGet : takersGet,
-  givenGet : givenGet,
+  hasMessage : hasMessage,
+  messageHas : hasMessage,
+  correspondentsGet : correspondentsGet,
+  messageGet : messageGet,
   toStr : toStr,
   _onDebug : _onDebug,
 
