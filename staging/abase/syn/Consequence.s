@@ -600,6 +600,18 @@ var tap = function tap( correspondent )
 
 //
 
+  /**
+   * Method pushed `correspondent` callback into wConsequence correspondents queue. That callback will
+     trigger only in that case if accepted error parameter will be null. Else accepted error will be passed to the next
+     correspondent in queue. After handling accepted value, correspondent pass result to the next handler, like then_
+     method.
+   * @returns {wConsequence}
+   * @throws {Error} if passed more than one arguments
+   * @see {@link wConsequence#got} then_ method
+   * @method ifErrorThen
+   * @memberof wConsequenc
+   */
+
 var ifNoErrorThen = function()
 {
 
@@ -681,7 +693,7 @@ var ifNoErrorThenClass = function()
    * @param {wConsequence~correspondent|wConsequence} correspondent callback, that accepts exception  reason and value .
    * @returns {wConsequence}
    * @throws {Error} if passed more than one arguments
-   * @see {@link wConsequence#got} got method
+   * @see {@link wConsequence#got} then_ method
    * @method ifErrorThen
    * @memberof wConsequenc
    */
