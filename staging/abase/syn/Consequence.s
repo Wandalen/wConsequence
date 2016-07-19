@@ -449,7 +449,8 @@ var then_ = function then_( correspondent )
      // handler 1: 4
      // handler 3: 5
 
-   * @param {wConsequence~taker|wConsequence} correspondent callback, that accepts resolved value or exception reason.
+   * @param {wConsequence~correspondent|wConsequence} correspondent callback, that accepts resolved value or exception
+     reason.
    * @returns {*}
    * @throws {Error} if passed more than one argument.
    * @throws {Error} if correspondent is defined as anonymous function including anonymous function expression.
@@ -541,7 +542,8 @@ var thenClone = function thenClone()
 //
 
   /**
-   * Works like got() method, but value that accepts taker, passes to the next taker in takers queue without modification.
+   * Works like got() method, but value that accepts correspondent, passes to the next taker in takers queue without
+     modification.
    * @example
    *
      function gotHandler1( error, value )
@@ -569,7 +571,8 @@ var thenClone = function thenClone()
      // handler 2: 1
      // handler 3: 4
 
-   * @param {wConsequence~taker|wConsequence} taker callback, that accepts resolved value or exception reason.
+   * @param {wConsequence~correspondent|wConsequence} correspondent callback, that accepts resolved value or exception
+     reason.
    * @returns {wConsequence}
    * @throws {Error} if passed more than one arguments
    * @see {@link wConsequence#got} got method
