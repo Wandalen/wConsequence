@@ -3,9 +3,8 @@ if( typeof module !== 'undefined' )
 {
   require( 'wTools' );
   // require( 'wConsequence' );
-  require('/home/ostash/work/nodejs/wConsequence/staging/abase/syn/Consequence.s')
+  require( '../staging/abase/syn/Consequence.s' );
 }
-
 
 function gotHandler1( error, value )
 {
@@ -24,8 +23,13 @@ function gotHandler3( error, value )
   console.log( 'handler 3: ' + value );
 }
 
+/**/
+
+console.log( 'case 1' );
+
 var con1 = new wConsequence();
-con1.give(1).give(4);
+
+con1.give( 1 ).give( 4 );
 
 con1.inform( gotHandler1 );
 con1.got( gotHandler2 );
@@ -33,8 +37,14 @@ con1.got( gotHandler3 );
 
 
 
+/* should be same */
 
+console.log( 'case 2' );
 
+var con1 = new wConsequence();
 
+con1.inform( gotHandler1 );
+con1.got( gotHandler2 );
+con1.got( gotHandler3 );
 
-
+con1.give( 1 ).give( 4 );
