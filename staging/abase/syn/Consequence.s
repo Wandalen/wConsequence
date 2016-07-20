@@ -1013,6 +1013,41 @@ var _handleError = function _handleError( err )
 
 //
 
+  /**
+   * Method for processing corespondents and _message queue. Provides handling of resolved message values and errors by
+      corespondents from correspondents value. Method takes first message from _message sequence and try to pass it to
+      the first corespondent in corespondents sequence. Method returns the result of current corespondent execution.
+      There are several cases of _handleGot behavior:
+      - if corespondent is regular function:
+        trying to pass messages error and argument values into corespondent and execute. If during execution exception
+        occurred, it will be catch by _handleError method. If corespondent was not added by tap or persist method,
+        _handleGot will remove message from head of queue.
+
+        If corespondent was added by then_, thenOnce, ifErrorThen, or by other "thenable" method of wConsequence, then:
+
+        1) if result of corespondents is ordinary value, then _handleGot method appends result of corespondent to the
+        head of messages queue, and therefore pass it to the next handler in corespondents queue.
+        2) if result of corespondents is instance of wConsequence, _handleGot will append current wConsequence instance
+        to result instance corespondents sequence.
+
+        After method try to handle next message in queue if exists.
+
+      - if corespondent is instance of wConsequence:
+        in that case _handleGot pass message into corespondent`s messages queue.
+
+        If corespondent was added by tap, or one of then_, thenOnce, ifErrorThen, or by other "thenable" method of
+        wConsequence then _handleGot try to pass current message to the next handler in corespondents sequence.
+
+      - if in current wConsequence are present corespondents added by persist method, then _handleGot passes message to
+        all of them, without removing them from sequence.
+
+   * @returns {*}
+   * @throws {Error} if on invocation moment the _message queue is empty.
+   * @private
+   * @method _handleGot
+   * @memberof wConsequence
+   */
+
 var _handleGot = function _handleGot()
 {
   var self = this;
@@ -1095,8 +1130,7 @@ var _handleGot = function _handleGot()
   var correspondent;
   if( self._correspondent.length > 0 )
   {
-    correspondent = self._correspondent[ 0 ];
-    self._correspondent.splice( 0,1 );
+    correspondent = self._correspondent.shift();
     __giveTo( correspondent,1 );
   }
 
