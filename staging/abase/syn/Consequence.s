@@ -494,7 +494,7 @@ var thenOnce = function thenOnce( correspondent )
 
   /**
    * Returns new wConsequence instance. If on cloning moment current wConsequence has unhandled resolved values in queue
-     the first of them would be handled by new wConsequence.
+     the first of them would be handled by new wConsequence. Else pass accepted
    * @example
      function gotHandler1( error, value )
      {
@@ -577,7 +577,7 @@ var thenClone = function thenClone()
    * @throws {Error} if passed more than one arguments
    * @see {@link wConsequence#got} got method
    * @method tap
-   * @memberof wConsequenc
+   * @memberof wConsequence
    */
 
 var tap = function tap( correspondent )
@@ -609,7 +609,7 @@ var tap = function tap( correspondent )
    * @throws {Error} if passed more than one arguments
    * @see {@link wConsequence#got} then_ method
    * @method ifErrorThen
-   * @memberof wConsequenc
+   * @memberof wConsequence
    */
 
 var ifNoErrorThen = function()
@@ -695,7 +695,7 @@ var ifNoErrorThenClass = function()
    * @throws {Error} if passed more than one arguments
    * @see {@link wConsequence#got} then_ method
    * @method ifErrorThen
-   * @memberof wConsequenc
+   * @memberof wConsequence
    */
 
 var ifErrorThen = function()
@@ -745,6 +745,17 @@ var ifErrorThenClass = function()
 }
 
 //
+
+  /**
+   * Using for debugging. Taps into wConsequence correspondents sequence predefined wConsequence correspondent callback, that contains
+      'debugger' statement. If correspondent accepts non null `err` parameter, it generate and throw error based on
+      `err` value. Else passed accepted `value` parameter to the next handler in correspondents sequence.
+   * Note: this is experimental tool.
+   * @returns {wConsequence}
+   * @throws {Error} If try to call method with any argument.
+   * @method thenDebug
+   * @memberof wConsequence
+   */
 
 var thenDebug = function thenDebug()
 {
