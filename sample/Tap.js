@@ -2,9 +2,11 @@
 if( typeof module !== 'undefined' )
 {
   require( 'wTools' );
-  // require( 'wConsequence' );
+  /* require( 'wConsequence' ); */
   require( '../staging/abase/syn/Consequence.s' );
 }
+
+/* correspondents */
 
 function gotHandler1( error, value )
 {
@@ -23,7 +25,7 @@ function gotHandler3( error, value )
   console.log( 'handler 3: ' + value );
 }
 
-/**/
+/* cases */
 
 console.log( 'case 1' );
 
@@ -34,8 +36,6 @@ con1.give( 1 ).give( 4 );
 con1.tap( gotHandler1 );
 con1.got( gotHandler2 );
 con1.got( gotHandler3 );
-
-
 
 /* should be same */
 

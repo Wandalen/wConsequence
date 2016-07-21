@@ -6,6 +6,8 @@ if( typeof module !== 'undefined' )
   require( '../staging/abase/syn/Consequence.s' );
 }
 
+/* correspondents */
+
 function gotHandler1( error, value )
 {
   console.log( 'handler 1: ' + value );
@@ -28,7 +30,7 @@ function gotHandler3( error, value )
   return value;
 }
 
-/**/
+/* cases */
 
 console.log( 'case 1' );
 
@@ -36,14 +38,6 @@ var con1 = new wConsequence();
 
 con1.ifErrorThen( gotHandler3 ).got( gotHandler1 ).got( gotHandler2 );
 con1.give( 1 ).give( 4 );
-console.log( con1.toStr() );
-
-console.log( 'case x' );
-
-var con1 = new wConsequence();
-
-con1.give( 3 ).give( 30 );
-con1.then_( gotHandler1 ).then_( gotHandler2 ).then_( gotHandler3 );
 console.log( con1.toStr() );
 
 /**/
@@ -59,9 +53,9 @@ console.log( con1.toStr() );
 /**/
 
 console.log( 'case 3' );
-var con2 = new wConsequence();
+var con1 = new wConsequence();
 
-con2._giveWithError( 'error msg', 8 ).give( 14 );
+con1.error( 'error msg' ).give( 14 );
 
-con2.ifErrorThen( gotHandler3 ).got( gotHandler1 );
-console.log( con2.toStr() );
+con1.ifErrorThen( gotHandler3 ).got( gotHandler1 );
+console.log( con1.toStr() );
