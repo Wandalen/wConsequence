@@ -958,8 +958,6 @@ var ping = function( error,argument )
     argument : argument,
   }
 
-  debugger;
-
   self._message.push( given );
   var result = self._handleGot();
 

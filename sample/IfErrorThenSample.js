@@ -26,7 +26,7 @@ function gotHandler3( error, value )
 }
 
 /**/
-
+/*
 console.log( 'case 1' );
 
 var con1 = new wConsequence();
@@ -34,6 +34,8 @@ var con1 = new wConsequence();
 con1.ifErrorThen( gotHandler3 ).got( gotHandler1 ).got( gotHandler2 );
 con1.give( 1 ).give( 4 );
 
+return;
+*/
 console.log( 'case 2' );
 
 var con1 = new wConsequence();
@@ -43,6 +45,7 @@ con1.ifErrorThen( gotHandler3 ).got( gotHandler1 ).got( gotHandler2 );
 
 /**/
 
+return;
 console.log( 'case 3' );
 var con2 = new wConsequence();
 
