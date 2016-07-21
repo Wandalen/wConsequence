@@ -937,6 +937,60 @@ var persist = function persist( correspondent )
 // reverse chainer
 // --
 
+
+  /**
+   * Method accepts array of wConsequences object. If current wConsequence instance ready to resolve message, it will be
+     wait for all passed wConsequence instances will been resolved, then current wConsequence resolve own message.
+     Returns current wConsequence.
+   * @example
+   *
+     var handleGot1 = function(err, val)
+     {
+       if( err )
+       {
+         console.log( 'handleGot1 error: ' + err );
+       }
+       else
+       {
+         console.log( 'handleGot1 value: ' + val );
+       }
+     };
+
+     var con1 = new wConsequence();
+     var con2 = new wConsequence();
+
+     con1.got( function( err, value )
+     {
+       console.log( 'con1 handler executed with value: ' + value + 'and error: ' + err );
+     } );
+
+     con2.got( function( err, value )
+     {
+       console.log( 'con2 handler executed with value: ' + value + 'and error: ' + err );
+     } );
+
+     var conOwner = new  wConsequence();
+
+     conOwner.and( [ con1, con2 ] );
+
+     conOwner.give( 100 );
+     conOwner.got( handleGot1 );
+
+     con1.give( 'value1' );
+     con2.error( 'ups' );
+     // prints
+     // con1 handler executed with value: value1and error: null
+     // con2 handler executed with value: undefinedand error: ups
+     // handleGot1 value: 100
+
+   * @param {wConsequence[]|wConsequence} srcs array of wConsequence
+   * @returns {wConsequence}
+   * @throws {Error} if missed arguments.
+   * @throws {Error} if passed extra arguments.
+   * @method and
+   * @memberof wConsequence
+   */
+
 var and = function and( srcs )
 {
   var self = this;
