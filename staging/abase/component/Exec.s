@@ -103,7 +103,7 @@ var execStages = function( stages,options )
     if( options.onEnd )
     wConsequence.giveWithContextAndErrorTo( options.onEnd,options.context,err,options );
 
-    conEnd.giveWithError( err,null );
+    conEnd._giveWithError( err,null );
 
   }
 

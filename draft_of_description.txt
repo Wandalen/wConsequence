@@ -64,7 +64,7 @@ var onSuccess = function(errValue, gotValue) {
       }
       else
       {
-        con.giveWithError(new Error('Negative value'), value );
+        con._giveWithError(new Error('Negative value'), value );
       }
     }, delay )
   } catch( err )
@@ -88,9 +88,9 @@ var onSuccess = function(errValue, gotValue) {
  * can accepts two parameters, in this case the first parameter will be interpreted as reject reason value, what allow
  * use give() also as reject() in Promise.
  * wConsequence has several method, without give() that "resolve" values (details they will be described later):
- *   - giveWithError: work similar as give with two parameters,
+ *   - _giveWithError: work similar as give with two parameters,
  *   - ping: work as give, but return result of handling taker, if it was append before.
- * 3) instead reject() we use error() method (that work similar), or giveWithError.
+ * 3) instead reject() we use error() method (that work similar), or _giveWithError.
  * 4) for handling resolved/rejected values of wConsequence we can use one of next approaches (analog of then/catch):
  *   - got(): accepts callback with two parameters: error (null if wConsequence fulfilled successful) and resolved value,
  *   instead two callback for fulfill/reject in Promise. instead then(), don`t pass handling result into next handlers.

@@ -1,4 +1,4 @@
-( function _Consequence_s_(){
+( function _Consequence_s_() {
 
 'use strict';
 
@@ -175,8 +175,6 @@ var _correspondentAppend = function( o )
   self._correspondentPersistent.push
   ({
     onGot : correspondent,
-    thenning : !!o.thenning,
-    tapping : !!o.tapping,
     name : name,
   });
   else
@@ -185,6 +183,8 @@ var _correspondentAppend = function( o )
     onGot : correspondent,
     thenning : !!o.thenning,
     tapping : !!o.tapping,
+    ifError :  !!o.ifError,
+    ifNoError :  !!o.ifNoError,
     name : name,
   });
 
@@ -469,7 +469,6 @@ var thenOnce = function thenOnce( correspondent )
   _.assert( _.strIsNotEmpty( key ) );
   _.assert( arguments.length === 1 );
 
-  debugger;
   var i = _.arrayLeftIndexOf( self._correspondent,key,function( a )
   {
     return a.name;
@@ -592,7 +591,7 @@ var tap = function tap( correspondent )
     correspondent : correspondent,
     context : undefined,
     argument : arguments[ 2 ],
-    thenning : false,
+    thenning : true,
     tapping : true,
   });
 
@@ -621,10 +620,12 @@ var ifNoErrorThen = function()
 
   return this._correspondentAppend
   ({
-    correspondent : Self.ifNoErrorThen( arguments[ 0 ] ),
+    //correspondent : Self.ifNoErrorThen( arguments[ 0 ] ),
+    correspondent : arguments[ 0 ],
     context : arguments[ 1 ],
     argument : arguments[ 2 ],
     thenning : true,
+    ifNoError : true,
   });
 
 }
@@ -682,7 +683,7 @@ var ifNoErrorThenClass = function()
 
      var con2 = new wConsequence();
 
-     con2.giveWithError( 'error msg', 8 ).give( 14 );
+     con2._giveWithError( 'error msg', 8 ).give( 14 );
      con2.ifErrorThen( gotHandler3 ).got( gotHandler1 );
 
      // prints:
@@ -706,10 +707,12 @@ var ifErrorThen = function()
 
   return this._correspondentAppend
   ({
-    correspondent : Self.ifErrorThen( arguments[ 0 ] ),
+    //correspondent : Self.ifErrorThen( arguments[ 0 ] ),
+    correspondent : arguments[ 0 ],
     context : arguments[ 1 ],
     argument : arguments[ 2 ],
     thenning : true,
+    ifError : true,
   });
 
 }
@@ -914,14 +917,14 @@ var first = function first( src )
 // messager
 // --
 
-var give = function give( given )
+var give = function give( message )
 {
   var self = this;
   _.assert( arguments.length === 2 || arguments.length === 1 || arguments.length === 0, 'expects 0, 1 or 2 arguments, got ' + arguments.length );
   if( arguments.length === 2 )
-  return self.giveWithError( arguments[ 0 ],arguments[ 1 ] );
+  return self._giveWithError( arguments[ 0 ],arguments[ 1 ] );
   else
-  return self.giveWithError( null,given );
+  return self._giveWithError( null,message );
 }
 
 //
@@ -932,24 +935,24 @@ var error = function( error )
   _.assert( arguments.length === 1 || arguments.length === 0 );
   if( arguments.length === 0  )
   error = _.err();
-  return self.giveWithError( error,undefined );
+  return self._giveWithError( error,undefined );
 }
 
 //
 
-var giveWithError = function( error,argument )
+var _giveWithError = function( error,argument )
 {
   var self = this;
 
   _.assert( arguments.length === 2 );
 
-  var given =
+  var message =
   {
     error : error,
     argument : argument,
   }
 
-  self._message.push( given );
+  self._message.push( message );
   self._handleGot();
 
   return self;
@@ -963,13 +966,13 @@ var ping = function( error,argument )
 
   _.assert( arguments.length === 2 );
 
-  var given =
+  var message =
   {
     error : error,
     argument : argument,
   }
 
-  self._message.push( given );
+  self._message.push( message );
   var result = self._handleGot();
 
   return result;
@@ -1056,17 +1059,17 @@ var _handleGot = function _handleGot()
   return;
 
   _.assert( self._message.length );
-  var _message = self._message[ 0 ];
+  var message = self._message[ 0 ];
 
   /* give message to correspondent consequence */
 
   var __giveToConsequence = function( correspondent,ordinary )
   {
 
-    result = correspondent.onGot.giveWithError( _message.error,_message.argument );
+    result = correspondent.onGot._giveWithError( message.error,message.argument );
 
     if( ordinary )
-    if( correspondent.thenning || correspondent.tapping )
+    if( correspondent.thenning )
     {
       self._handleGot();
     }
@@ -1078,17 +1081,28 @@ var _handleGot = function _handleGot()
   var __giveToRoutine = function( correspondent,ordinary )
   {
 
-    if( !correspondent.tapping && ordinary )
+    var execute = true;
+    var execute = execute && ( !correspondent.ifError || ( correspondent.ifError && !!message.error ) );
+    var execute = execute && ( !correspondent.ifNoError || ( correspondent.ifNoError && !message.error ) );
+
+    if( !execute )
+    return;
+
+    var splice = true;
+    splice = splice && !correspondent.tapping && ordinary;
+    splice = splice && execute;
+
+    if( splice )
     {
       spliced = 1;
-      self._message.splice( 0,1 );
+      self._message.shift();
     }
 
     /**/
 
     try
     {
-      result = correspondent.onGot.call( self,_message.error,_message.argument );
+      result = correspondent.onGot.call( self,message.error,message.argument );
     }
     catch( err )
     {
@@ -1144,7 +1158,7 @@ var _handleGot = function _handleGot()
     }
 
     if( !spliced && self._correspondentPersistent.length )
-    self._message.splice( 0,1 );
+    self._message.shift();
 
   }
 
@@ -1177,7 +1191,7 @@ var _give_class = function _give_class( o )
     if( o.error === undefined )
     give = o.consequence.give;
     else
-    give = o.consequence.giveWithError;
+    give = o.consequence._giveWithError;
 */
     _.assert( _.arrayIs( o.args ) && o.args.length <= 1 );
 
@@ -1185,7 +1199,7 @@ var _give_class = function _give_class( o )
 
     if( o.error !== undefined )
     {
-      o.consequence.giveWithError( o.error,o.args[ 0 ] );
+      o.consequence._giveWithError( o.error,o.args[ 0 ] );
     }
     else
     {
@@ -1411,9 +1425,9 @@ var toStr = function()
 
   var names = _.entitySelect( self.correspondentsGet(),'*.name' );
 
-  result += '\n  given : ' + self.messageGet().length;
+  result += '\n  message : ' + self.messageGet().length;
   result += '\n  correspondents : ' + self.correspondentsGet().length;
-  result += '\n  correspondents : ' + names.join( ' ' );
+  result += '\n  correspondent names : ' + names.join( ' ' );
 
   return result;
 }
@@ -1488,7 +1502,7 @@ var Proto =
 
   give : give,
   error : error,
-  giveWithError : giveWithError,
+  _giveWithError : _giveWithError,
   ping : ping, /* experimental */
 
   _give_class : _give_class,
