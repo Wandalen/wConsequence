@@ -776,6 +776,43 @@ var thenDebug = function thenDebug()
 
 //
 
+  /**
+   * Works like then_, but when correspondent accepts message from messages sequence, execution of correspondent will be
+      delayed. The result of correspondent execution will be passed to the handler that is first in correspondent queue
+      on execution end moment.
+
+   * @example
+   *
+     function gotHandler1( error, value )
+     {
+       console.log( 'handler 1: ' + value );
+       value++;
+       return value;
+     }
+
+     function gotHandler2( error, value )
+     {
+       console.log( 'handler 2: ' + value );
+     }
+
+     var con = new wConsequence();
+
+     con.timeOut(500, gotHandler1).got( gotHandler2 );
+     con.give(90);
+     //  prints:
+     // handler 1: 90
+     // handler 2: 91
+
+   * @param {number} time delay in milliseconds
+   * @param {wConsequence~correspondent|wConsequence} correspondent callback, that accepts exception reason and value.
+   * @returns {wConsequence}
+   * @throws {Error} if missed arguments.
+   * @throws {Error} if passed extra arguments.
+   * @see {@link wConsequence~then_} then_ method
+   * @method timeOut
+   * @memberof wConsequence
+   */
+
 var timeOut = function timeOut( time,correspondent )
 {
   var self = this;
