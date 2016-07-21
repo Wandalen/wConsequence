@@ -184,7 +184,8 @@ var _correspondentAppend = function( o )
     thenning : !!o.thenning,
     tapping : !!o.tapping,
     ifError :  !!o.ifError,
-    ifNoError :  !!o.ifNoError,
+    ifNoError : !!o.ifNoError,
+    debug : !!o.debug,
     name : name,
   });
 
@@ -662,6 +663,15 @@ var ifNoErrorThenClass = function()
 
 //
 
+var passThruClass = function passThru( err,data )
+{
+  if( err )
+  throw _.err( err );
+  return data;
+}
+
+//
+
   /**
    * ifErrorThen method pushed `correspondent` callback into wConsequence correspondents queue. That callback will
      trigger only in that case if accepted error parameter will be defined and not null. Else accepted parameters will
@@ -797,7 +807,7 @@ var thenDebug = function thenDebug()
 
      var con = new wConsequence();
 
-     con.timeOut(500, gotHandler1).got( gotHandler2 );
+     con.thenTimeOut(500, gotHandler1).got( gotHandler2 );
      con.give(90);
      //  prints:
      // handler 1: 90
@@ -809,25 +819,51 @@ var thenDebug = function thenDebug()
    * @throws {Error} if missed arguments.
    * @throws {Error} if passed extra arguments.
    * @see {@link wConsequence~then_} then_ method
-   * @method timeOut
+   * @method thenTimeOut
    * @memberof wConsequence
    */
 
-var timeOut = function timeOut( time,correspondent )
+var thenTimeOut = function thenTimeOut( time,correspondent )
 {
   var self = this;
 
-  _.assert( arguments.length === 2 );
-  _.assert( _.routineIs( correspondent ),'not implemented' );
+  _.assert( arguments.length === 1 || arguments.length === 2 );
+  //_.assert( arguments.length === 1 || _.routineIs( correspondent ),'not implemented' );
+
+  /**/
+
+  if( !correspondent )
+  correspondent = Self.passThru;
+
+  /**/
+
+  var _correspondent;
+  if( _.routineIs( correspondent ) )
+  _correspondent = function __thenTimeOut( err,data )
+  {
+    return _.timeOut( time,self,correspondent,[ err,data ] );
+  }
+  else
+  _correspondent = function __thenTimeOut( err,data )
+  {
+    return _.timeOut( time,function()
+    {
+      correspondent._giveWithError( err,data );
+      if( err )
+      throw _.err( err );
+      return data;
+    });
+  }
+
+  /**/
 
   return self._correspondentAppend
   ({
-    correspondent : function( err,data ){
-      return _.timeOut( time,self,correspondent,[ err,data ] );
-    },
+    correspondent : _correspondent,
     context : arguments[ 1 ],
     argument : arguments[ 2 ],
     thenning : true,
+    /*debug : true,*/
   });
 
 }
@@ -882,7 +918,7 @@ var and = function and( srcs )
     if( err )
     anyErr = anyErr;
     if( count === 0 && got )
-    _.timeOut( 1,give );
+    setTimeout( give,0 );
     if( err )
     throw _.err( err );
     return data;
@@ -1117,6 +1153,10 @@ var _handleGot = function _handleGot()
 
   var __giveToRoutine = function( correspondent,ordinary )
   {
+
+    if( Config.debug )
+    if( correspondent.debug )
+    debugger;
 
     var execute = true;
     var execute = execute && ( !correspondent.ifError || ( correspondent.ifError && !!message.error ) );
@@ -1524,7 +1564,7 @@ var Proto =
   ifErrorThen : ifErrorThen,
   ifNoErrorThen : ifNoErrorThen,
   thenDebug : thenDebug, /* experimental */
-  timeOut : timeOut,
+  thenTimeOut : thenTimeOut,
 
   persist : persist, /* experimental */
 
@@ -1597,6 +1637,8 @@ var Static =
 
   ifErrorThen : ifErrorThenClass,
   ifNoErrorThen : ifNoErrorThenClass,
+
+  passThru : passThruClass,
 
 }
 

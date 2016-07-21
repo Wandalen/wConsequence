@@ -2,7 +2,7 @@
 if( typeof module !== 'undefined' )
 {
   require( 'wTools' );
-  // require( 'wConsequence' );
+  /* require( 'wConsequence' ); */
   require( '../staging/abase/syn/Consequence.s' );
 }
 
@@ -10,22 +10,23 @@ if( typeof module !== 'undefined' )
 
 function gotHandler1( error, value )
 {
-  console.log( 'handler 1: ' + value );
+  console.log( 'handler 1 : ' + value );
   value++;
   return value;
 }
 
 function gotHandler2( error, value )
 {
-  console.log( 'handler 2: ' + value );
+  debugger;
+  console.log( 'handler 2 : ' + value );
   value++;
   return value;
 }
 
 function gotHandler3( error, value )
 {
-  console.log( 'handler 3 err: ' + error );
-  console.log( 'handler 3 val: ' + value );
+  console.log( 'handler 3 err : ' + error );
+  console.log( 'handler 3 val : ' + value );
   value++;
   return value;
 }
