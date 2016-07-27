@@ -1786,6 +1786,7 @@ if( typeof module !== 'undefined' )
   module[ 'exports' ] = Self;
 }
 
+
 _global_.wConsequence = wTools.Consequence = Self;
 return Self;
 
