@@ -1,3 +1,8 @@
+/**
+ * @file This sample demonstrates using wConsequence for synchronization the several asynchronous process by example of
+ * sleeping barber problem. In this example appending clients in barber shop and servicing them by barber are
+ * asynchronous.
+ */
 
 if( typeof module !== 'undefined' )
 {
@@ -6,10 +11,15 @@ if( typeof module !== 'undefined' )
   require( '../staging/abase/syn/Consequence.s' );
 }
 
+/**
+ * Class barber simulate work barber in barber shop.
+ * @class Barber
+ */
+
 class Barber {
   constructor()
   {
-    this.sleep();
+    this.sleep(); // on begin barber open barber shop, but clients
     this._workSequence = wConsequence();
   }
 
@@ -66,11 +76,13 @@ class Barber {
     this._state = Barber.WORKING_STATE;
   }
 
-  _setStateToSleep() {
+  _setStateToSleep()
+  {
     this._state = Barber.SLEEP_STATE;
   }
 
-  _getDelay() {
+  _getDelay()
+  {
     var [ max, min ] = Barber.DURATION_OF_WORK_RANGE;
     return Math.floor( Math.random() * (max - min + 1)) + min;
   }
@@ -81,7 +93,8 @@ class Barber {
     client.state = Customer.HAIRCUT_FINISHED_STATE;
   }
 
-  serveQueue( con ) {
+  serveQueue( con )
+  {
     this._queue = con;
   }
 }
@@ -90,8 +103,14 @@ Barber.SLEEP_STATE = 'sleep';
 Barber.WORKING_STATE = 'work';
 Barber.DURATION_OF_WORK_RANGE = [ 500, 3000 ];
 
+/**
+ * Represent barber client
+ * @class Customer
+ */
+
 class Customer {
-  constructor(name) {
+  constructor(name)
+  {
     this.name = name;
     this.state = Customer.HAIRCUT_NO_STATE;
   }
@@ -99,6 +118,12 @@ class Customer {
 
 Customer.HAIRCUT_FINISHED_STATE = 1;
 Customer.HAIRCUT_NO_STATE = 0
+
+/**
+ * Class container for wConsequence that represent queue in waiting room.
+ * Main goal of this class is to limit places in queue.
+ * @class WhaitingRoomQueue
+ */
 
 class WhaitingRoomQueue {
   constructor()
@@ -134,6 +159,12 @@ var customersList =  // test finite list, in generally we must TODO: create infi
     { name: 'Joe', arrived: 9000 },
   ];
 
+/**
+ * Used to simulate customers visiting hairdresser
+ * @param {wConsequence} con this parameter represent sequence of clients that go to barber shop
+ * @returns {wConsequence}
+ */
+
 function custromerGenerator( con )  // used to simulate customers visiting hairdresser (draft version)
                                     // TODO: make customer generation with using wConsequence synchronisation, without
                                     // unnecessary actions
@@ -143,7 +174,7 @@ function custromerGenerator( con )  // used to simulate customers visiting haird
     let cust = new Customer( customer.name );
     let delayCon = wConsequence();
     delayCon.thenTimeOut( customer.arrived, (err, value) => {
-      console.log( 'customer send: ' + value.name );
+      // sending customers to shop
       con.give(value)
     } );
     delayCon.give( cust );
@@ -151,13 +182,16 @@ function custromerGenerator( con )  // used to simulate customers visiting haird
   return con;
 }
 
+// start process
+
+// initializing
 var clientSequence = wConsequence();
 var waitingRoomQueue = new WhaitingRoomQueue();
 var barber = new Barber();
 barber.serveQueue( waitingRoomQueue );
 
 
-
+// listening for client appending in shop
 clientSequence.persist( ( err, client ) =>
 {
   if( err ) throw new Error( err );
@@ -179,4 +213,5 @@ clientSequence.persist( ( err, client ) =>
 
 });
 
+// send customers to barber shop.
 custromerGenerator( clientSequence );
