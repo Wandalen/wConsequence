@@ -870,6 +870,54 @@ var thenTimeOut = function thenTimeOut( time,correspondent )
 
 //
 
+  /**
+   * Correspondents added by persist method, will be accepted every messages resolved by wConsequence, like an event
+      listener. Returns current wConsequence instance.
+   * @example
+     function gotHandler1( error, value )
+     {
+       console.log( 'message handler 1: ' + value );
+       value++;
+       return value;
+     }
+
+     function gotHandler2( error, value )
+     {
+       console.log( 'message handler 2: ' + value );
+     }
+
+     var con = new wConsequence();
+
+     var messages = [ 'hello', 'world', 'foo', 'bar', 'baz' ],
+     len = messages.length,
+     i = 0;
+
+     con.persist( gotHandler1).persist( gotHandler2 );
+
+     for( ; i < len; i++) con.give( messages[i] );
+
+     // prints:
+     // message handler 1: hello
+     // message handler 2: hello
+     // message handler 1: world
+     // message handler 2: world
+     // message handler 1: foo
+     // message handler 2: foo
+     // message handler 1: bar
+     // message handler 2: bar
+     // message handler 1: baz
+     // message handler 2: baz
+
+   * @param {wConsequence~correspondent|wConsequence} correspondent callback, that accepts exception reason and value.
+   * @returns {wConsequence}
+   * @throws {Error} if missed arguments.
+   * @throws {Error} if passed extra arguments.
+   * @see {@link wConsequence~got} got method
+   * @method persist
+   * @memberof wConsequence
+   */
+
+
 var persist = function persist( correspondent )
 {
   var self = this;
@@ -888,6 +936,60 @@ var persist = function persist( correspondent )
 // --
 // reverse chainer
 // --
+
+
+  /**
+   * Method accepts array of wConsequences object. If current wConsequence instance ready to resolve message, it will be
+     wait for all passed wConsequence instances will been resolved, then current wConsequence resolve own message.
+     Returns current wConsequence.
+   * @example
+   *
+     var handleGot1 = function(err, val)
+     {
+       if( err )
+       {
+         console.log( 'handleGot1 error: ' + err );
+       }
+       else
+       {
+         console.log( 'handleGot1 value: ' + val );
+       }
+     };
+
+     var con1 = new wConsequence();
+     var con2 = new wConsequence();
+
+     con1.got( function( err, value )
+     {
+       console.log( 'con1 handler executed with value: ' + value + 'and error: ' + err );
+     } );
+
+     con2.got( function( err, value )
+     {
+       console.log( 'con2 handler executed with value: ' + value + 'and error: ' + err );
+     } );
+
+     var conOwner = new  wConsequence();
+
+     conOwner.and( [ con1, con2 ] );
+
+     conOwner.give( 100 );
+     conOwner.got( handleGot1 );
+
+     con1.give( 'value1' );
+     con2.error( 'ups' );
+     // prints
+     // con1 handler executed with value: value1and error: null
+     // con2 handler executed with value: undefinedand error: ups
+     // handleGot1 value: 100
+
+   * @param {wConsequence[]|wConsequence} srcs array of wConsequence
+   * @returns {wConsequence}
+   * @throws {Error} if missed arguments.
+   * @throws {Error} if passed extra arguments.
+   * @method and
+   * @memberof wConsequence
+   */
 
 var and = function and( srcs )
 {
