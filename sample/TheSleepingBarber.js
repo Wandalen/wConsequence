@@ -40,16 +40,16 @@ class Barber {
   {
     if( this._queue.shopQueueLength > 0 ) // barber check if someone waiting in queue;
     {
-      this._queue.con.then_( (err, client) => { // if someone waiting, barber take him and start cutting despite resistance
-        console.log( '->>>>>>>>>>>>' + JSON.stringify( client ) );
+      this._queue.con.got( (err, client) => { // if someone waiting, barber take him and start cutting despite resistance
         console.log( `Waiting room: ${client.name} leave queue` );
         this._queue.shopQueueLength--; // place in the queue is freed
+        console.log(`Waiting room: ${this._queue.shopQueueLength} places is occupied;` );
         console.log( `begins haircut client ${client.name}` );
         var delayed = _.timeOut( this._getDelay() ); // process take some time;
         delayed.then_( () => {
           this.cutClient( null, client ); // finish with current client
         } )
-        .got( () => // after that, barber got to waiting room for next client.
+        .got( () => // after that, barber go to waiting room for next client.
         {
           this.takeNextClient()
         });
@@ -112,6 +112,7 @@ class WhaitingRoomQueue {
     {
       this.shopQueueLength++;
       console.log(`Waiting room: ${client.name} take place in queue;` );
+      console.log(`Waiting room: ${this.shopQueueLength} places is occupied;` );
       this.con.give( client );
       return true;
     }
@@ -120,8 +121,6 @@ class WhaitingRoomQueue {
 }
 
 WhaitingRoomQueue.BARBER_NUM_SITS = 4;
-
-;
 
 var customersList =  // test finite list, in generally we must TODO: create infinity customers generation
   [
