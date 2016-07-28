@@ -11,14 +11,14 @@ if( typeof module !== 'undefined' )
 
 var clientsList =  // list of clients
 [
-  { name : 'Jon', arrivedTime: 500 },
-  { name : 'Alfred', arrivedTime: 5000 },
-  { name : 'Jane', arrivedTime: 5000 },
-  { name : 'Derek', arrivedTime: 1500 },
-  { name : 'Bob', arrivedTime: 4500 },
-  { name : 'Sean', arrivedTime: 6500 },
-  { name : 'Martin', arrivedTime: 2500 },
-  { name : 'Joe', arrivedTime: 7000 },
+  { name : 'Jon', arrivedTime : 500 },
+  { name : 'Alfred', arrivedTime : 5000 },
+  { name : 'Jane', arrivedTime : 5000 },
+  { name : 'Derek', arrivedTime : 1500 },
+  { name : 'Bob', arrivedTime : 4500 },
+  { name : 'Sean', arrivedTime : 6500 },
+  { name : 'Martin', arrivedTime : 2500 },
+  { name : 'Joe', arrivedTime : 7000 },
 ];
 
 //
