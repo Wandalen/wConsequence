@@ -9,42 +9,39 @@ if( typeof module !== 'undefined' )
   require( '../staging/abase/syn/Consequence.s' );
 }
 
-var customersList =  // list of clients
+var clientsList =  // list of clients
 [
-  { name: 'Jon', arrived: 500 },
-  { name: 'Alfred', arrived: 5000 },
-  { name: 'Jane', arrived: 5000 },
-  { name: 'Derek', arrived: 1500 },
-  { name: 'Bob', arrived: 4500 },
-  { name: 'Sean', arrived: 6500 },
-  { name: 'Martin', arrived: 2500 },
-  { name: 'Joe', arrived: 7000 },
+  { name: 'Jon', arrivedTime: 500 },
+  { name: 'Alfred', arrivedTime: 5000 },
+  { name: 'Jane', arrivedTime: 5000 },
+  { name: 'Derek', arrivedTime: 1500 },
+  { name: 'Bob', arrivedTime: 4500 },
+  { name: 'Sean', arrivedTime: 6500 },
+  { name: 'Martin', arrivedTime: 2500 },
+  { name: 'Joe', arrivedTime: 7000 },
 ];
 
 //
 
 /**
- * Used to simulate customers visiting hairdresser
+ * Used to simulate clients visiting hairdresser
  * @param {wConsequence} con - this parameter represent sequence of clients that go to barber shop
  * @returns {wConsequence}
  */
 
-function custromerGenerator( con )
+function clientsGenerator( con )
 {
   var i = 0,
-    len = customersList.length;
+    len = clientsList.length;
 
-  for( ; i< len; i++ )
+  for( ; i < len; i++ )
   {
-    var customer = { name : customersList[ i ].name };
-    let delayCon = wConsequence();
-    delayCon.thenTimeOut( customersList[ i ].arrived,
-      function( err, value )
+    var client = { name : clientsList[ i ].name };
+    setTimeout( ( function( client )
       {
-        /* sending customers to shop */
-        con.give(value)
-      });
-    delayCon.give( customer );
+        /* sending clients to shop */
+        con.give( client );
+      } ).bind(null, client), clientsList[ i ].arrivedTime);
   }
 
   return con;
@@ -66,10 +63,10 @@ clientSequence.persist( ( err, client ) =>
   throw _.errLog( err );
 
   /* clients arrived to barber shop */
-  console.log( 'new customer is coming : ' + client.name + _.timeSpent( ' ',time ) );
+  console.log( 'new client is coming : ' + client.name + _.timeSpent( ' ',time ) );
 
 });
 
-/* send customers to barber shop. */
+/* send clients to barber shop. */
 
-custromerGenerator( clientSequence );
+clientsGenerator( clientSequence );

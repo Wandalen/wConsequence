@@ -90,7 +90,7 @@ class Barber {
   cutClient( err, client )
   {
     console.log( `client ${client.name} cutted` );
-    client.state = Customer.HAIRCUT_FINISHED_STATE;
+    client.state = Client.HAIRCUT_FINISHED_STATE;
   }
 
   serveQueue( con )
@@ -108,16 +108,16 @@ Barber.DURATION_OF_WORK_RANGE = [ 500, 3000 ];
  * @class Customer
  */
 
-class Customer {
+class Client {
   constructor(name)
   {
     this.name = name;
-    this.state = Customer.HAIRCUT_NO_STATE;
+    this.state = Client.HAIRCUT_NO_STATE;
   }
 }
 
-Customer.HAIRCUT_FINISHED_STATE = 1;
-Customer.HAIRCUT_NO_STATE = 0
+Client.HAIRCUT_FINISHED_STATE = 1;
+Client.HAIRCUT_NO_STATE = 0
 
 /**
  * Class container for wConsequence that represent queue in waiting room.
@@ -147,16 +147,16 @@ class WhaitingRoomQueue {
 
 WhaitingRoomQueue.BARBER_NUM_SITS = 4;
 
-var customersList =  // test finite list, in generally we must TODO: create infinity customers generation
+var clientsList =  // test finite list, in generally we must TODO: create infinity customers generation
   [
-    { name: 'Jon', arrived: 500 },
-    { name: 'Alfred', arrived: 5000 },
-    { name: 'Jane', arrived: 5000 },
-    { name: 'Derek', arrived: 1500 },
-    { name: 'Bob', arrived: 4500 },
-    { name: 'Sean', arrived: 6500 },
-    { name: 'Martin', arrived: 2500 },
-    { name: 'Joe', arrived: 9000 },
+    { name: 'Jon', arrivedTime: 500 },
+    { name: 'Alfred', arrivedTime: 5000 },
+    { name: 'Jane', arrivedTime: 5000 },
+    { name: 'Derek', arrivedTime: 1500 },
+    { name: 'Bob', arrivedTime: 4500 },
+    { name: 'Sean', arrivedTime: 6500 },
+    { name: 'Martin', arrivedTime: 2500 },
+    { name: 'Joe', arrivedTime: 9000 },
   ];
 
 /**
@@ -165,19 +165,18 @@ var customersList =  // test finite list, in generally we must TODO: create infi
  * @returns {wConsequence}
  */
 
-function custromerGenerator( con )  // used to simulate customers visiting hairdresser (draft version)
+function clientsGenerator( con )  // used to simulate customers visiting hairdresser (draft version)
                                     // TODO: make customer generation with using wConsequence synchronisation, without
                                     // unnecessary actions
 {
-  for ( let customer of customersList )
+  for ( let client of clientsList )
   {
-    let cust = new Customer( customer.name );
-    let delayCon = wConsequence();
-    delayCon.thenTimeOut( customer.arrived, (err, value) => {
-      // sending customers to shop
-      con.give(value)
-    } );
-    delayCon.give( cust );
+    let clientObj = new Client( client.name );
+    setTimeout( ( ( client ) =>
+    {
+      // sending clients to shop
+      con.give (client );
+    } ).bind(this, clientObj), client.arrivedTime );
   }
   return con;
 }
@@ -197,7 +196,7 @@ clientSequence.persist( ( err, client ) =>
   if( err ) throw new Error( err );
 
   // clients arrived to barber shop
-  console.log( 'new customer is coming: ' + client.name );
+  console.log( 'new client is coming: ' + client.name );
 
     if ( barber.state === Barber.SLEEP_STATE ) // if no client and barber sleep, client wakes him
     {
@@ -213,5 +212,5 @@ clientSequence.persist( ( err, client ) =>
 
 });
 
-// send customers to barber shop.
-custromerGenerator( clientSequence );
+// send clients to barber shop.
+clientsGenerator( clientSequence );
