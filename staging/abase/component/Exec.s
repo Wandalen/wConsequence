@@ -24,9 +24,43 @@ var _arraySlice = _.arraySlice;
 // exec
 // --
 
+var exec = ( function( o )
+{
+
+  var Exec;
+
+  return function exec( o )
+  {
+    var con = new wConsequence();
+
+    if( _.strIs( o ) )
+    o = { command : o };
+    _.assertMapOnly( o,exec.defaults );
+    _.assert( arguments.length === 1 );
+
+    if( !Exec )
+    Exec = require( 'child_process' ).exec;
+
+    var child = Exec( 'npm install' );
+    child.stdout.on( 'data', function( data ) { console.log( data ); } );
+    child.stderr.on( 'data', function( data ) { console.error( 'ERROR :',data ); } );
+    child.on( 'close', function() { debugger; con.give(); } );
+
+    return con;
+  }
+
+})();
+
+exec.defaults =
+{
+  command : null,
+}
+
+//
+
 var execAsyn = function( routine,onEnd,context )
 {
-  _assert( arguments.length >= 3,'execAsyn:','expects 3 arguments or more' );
+  _assert( arguments.length >= 3,'execAsyn :','expects 3 arguments or more' );
 
   var args = arraySlice( arguments,3 ); throw _.err( 'not tested' );
 
@@ -240,10 +274,10 @@ var execForEach = function execForEach( elements,o )
 
   // validation
 
-  if( !elements ) throw _.err( 'execForEach:','require elements' );
-  if( !o ) throw _.err( 'execForEach:','require o' );
-  if( o.onEach === undefined ) throw _.err( 'execForEach:','o require onEach' );
-  if( o.range === undefined ) throw _.err( 'execForEach:','o require range' );
+  if( !elements ) throw _.err( 'execForEach :','require elements' );
+  if( !o ) throw _.err( 'execForEach :','require o' );
+  if( o.onEach === undefined ) throw _.err( 'execForEach :','o require onEach' );
+  if( o.range === undefined ) throw _.err( 'execForEach :','o require range' );
 
   // correction
 
@@ -287,9 +321,9 @@ var execForEach = function execForEach( elements,o )
 var execInRange = function execInRange( o )
 {
 
-  if( !o ) throw _.err( '_.execInRange:','require o' );
-  if( o.onEach === undefined ) throw _.err( '_.execInRange:','o require onEach' );
-  if( o.range === undefined ) throw _.err( '_.execInRange:','o require range' );
+  if( !o ) throw _.err( '_.execInRange :','require o' );
+  if( o.onEach === undefined ) throw _.err( '_.execInRange :','o require onEach' );
+  if( o.range === undefined ) throw _.err( '_.execInRange :','o require range' );
 
   if( o.batch === undefined ) o.batch = 1;
   if( o.delay === undefined ) o.delay = 0;
@@ -330,9 +364,9 @@ var execInRanges = function( o )
 
   _.assertMapOnly( o,execInRanges.defaults );
   _assert( _.objectIs( o ) )
-  _assert( _.arrayIs( o.ranges ) || _.objectIs( o.ranges ),'execInRanges:','expects o.ranges as array or object' )
-  _assert( _.routineIs( o.onEach ),'execInRanges:','expects o.onEach as routine' )
-  _assert( !o.delta || o.delta.length === o.ranges.length,'execInRanges:','o.delta must be same length as ranges' );
+  _assert( _.arrayIs( o.ranges ) || _.objectIs( o.ranges ),'execInRanges :','expects o.ranges as array or object' )
+  _assert( _.routineIs( o.onEach ),'execInRanges :','expects o.onEach as routine' )
+  _assert( !o.delta || o.delta.length === o.ranges.length,'execInRanges :','o.delta must be same length as ranges' );
 
   /**/
 
@@ -479,10 +513,11 @@ var Proto =
 
   // exec
 
-  execAsyn: execAsyn,
-  execStages: execStages,
-  execInRange: execInRange,
-  execInRanges: execInRanges,
+  exec : exec,
+  execAsyn : execAsyn,
+  execStages : execStages,
+  execInRange : execInRange,
+  execInRanges : execInRanges,
 
 }
 

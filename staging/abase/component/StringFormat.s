@@ -98,7 +98,11 @@ var toStrFine_gen = function()
   Object.preventExtensions( optional );
   Object.preventExtensions( restricts );
 
-  var def = _.protoUnitedInterface([ primeFilter,composes,optional ]);
+  var def
+  if( _.protoUnitedInterface )
+  def = _.protoUnitedInterface([ primeFilter,composes,optional ]);
+  else
+  def = _.mapExtend( {},primeFilter,composes,optional );
 
   var routine = function toStrFine( src,options )
   {

@@ -28,29 +28,29 @@ if( typeof module !== 'undefined' )
 
   try
   {
-    require( 'wTools' );
+    require( '../wTools.s' );
   }
   catch( err )
   {
-    require( '../wTools.s' );
+    require( 'wTools' );
   }
 
   try
-  {
-    require( 'wCopyable' );
-  }
-  catch( err )
   {
     require( '../mixin/Copyable.s' );
   }
+  catch( err )
+  {
+    require( 'wCopyable' );
+  }
 
   try
   {
-    require( 'wProto' );
+    require( '../component/Proto.s' );
   }
   catch( err )
   {
-    require( '../component/Proto.s' );
+    require( 'wProto' );
   }
 
 }
@@ -415,6 +415,57 @@ var then_ = function then_( correspondent )
     argument : arguments[ 2 ],
     thenning : true,
   });
+}
+
+//
+
+var thenSealed = function thenSealed( context,correspondent,args )
+{
+  var self = this;
+
+  _.assert( arguments.length === 2 || arguments.length === 3 );
+
+  if( arguments.length === 2 )
+  if( _.arrayLike( arguments[ 1 ] ) )
+  {
+    args = arguments[ 1 ];
+    correspondent = arguments[ 0 ];
+    context = undefined;
+  }
+
+  var correspondentJoined = _.routineSeal( context,correspondent,args );
+
+  return self._correspondentAppend
+  ({
+    correspondent : correspondentJoined,
+    ifNoError : true,
+    thenning : true,
+  });
+
+}
+
+//
+
+var thenReportError = function thenReportError( context,correspondent,args )
+{
+  var self = this;
+
+  _.assert( arguments.length === 0 );
+
+  var correspondent = function reportError( err,data )
+  {
+    if( err )
+    throw _.errLog( err );
+    return data;
+  }
+
+  return self._correspondentAppend
+  ({
+    correspondent : correspondent,
+    ifError : true,
+    thenning : true,
+  });
+
 }
 
 //
@@ -1657,6 +1708,9 @@ var Proto =
   gotOnce : gotOnce, /* experimental */
 
   then_ : then_,
+  thenSealed : thenSealed,
+  thenReportError : thenReportError, /* experimental */
+
   thenOnce : thenOnce, /* experimental */
   thenClone : thenClone,
 
