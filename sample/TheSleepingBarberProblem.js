@@ -9,18 +9,17 @@ if( typeof module !== 'undefined' )
   require( '../staging/abase/syn/Consequence.s' );
 }
 
-
 var customersList =  // list of clients
-  [
-    { name: 'Jon', arrived: 500 },
-    { name: 'Alfred', arrived: 5000 },
-    { name: 'Jane', arrived: 5000 },
-    { name: 'Derek', arrived: 1500 },
-    { name: 'Bob', arrived: 4500 },
-    { name: 'Sean', arrived: 6500 },
-    { name: 'Martin', arrived: 2500 },
-    { name: 'Joe', arrived: 7000 },
-  ];
+[
+  { name: 'Jon', arrived: 500 },
+  { name: 'Alfred', arrived: 5000 },
+  { name: 'Jane', arrived: 5000 },
+  { name: 'Derek', arrived: 1500 },
+  { name: 'Bob', arrived: 4500 },
+  { name: 'Sean', arrived: 6500 },
+  { name: 'Martin', arrived: 2500 },
+  { name: 'Joe', arrived: 7000 },
+];
 
 //
 
