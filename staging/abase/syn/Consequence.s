@@ -1160,9 +1160,6 @@ var ping = function( error,argument )
 var _handleError = function _handleError( err )
 {
   var self = this;
-
-  debugger;
-
   var err = _.err( err );
 
   if( !err.attentionGiven )
@@ -1173,6 +1170,7 @@ var _handleError = function _handleError( err )
   if( Config.debug && err.attentionNeeded )
   {
     console.error( 'Consequence caught error' );
+    debugger;
 
     _.timeOut( 0, function()
     {
@@ -1787,6 +1785,7 @@ if( typeof module !== 'undefined' )
 {
   module[ 'exports' ] = Self;
 }
+
 
 _global_.wConsequence = wTools.Consequence = Self;
 return Self;
