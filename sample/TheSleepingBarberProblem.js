@@ -22,9 +22,11 @@ var customersList =  // list of clients
     { name: 'Joe', arrived: 7000 },
   ];
 
+//
+
 /**
  * Used to simulate customers visiting hairdresser
- * @param {wConsequence} con this parameter represent sequence of clients that go to barber shop
+ * @param {wConsequence} con - this parameter represent sequence of clients that go to barber shop
  * @returns {wConsequence}
  */
 
@@ -33,34 +35,42 @@ function custromerGenerator( con )
   var i = 0,
     len = customersList.length;
 
-  for ( ; i< len; i++ )
+  for( ; i< len; i++ )
   {
-    var customer = { name: customersList[ i ].name };
+    var customer = { name : customersList[ i ].name };
     let delayCon = wConsequence();
     delayCon.thenTimeOut( customersList[ i ].arrived,
       function( err, value )
       {
-        // sending customers to shop
+        /* sending customers to shop */
         con.give(value)
-      } );
+      });
     delayCon.give( customer );
   }
+
   return con;
 }
 
-// start process
+//
 
-// initializing
+/* initializing */
+
 var clientSequence = wConsequence();
+var time = _.timeNow();
 
-// listening for client appending in shop
+/* listening for client appending in shop */
+
 clientSequence.persist( ( err, client ) =>
 {
-  if( err ) throw new Error( err );
 
-  // clients arrived to barber shop
-  console.log( 'new customer is coming: ' + client.name );
+  if( err )
+  throw _.errLog( err );
+
+  /* clients arrived to barber shop */
+  console.log( 'new customer is coming : ' + client.name + _.timeSpent( ' ',time ) );
+
 });
 
-// send customers to barber shop.
+/* send customers to barber shop. */
+
 custromerGenerator( clientSequence );
