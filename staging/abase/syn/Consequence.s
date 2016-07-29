@@ -1199,6 +1199,29 @@ var first = function first( src )
 // messager
 // --
 
+  /**
+   * Method pushes `message` into wConsequence messages queue.
+   * Method also can accept two parameters: error, and
+   * Returns current wConsequence instance.
+   * @example
+   * var gotHandler1 = function( error, value )
+     {
+       console.log( 'handler 1: ' + value );
+     };
+
+     var con1 = new wConsequence();
+
+     con1.got( gotHandler1 );
+     con1.give( 'hello' );
+
+     // prints " handler 1: hello ",
+   * @param {*} [message] Resolved value
+   * @returns {wConsequence} consequence current wConsequence instance.
+   * @throws {Error} if passed extra parameters.
+   * @method give
+   * @memberof wConsequence
+   */
+
 var give = function give( message )
 {
   var self = this;
