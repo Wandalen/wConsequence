@@ -1234,6 +1234,48 @@ var give = function give( message )
 
 //
 
+  /**
+   * Using for adds to message queue error reason, that using for informing corespondent that will handle it, about
+   * exception
+   * @example
+     var showResult = function(err, val)
+     {
+       if( err )
+       {
+         console.log( 'handleGot1 error: ' + err );
+       }
+       else
+       {
+         console.log( 'handleGot1 value: ' + val );
+       }
+     };
+
+     var con = new  wConsequence();
+
+     var divade = function( x, y )
+     {
+       var result;
+       if( y!== 0 )
+       {
+         result = x / y;
+         con.give(result);
+       }
+       else
+       {
+         con.error( 'divide by zero' );
+       }
+     }
+
+     con.got( showResult );
+     divade( 3, 0 );
+
+     // prints: handleGot1 error: divide by zero
+   * @param {*|Error} error error, or value that represent error reason
+   * @throws {Error} if passed extra parameters.
+   * @method error
+   * @memberof wConsequence
+   */
+
 var error = function( error )
 {
   var self = this;
