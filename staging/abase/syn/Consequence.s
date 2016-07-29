@@ -1287,6 +1287,18 @@ var error = function( error )
 
 //
 
+  /**
+   * Method creates and pushed message object int messages sequence.
+   * Returns current wConsequence instance.
+   * @param {*} error Error value
+   * @param {*} argument resolved value
+   * @returns {_giveWithError}
+   * @private
+   * @throws {Error} if missed arguments or passed extra arguments
+   * @method _giveWithError
+   * @memberof wConsequence
+   */
+
 var _giveWithError = function( error,argument )
 {
   var self = this;
