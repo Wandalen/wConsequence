@@ -1100,6 +1100,62 @@ var and = function and( srcs )
 
 //
 
+  /**
+   * If type of `src` is function, the first method run it on begin, and if the result of `src` invocation is instance of
+     wConsequence, the current wConsequence will be wait for it resolving, else method added result to messages sequence
+     of the current instance.
+   * If `src` is instance of wConsequence, the current wConsequence delegates to it his first corespondent.
+   * Returns current wConsequence instance.
+   * @example
+   * var handleGot1 = function(err, val)
+     {
+       if( err )
+       {
+         console.log( 'handleGot1 error: ' + err );
+       }
+       else
+       {
+         console.log( 'handleGot1 value: ' + val );
+       }
+     };
+
+     var con = new  wConsequence();
+
+     con.first( function() {
+       return 'foo';
+     } );
+
+   con.give( 100 );
+   con.got( handleGot1 );
+   // prints: handleGot1 value: foo
+  *
+    var handleGot1 = function(err, val)
+    {
+      if( err )
+      {
+        console.log( 'handleGot1 error: ' + err );
+      }
+      else
+      {
+        console.log( 'handleGot1 value: ' + val );
+      }
+    };
+
+    var con = new  wConsequence();
+
+    con.first( function() {
+      return wConsequence().give(3);
+    } );
+
+   con.give(100);
+   con.got( handleGot1 );
+   * @param {wConsequence|Function} src wConsequence or routine.
+   * @returns {wConsequence}
+   * @throws {Error} if `src` has unexpected type.
+   * @method first
+   * @memberof wConsequence
+   */
+
 var first = function first( src )
 {
   var self = this;
