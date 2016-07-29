@@ -1319,6 +1319,30 @@ var _giveWithError = function( error,argument )
 
 //
 
+  /**
+   * Creates and pushes message object into wConsequence messages sequence, and trying to get and return result of
+      handling this message by appropriate correspondent.
+   * @example
+     var con = new  wConsequence();
+
+     var increment = function( err, value )
+     {
+       return ++value;
+     };
+
+
+     con.got( increment );
+     var result = con.ping( undefined, 4 );
+     console.log( result );
+     // prints 5;
+   * @param {*} error
+   * @param {*} argument
+   * @returns {*} result
+   * @throws {Error} if missed arguments or passed extra arguments
+   * @method ping
+   * @memberof wConsequence
+   */
+
 var ping = function( error,argument )
 {
   var self = this;
