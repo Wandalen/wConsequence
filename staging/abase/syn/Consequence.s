@@ -1288,7 +1288,7 @@ var error = function( error )
 //
 
   /**
-   * Method creates and pushed message object int messages sequence.
+   * Method creates and pushes message object into wConsequence messages sequence.
    * Returns current wConsequence instance.
    * @param {*} error Error value
    * @param {*} argument resolved value
