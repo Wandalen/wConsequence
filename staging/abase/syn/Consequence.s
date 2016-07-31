@@ -1365,6 +1365,16 @@ var ping = function( error,argument )
 // mechanism
 // --
 
+  /**
+   * Creates and handles error object based on `err` parameter.
+   * Returns new wConsequence instance with error in messages queue.
+   * @param {*} err error value.
+   * @returns {wConsequence}
+   * @private
+   * @method _handleError
+   * @memberof wConsequence
+   */
+
 var _handleError = function _handleError( err )
 {
   var self = this;
