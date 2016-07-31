@@ -1567,6 +1567,22 @@ var _handleGot = function _handleGot()
 
 //
 
+  /**
+   * If `o.consequence` if instance of wConsequence, method pass o.args and o.error to it's message sequence.
+   * If `o.consequence` is routine, method pass o.args as arguments to it and return result.
+   * @param {Object} o parameters object.
+   * @param {Function|wConsequence} o.consequence wConsequence or routine.
+   * @param {Array} o.args values for wConsequence messages queue or arguments for routine.
+   * @param {*|Error} o.error error value.
+   * @returns {*}
+   * @private
+   * @throws {Error} if missed arguments.
+   * @throws {Error} if passed argument is not object.
+   * @throws {Error} if o.consequence has unexpected type.
+   * @method _handleGot
+   * @memberof wConsequence
+   */
+
 var _give_class = function _give_class( o )
 {
   var context;
