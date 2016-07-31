@@ -1568,7 +1568,7 @@ var _handleGot = function _handleGot()
 //
 
   /**
-   * If `o.consequence` if instance of wConsequence, method pass o.args and o.error to it's message sequence.
+   * If `o.consequence` if instance of wConsequence, method pass o.args and o.error if defined, to it's message sequence.
    * If `o.consequence` is routine, method pass o.args as arguments to it and return result.
    * @param {Object} o parameters object.
    * @param {Function|wConsequence} o.consequence wConsequence or routine.
@@ -1579,7 +1579,7 @@ var _handleGot = function _handleGot()
    * @throws {Error} if missed arguments.
    * @throws {Error} if passed argument is not object.
    * @throws {Error} if o.consequence has unexpected type.
-   * @method _handleGot
+   * @method _give_class
    * @memberof wConsequence
    */
 
@@ -1679,6 +1679,39 @@ var giveWithContextTo = function giveWithContextTo( consequence,context,got )
 }
 */
 //
+
+
+  /**
+   * If `consequence` if instance of wConsequence, method pass arg and error if defined to it's message sequence.
+   * If `consequence` is routine, method pass o.args as arguments to it and return result.
+   * @example
+   * var showResult = function(err, val)
+     {
+       if( err )
+       {
+         console.log( 'handleGot1 error: ' + err );
+       }
+       else
+       {
+         console.log( 'handleGot1 value: ' + val );
+       }
+     };
+
+     var con = new  wConsequence();
+
+
+     con.got( showResult );
+
+     wConsequence.give( con, 'hello world' );
+     // prints: handleGot1 value: hello world
+   * @param {Function|wConsequence} consequence
+   * @param {*} arg argument value
+   * @param {*} [error] error value
+   * @returns {*}
+   * @static
+   * @method give
+   * @memberof wConsequence
+   */
 
 var giveClass = function( consequence )
 {
