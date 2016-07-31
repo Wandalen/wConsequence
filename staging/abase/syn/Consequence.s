@@ -1683,7 +1683,7 @@ var giveWithContextTo = function giveWithContextTo( consequence,context,got )
 
   /**
    * If `consequence` if instance of wConsequence, method pass arg and error if defined to it's message sequence.
-   * If `consequence` is routine, method pass o.args as arguments to it and return result.
+   * If `consequence` is routine, method pass arg as arguments to it and return result.
    * @example
    * var showResult = function(err, val)
      {
@@ -1698,7 +1698,6 @@ var giveWithContextTo = function giveWithContextTo( consequence,context,got )
      };
 
      var con = new  wConsequence();
-
 
      con.got( showResult );
 
@@ -1742,6 +1741,36 @@ var giveClass = function( consequence )
 }
 
 //
+
+  /**
+   * If `consequence` if instance of wConsequence, method error to it's message sequence.
+   * If `consequence` is routine, method pass error as arguments to it and return result.
+   * @example
+   * var showResult = function(err, val)
+     {
+       if( err )
+       {
+         console.log( 'handleGot1 error: ' + err );
+       }
+       else
+       {
+         console.log( 'handleGot1 value: ' + val );
+       }
+     };
+
+     var con = new  wConsequence();
+
+     con.got( showResult );
+
+     wConsequence.error( con, 'something wrong' );
+   // prints: handleGot1 error: something wrong
+   * @param {Function|wConsequence} consequence
+   * @param {*} error error value
+   * @returns {*}
+   * @static
+   * @method error
+   * @memberof wConsequence
+   */
 
 var errorClass = function( consequence,error )
 {
