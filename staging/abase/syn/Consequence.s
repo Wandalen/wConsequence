@@ -1944,6 +1944,37 @@ var correspondentsClear = function correspondentsClear( correspondent )
 // message
 // --
 
+  /**
+   * The internal wConsequence view of message.
+   * @typedef {Object} _messageObject
+   * @property {*} error error value
+   * @property {*} argument resolved value
+   */
+
+  /**
+   * Returns messages queue.
+   * @example
+   * var con = wConsequence();
+
+     con.give( 'foo' );
+     con.give( 'bar ');
+     con.error( 'baz' );
+
+
+     var messages = con.messagesGet();
+
+     console.log( messages );
+
+     // prints
+     // [ { error: null, argument: 'foo' },
+     // { error: null, argument: 'bar ' },
+     // { error: 'baz', argument: undefined } ]
+
+   * @returns {_messageObject[]}
+   * @method messagesGet
+   * @memberof wConsequence
+   */
+
 var messagesGet = function()
 {
   var self = this;
