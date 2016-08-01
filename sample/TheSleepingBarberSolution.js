@@ -21,7 +21,7 @@ class Barber
 
   constructor()
   {
-    this.sleep(); // on begin barber open barber shop, but clients
+    this.sleep(); /* on begin barber open barber shop, but clients */
     this._workSequence = wConsequence();
   }
 
@@ -35,42 +35,44 @@ class Barber
   };
 
   wakeUp( client ) {
-    console.log( 'waking up' ); // barber wakes up and start haircut client, who wakes him.
+    console.log( 'waking up' ); /* barber wakes up and start haircut client, who wakes him. */
     this._setStateToToWorking(Barber.WORKING);
     console.log( `begins haircut client ${client.name}` );
-    var con = _.timeOut( this._getDelay() ); // process takes some time;
+    var con = _.timeOut( this._getDelay() ); /* process takes some time; */
     con.then_( () =>
     {
       this.cutClient( null, client );
     }).got( () =>
     {
-      this.takeNextClient(); // after finish, barber got to waiting room and check for client in queue.
-    } )
+      this.takeNextClient(); /* after finish, barber got to waiting room and check for client in queue. */
+    })
   }
 
   takeNextClient()
   {
-    if( this._queue.shopQueueLength > 0 ) // barber check if someone waiting in queue;
+
+    /* barber check if someone waiting in queue; */
+    if( this._waitingRoom.messagesGet().length === 0 )
+    return this._setStateToSleep();
+
+    /* if someone waiting, barber take him and start cutting despite resistance */
+    this._waitingRoom.got( (err, client) =>
     {
-      this._queue.con.got( (err, client) => { // if someone waiting, barber take him and start cutting despite resistance
-        console.log( `Waiting room: ${client.name} leave queue` );
-        this._queue.shopQueueLength--; // place in the queue is freed
-        console.log(`Waiting room: ${this._queue.shopQueueLength} places is occupied;` );
-        console.log( `begins haircut client ${client.name}` );
-        var delayed = _.timeOut( this._getDelay() ); // process take some time;
-        delayed.then_( () => {
-          this.cutClient( null, client ); // finish with current client
-        } )
-        .got( () => // after that, barber go to waiting room for next client.
-        {
-          this.takeNextClient()
-        });
+      console.log( `Waiting room: ${client.name} leave queue` );
+      this._waitingRoom.shopQueueLength--; /* place in the queue is freed */
+      console.log(`Waiting room: ${this._waitingRoom.shopQueueLength} places is occupied;` );
+      console.log( `begins haircut client ${client.name}` );
+      var delayed = _.timeOut( this._getDelay() ); /* process take some time; */
+      delayed.then_( () =>
+      {
+        this.cutClient( null, client ); /* finish with current client */
       })
-    }
-    else // if room is empty got to sleep.
-    {
-      this._setStateToSleep();
-    }
+      .got( () => /* after that, barber go to waiting room for next client. */
+      {
+        this.takeNextClient()
+      });
+    })
+
   }
 
   _setStateToToWorking()
@@ -95,9 +97,9 @@ class Barber
     client.state = Client.HAIRCUT_FINISHED_STATE;
   }
 
-  serveQueue( con )
+  waitingRoomSet( con )
   {
-    this._queue = con;
+    this._waitingRoom = con;
   }
 
   meet( client )
@@ -106,15 +108,16 @@ class Barber
     if ( barber.state === Barber.SLEEP_STATE ) /* if no client and barber sleep, client wakes him */
     {
       barber.wakeUp( client );
+      return true;
     }
-    else
+    else if( !this._waitingRoom.messagesGet().length < Barber.BARBER_NUM_SITS ) /* else client try to place client in queue */
     {
-      if( !waitingRoom.push( client ) ) /* else client try to place sit in queue */
-      {
-        console.log( `all seats in waiting room are occupied, so client ${client.name} leave shop` );
-      }
+      this._waitingRoom.give( client );
+      return true;
     }
 
+    console.log( `all seats in waiting room are occupied, so client ${client.name} leave shop` );
+    return false;
   }
 
 }
@@ -122,6 +125,7 @@ class Barber
 Barber.SLEEP_STATE = 'sleep';
 Barber.WORKING_STATE = 'work';
 Barber.DURATION_OF_WORK_RANGE = [ 500, 3000 ];
+Barber.BARBER_NUM_SITS = 3;
 
 //
 
@@ -149,7 +153,7 @@ Client.HAIRCUT_NO_STATE = 0
  * Main goal of this class is to limit places in queue.
  * @class WaitingRoom
  */
-
+/*
 class WaitingRoom
 {
   constructor()
@@ -174,10 +178,13 @@ class WaitingRoom
 
 WaitingRoom.BARBER_NUM_SITS = 4;
 waitingRoom = new WaitingRoom();
-barber = new Barber();
-barber.serveQueue( waitingRoom );
+*/
 
-var clientsList =  // list of clients
+waitingRoom = new wConsequence().give().give();
+barber = new Barber();
+barber.waitingRoomSet( waitingRoom );
+
+var clientsList = // list of clients
 [
   { name : 'Jon', arrivedTime : 500 },
   { name : 'Alfred', arrivedTime : 5000 },

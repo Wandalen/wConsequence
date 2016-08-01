@@ -1568,6 +1568,14 @@ var giveWithContextAndErrorTo = function giveWithContextAndErrorTo( consequence,
 // correspondent
 // --
 
+var correspondentsGet = function()
+{
+  var self = this;
+  return self._correspondent;
+}
+
+//
+
 var correspondentsClear = function correspondentsClear( correspondent )
 {
   var self = this;
@@ -1584,17 +1592,17 @@ var correspondentsClear = function correspondentsClear( correspondent )
 
 }
 
-//
-
-var correspondentsGet = function()
-{
-  var self = this;
-  return self._correspondent;
-}
-
 // --
 // message
 // --
+
+var messagesGet = function()
+{
+  var self = this;
+  return self._message;
+}
+
+//
 
 var messagesClear = function messagesClear( data )
 {
@@ -1622,14 +1630,6 @@ var hasMessage = function()
   return self._message.length - self._correspondent.length;
 }
 
-//
-
-var messageGet = function()
-{
-  var self = this;
-  return self._message;
-}
-
 // --
 // etc
 // --
@@ -1653,7 +1653,7 @@ var toStr = function()
 
   var names = _.entitySelect( self.correspondentsGet(),'*.name' );
 
-  result += '\n  message : ' + self.messageGet().length;
+  result += '\n  message : ' + self.messagesGet().length;
   result += '\n  correspondents : ' + self.correspondentsGet().length;
   result += '\n  correspondent names : ' + names.join( ' ' );
 
@@ -1747,16 +1747,17 @@ var Proto =
 
   // correspondent
 
-  correspondentsClear : correspondentsClear,
   correspondentsGet : correspondentsGet,
+  correspondentsClear : correspondentsClear,
 
 
   // message
 
+  messagesGet : messagesGet,
   messagesClear : messagesClear,
+
   hasMessage : hasMessage,
   messageHas : hasMessage,
-  messageGet : messageGet,
 
 
   // etc
