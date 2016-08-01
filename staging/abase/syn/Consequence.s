@@ -1813,7 +1813,73 @@ var giveWithContextAndErrorTo = function giveWithContextAndErrorTo( consequence,
 // correspondent
 // --
 
+  /**
+   * The _corespondentMap object
+   * @typedef {Object} _corespondentMap
+   * @property {Function|wConsequence} onGot function or wConsequence instance, that accepts resolved messages from
+   * messages queue.
+   * @property {boolean} thenning determines if corespondent pass his result back into messages queue.
+   * @property {boolean} tapping determines if corespondent return accepted message back into  messages queue.
+   * @property {boolean} ifError turn on corespondent only if message represent error;
+   * @property {boolean} ifNoError turn on corespondent only if message represent no error;
+   * @property {boolean} debug enables debugging.
+   * @property {string} name corespondent name.
+   */
 
+  /**
+   * Returns array of corespondents
+   * @example
+   * function corespondent1(err, val)
+     {
+       console.log( 'corespondent1 value: ' + val );
+     };
+
+     function corespondent2(err, val)
+     {
+       console.log( 'corespondent2 value: ' + val );
+     };
+
+     function corespondent3(err, val)
+     {
+       console.log( 'corespondent1 value: ' + val );
+     };
+
+     var con = wConsequence();
+
+     con.tap( corespondent1 ).then_( corespondent2 ).got( corespondent3 );
+
+     var corespondents = con.correspondentsGet();
+
+     console.log( corespondents );
+
+     // prints
+     // [ {
+     //  onGot: [Function: corespondent1],
+     //  thenning: true,
+     //  tapping: true,
+     //  ifError: false,
+     //  ifNoError: false,
+     //  debug: false,
+     //  name: 'corespondent1' },
+     // { onGot: [Function: corespondent2],
+     //   thenning: true,
+     //   tapping: false,
+     //   ifError: false,
+     //   ifNoError: false,
+     //   debug: false,
+     //   name: 'corespondent2' },
+     // { onGot: [Function: corespondent3],
+     //   thenning: false,
+     //   tapping: false,
+     //   ifError: false,
+     //   ifNoError: false,
+     //   debug: false,
+     //   name: 'corespondent3'
+     // } ]
+   * @returns {_corespondentMap[]}
+   * @method correspondentsGet
+   * @memberof wConsequence
+   */
 
 var correspondentsGet = function()
 {
@@ -1822,7 +1888,7 @@ var correspondentsGet = function()
 }
 
 //
-  
+
   /**
    * If called without arguments, method correspondentsClear() removes all corespondents from wConsequence
    * correspondents queue.
@@ -1854,6 +1920,8 @@ var correspondentsGet = function()
    // prints
    // corespondent1 value: bar
    * @param [correspondent]
+   * @method correspondentsClear
+   * @memberof wConsequence
    */
 
 var correspondentsClear = function correspondentsClear( correspondent )
