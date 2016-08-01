@@ -16,7 +16,9 @@ if( typeof module !== 'undefined' )
  * @class Barber
  */
 
-class Barber {
+class Barber
+{
+
   constructor()
   {
     this.sleep(); // on begin barber open barber shop, but clients
@@ -97,18 +99,39 @@ class Barber {
   {
     this._queue = con;
   }
+
+  meet( client )
+  {
+
+    if ( barber.state === Barber.SLEEP_STATE ) /* if no client and barber sleep, client wakes him */
+    {
+      barber.wakeUp( client );
+    }
+    else
+    {
+      if( !waitingRoom.push( client ) ) /* else client try to place sit in queue */
+      {
+        console.log( `all seats in waiting room are occupied, so client ${client.name} leave shop` );
+      }
+    }
+
+  }
+
 }
 
 Barber.SLEEP_STATE = 'sleep';
 Barber.WORKING_STATE = 'work';
 Barber.DURATION_OF_WORK_RANGE = [ 500, 3000 ];
 
+//
+
 /**
  * Represent barber client
  * @class Customer
  */
 
-class Client {
+class Client
+{
   constructor(name)
   {
     this.name = name;
@@ -119,25 +142,29 @@ class Client {
 Client.HAIRCUT_FINISHED_STATE = 1;
 Client.HAIRCUT_NO_STATE = 0
 
+//
+
 /**
  * Class container for wConsequence that represent queue in waiting room.
  * Main goal of this class is to limit places in queue.
- * @class WhaitingRoomQueue
+ * @class WaitingRoom
  */
 
-class WhaitingRoomQueue {
+class WaitingRoom
+{
   constructor()
   {
     this.shopQueueLength = 0;
     this.con = wConsequence();
   }
 
-  push( client ) {
-    if( this.shopQueueLength < WhaitingRoomQueue.BARBER_NUM_SITS ) // if in queue is free sit, client occupied it.
+  push( client )
+  {
+    if( this.shopQueueLength < WaitingRoom.BARBER_NUM_SITS ) // if in queue is free sit, client occupied it.
     {
       this.shopQueueLength++;
-      console.log(`Waiting room: ${client.name} take place in queue;` );
-      console.log(`Waiting room: ${this.shopQueueLength} places is occupied;` );
+      console.log( `Waiting room: ${client.name} take place in queue;` );
+      console.log( `Waiting room: ${this.shopQueueLength} places is occupied;` );
       this.con.give( client );
       return true;
     }
@@ -145,72 +172,71 @@ class WhaitingRoomQueue {
   }
 }
 
-WhaitingRoomQueue.BARBER_NUM_SITS = 4;
+WaitingRoom.BARBER_NUM_SITS = 4;
+waitingRoom = new WaitingRoom();
+barber = new Barber();
+barber.serveQueue( waitingRoom );
 
-var clientsList =  // test finite list, in generally we must TODO: create infinity customers generation
-  [
-    { name: 'Jon', arrivedTime: 500 },
-    { name: 'Alfred', arrivedTime: 5000 },
-    { name: 'Jane', arrivedTime: 5000 },
-    { name: 'Derek', arrivedTime: 1500 },
-    { name: 'Bob', arrivedTime: 4500 },
-    { name: 'Sean', arrivedTime: 6500 },
-    { name: 'Martin', arrivedTime: 2500 },
-    { name: 'Joe', arrivedTime: 9000 },
-  ];
+var clientsList =  // list of clients
+[
+  { name : 'Jon', arrivedTime : 500 },
+  { name : 'Alfred', arrivedTime : 5000 },
+  { name : 'Jane', arrivedTime : 5000 },
+  { name : 'Derek', arrivedTime : 1500 },
+  { name : 'Bob', arrivedTime : 4500 },
+  { name : 'Sean', arrivedTime : 6500 },
+  { name : 'Martin', arrivedTime : 2500 },
+  { name : 'Joe', arrivedTime : 7000 },
+];
+
+//
 
 /**
- * Used to simulate customers visiting hairdresser
- * @param {wConsequence} con this parameter represent sequence of clients that go to barber shop
+ * Used to simulate clients visiting hairdresser
+ * @param {wConsequence} con - this parameter represent sequence of clients that go to barber shop
  * @returns {wConsequence}
  */
 
-function clientsGenerator( con )  // used to simulate customers visiting hairdresser (draft version)
-                                    // TODO: make customer generation with using wConsequence synchronisation, without
-                                    // unnecessary actions
+function clientsGenerator( con )
 {
-  for ( let client of clientsList )
+  var i = 0,
+    len = clientsList.length;
+
+  for( ; i < len; i++ )
   {
-    let clientObj = new Client( client.name );
-    setTimeout( ( ( client ) =>
+    var client = { name : clientsList[ i ].name };
+    setTimeout(( function( client )
     {
-      // sending clients to shop
-      con.give (client );
-    } ).bind(this, clientObj), client.arrivedTime );
+      /* sending clients to shop */
+      con.give( client );
+    }).bind( null, client ), clientsList[ i ].arrivedTime );
   }
+
   return con;
 }
 
-// start process
+//
 
-// initializing
+/* initializing */
+
 var clientSequence = wConsequence();
-var waitingRoomQueue = new WhaitingRoomQueue();
-var barber = new Barber();
-barber.serveQueue( waitingRoomQueue );
+var time = _.timeNow();
 
+/* listening for client appending in shop */
 
-// listening for client appending in shop
 clientSequence.persist( ( err, client ) =>
 {
-  if( err ) throw new Error( err );
 
-  // clients arrived to barber shop
-  console.log( 'new client is coming: ' + client.name );
+  if( err )
+  throw _.errLog( err );
 
-    if ( barber.state === Barber.SLEEP_STATE ) // if no client and barber sleep, client wakes him
-    {
-      barber.wakeUp( client );
-    }
-    else
-    {
-      if( !waitingRoomQueue.push(client) ) // else client try to place sit in queue
-      {
-        console.log( `all seats in waiting room are occupied, so client ${client.name} leave shop` );
-      }
-    }
+  /* clients arrived to barber shop */
+  console.log( 'new client is coming : ' + client.name + _.timeSpent( ' ',time ) );
+
+  barber.meet( client );
 
 });
 
-// send clients to barber shop.
+/* send clients to barber shop. */
+
 clientsGenerator( clientSequence );
