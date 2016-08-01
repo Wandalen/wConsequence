@@ -1813,6 +1813,39 @@ var giveWithContextAndErrorTo = function giveWithContextAndErrorTo( consequence,
 // correspondent
 // --
 
+  /**
+   * If called without arguments, method correspondentsClear() removes all corespondents from wConsequence
+   * correspondents queue.
+   * If as argument passed routine, method correspondentsClear() removes it from corespondents queue if exists.
+   * @example
+     function corespondent1(err, val)
+     {
+       console.log( 'corespondent1 value: ' + val );
+     };
+
+     function corespondent2(err, val)
+     {
+       console.log( 'corespondent2 value: ' + val );
+     };
+
+     function corespondent3(err, val)
+     {
+       console.log( 'corespondent1 value: ' + val );
+     };
+
+     var con = wConsequence();
+
+     con.got( corespondent1 ).got( corespondent2 );
+     con.correspondentsClear();
+
+     con.got( corespondent3 );
+     con.give( 'bar' );
+
+     // prints
+     // corespondent1 value: bar
+   * @param [correspondent]
+   */
+
 var correspondentsClear = function correspondentsClear( correspondent )
 {
   var self = this;
