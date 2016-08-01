@@ -25,18 +25,19 @@ class Barber
     this._workSequence = wConsequence();
   }
 
-  get state() {
+  get state()
+  {
     return this._state;
   }
 
-  sleep() {
-    console.log( 'slep zzzzzzzzzz' );
-    this._setStateToSleep();
+  sleep()
+  {
+    this._stateSet( Barber.SLEEP_STATE );
   };
 
-  wakeUp( client ) {
-    console.log( 'waking up' ); /* barber wakes up and start haircut client, who wakes him. */
-    this._setStateToToWorking(Barber.WORKING);
+  wakeUp( client )
+  {
+    this._stateSet( Barber.WORKING );
     console.log( `begins haircut client ${client.name}` );
     var con = _.timeOut( this._getDelay() ); /* process takes some time; */
     con.then_( () =>
@@ -53,7 +54,7 @@ class Barber
 
     /* barber check if someone waiting in queue; */
     if( this._waitingRoom.messagesGet().length === 0 )
-    return this._setStateToSleep();
+    return this._stateSet( Barber.SLEEP_STATE );
 
     /* if someone waiting, barber take him and start cutting despite resistance */
     this._waitingRoom.got( (err, client) =>
@@ -74,14 +75,15 @@ class Barber
 
   }
 
-  _setStateToToWorking()
+  _stateSet( state )
   {
-    this._state = Barber.WORKING_STATE;
-  }
 
-  _setStateToSleep()
-  {
-    this._state = Barber.SLEEP_STATE;
+    if( state === Barber.WORKING_STATE && this._state === Barber.SLEEP_STATE )
+    console.log( 'waking up' ); /* barber wakes up and start haircut client, who wakes him. */
+    else if( state === Barber.SLEEP_STATE && this._state === Barber.WORKING_STATE )
+    console.log( 'slep zzzzzzzzzz' );
+
+    this._state = state;
   }
 
   _getDelay()
