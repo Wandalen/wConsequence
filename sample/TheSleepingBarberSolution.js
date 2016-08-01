@@ -59,8 +59,7 @@ class Barber
     this._waitingRoom.got( (err, client) =>
     {
       console.log( `Waiting room: ${client.name} leave queue` );
-      this._waitingRoom.shopQueueLength--; /* place in the queue is freed */
-      console.log(`Waiting room: ${this._waitingRoom.shopQueueLength} places is occupied;` );
+      console.log(`Waiting room: ${this._waitingRoom.messagesGet().length} places is occupied;` );
       console.log( `begins haircut client ${client.name}` );
       var delayed = _.timeOut( this._getDelay() ); /* process take some time; */
       delayed.then_( () =>
@@ -180,7 +179,7 @@ WaitingRoom.BARBER_NUM_SITS = 4;
 waitingRoom = new WaitingRoom();
 */
 
-waitingRoom = new wConsequence().give().give();
+waitingRoom = new wConsequence();
 barber = new Barber();
 barber.waitingRoomSet( waitingRoom );
 
