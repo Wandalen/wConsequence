@@ -684,6 +684,7 @@ var ifNoErrorThen = function()
 
 //
 
+
 var ifNoErrorThenClass = function()
 {
 
@@ -779,6 +780,20 @@ var ifErrorThen = function()
 }
 
 //
+
+
+  /**
+   * Method accepts correspondent callback. Returns special correspondent that wrap passed one. Passed corespondent will
+   * be invoked only if handling message contains error value. Else given message will be delegate to the next handler
+   * in wConsequence, to the which result correspondent was added.
+   * @param {wConsequence|corespondent} errHandler handler for error
+   * @returns {correspondent}
+   * @static
+   * @thorws If missed arguments or passed extra ones.
+   * @method ifErrorThenClass
+   * @memberof wConsequence
+   * @see {@link wConsequence#ifErrorThen}
+   */
 
 var ifErrorThenClass = function()
 {
@@ -2115,7 +2130,7 @@ var clear = function clear( data )
 
    * @returns {string}
    * @method toStr
-   * @memberof wConsequenc
+   * @memberof wConsequence
    */
 
 var toStr = function()
