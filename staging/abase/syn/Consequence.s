@@ -419,6 +419,18 @@ var then_ = function then_( correspondent )
 
 //
 
+  /**
+   * Adds to the wConsequences corespondents queue `correspondent` with sealed `context` and `args`. The result of
+   * correspondent will be added to wConsequence message sequence after handling.
+   * Returns current wConsequence instance.
+   * @param {Object} context context that seals for correspondent callback
+   * @param {Function} correspondent callback
+   * @param {Array<*>} [args] arguments arguments that seals for correspondent callback
+   * @returns {wConsequence}
+   * @method thenSealed
+   * @memberof wConsequence
+   */
+
 var thenSealed = function thenSealed( context,correspondent,args )
 {
   var self = this;
@@ -445,6 +457,14 @@ var thenSealed = function thenSealed( context,correspondent,args )
 }
 
 //
+
+  /**
+   * Creates and adds to corespondents sequence error handler. If handled message contains error, corespondent logs it.
+   * @returns {wConsequence}
+   * @throws {Error} If called with any argument.
+   * @method thenReportError
+   * @memberof wConsequence
+   */
 
 var thenReportError = function thenReportError( context,correspondent,args )
 {
@@ -684,6 +704,19 @@ var ifNoErrorThen = function()
 
 //
 
+
+  /**
+   * Method accepts correspondent callback. Returns special correspondent that wrap passed one. Passed corespondent will
+   * be invoked only if handling message does not contain error value. Else given message with error will be delegate to
+   * the next handler in wConsequence, to the which result correspondent was added.
+   * @param {correspondent} vallueHandler resolved message handler
+   * @returns {corespondent}
+   * @static
+   * @throws {Error} If missed arguments or passed extra one;
+   * @method ifNoErrorThenClass
+   * @memberof wConsequence
+   */
+
 var ifNoErrorThenClass = function()
 {
 
@@ -779,6 +812,20 @@ var ifErrorThen = function()
 }
 
 //
+
+
+  /**
+   * Method accepts correspondent callback. Returns special correspondent that wrap passed one. Passed corespondent will
+   * be invoked only if handling message contains error value. Else given message will be delegate to the next handler
+   * in wConsequence, to the which result correspondent was added.
+   * @param {correspondent} errHandler handler for error
+   * @returns {correspondent}
+   * @static
+   * @thorws If missed arguments or passed extra ones.
+   * @method ifErrorThenClass
+   * @memberof wConsequence
+   * @see {@link wConsequence#ifErrorThen}
+   */
 
 var ifErrorThenClass = function()
 {
@@ -1100,6 +1147,62 @@ var and = function and( srcs )
 
 //
 
+  /**
+   * If type of `src` is function, the first method run it on begin, and if the result of `src` invocation is instance of
+     wConsequence, the current wConsequence will be wait for it resolving, else method added result to messages sequence
+     of the current instance.
+   * If `src` is instance of wConsequence, the current wConsequence delegates to it his first corespondent.
+   * Returns current wConsequence instance.
+   * @example
+   * var handleGot1 = function(err, val)
+     {
+       if( err )
+       {
+         console.log( 'handleGot1 error: ' + err );
+       }
+       else
+       {
+         console.log( 'handleGot1 value: ' + val );
+       }
+     };
+
+     var con = new  wConsequence();
+
+     con.first( function() {
+       return 'foo';
+     } );
+
+   con.give( 100 );
+   con.got( handleGot1 );
+   // prints: handleGot1 value: foo
+  *
+    var handleGot1 = function(err, val)
+    {
+      if( err )
+      {
+        console.log( 'handleGot1 error: ' + err );
+      }
+      else
+      {
+        console.log( 'handleGot1 value: ' + val );
+      }
+    };
+
+    var con = new  wConsequence();
+
+    con.first( function() {
+      return wConsequence().give(3);
+    } );
+
+   con.give(100);
+   con.got( handleGot1 );
+   * @param {wConsequence|Function} src wConsequence or routine.
+   * @returns {wConsequence}
+   * @throws {Error} if `src` has unexpected type.
+   * @method first
+   * @memberof wConsequence
+   */
+
 var first = function first( src )
 {
   var self = this;
@@ -1143,6 +1246,29 @@ var first = function first( src )
 // messager
 // --
 
+  /**
+   * Method pushes `message` into wConsequence messages queue.
+   * Method also can accept two parameters: error, and
+   * Returns current wConsequence instance.
+   * @example
+   * var gotHandler1 = function( error, value )
+     {
+       console.log( 'handler 1: ' + value );
+     };
+
+     var con1 = new wConsequence();
+
+     con1.got( gotHandler1 );
+     con1.give( 'hello' );
+
+     // prints " handler 1: hello ",
+   * @param {*} [message] Resolved value
+   * @returns {wConsequence} consequence current wConsequence instance.
+   * @throws {Error} if passed extra parameters.
+   * @method give
+   * @memberof wConsequence
+   */
+
 var give = function give( message )
 {
   var self = this;
@@ -1155,6 +1281,48 @@ var give = function give( message )
 
 //
 
+  /**
+   * Using for adds to message queue error reason, that using for informing corespondent that will handle it, about
+   * exception
+   * @example
+     var showResult = function(err, val)
+     {
+       if( err )
+       {
+         console.log( 'handleGot1 error: ' + err );
+       }
+       else
+       {
+         console.log( 'handleGot1 value: ' + val );
+       }
+     };
+
+     var con = new  wConsequence();
+
+     var divade = function( x, y )
+     {
+       var result;
+       if( y!== 0 )
+       {
+         result = x / y;
+         con.give(result);
+       }
+       else
+       {
+         con.error( 'divide by zero' );
+       }
+     }
+
+     con.got( showResult );
+     divade( 3, 0 );
+
+     // prints: handleGot1 error: divide by zero
+   * @param {*|Error} error error, or value that represent error reason
+   * @throws {Error} if passed extra parameters.
+   * @method error
+   * @memberof wConsequence
+   */
+
 var error = function( error )
 {
   var self = this;
@@ -1165,6 +1333,18 @@ var error = function( error )
 }
 
 //
+
+  /**
+   * Method creates and pushes message object into wConsequence messages sequence.
+   * Returns current wConsequence instance.
+   * @param {*} error Error value
+   * @param {*} argument resolved value
+   * @returns {_giveWithError}
+   * @private
+   * @throws {Error} if missed arguments or passed extra arguments
+   * @method _giveWithError
+   * @memberof wConsequence
+   */
 
 var _giveWithError = function( error,argument )
 {
@@ -1185,6 +1365,30 @@ var _giveWithError = function( error,argument )
 }
 
 //
+
+  /**
+   * Creates and pushes message object into wConsequence messages sequence, and trying to get and return result of
+      handling this message by appropriate correspondent.
+   * @example
+     var con = new  wConsequence();
+
+     var increment = function( err, value )
+     {
+       return ++value;
+     };
+
+
+     con.got( increment );
+     var result = con.ping( undefined, 4 );
+     console.log( result );
+     // prints 5;
+   * @param {*} error
+   * @param {*} argument
+   * @returns {*} result
+   * @throws {Error} if missed arguments or passed extra arguments
+   * @method ping
+   * @memberof wConsequence
+   */
 
 var ping = function( error,argument )
 {
@@ -1207,6 +1411,16 @@ var ping = function( error,argument )
 // --
 // mechanism
 // --
+
+  /**
+   * Creates and handles error object based on `err` parameter.
+   * Returns new wConsequence instance with error in messages queue.
+   * @param {*} err error value.
+   * @returns {wConsequence}
+   * @private
+   * @method _handleError
+   * @memberof wConsequence
+   */
 
 var _handleError = function _handleError( err )
 {
@@ -1400,6 +1614,22 @@ var _handleGot = function _handleGot()
 
 //
 
+  /**
+   * If `o.consequence` if instance of wConsequence, method pass o.args and o.error if defined, to it's message sequence.
+   * If `o.consequence` is routine, method pass o.args as arguments to it and return result.
+   * @param {Object} o parameters object.
+   * @param {Function|wConsequence} o.consequence wConsequence or routine.
+   * @param {Array} o.args values for wConsequence messages queue or arguments for routine.
+   * @param {*|Error} o.error error value.
+   * @returns {*}
+   * @private
+   * @throws {Error} if missed arguments.
+   * @throws {Error} if passed argument is not object.
+   * @throws {Error} if o.consequence has unexpected type.
+   * @method _give_class
+   * @memberof wConsequence
+   */
+
 var _give_class = function _give_class( o )
 {
   var context;
@@ -1497,6 +1727,38 @@ var giveWithContextTo = function giveWithContextTo( consequence,context,got )
 */
 //
 
+
+  /**
+   * If `consequence` if instance of wConsequence, method pass arg and error if defined to it's message sequence.
+   * If `consequence` is routine, method pass arg as arguments to it and return result.
+   * @example
+   * var showResult = function(err, val)
+     {
+       if( err )
+       {
+         console.log( 'handleGot1 error: ' + err );
+       }
+       else
+       {
+         console.log( 'handleGot1 value: ' + val );
+       }
+     };
+
+     var con = new  wConsequence();
+
+     con.got( showResult );
+
+     wConsequence.give( con, 'hello world' );
+     // prints: handleGot1 value: hello world
+   * @param {Function|wConsequence} consequence
+   * @param {*} arg argument value
+   * @param {*} [error] error value
+   * @returns {*}
+   * @static
+   * @method give
+   * @memberof wConsequence
+   */
+
 var giveClass = function( consequence )
 {
 
@@ -1526,6 +1788,36 @@ var giveClass = function( consequence )
 }
 
 //
+
+  /**
+   * If `consequence` if instance of wConsequence, method error to it's message sequence.
+   * If `consequence` is routine, method pass error as arguments to it and return result.
+   * @example
+   * var showResult = function(err, val)
+     {
+       if( err )
+       {
+         console.log( 'handleGot1 error: ' + err );
+       }
+       else
+       {
+         console.log( 'handleGot1 value: ' + val );
+       }
+     };
+
+     var con = new  wConsequence();
+
+     con.got( showResult );
+
+     wConsequence.error( con, 'something wrong' );
+   // prints: handleGot1 error: something wrong
+   * @param {Function|wConsequence} consequence
+   * @param {*} error error value
+   * @returns {*}
+   * @static
+   * @method error
+   * @memberof wConsequence
+   */
 
 var errorClass = function( consequence,error )
 {
@@ -1568,6 +1860,74 @@ var giveWithContextAndErrorTo = function giveWithContextAndErrorTo( consequence,
 // correspondent
 // --
 
+  /**
+   * The _corespondentMap object
+   * @typedef {Object} _corespondentMap
+   * @property {Function|wConsequence} onGot function or wConsequence instance, that accepts resolved messages from
+   * messages queue.
+   * @property {boolean} thenning determines if corespondent pass his result back into messages queue.
+   * @property {boolean} tapping determines if corespondent return accepted message back into  messages queue.
+   * @property {boolean} ifError turn on corespondent only if message represent error;
+   * @property {boolean} ifNoError turn on corespondent only if message represent no error;
+   * @property {boolean} debug enables debugging.
+   * @property {string} name corespondent name.
+   */
+
+  /**
+   * Returns array of corespondents
+   * @example
+   * function corespondent1(err, val)
+     {
+       console.log( 'corespondent1 value: ' + val );
+     };
+
+     function corespondent2(err, val)
+     {
+       console.log( 'corespondent2 value: ' + val );
+     };
+
+     function corespondent3(err, val)
+     {
+       console.log( 'corespondent1 value: ' + val );
+     };
+
+     var con = wConsequence();
+
+     con.tap( corespondent1 ).then_( corespondent2 ).got( corespondent3 );
+
+     var corespondents = con.correspondentsGet();
+
+     console.log( corespondents );
+
+     // prints
+     // [ {
+     //  onGot: [Function: corespondent1],
+     //  thenning: true,
+     //  tapping: true,
+     //  ifError: false,
+     //  ifNoError: false,
+     //  debug: false,
+     //  name: 'corespondent1' },
+     // { onGot: [Function: corespondent2],
+     //   thenning: true,
+     //   tapping: false,
+     //   ifError: false,
+     //   ifNoError: false,
+     //   debug: false,
+     //   name: 'corespondent2' },
+     // { onGot: [Function: corespondent3],
+     //   thenning: false,
+     //   tapping: false,
+     //   ifError: false,
+     //   ifNoError: false,
+     //   debug: false,
+     //   name: 'corespondent3'
+     // } ]
+   * @returns {_corespondentMap[]}
+   * @method correspondentsGet
+   * @memberof wConsequence
+   */
+
 var correspondentsGet = function()
 {
   var self = this;
@@ -1575,6 +1935,41 @@ var correspondentsGet = function()
 }
 
 //
+
+  /**
+   * If called without arguments, method correspondentsClear() removes all corespondents from wConsequence
+   * correspondents queue.
+   * If as argument passed routine, method correspondentsClear() removes it from corespondents queue if exists.
+   * @example
+   function corespondent1(err, val)
+   {
+     console.log( 'corespondent1 value: ' + val );
+   };
+
+   function corespondent2(err, val)
+   {
+     console.log( 'corespondent2 value: ' + val );
+   };
+
+   function corespondent3(err, val)
+   {
+     console.log( 'corespondent1 value: ' + val );
+   };
+
+   var con = wConsequence();
+
+   con.got( corespondent1 ).got( corespondent2 );
+   con.correspondentsClear();
+
+   con.got( corespondent3 );
+   con.give( 'bar' );
+
+   // prints
+   // corespondent1 value: bar
+   * @param [correspondent]
+   * @method correspondentsClear
+   * @memberof wConsequence
+   */
 
 var correspondentsClear = function correspondentsClear( correspondent )
 {
@@ -1596,6 +1991,37 @@ var correspondentsClear = function correspondentsClear( correspondent )
 // message
 // --
 
+  /**
+   * The internal wConsequence view of message.
+   * @typedef {Object} _messageObject
+   * @property {*} error error value
+   * @property {*} argument resolved value
+   */
+
+  /**
+   * Returns messages queue.
+   * @example
+   * var con = wConsequence();
+
+     con.give( 'foo' );
+     con.give( 'bar ');
+     con.error( 'baz' );
+
+
+     var messages = con.messagesGet();
+
+     console.log( messages );
+
+     // prints
+     // [ { error: null, argument: 'foo' },
+     // { error: null, argument: 'bar ' },
+     // { error: 'baz', argument: undefined } ]
+
+   * @returns {_messageObject[]}
+   * @method messagesGet
+   * @memberof wConsequence
+   */
+
 var messagesGet = function()
 {
   var self = this;
@@ -1603,6 +2029,27 @@ var messagesGet = function()
 }
 
 //
+  /**
+   * If called without arguments, method removes all messages from wConsequence
+   * correspondents queue.
+   * If as argument passed value, method messagesClear() removes it from messages queue if messages queue contains it.
+   * @example
+   * var con = wConsequence();
+
+     con.give( 'foo' );
+     con.give( 'bar ');
+     con.error( 'baz' );
+
+     con.messagesClear();
+     var messages = con.messagesGet();
+
+     console.log( messages );
+     // prints: []
+   * @param {_messageObject} data message object for removing.
+   * @throws {Error} If passed extra arguments.
+   * @method correspondentsClear
+   * @memberof wConsequence
+   */
 
 var messagesClear = function messagesClear( data )
 {
@@ -1622,6 +2069,31 @@ var messagesClear = function messagesClear( data )
 
 //
 
+  /**
+   * Returns number of messages in current messages queue.
+   * @example
+   * var con = wConsequence();
+
+     var conLen = con.hasMessage();
+     console.log( conLen );
+
+     con.give( 'foo' );
+     con.give( 'bar' );
+     con.error( 'baz' );
+     conLen = con.hasMessage();
+     console.log( conLen );
+
+     con.messagesClear();
+
+     conLen = con.hasMessage();
+     console.log( conLen );
+     // prints: 0, 3, 0;
+
+   * @returns {number}
+   * @method hasMessage
+   * @memberof wConsequence
+   */
+
 var hasMessage = function()
 {
   var self = this;
@@ -1634,6 +2106,12 @@ var hasMessage = function()
 // etc
 // --
 
+  /**
+   * Clears all messages and corespondents of wConsequence.
+   * @method clear
+   * @memberof wConsequence
+   */
+
 var clear = function clear( data )
 {
   var self = this;
@@ -1645,6 +2123,47 @@ var clear = function clear( data )
 }
 
 //
+
+  /**
+   * Serializes current wConsequence instance.
+   * @example
+   * function corespondent1(err, val)
+     {
+       console.log( 'corespondent1 value: ' + val );
+     };
+
+     var con = wConsequence();
+     con.got( corespondent1 );
+
+     var conStr = con.toStr();
+
+     console.log( conStr );
+
+     con.give( 'foo' );
+     con.give( 'bar' );
+     con.error( 'baz' );
+
+     conStr = con.toStr();
+
+     console.log( conStr );
+     // prints:
+
+     // wConsequence( 0 )
+     // message : 0
+     // correspondents : 1
+     // correspondent names : corespondent1
+
+     // corespondent1 value: foo
+
+     // wConsequence( 0 )
+     // message : 2
+     // correspondents : 0
+     // correspondent names :
+
+   * @returns {string}
+   * @method toStr
+   * @memberof wConsequence
+   */
 
 var toStr = function()
 {
