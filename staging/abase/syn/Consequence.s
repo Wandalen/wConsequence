@@ -2059,6 +2059,12 @@ var hasMessage = function()
 // etc
 // --
 
+  /**
+   * Clears all messages and corespondents of wConsequence.
+   * @method clear
+   * @memberof wConsequence
+   */
+
 var clear = function clear( data )
 {
   var self = this;
@@ -2070,6 +2076,47 @@ var clear = function clear( data )
 }
 
 //
+
+  /**
+   * Serializes current wConsequence instance.
+   * @example
+   * function corespondent1(err, val)
+     {
+       console.log( 'corespondent1 value: ' + val );
+     };
+
+     var con = wConsequence();
+     con.got( corespondent1 );
+
+     var conStr = con.toStr();
+
+     console.log( conStr );
+
+     con.give( 'foo' );
+     con.give( 'bar' );
+     con.error( 'baz' );
+
+     conStr = con.toStr();
+
+     console.log( conStr );
+     // prints:
+
+     // wConsequence( 0 )
+     // message : 0
+     // correspondents : 1
+     // correspondent names : corespondent1
+
+     // corespondent1 value: foo
+
+     // wConsequence( 0 )
+     // message : 2
+     // correspondents : 0
+     // correspondent names :
+
+   * @returns {string}
+   * @method toStr
+   * @memberof wConsequenc
+   */
 
 var toStr = function()
 {
