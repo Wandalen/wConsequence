@@ -18,4 +18,5 @@
     continue to alternate between eating and thinking, assuming that no philosopher can know when others may want to eat
     or think.
 
+    source: https://en.wikipedia.org/wiki/Dining_philosophers_problem
  */
