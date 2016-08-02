@@ -685,6 +685,18 @@ var ifNoErrorThen = function()
 //
 
 
+  /**
+   * Method accepts correspondent callback. Returns special correspondent that wrap passed one. Passed corespondent will
+   * be invoked only if handling message does not contain error value. Else given message with error will be delegate to
+   * the next handler in wConsequence, to the which result correspondent was added.
+   * @param {correspondent} vallueHandler resolved message handler
+   * @returns {corespondent}
+   * @static
+   * @throws {Error} If missed arguments or passed extra one;
+   * @method ifNoErrorThenClass
+   * @memberof wConsequence
+   */
+
 var ifNoErrorThenClass = function()
 {
 
@@ -786,7 +798,7 @@ var ifErrorThen = function()
    * Method accepts correspondent callback. Returns special correspondent that wrap passed one. Passed corespondent will
    * be invoked only if handling message contains error value. Else given message will be delegate to the next handler
    * in wConsequence, to the which result correspondent was added.
-   * @param {wConsequence|corespondent} errHandler handler for error
+   * @param {correspondent} errHandler handler for error
    * @returns {correspondent}
    * @static
    * @thorws If missed arguments or passed extra ones.
