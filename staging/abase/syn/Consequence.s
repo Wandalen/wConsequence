@@ -1997,6 +1997,7 @@ var messagesGet = function()
      var messages = con.messagesGet();
 
      console.log( messages );
+     // prints: []
    * @param {_messageObject} data message object for removing.
    * @throws {Error} If passed extra arguments.
    * @method correspondentsClear
@@ -2020,6 +2021,31 @@ var messagesClear = function messagesClear( data )
 }
 
 //
+
+  /**
+   * Returns number of messages in current messages queue.
+   * @example
+   * var con = wConsequence();
+
+     var conLen = con.hasMessage();
+     console.log( conLen );
+
+     con.give( 'foo' );
+     con.give( 'bar' );
+     con.error( 'baz' );
+     conLen = con.hasMessage();
+     console.log( conLen );
+
+     con.messagesClear();
+
+     conLen = con.hasMessage();
+     console.log( conLen );
+     // prints: 0, 3, 0;
+
+   * @returns {number}
+   * @method hasMessage
+   * @memberof wConsequence
+   */
 
 var hasMessage = function()
 {
