@@ -458,6 +458,14 @@ var thenSealed = function thenSealed( context,correspondent,args )
 
 //
 
+  /**
+   * Creates and adds to corespondents sequence error handler. If handled message contains error, corespondent logs it.
+   * @returns {wConsequence}
+   * @throws {Error} If called with any argument.
+   * @method thenReportError
+   * @memberof wConsequence
+   */
+
 var thenReportError = function thenReportError( context,correspondent,args )
 {
   var self = this;
