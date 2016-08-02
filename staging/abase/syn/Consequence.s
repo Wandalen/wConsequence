@@ -1982,6 +1982,26 @@ var messagesGet = function()
 }
 
 //
+  /**
+   * If called without arguments, method removes all messages from wConsequence
+   * correspondents queue.
+   * If as argument passed value, method messagesClear() removes it from messages queue if messages queue contains it.
+   * @example
+   * var con = wConsequence();
+
+     con.give( 'foo' );
+     con.give( 'bar ');
+     con.error( 'baz' );
+
+     con.messagesClear();
+     var messages = con.messagesGet();
+
+     console.log( messages );
+   * @param {_messageObject} data message object for removing.
+   * @throws {Error} If passed extra arguments.
+   * @method correspondentsClear
+   * @memberof wConsequence
+   */
 
 var messagesClear = function messagesClear( data )
 {
