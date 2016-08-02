@@ -419,6 +419,18 @@ var then_ = function then_( correspondent )
 
 //
 
+  /**
+   * Adds to the wConsequences corespondents queue `correspondent` with sealed `context` and `args`. The result of
+   * correspondent will be added to wConsequence message sequence after handling.
+   * Returns current wConsequence instance.
+   * @param {Object} context context that seals for correspondent callback
+   * @param {Function} correspondent callback
+   * @param {Array<*>} [args] arguments arguments that seals for correspondent callback
+   * @returns {wConsequence}
+   * @method thenSealed
+   * @memberof wConsequence
+   */
+
 var thenSealed = function thenSealed( context,correspondent,args )
 {
   var self = this;
