@@ -18,14 +18,14 @@
     continue to alternate between eating and thinking, assuming that no philosopher can know when others may want to eat
     or think.
 
-    source: https://en.wikipedia.org/wiki/Dining_philosophers_problem
- */
+    source : https://en.wikipedia.org/wiki/Dining_philosophers_problem
+*/
 
 if( typeof module !== 'undefined' )
 {
   var _ = require( 'wTools' );
   /* require( 'wConsequence' ); */
-  require( '../staging/abase/syn/Consequence.s' );
+  /* require( '../staging/abase/syn/Consequence.s' ); */
 }
 
 var philosophers =
@@ -66,7 +66,7 @@ function informAboutHungry( c )
 
   console.log( 'philosopher want to eat : ' + c.philosopher.name + _.timeSpent( ' ',c.time ) );
 
-};
+}
 
 //
 
