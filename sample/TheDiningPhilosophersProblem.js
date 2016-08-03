@@ -64,8 +64,8 @@ function simulateHungryEvent()
     {
       /* sending clients to shop */
       context.philosopher = philosopher;
-      Self.informAboutHungry( context );
-    }).bind( null, philosopher ), philosopher.delay );
+      this.informAboutHungry( context );
+    }).bind( this, philosopher ), philosopher.delay );
   }
 }
 
@@ -93,5 +93,5 @@ if( typeof module !== 'undefined' )
 {
   module[ 'exports' ] = Self;
   if( !module.parent )
-  simulateHungryEvent();
+    Self.simulateHungryEvent();
 }
