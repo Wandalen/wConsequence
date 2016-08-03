@@ -111,8 +111,41 @@ function  precessEvent( opt )
   console.log( 'try to perform ' + opt.event.operation + ' by ' + opt.rwSubject.name + ' at '
     + _.timeSpent( ' ',opt.time ) );
 
-  // in progress
-  
+  if( opt.event.operation == 'read' )
+  {
+    if ( resource.writers.length > 0 )
+    {
+      console.log('PROBLEM: ' + opt.rwSubject.name + 'can`t read resource, because it busy by ' +
+      resource.writers.join( ', ' ) + 'subjects' );
+    }
+    else {
+      resource.readers.push( opt.rwSubject.name );
+      console.log( 'start read by ' + opt.rwSubject.name );
+      setTimeout( ( function(opt) {
+        console.log( 'end read by ' + opt.rwSubject.name );
+        opt.rwSubject.read();
+        _.arrayRemovedOnce(resource.readers, opt.rwSubject.name);
+      } ).bind( null, opt ), opt.event.duration );
+    }
+  }
+  else if( opt.event.operation == 'write' )
+  {
+    if ( resource.writers.length + resource.readers.length > 0 )
+    {
+      console.log('PROBLEM: ' + opt.rwSubject.name + 'can`t wwrite resource, because it busy by ' +
+        resource.readers.join( ', ' ) + ' read subjects and ' + resource.writers.join( ', ' ) + ' write subjects' );
+    }
+    else {
+      resource.readers.push( opt.rwSubject.name );
+      console.log( 'start write by ' + opt.rwSubject.name );
+      setTimeout( ( function(opt) {
+        console.log( 'end write by ' + opt.rwSubject.name );
+        opt.rwSubject.write();
+        _.arrayRemovedOnce(resource.readers, opt.rwSubject.name);
+      } ).bind( null, opt ), opt.event.duration );
+    }
+  }
+
 }
 
 var Self =
