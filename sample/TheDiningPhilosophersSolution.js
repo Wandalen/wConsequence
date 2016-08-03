@@ -17,9 +17,10 @@ var con = new wConsequence();
 function STheDiningPhilosophersProblem () {};
 
 STheDiningPhilosophersProblem.prototype = Object.create( TheDiningPhilosophersProblem, {
-  informAboutHungry:
+  informAboutHungry :
   {
-    value: function( c ) {
+    value : function( c )
+    {
       console.log( '>>' );
       console.log( 'philosopher want to eat : ' + c.philosopher.name + _.timeSpent( ' ',c.time ) );
       tryToEat( c );
@@ -30,7 +31,8 @@ STheDiningPhilosophersProblem.prototype = Object.create( TheDiningPhilosophersPr
 var theDiningPhilosophersProblem = new STheDiningPhilosophersProblem();
 theDiningPhilosophersProblem.simulateHungryEvent();
 
-var forks = [
+var forks =
+[
   wConsequence().give(),
   wConsequence().give(),
   wConsequence().give(),
