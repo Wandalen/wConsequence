@@ -20,3 +20,51 @@
 
     source: https://en.wikipedia.org/wiki/Dining_philosophers_problem
  */
+
+if( typeof module !== 'undefined' )
+{
+  var _ = require( 'wTools' );
+  /* require( 'wConsequence' ); */
+  require( '../staging/abase/syn/Consequence.s' );
+}
+
+var philosophers =
+  [
+    { name : 'p1', delay: 560 },
+    { name : 'p2', delay: 750 },
+    { name : 'p3', delay: 160 },
+    { name : 'p4', delay: 560 },
+    { name : 'p5', delay: 340 },
+  ];
+
+//
+
+function simulateHungryEvent()
+{
+  var i = 0,
+    len = philosophers.length;
+
+  for( ; i < len; i++ )
+  {
+    var philosopher = philosophers[ i ];
+    setTimeout(( function( philosopher )
+    {
+      /* sending clients to shop */
+      informAboutHungry( philosopher );
+    }).bind( null, philosopher ), philosopher.delay );
+  }
+}
+
+//
+var time = _.timeNow();
+
+function informAboutHungry( philosopher )
+{
+
+  console.log( 'philosopher want to eat : ' + philosopher.name + _.timeSpent( ' ',time ) );
+
+};
+
+/* send clients to barber shop. */
+
+simulateHungryEvent();
