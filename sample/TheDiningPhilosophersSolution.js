@@ -46,13 +46,16 @@ function tryToEat(c)
   takeFork(forks[ name % 5 ] );
   eat( c.philosopher.duration );
 
+  putFork(forks[ name - 1 ] );
+  putFork(forks[ name % 5 ] );
+
 }
 
 function takeFork(fork) {
   return fork.got();
 }
 
-function takeFork(fork) {
+function putFork(fork) {
   return fork.give();
 }
 
