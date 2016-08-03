@@ -30,11 +30,22 @@ if( typeof module !== 'undefined' )
 
 var philosophers =
   [
-    { name : 'p1', delay: 560 },
-    { name : 'p2', delay: 750 },
-    { name : 'p3', delay: 160 },
-    { name : 'p4', delay: 560 },
-    { name : 'p5', delay: 340 },
+    { name : 1, delay: 5000 },
+    { name : 2, delay: 7000 },
+    { name : 3, delay: 3000 },
+    { name : 4, delay: 1000 },
+    { name : 5, delay: 3000 },
+    { name : 1, delay: 7000 },
+    { name : 2, delay: 8000 },
+    { name : 3, delay: 4000 },
+    { name : 4, delay: 9000 },
+    { name : 5, delay: 6000 },
+    { name : 1, delay: 10000 },
+    { name : 2, delay: 11000 },
+    { name : 3, delay: 6000 },
+    { name : 4, delay: 13000 },
+    { name : 5, delay: 15000 },
+
   ];
 
 //
@@ -74,7 +85,7 @@ var Self =
 {
   informAboutHungry : informAboutHungry,
   simulateHungryEvent : simulateHungryEvent,
-}
+};
 
 //
 
