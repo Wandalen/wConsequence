@@ -43,13 +43,28 @@ var forks =
 function tryToEat(c)
 {
   // draft
-  var name = c.philosopher.name;
-  takeFork(forks[ name - 1 ] );
-  takeFork(forks[ name % 5 ] );
-  eat( c.philosopher.duration );
+  var eventSequence = wConsequence();
 
-  putFork(forks[ name - 1 ] );
-  putFork(forks[ name % 5 ] );
+  var name = c.philosopher.name;
+  var leftFork = forks[ name - 1 ];
+  var rightFork = forks[ name % 5 ];
+  eventSequence.and( [ leftFork, rightFork ] ).then_(
+    function()
+    {
+      takeFork( leftFork );
+      takeFork( rightFork );
+      console.log( 'philosopher ' + c.philosopher.name + ' start eating.' );
+    }
+  ).thenTimeOut( c.philosopher.duration,
+    function()
+    {
+      console.log( 'philosopher ' + c.philosopher.name + ' end eating.' );
+      putFork(forks[ name - 1 ] );
+      putFork(forks[ name % 5 ] );
+    }
+  ).give();
+
+
 
 }
 
@@ -61,4 +76,6 @@ function putFork(fork) {
   return fork.give();
 }
 
-function eat( duration ) {}
+function eat(  ) {
+  return true;
+}
