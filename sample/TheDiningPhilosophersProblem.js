@@ -43,6 +43,8 @@ function simulateHungryEvent()
 {
   var i = 0,
     len = philosophers.length;
+  var context = {};
+  context.time = _.timeNow();
 
   for( ; i < len; i++ )
   {
@@ -50,21 +52,35 @@ function simulateHungryEvent()
     setTimeout(( function( philosopher )
     {
       /* sending clients to shop */
-      informAboutHungry( philosopher );
+      context.philosopher = philosopher;
+      Self.informAboutHungry( context );
     }).bind( null, philosopher ), philosopher.delay );
   }
 }
 
 //
-var time = _.timeNow();
 
-function informAboutHungry( philosopher )
+
+function informAboutHungry( c )
 {
 
-  console.log( 'philosopher want to eat : ' + philosopher.name + _.timeSpent( ' ',time ) );
+  console.log( 'philosopher want to eat : ' + c.philosopher.name + _.timeSpent( ' ',c.time ) );
 
 };
 
-/* send clients to barber shop. */
+//
 
-simulateHungryEvent();
+var Self =
+{
+  informAboutHungry : informAboutHungry,
+  simulateHungryEvent : simulateHungryEvent,
+}
+
+//
+
+if( typeof module !== 'undefined' )
+{
+  module[ 'exports' ] = Self;
+  if( !module.parent )
+  simulateHungryEvent();
+}

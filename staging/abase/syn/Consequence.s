@@ -20,7 +20,6 @@
     if( errs.length )
     throw _.err( errs[ 0 ] );
 
-
 */
 
 if( typeof module !== 'undefined' )
@@ -2359,7 +2358,6 @@ if( typeof module !== 'undefined' )
 {
   module[ 'exports' ] = Self;
 }
-
 
 _global_.wConsequence = wTools.Consequence = Self;
 return Self;
