@@ -30,22 +30,21 @@ if( typeof module !== 'undefined' )
 
 var philosophers =
   [
-    { name : 1, delay: 5000 },
-    { name : 2, delay: 7000 },
-    { name : 3, delay: 3000 },
-    { name : 4, delay: 1000 },
-    { name : 5, delay: 3000 },
-    { name : 1, delay: 7000 },
-    { name : 2, delay: 8000 },
-    { name : 3, delay: 4000 },
-    { name : 4, delay: 9000 },
-    { name : 5, delay: 6000 },
-    { name : 1, delay: 10000 },
-    { name : 2, delay: 11000 },
-    { name : 3, delay: 6000 },
-    { name : 4, delay: 13000 },
-    { name : 5, delay: 15000 },
-
+    { name : 1, delay: 5000, duration: 5000 },
+    { name : 2, delay: 7000, duration: 7000 },
+    { name : 3, delay: 3000, duration: 8000 },
+    { name : 4, delay: 1000, duration: 5000 },
+    { name : 5, delay: 3000, duration: 4000 },
+    { name : 1, delay: 7000, duration: 5000 },
+    { name : 2, delay: 8000, duration: 7000 },
+    { name : 3, delay: 4000, duration: 3000 },
+    { name : 4, delay: 9000, duration: 1000 },
+    { name : 5, delay: 6000, duration: 8000 },
+    { name : 1, delay: 10000, duration: 2000 },
+    { name : 2, delay: 11000, duration: 4000 },
+    { name : 3, delay: 6000, duration: 5000 },
+    { name : 4, delay: 13000, duration: 5000 },
+    { name : 5, delay: 15000, duration: 1000 },
   ];
 
 //
