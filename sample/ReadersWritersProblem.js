@@ -7,6 +7,13 @@
  source: https://en.wikipedia.org/wiki/Readers%E2%80%93writers_problem
  */
 
+if( typeof module !== 'undefined' )
+{
+  var _ = require( 'wTools' );
+  /* require( 'wConsequence' ); */
+  /* require( '../staging/abase/syn/Consequence.s' ); */
+}
+
 var resource = {
   sharedData : '',
   readers: [],
@@ -17,12 +24,12 @@ function RWSubject( name )
 {
   this.name = name;
   this.read = function() {
-    // draft
-  }
+    console.log(resource.sharedData);
+  };
 
   this.write = function() {
-    // draft
-  }
+    resource.sharedData += this.name + 'was here);\n';
+  };
 }
 
 var rwSubjects =
@@ -50,7 +57,7 @@ var rwEventList =
         { operation: 'read', delay: 6000, duration: 500 },
         { operation: 'read', delay: 7000, duration: 600 },
         { operation: 'read', delay: 9000, duration: 600 },
-        { operation: 'write', delay: 110000, duration: 1000 }
+        { operation: 'write', delay: 11000, duration: 1000 }
       ],
     '3':
       [
@@ -59,7 +66,7 @@ var rwEventList =
         { operation: 'write', delay: 4000, duration: 1400 },
         { operation: 'read', delay: 6000, duration: 1300 },
         { operation: 'read', delay: 8000, duration: 200 }
-      ]
+      ],
     '4':
       [
         { operation: 'read', delay: 1000, duration: 200 },
@@ -70,3 +77,55 @@ var rwEventList =
         { operation: 'read', delay: 6000, duration: 200 }
       ]
   };
+
+function simulateReadWriteEvent()
+{
+  var subject;
+  for( subject in rwEventList )
+  {
+    if( !rwEventList.hasOwnProperty( subject ) )
+      continue;
+
+    var i = 0,
+      list = rwEventList[ subject ],
+      len = list.length,
+      time = _.timeNow(),
+      rWSubject = rwSubjects[ subject - 1 ];
+    for( ; i < len; i++ )
+    {
+      var event = list[ i ];
+      setTimeout( ( function( rWSubject, event )
+      {
+        var context = {};
+        context.time = time;
+        context.rwSubject = rWSubject;
+        context.event = event;
+        this.precessEvent( context );
+      }).bind( this, rWSubject, event ), event.delay );
+    }
+  }
+}
+
+function  precessEvent( opt )
+{
+  console.log( 'try to perform ' + opt.event.operation + ' by ' + opt.rwSubject.name + ' at '
+    + _.timeSpent( ' ',opt.time ) );
+
+  // in progress
+  
+}
+
+var Self =
+{
+  precessEvent : precessEvent,
+  simulateReadWriteEvent : simulateReadWriteEvent,
+};
+
+//
+
+if( typeof module !== 'undefined' )
+{
+  module[ 'exports' ] = Self;
+  if( !module.parent )
+    Self.simulateReadWriteEvent();
+}
