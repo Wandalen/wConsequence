@@ -30,11 +30,21 @@ if( typeof module !== 'undefined' )
 
 var philosophers =
   [
-    { name : 'p1', delay: 560 },
-    { name : 'p2', delay: 750 },
-    { name : 'p3', delay: 160 },
-    { name : 'p4', delay: 560 },
-    { name : 'p5', delay: 340 },
+    { name : 1, delay: 5000, duration: 5000 },
+    { name : 2, delay: 7000, duration: 7000 },
+    { name : 3, delay: 3000, duration: 8000 },
+    { name : 4, delay: 1000, duration: 5000 },
+    { name : 5, delay: 3000, duration: 4000 },
+    { name : 1, delay: 7000, duration: 5000 },
+    { name : 2, delay: 8000, duration: 7000 },
+    { name : 3, delay: 4000, duration: 3000 },
+    { name : 4, delay: 9000, duration: 1000 },
+    { name : 5, delay: 6000, duration: 8000 },
+    { name : 1, delay: 10000, duration: 2000 },
+    { name : 2, delay: 11000, duration: 4000 },
+    { name : 3, delay: 6000, duration: 5000 },
+    { name : 4, delay: 13000, duration: 5000 },
+    { name : 5, delay: 15000, duration: 1000 },
   ];
 
 //
@@ -53,8 +63,8 @@ function simulateHungryEvent()
     {
       /* sending clients to shop */
       context.philosopher = philosopher;
-      Self.informAboutHungry( context );
-    }).bind( null, philosopher ), philosopher.delay );
+      this.informAboutHungry( context );
+    }).bind( this, philosopher ), philosopher.delay );
   }
 }
 
@@ -74,7 +84,7 @@ var Self =
 {
   informAboutHungry : informAboutHungry,
   simulateHungryEvent : simulateHungryEvent,
-}
+};
 
 //
 
@@ -82,5 +92,5 @@ if( typeof module !== 'undefined' )
 {
   module[ 'exports' ] = Self;
   if( !module.parent )
-  simulateHungryEvent();
+    Self.simulateHungryEvent();
 }
