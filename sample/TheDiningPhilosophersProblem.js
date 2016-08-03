@@ -30,8 +30,9 @@ if( typeof module !== 'undefined' )
 
 var philosophers =
   [
-    { name : 1, delay: 5000, duration: 5000 },
-    { name : 2, delay: 7000, duration: 7000 },
+    { name : 1, delay: 1000, duration: 3000 },
+    { name : 2, delay: 3000, duration: 4000 },
+
     { name : 3, delay: 3000, duration: 8000 },
     { name : 4, delay: 1000, duration: 5000 },
     { name : 5, delay: 3000, duration: 4000 },
@@ -45,16 +46,16 @@ var philosophers =
     { name : 3, delay: 6000, duration: 5000 },
     { name : 4, delay: 13000, duration: 5000 },
     { name : 5, delay: 15000, duration: 1000 },
+
   ];
 
 //
 
 function simulateHungryEvent()
 {
-  var i = 0,
-    len = philosophers.length;
-  var context = {};
-  context.time = _.timeNow();
+  var i = 0;
+  var len = philosophers.length;
+  var time = _.timeNow();
 
   for( ; i < len; i++ )
   {
@@ -62,6 +63,8 @@ function simulateHungryEvent()
     setTimeout(( function( philosopher )
     {
       /* sending clients to shop */
+      var context = {};
+      context.time = time;
       context.philosopher = philosopher;
       this.informAboutHungry( context );
     }).bind( this, philosopher ), philosopher.delay );

@@ -22,7 +22,7 @@ STheDiningPhilosophersProblem.prototype = Object.create( TheDiningPhilosophersPr
     value : function( c )
     {
       console.log( '>>' );
-      console.log( 'philosopher want to eat : ' + c.philosopher.name + _.timeSpent( ' ',c.time ) );
+      console.log( 'philosopher ' + c.philosopher.name + ' wants to eat at ' + _.timeSpent( ' ',c.time ) );
       tryToEat( c );
     }
   }
@@ -40,42 +40,63 @@ var forks =
   wConsequence().give(),
 ];
 
+//
+
 function tryToEat(c)
 {
   // draft
-  var eventSequence = wConsequence();
+  //var eventSequence = wConsequence();
 
   var name = c.philosopher.name;
-  var leftFork = forks[ name - 1 ];
-  var rightFork = forks[ name % 5 ];
-  eventSequence.and( [ leftFork, rightFork ] ).then_(
-    function()
-    {
-      takeFork( leftFork );
-      takeFork( rightFork );
-      console.log( 'philosopher ' + c.philosopher.name + ' start eating.' );
-    }
-  ).thenTimeOut( c.philosopher.duration,
-    function()
-    {
-      console.log( 'philosopher ' + c.philosopher.name + ' end eating.' );
-      putFork(forks[ name - 1 ] );
-      putFork(forks[ name % 5 ] );
-    }
-  ).give();
 
+  //eventSequence.and( [ leftFork, rightFork ] ).then_(
 
+  forkFor( name,0 )
+  .and( forkFor( name,1 ) )
+  .then_( function()
+  {
+
+    console.log( 'p' + c.philosopher.name + ' started eating.' );
+
+  })
+  .thenTimeOut( c.philosopher.duration,function()
+  {
+
+    console.log( 'p' + c.philosopher.name + ' stopped eating.' );
+
+  });
+
+/*
+  function()
+  {
+    takeFork( name,0 );
+    takeFork( name,1 );
+    console.log( 'p' + c.philosopher.name + ' started eating.' );
+  }).thenTimeOut( c.philosopher.duration,function()
+  {
+
+    console.log( 'p' + c.philosopher.name + ' stopped eating.' );
+    putFork( name,0 );
+    putFork( name,1 );
+
+  }).give();
+*/
 
 }
 
-function takeFork(fork) {
-  return fork.got();
+//
+
+function forkFor( name,right )
+{
+  var i = right ? name % 5 : name - 1;
+  var fork = forks[ i ];
+  console.log( 'p' + name + ' interested in ' + ( right ? 'right' : 'left' ) + ' fork' + i );
+  return fork;
 }
 
-function putFork(fork) {
-  return fork.give();
-}
+//
 
-function eat(  ) {
+function eat(  )
+{
   return true;
 }

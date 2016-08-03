@@ -1137,7 +1137,7 @@ var and = function and( srcs )
   for( var a = 0 ; a < srcs.length ; a++ )
   {
     var src = srcs[ a ];
-    _.assert( _.objectIs( src ) && _.routineIs( src.then_ ) )
+    _.assert( _.objectIs( src ) && _.routineIs( src.then_ ) );
     src.then_( collect );
   }
 
