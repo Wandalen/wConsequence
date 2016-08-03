@@ -20,9 +20,9 @@ STheDiningPhilosophersProblem.prototype = Object.create( TheDiningPhilosophersPr
   informAboutHungry:
   {
     value: function( c ) {
-      console.log( '=>>' );
+      console.log( '>>' );
       console.log( 'philosopher want to eat : ' + c.philosopher.name + _.timeSpent( ' ',c.time ) );
-      con.give(c);
+      tryToEat( c );
     }
   }
 } );
@@ -31,10 +31,32 @@ var theDiningPhilosophersProblem = new STheDiningPhilosophersProblem();
 theDiningPhilosophersProblem.simulateHungryEvent();
 
 var forks = [
-  { name : 1, status : 'free' },
-  { name : 2, status : 'free' },
-  { name : 3, status : 'free' },
-  { name : 4, status : 'free' },
-  { name : 5, status : 'free' },
+  wConsequence().give(),
+  wConsequence().give(),
+  wConsequence().give(),
+  wConsequence().give(),
+  wConsequence().give(),
 ];
 
+function tryToEat(c)
+{
+  // draft
+  var name = c.philosopher.name;
+  takeFork(forks[ name - 1 ] );
+  takeFork(forks[ name % 5 ] );
+  eat( c.philosopher.duration );
+
+  putFork(forks[ name - 1 ] );
+  putFork(forks[ name % 5 ] );
+
+}
+
+function takeFork(fork) {
+  return fork.got();
+}
+
+function putFork(fork) {
+  return fork.give();
+}
+
+function eat( duration ) {}
