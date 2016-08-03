@@ -60,7 +60,6 @@ function simulateHungryEvent()
 
 //
 
-
 function informAboutHungry( c )
 {
 
