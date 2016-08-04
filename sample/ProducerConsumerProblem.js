@@ -29,7 +29,7 @@ var producerEventList =
 
 //
 
-var customerEventList =
+var consumerEventList =
   [
     { delay : 1000 },
     { delay : 3000 },
@@ -45,7 +45,7 @@ var buffer =
 {
   size: 3,
   _items: [],
-  append: function( item )
+  appendItem: function( item )
   {
     if( this._items.length === this.size )
     {
@@ -56,7 +56,7 @@ var buffer =
       this._items.push( item );
     }
   },
-  get: function()
+  getItem: function()
   {
     if( this._items.length === 0 )
     {
@@ -78,38 +78,49 @@ function producerEventGenerator(  )
     var item = producerEventList[ i ].item;
     setTimeout( ( function( item )
     {
-      buffer.append( item );
-    } ).bind( null, item ),  producerEventList[ i ].delay );
+      this.producerAppend( item );
+    } ).bind( this, item ),  producerEventList[ i ].delay );
   }
 }
 
-function customerEventGenerator(  )
+function consumerEventGenerator(  )
 {
   var i = 0,
-    len = customerEventList.length;
+    len = consumerEventList.length;
 
   for( ; i < len; i++ )
   {
-    var item;
-    setTimeout( ( function( item )
+    setTimeout( ( function()
     {
-      item = buffer.get( item );
-      console.log( 'handled item ' + item );
-    } ).bind( null, item ),  customerEventList[ i ].delay );
+      this.consumerGet();
+    } ).bind( this ),  consumerEventList[ i ].delay );
   }
+}
+
+function producerAppend( item )
+{
+  buffer.appendItem( item );
+}
+
+function consumerGet()
+{
+  var item = buffer.getItem( item );
+  console.log( 'handled item ' + item );
 }
 
 function init()
 {
   this.producerEventGenerator();
-  this.customerEventGenerator();
+  this.consumerEventGenerator();
 }
 
 var Self =
 {
   buffer: buffer,
-  customerEventGenerator : customerEventGenerator,
+  consumerEventGenerator : consumerEventGenerator,
   producerEventGenerator : producerEventGenerator,
+  producerAppend: producerAppend,
+  consumerGet: consumerGet,
   init: init,
 };
 
