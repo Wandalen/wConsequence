@@ -32,13 +32,14 @@ function RWSubject( name )
   };
 }
 
-var rwSubjects =
-  [
-    new RWSubject('1'),
-    new RWSubject('2'),
-    new RWSubject('3'),
-    new RWSubject('4'),
-  ];
+function createRWsubjects()
+{
+  var rwSubjects = [];
+  for ( var i = 1; i < 5; i++)
+    rwSubjects.push( new RWSubject(i) );
+  return rwSubjects
+}
+
 
 var rwEventList =
   {
@@ -90,7 +91,7 @@ function simulateReadWriteEvent()
       list = rwEventList[ subject ],
       len = list.length,
       time = _.timeNow(),
-      rWSubject = rwSubjects[ subject - 1 ];
+      rWSubject = this.rwSubjects[ subject - 1 ];
     for( ; i < len; i++ )
     {
       var event = list[ i ];
@@ -110,6 +111,8 @@ function  precessEvent( opt )
 {
   console.log( 'try to perform ' + opt.event.operation + ' by ' + opt.rwSubject.name + ' at '
     + _.timeSpent( ' ',opt.time ) );
+
+  var resource = this.resource;
 
   if( opt.event.operation == 'read' )
   {
@@ -136,22 +139,31 @@ function  precessEvent( opt )
         resource.readers.join( ', ' ) + ' read subjects and ' + resource.writers.join( ', ' ) + ' write subjects' );
     }
     else {
-      resource.readers.push( opt.rwSubject.name );
+      resource.writers.push( opt.rwSubject.name );
       console.log( 'start write by ' + opt.rwSubject.name );
       setTimeout( ( function(opt) {
         console.log( 'end write by ' + opt.rwSubject.name );
         opt.rwSubject.write();
-        _.arrayRemovedOnce(resource.readers, opt.rwSubject.name);
+        _.arrayRemovedOnce(resource.writers, opt.rwSubject.name);
       } ).bind( null, opt ), opt.event.duration );
     }
   }
 
 }
 
+function init()
+{
+  this.rwSubjects = this.createRWsubjects();
+  this.simulateReadWriteEvent();
+}
+
 var Self =
 {
+  resource: resource,
   precessEvent : precessEvent,
   simulateReadWriteEvent : simulateReadWriteEvent,
+  createRWsubjects: createRWsubjects,
+  init: init,
 };
 
 //
@@ -160,5 +172,5 @@ if( typeof module !== 'undefined' )
 {
   module[ 'exports' ] = Self;
   if( !module.parent )
-    Self.simulateReadWriteEvent();
+    Self.init();
 }
