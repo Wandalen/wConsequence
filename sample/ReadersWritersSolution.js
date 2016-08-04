@@ -42,21 +42,35 @@ SReadersWritersProblem.prototype = Object.create( ReadersWritersProblem, {
         resource.readLock.got( function()
           {
             if( resource.writeLock.hasMessage() !== 0 ) // prevent writing during process read if not prevented by any
-                                                        // other reader yet.
+            // other reader yet.
             {
               resource.writeLock.got();
             }
             resource.readLock.give(); // allow reading, because reading allowed for several readers in one time
-            console.log( 'start read by ' + opt.rwSubject.name );
-            setTimeout( ( function( opt )
+            if ( resource.writers.length > 0 )
             {
-              console.log( 'end read by ' + opt.rwSubject.name );
-              opt.rwSubject.read();
+              console.log('PROBLEM: ' + opt.rwSubject.name + 'can`t read resource, because it busy by ' +
+                resource.writers.join( ', ' ) + 'subjects' );
               if( resource.writeLock.hasMessage() === 0 )
               {
                 resource.writeLock.give(); // allow writing
               }
-            } ).bind( null, opt ), opt.event.duration );
+            }
+            else
+            {
+              resource.readers.push( opt.rwSubject.name );
+              console.log( 'start read by ' + opt.rwSubject.name );
+              setTimeout( ( function( opt )
+              {
+                console.log( 'end read by ' + opt.rwSubject.name );
+                opt.rwSubject.read();
+                _.arrayRemovedOnce(resource.readers, opt.rwSubject.name);
+                if( resource.writeLock.hasMessage() === 0 )
+                {
+                  resource.writeLock.give(); // allow writing
+                }
+              } ).bind( null, opt ), opt.event.duration );
+            }
           }
         );
       }
@@ -66,14 +80,26 @@ SReadersWritersProblem.prototype = Object.create( ReadersWritersProblem, {
         resource.writeLock.got( function()
           {
             resource.readLock.got(); // prevent reading during process write
-            console.log( 'start write by ' + opt.rwSubject.name );
-            setTimeout( ( function( opt )
+            if ( resource.writers.length + resource.readers.length > 0 )
             {
-              console.log( 'end write by ' + opt.rwSubject.name );
-              opt.rwSubject.write();
+              console.log('PROBLEM: ' + opt.rwSubject.name + 'can`t wwrite resource, because it busy by ' +
+                resource.readers.join( ', ' ) + ' read subjects and ' + resource.writers.join( ', ' ) + ' write subjects' );
               resource.writeLock.give(); // allow write
               resource.readLock.give(); //allow read
-            } ).bind( null, opt ), opt.event.duration );
+            }
+            else
+            {
+              resource.writers.push( opt.rwSubject.name );
+              console.log( 'start write by ' + opt.rwSubject.name );
+              setTimeout( ( function( opt )
+              {
+                console.log( 'end write by ' + opt.rwSubject.name );
+                opt.rwSubject.write();
+                _.arrayRemovedOnce(resource.writers, opt.rwSubject.name);
+                resource.writeLock.give(); // allow write
+                resource.readLock.give(); //allow read
+              } ).bind( null, opt ), opt.event.duration );
+            }
           }
         );
       }

@@ -32,11 +32,11 @@ function RWSubject( name )
   };
 }
 
-function createRWsubjects( rwConstructor )
+function createRWsubjects()
 {
   var rwSubjects = [];
   for ( var i = 1; i < 5; i++)
-    rwSubjects.push( new rwConstructor(i) );
+    rwSubjects.push( new RWSubject(i) );
   return rwSubjects
 }
 
@@ -144,16 +144,16 @@ function  precessEvent( opt )
       setTimeout( ( function(opt) {
         console.log( 'end write by ' + opt.rwSubject.name );
         opt.rwSubject.write();
-        _.arrayRemovedOnce(resource.readers, opt.rwSubject.name);
+        _.arrayRemovedOnce(resource.writers, opt.rwSubject.name);
       } ).bind( null, opt ), opt.event.duration );
     }
   }
 
 }
 
-function init( rwConstructor )
+function init()
 {
-  this.rwSubjects = this.createRWsubjects( rwConstructor );
+  this.rwSubjects = this.createRWsubjects();
   this.simulateReadWriteEvent();
 }
 
@@ -171,7 +171,6 @@ var Self =
 if( typeof module !== 'undefined' )
 {
   module[ 'exports' ] = Self;
-  module[ 'exports' ][ 'RWSubject' ] = RWSubject;
   if( !module.parent )
-    Self.init( RWSubject );
+    Self.init();
 }
