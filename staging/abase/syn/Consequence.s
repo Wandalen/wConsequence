@@ -1083,11 +1083,11 @@ var persist = function persist( correspondent )
    * @returns {wConsequence}
    * @throws {Error} if missed arguments.
    * @throws {Error} if passed extra arguments.
-   * @method and
+   * @method andGet
    * @memberof wConsequence
    */
 
-var and = function and( srcs )
+var andGet = function andGet( srcs )
 {
   var self = this;
   _.assert( arguments.length === 1 );
@@ -1096,7 +1096,7 @@ var and = function and( srcs )
 
 //
 
-var andThen = function andThen( srcs )
+var and = function and( srcs )
 {
   var self = this;
   _.assert( arguments.length === 1 );
@@ -2262,8 +2262,8 @@ var Proto =
 
   // advanced
 
+  andGet : andGet,
   and : and,
-  andThen : andThen,
   _and : _and,
 
   first : first,

@@ -46,7 +46,7 @@ function tryToEat( c )
   var forks = [ forkFor( name,0 ),forkFor( name,1 ) ];
   var con = wConsequence().give();
 
-  con.and( forks )
+  con.andGet( forks )
   .then_( function eating()
   {
 
