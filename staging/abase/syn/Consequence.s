@@ -1105,6 +1105,16 @@ var andThen = function andThen( srcs )
 
 //
 
+/**
+
+  possible scenarios for "and" :
+
+1. do not give back messages to src consequences( thenning = false )
+2. give back massages to src consequences immediately
+3. give back massages to src consequences once all come( thenning = true )
+
+*/
+
 var _and = function _and( srcs,thenning )
 {
   var self = this;
