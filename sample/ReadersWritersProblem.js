@@ -48,72 +48,54 @@ function createRWsubjects()
 //
 
 var rwEventList =
-{
-  '1' :
-  [
-    { operation : 'write', delay : 1000, duration : 1500 },
-    { operation : 'read', delay : 3000, duration : 2000 },
-    { operation : 'read', delay : 5000, duration : 1000 },
-    { operation : 'write', delay : 7000, duration : 500 },
-    { operation : 'read', delay : 9000, duration : 1700 },
-    { operation : 'write', delay : 11000, duration : 4000 }
-  ],
-  '2' :
-  [
-    { operation : 'write', delay : 2000, duration : 1000 },
-    { operation : 'read', delay : 6000, duration : 500 },
-    { operation : 'read', delay : 7000, duration : 600 },
-    { operation : 'read', delay : 9000, duration : 600 },
-    { operation : 'write', delay : 11000, duration : 1000 }
-  ],
-  '3' :
-  [
-    { operation : 'write', delay : 0, duration : 200 },
-    { operation : 'read', delay : 2000, duration : 200 },
-    { operation : 'write', delay : 4000, duration : 1400 },
-    { operation : 'read', delay : 6000, duration : 1300 },
-    { operation : 'read', delay : 8000, duration : 200 }
-  ],
-  '4' :
-  [
-    { operation : 'read', delay : 1000, duration : 200 },
-    { operation : 'read', delay : 2000, duration : 300 },
-    { operation : 'write', delay : 3000, duration : 200 },
-    { operation : 'write', delay : 4000, duration : 200 },
-    { operation : 'read', delay : 5000, duration : 400 },
-    { operation : 'read', delay : 6000, duration : 200 }
-  ]
-};
+[
+  { subject: '1', operation : 'write', delay : 1000, duration : 1500 },
+  { subject: '1', operation : 'read', delay : 3000, duration : 2000 },
+  { subject: '1', operation : 'read', delay : 5000, duration : 1000 },
+  { subject: '1', operation : 'write', delay : 7000, duration : 500 },
+  { subject: '1', operation : 'read', delay : 9000, duration : 1700 },
+  { subject: '1', operation : 'write', delay : 11000, duration : 4000 },
+  { subject: '2', operation : 'write', delay : 2000, duration : 1000 },
+  { subject: '2', operation : 'read', delay : 6000, duration : 500 },
+  { subject: '2', operation : 'read', delay : 7000, duration : 600 },
+  { subject: '2', operation : 'read', delay : 9000, duration : 600 },
+  { subject: '2', operation : 'write', delay : 11000, duration : 1000 },
+  { subject: '3', operation : 'write', delay : 0, duration : 200 },
+  { subject: '3', operation : 'read', delay : 2000, duration : 200 },
+  { subject: '3', operation : 'write', delay : 4000, duration : 1400 },
+  { subject: '3', operation : 'read', delay : 6000, duration : 1300 },
+  { subject: '3', operation : 'read', delay : 8000, duration : 200 },
+  { subject: '4', operation : 'read', delay : 1000, duration : 200 },
+  { subject: '4', operation : 'read', delay : 2000, duration : 300 },
+  { subject: '4', operation : 'write', delay : 3000, duration : 200 },
+  { subject: '4', operation : 'write', delay : 4000, duration : 200 },
+  { subject: '4', operation : 'read', delay : 5000, duration : 400 },
+  { subject: '4', operation : 'read', delay : 6000, duration : 200 }
+];
 
 //
 
 function simulateReadWriteEvent()
 {
-  var subject;
-  for( subject in rwEventList )
+
+  var i = 0,
+    list = rwEventList,
+    len = list.length,
+    time = _.timeNow();
+
+
+  for( ; i < len; i++ )
   {
-    if( !rwEventList.hasOwnProperty( subject ) )
-      continue;
-
-    var i = 0,
-      list = rwEventList[ subject ],
-      len = list.length,
-      time = _.timeNow(),
-      rWSubject = this.rwSubjects[ subject - 1 ];
-
-    for( ; i < len; i++ )
+    var event = list[ i ],
+    rWSubject = this.rwSubjects[ event.subject - 1 ];
+    setTimeout( ( function( rWSubject, event )
     {
-      var event = list[ i ];
-      setTimeout( ( function( rWSubject, event )
-      {
-        var context = {};
-        context.time = time;
-        context.rwSubject = rWSubject;
-        context.event = event;
-        this.precessEvent( context );
-      }).bind( this, rWSubject, event ), event.delay );
-    }
-
+      var context = {};
+      context.time = time;
+      context.rwSubject = rWSubject;
+      context.event = event;
+      this.precessEvent( context );
+    }).bind( this, rWSubject, event ), event.delay );
   }
 }
 
