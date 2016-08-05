@@ -28,23 +28,29 @@ if( typeof module !== 'undefined' )
 
 var philosophers =
 [
-  { name : 1, delay: 1000, duration: 3000 },
+  { name : 1, delay: 1000, duration: 5000 },
+  { name : 3, delay: 2000, duration: 4000 },
   { name : 2, delay: 2000, duration: 4000 },
-/*
-  { name : 3, delay: 3000, duration: 8000 },
-  { name : 4, delay: 1000, duration: 5000 },
-  { name : 5, delay: 3000, duration: 4000 },
-  { name : 1, delay: 7000, duration: 5000 },
-  { name : 2, delay: 8000, duration: 7000 },
-  { name : 3, delay: 4000, duration: 3000 },
-  { name : 4, delay: 9000, duration: 1000 },
-  { name : 5, delay: 6000, duration: 8000 },
-  { name : 1, delay: 10000, duration: 2000 },
-  { name : 2, delay: 11000, duration: 4000 },
-  { name : 3, delay: 6000, duration: 5000 },
-  { name : 4, delay: 13000, duration: 5000 },
-  { name : 5, delay: 15000, duration: 1000 },
-*/
+  { name : 1, delay: 2500, duration: 2000 },
+
+  { name : 1, delay: 11000, duration: 5000 },
+  { name : 2, delay: 12000, duration: 4000 },
+  { name : 1, delay: 12500, duration: 2000 },
+
+  { name : 3, delay: 23000, duration: 8000 },
+  { name : 4, delay: 21000, duration: 5000 },
+  { name : 5, delay: 23000, duration: 4000 },
+  { name : 1, delay: 27000, duration: 5000 },
+  { name : 2, delay: 28000, duration: 7000 },
+  { name : 3, delay: 24000, duration: 3000 },
+  { name : 4, delay: 29000, duration: 1000 },
+  { name : 5, delay: 26000, duration: 8000 },
+  { name : 1, delay: 30000, duration: 2000 },
+  { name : 2, delay: 31000, duration: 4000 },
+  { name : 3, delay: 26000, duration: 5000 },
+  { name : 4, delay: 43000, duration: 5000 },
+  { name : 5, delay: 45000, duration: 1000 },
+
 ];
 
 //
@@ -73,7 +79,7 @@ function simulateHungryEvent()
 function informAboutHungry( c )
 {
 
-  console.log( 'philosopher want to eat : ' + c.philosopher.name + _.timeSpent( ' ',c.time ) );
+  console.log( 'P' + c.philosopher.name + ' wants to eat at ' + _.timeSpent( '',c.time ) );
 
 }
 
@@ -83,7 +89,7 @@ var Self =
 {
   informAboutHungry : informAboutHungry,
   simulateHungryEvent : simulateHungryEvent,
-};
+}
 
 //
 

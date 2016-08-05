@@ -712,11 +712,11 @@ var ifNoErrorThen = function()
    * @returns {corespondent}
    * @static
    * @throws {Error} If missed arguments or passed extra one;
-   * @method ifNoErrorThenClass
+   * @method ifNoErrorThen_class
    * @memberof wConsequence
    */
 
-var ifNoErrorThenClass = function()
+var ifNoErrorThen_class = function()
 {
 
   _.assert( arguments.length === 1 );
@@ -746,7 +746,7 @@ var ifNoErrorThenClass = function()
 
 //
 
-var passThruClass = function passThru( err,data )
+var passThru = function passThru( err,data )
 {
   if( err )
   throw _.err( err );
@@ -821,12 +821,12 @@ var ifErrorThen = function()
    * @returns {correspondent}
    * @static
    * @thorws If missed arguments or passed extra ones.
-   * @method ifErrorThenClass
+   * @method ifErrorThen_class
    * @memberof wConsequence
    * @see {@link wConsequence#ifErrorThen}
    */
 
-var ifErrorThenClass = function()
+var ifErrorThen_class = function()
 {
 
   _.assert( arguments.length === 1 );
@@ -1034,7 +1034,6 @@ var persist = function persist( correspondent )
 // reverse chainer
 // --
 
-
   /**
    * Method accepts array of wConsequences object. If current wConsequence instance ready to resolve message, it will be
      wait for all passed wConsequence instances will been resolved, then current wConsequence resolve own message.
@@ -1091,10 +1090,26 @@ var persist = function persist( correspondent )
 var and = function and( srcs )
 {
   var self = this;
-  var got,anyErr;
-  var returned = [];
-
   _.assert( arguments.length === 1 );
+  return self._and( srcs,false );
+}
+
+//
+
+var andThen = function andThen( srcs )
+{
+  var self = this;
+  _.assert( arguments.length === 1 );
+  return self._and( srcs,true );
+}
+
+//
+
+var _and = function _and( srcs,thenning )
+{
+  var self = this;
+  var anyErr;
+  var returned = [];
 
   if( !_.arrayIs( srcs ) )
   srcs = [ srcs ];
@@ -1103,37 +1118,55 @@ var and = function and( srcs )
 
   var give = function()
   {
-    if( anyErr && !got[ 0 ] )
+
+    if( thenning )
+    for( var i = 0 ; i < srcs.length ; i++ )
+    srcs[ i ].give( returned[ i ][ 0 ],returned[ i ][ 1 ] );
+
+    if( anyErr )
     self.error( anyErr );
     else
-    self.give( got[ 0 ],got[ 1 ] );
+    self.give( returned[ srcs.length ][ 0 ],returned[ srcs.length ][ 1 ] );
+
   }
 
   /**/
 
-  var count = srcs.length;
+  var count = srcs.length+1;
   var collect = function( err,data )
   {
     count -= 1;
-    if( err )
+    if( err && !anyErr )
     anyErr = err;
 
-    returned[ srcs.indexOf( this ) ] = data;
+    returned[ srcs.indexOf( this ) ] = [ err,data ];
 
-    if( count === 0 && got )
+    if( count === 0 )
     setTimeout( give,0 );
-    if( err )
-    throw _.err( err );
-    return data;
+
+    //if( err )
+    //throw _.err( err );
+    //return data;
+
   }
 
   /**/
 
   self.got( function( err,data )
   {
-    got = [ err,data ];
+
+    count -= 1;
+    if( err && !anyErr )
+    anyErr = err;
+
+    returned[ srcs.length ] = [ err,data ];
+
+    //if( count === 0 )
+    //give();
+
     if( count === 0 )
-    give();
+    setTimeout( give,0 );
+
   });
 
   /**/
@@ -1141,8 +1174,8 @@ var and = function and( srcs )
   for( var a = 0 ; a < srcs.length ; a++ )
   {
     var src = srcs[ a ];
-    _.assert( _.objectIs( src ) && _.routineIs( src.then_ ) );
-    src.then_( collect );
+    _.assert( _.objectIs( src ) && _.routineIs( src.got ) );
+    src.got( collect );
   }
 
   return self;
@@ -1507,6 +1540,11 @@ var _handleGot = function _handleGot()
   var __giveToConsequence = function( correspondent,ordinary )
   {
 
+    if( self.name === 'F2' || correspondent.name === 'F2' )
+    console.log( self.name,'gives to',correspondent.name );
+
+    /**/
+
     result = correspondent.onGot._giveWithError( message.error,message.argument );
 
     if( ordinary )
@@ -1614,120 +1652,6 @@ var _handleGot = function _handleGot()
 
   return result;
 }
-
-//
-
-  /**
-   * If `o.consequence` if instance of wConsequence, method pass o.args and o.error if defined, to it's message sequence.
-   * If `o.consequence` is routine, method pass o.args as arguments to it and return result.
-   * @param {Object} o parameters object.
-   * @param {Function|wConsequence} o.consequence wConsequence or routine.
-   * @param {Array} o.args values for wConsequence messages queue or arguments for routine.
-   * @param {*|Error} o.error error value.
-   * @returns {*}
-   * @private
-   * @throws {Error} if missed arguments.
-   * @throws {Error} if passed argument is not object.
-   * @throws {Error} if o.consequence has unexpected type.
-   * @method _give_class
-   * @memberof wConsequence
-   */
-
-var _give_class = function _give_class( o )
-{
-  var context;
-
-  if( !( _.arrayIs( o.args ) && o.args.length <= 1 ) )
-  debugger;
-
-  _.assert( arguments.length );
-  _.assert( _.objectIs( o ) );
-  _.assert( _.arrayIs( o.args ) && o.args.length <= 1, 'not tested' );
-
-  //
-
-  if( o.consequence instanceof Self )
-  {
-/*
-    if( o.error === undefined )
-    give = o.consequence.give;
-    else
-    give = o.consequence._giveWithError;
-*/
-    _.assert( _.arrayIs( o.args ) && o.args.length <= 1 );
-
-    context = o.consequence;
-
-    if( o.error !== undefined )
-    {
-      o.consequence._giveWithError( o.error,o.args[ 0 ] );
-    }
-    else
-    {
-      o.consequence.give( o.args[ 0 ] );
-    }
-/*
-    if( o.args )
-    give.apply( context,o.args );
-    else
-    give.call( context,got );
-*/
-  }
-  else if( _.routineIs( o.consequence ) )
-  {
-
-    _.assert( _.arrayIs( o.args ) && o.args.length <= 1 );
-
-/*
-    give = o.consequence;
-    context = o.context;
-
-    if( o.error !== undefined )
-    {
-      o.args = o.args || [];
-      o.args.unshift( o.error );
-    }
-
-    if( o.args )
-    o.consequence.apply( context,o.args );
-    else
-    o.consequence.call( context,got );
-*/
-
-    if( o.error !== undefined )
-    {
-      return o.consequence.call( context,o.error,o.args[ 0 ] );
-    }
-    else
-    {
-      return o.consequence.call( context,null,o.args[ 0 ] );
-    }
-
-  }
-  else throw _.err( 'Unknown type of consequence : ' + _.strTypeOf( o.consequence ) );
-
-
-}
-
-//
-/*
-var giveWithContextTo = function giveWithContextTo( consequence,context,got )
-{
-
-  var args = [ got ];
-  if( arguments.length > 3 )
-  args = _.arraySlice( arguments,2 );
-
-  return _give_class
-  ({
-    consequence : consequence,
-    context : context,
-    error : undefined,
-    args : args,
-  });
-
-}
-*/
 //
 
 
@@ -1762,7 +1686,7 @@ var giveWithContextTo = function giveWithContextTo( consequence,context,got )
    * @memberof wConsequence
    */
 
-var giveClass = function( consequence )
+var give_class = function( consequence )
 {
 
   _.assert( arguments.length === 2 || arguments.length === 3 );
@@ -1787,6 +1711,84 @@ var giveClass = function( consequence )
     error : err,
     args : args,
   });
+
+}
+
+//
+
+  /**
+   * If `o.consequence` if instance of wConsequence, method pass o.args and o.error if defined, to it's message sequence.
+   * If `o.consequence` is routine, method pass o.args as arguments to it and return result.
+   * @param {Object} o parameters object.
+   * @param {Function|wConsequence} o.consequence wConsequence or routine.
+   * @param {Array} o.args values for wConsequence messages queue or arguments for routine.
+   * @param {*|Error} o.error error value.
+   * @returns {*}
+   * @private
+   * @throws {Error} if missed arguments.
+   * @throws {Error} if passed argument is not object.
+   * @throws {Error} if o.consequence has unexpected type.
+   * @method _give_class
+   * @memberof wConsequence
+   */
+
+var _give_class = function _give_class( o )
+{
+  var context;
+
+  if( !( _.arrayIs( o.args ) && o.args.length <= 1 ) )
+  debugger;
+
+  _.assert( arguments.length === 1 );
+  _.assert( _.objectIs( o ) );
+  _.assert( _.arrayIs( o.args ) && o.args.length <= 1, 'not tested' );
+
+  /**/
+
+  if( _.arrayIs( o.consequence ) )
+  {
+
+    for( var i = 0 ; i < o.consequence.length ; i++ )
+    {
+      var optionsGive = _.mapExtend( {},o );
+      optionsGive.consequence = o.consequence[ i ];
+      _give_class( optionsGive );
+    }
+
+  }
+  else if( o.consequence instanceof Self )
+  {
+
+    _.assert( _.arrayIs( o.args ) && o.args.length <= 1 );
+
+    context = o.consequence;
+
+    if( o.error !== undefined )
+    {
+      o.consequence._giveWithError( o.error,o.args[ 0 ] );
+    }
+    else
+    {
+      o.consequence.give( o.args[ 0 ] );
+    }
+
+  }
+  else if( _.routineIs( o.consequence ) )
+  {
+
+    _.assert( _.arrayIs( o.args ) && o.args.length <= 1 );
+
+    if( o.error !== undefined )
+    {
+      return o.consequence.call( context,o.error,o.args[ 0 ] );
+    }
+    else
+    {
+      return o.consequence.call( context,null,o.args[ 0 ] );
+    }
+
+  }
+  else throw _.err( 'Unknown type of consequence : ' + _.strTypeOf( o.consequence ) );
 
 }
 
@@ -1822,7 +1824,7 @@ var giveClass = function( consequence )
    * @memberof wConsequence
    */
 
-var errorClass = function( consequence,error )
+var error_class = function( consequence,error )
 {
 
   _.assert( arguments.length === 2 );
@@ -1839,11 +1841,14 @@ var errorClass = function( consequence,error )
 
 //
 
-var giveWithContextAndErrorTo = function giveWithContextAndErrorTo( consequence,context,err,got )
+var giveWithContextAndError_class = function giveWithContextAndError_class( consequence,context,err,got )
 {
 
   if( err === undefined )
   err = null;
+
+  console.warn( 'deprecated' );
+  debugger;
 
   var args = [ got ];
   if( arguments.length > 4 )
@@ -2248,6 +2253,9 @@ var Proto =
   // advanced
 
   and : and,
+  andThen : andThen,
+  _and : _and,
+
   first : first,
 
 
@@ -2307,15 +2315,15 @@ var Proto =
 var Static =
 {
 
-  give : giveClass,
-  error : errorClass,
+  give : give_class,
+  error : error_class,
 
-  giveWithContextAndErrorTo : giveWithContextAndErrorTo,
+  giveWithContextAndError : giveWithContextAndError_class,
 
-  ifErrorThen : ifErrorThenClass,
-  ifNoErrorThen : ifNoErrorThenClass,
+  ifErrorThen : ifErrorThen_class,
+  ifNoErrorThen : ifNoErrorThen_class,
 
-  passThru : passThruClass,
+  passThru : passThru,
 
 }
 

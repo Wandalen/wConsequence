@@ -12,77 +12,54 @@ if( typeof module !== 'undefined' )
   var TheDiningPhilosophersProblem = require( './TheDiningPhilosophersProblem.js' );
 }
 
-var con = new wConsequence();
+//
 
-function STheDiningPhilosophersProblem () {};
+TheDiningPhilosophersProblem.informAboutHungry = function( c )
+{
 
-STheDiningPhilosophersProblem.prototype = Object.create( TheDiningPhilosophersProblem, {
-  informAboutHungry :
-  {
-    value : function( c )
-    {
-      console.log( '>>' );
-      console.log( 'philosopher ' + c.philosopher.name + ' wants to eat at ' + _.timeSpent( ' ',c.time ) );
-      tryToEat( c );
-    }
-  }
-} );
+  var name = c.philosopher.name;
 
-var theDiningPhilosophersProblem = new STheDiningPhilosophersProblem();
-theDiningPhilosophersProblem.simulateHungryEvent();
+  console.log( '' );
+  console.log( 'P' + c.philosopher.name + ' wants to eat at ' + _.timeSpent( '',c.time ) );
+
+  tryToEat( c );
+
+}
+
+//
 
 var forks =
 [
-  wConsequence().give(),
-  wConsequence().give(),
-  wConsequence().give(),
-  wConsequence().give(),
-  wConsequence().give(),
+  wConsequence({ name : 'F1' }).give(),
+  wConsequence({ name : 'F2' }).give(),
+  wConsequence({ name : 'F3' }).give(),
+  wConsequence({ name : 'F4' }).give(),
+  wConsequence({ name : 'F5' }).give(),
 ];
 
 //
 
-function tryToEat(c)
+function tryToEat( c )
 {
-  // draft
-  //var eventSequence = wConsequence();
 
   var name = c.philosopher.name;
+  var forks = [ forkFor( name,0 ),forkFor( name,1 ) ];
+  var con = wConsequence().give();
 
-  //eventSequence.and( [ leftFork, rightFork ] ).then_(
-
-  forkFor( name,0 )
-  .and( forkFor( name,1 ) )
-  .then_( function()
+  con.and( forks )
+  .then_( function eating()
   {
 
-    console.log( 'p' + c.philosopher.name + ' started eating.' );
-    console.log( forkFor( name,0 ).toStr() );
-    console.log( forkFor( name,1 ).toStr() );
+    console.log( 'P' + c.philosopher.name + ' got both forks and started eating at ' + _.timeSpent( '',c.time ) );
 
   })
-  .thenTimeOut( c.philosopher.duration,function()
+  .thenTimeOut( c.philosopher.duration,function satisfied()
   {
 
-    console.log( 'p' + c.philosopher.name + ' stopped eating.' );
+    console.log( 'P' + c.philosopher.name + ' stopped eating at ' + _.timeSpent( '',c.time ) );
+    wConsequence.give( forks,null );
 
   });
-
-/*
-  function()
-  {
-    takeFork( name,0 );
-    takeFork( name,1 );
-    console.log( 'p' + c.philosopher.name + ' started eating.' );
-  }).thenTimeOut( c.philosopher.duration,function()
-  {
-
-    console.log( 'p' + c.philosopher.name + ' stopped eating.' );
-    putFork( name,0 );
-    putFork( name,1 );
-
-  }).give();
-*/
 
 }
 
@@ -92,16 +69,20 @@ function forkFor( name,right )
 {
   var i = right ? name % 5 : name - 1;
 
-  i = right;
-
   var fork = forks[ i ];
-  console.log( 'p' + name + ' interested in ' + ( right ? 'right' : 'left' ) + ' fork' + ( i+1 ) );
+  console.log( 'P' + name + ' interested in ' + ( right ? 'right' : 'left' ) + ' fork' + ( i+1 ) );
   return fork;
 }
 
 //
 
-function eat(  )
+var Self =
 {
-  return true;
+  forks : forks,
+  tryToEat : tryToEat,
+  forkFor : forkFor,
 }
+
+//
+
+TheDiningPhilosophersProblem.simulateHungryEvent();
