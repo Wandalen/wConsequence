@@ -6,31 +6,36 @@ if( typeof module !== 'undefined' )
   var ReadersWritersProblem = require( './ReadersWritersProblem.js' );
 }
 
+//
+
 var sResource = Object.create( ReadersWritersProblem.resource,
   {
-    writeLock:
+    writeLock :
     {
-      value: wConsequence().give() // on begin resource allowed wor read/write by any subject.
+      value : wConsequence().give() // on begin resource allowed wor read/write by any subject.
     },
 
-    readLock:
+    readLock :
     {
-      value: wConsequence().give() // on begin resource allowed wor read by any subject.
+      value : wConsequence().give() // on begin resource allowed wor read by any subject.
     },
   }
 );
 
 function SReadersWritersProblem () {};
 
-SReadersWritersProblem.prototype = Object.create( ReadersWritersProblem, {
-  resource:
+//
+
+var properties =
+{
+  resource :
   {
-    value: sResource
+    value : sResource
   },
 
-  precessEvent :
+  precessEvent  :
   {
-    value: function( opt )
+    value : function( opt )
     {
       console.log( 'try to perform ' + opt.event.operation + ' by ' + opt.rwSubject.name + ' at '
         + _.timeSpent( ' ', opt.time ) );
@@ -49,7 +54,7 @@ SReadersWritersProblem.prototype = Object.create( ReadersWritersProblem, {
             resource.readLock.give(); // allow reading, because reading allowed for several readers in one time
             if ( resource.writers.length > 0 )
             {
-              console.log('PROBLEM: ' + opt.rwSubject.name + 'can`t read resource, because it busy by ' +
+              console.log('PROBLEM : ' + opt.rwSubject.name + 'can`t read resource, because it busy by ' +
                 resource.writers.join( ', ' ) + 'subjects' );
               if( resource.writeLock.hasMessage() === 0 )
               {
@@ -82,7 +87,7 @@ SReadersWritersProblem.prototype = Object.create( ReadersWritersProblem, {
             resource.readLock.got(); // prevent reading during process write
             if ( resource.writers.length + resource.readers.length > 0 )
             {
-              console.log('PROBLEM: ' + opt.rwSubject.name + 'can`t wwrite resource, because it busy by ' +
+              console.log('PROBLEM : ' + opt.rwSubject.name + 'can`t wwrite resource, because it busy by ' +
                 resource.readers.join( ', ' ) + ' read subjects and ' + resource.writers.join( ', ' ) + ' write subjects' );
               resource.writeLock.give(); // allow write
               resource.readLock.give(); //allow read
@@ -105,7 +110,9 @@ SReadersWritersProblem.prototype = Object.create( ReadersWritersProblem, {
       }
     }
   }
-} );
+}
+
+SReadersWritersProblem.prototype = Object.create( ReadersWritersProblem,properties );
 
 var readersWritersProblem = new SReadersWritersProblem();
 

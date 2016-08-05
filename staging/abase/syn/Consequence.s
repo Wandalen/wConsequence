@@ -1092,6 +1092,7 @@ var and = function and( srcs )
 {
   var self = this;
   var got,anyErr;
+  var returned = [];
 
   _.assert( arguments.length === 1 );
 
@@ -1110,12 +1111,15 @@ var and = function and( srcs )
 
   /**/
 
-  var count = srcs.length
+  var count = srcs.length;
   var collect = function( err,data )
   {
     count -= 1;
     if( err )
-    anyErr = anyErr;
+    anyErr = err;
+
+    returned[ srcs.indexOf( this ) ] = data;
+
     if( count === 0 && got )
     setTimeout( give,0 );
     if( err )

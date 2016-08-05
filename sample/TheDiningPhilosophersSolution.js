@@ -57,6 +57,8 @@ function tryToEat(c)
   {
 
     console.log( 'p' + c.philosopher.name + ' started eating.' );
+    console.log( forkFor( name,0 ).toStr() );
+    console.log( forkFor( name,1 ).toStr() );
 
   })
   .thenTimeOut( c.philosopher.duration,function()
@@ -89,8 +91,11 @@ function tryToEat(c)
 function forkFor( name,right )
 {
   var i = right ? name % 5 : name - 1;
+
+  i = right;
+
   var fork = forks[ i ];
-  console.log( 'p' + name + ' interested in ' + ( right ? 'right' : 'left' ) + ' fork' + i );
+  console.log( 'p' + name + ' interested in ' + ( right ? 'right' : 'left' ) + ' fork' + ( i+1 ) );
   return fork;
 }
 
