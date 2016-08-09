@@ -68,7 +68,6 @@ function tryToEat( c )
 function forkFor( name,right )
 {
   var i = right ? name % 5 : name - 1;
-
   var fork = forks[ i ];
   console.log( 'P' + name + ' interested in ' + ( right ? 'right' : 'left' ) + ' fork' + ( i+1 ) );
   return fork;
