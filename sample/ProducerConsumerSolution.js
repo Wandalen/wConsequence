@@ -3,48 +3,57 @@ if( typeof module !== 'undefined' )
   var _ = require( 'wTools' );
   /* require( 'wConsequence' ); */
   require( '../staging/abase/syn/Consequence.s' );
-  var ProducerConsumerProblem = require( './ProducerConsumerProblem.js' );
-}
-
-function SProducerConsumerProblem()
-{
-  this.producerLock = wConsequence();
-  for( var i = 0; i < this.buffer.size; i++)
-    this.producerLock.give();
-
-  this.consumerLock = wConsequence();
+  var Problem = require( './ProducerConsumerProblem.js' );
 }
 
 //
 
-SProducerConsumerProblem.prototype = Object.create(ProducerConsumerProblem,
+Problem.capacity = 2;
+Problem.produced = wConsequence();
+
+//
+
+Problem.printInfo = function printInfo( item )
+{
+  console.log( 'buffer : ' + this.produced.messagesGet().length + ' / ' + Problem.capacity );
+}
+
+//
+
+Problem.produce = function produce( item )
 {
 
-  producerAppend :
-  {
-    value : function( item )
-    {
+  console.log( 'producer wants to produce item' + _.timeSpent( ' at',this.time ) );
 
-      this.producerLock.got( (function() {
-        this.buffer.appendItem( item );
-        this.consumerLock.give();
-      }).bind( this ) )
-    }
-  },
-  consumerGet :
+  if( this.produced.messagesGet().length === this.capacity )
   {
-    value : function( item )
-    {
-      this.consumerLock.got( ( function() {
-        var item = this.buffer.getItem( item );
-        console.log( 'handled item ' + item );
-        this.producerLock.give();
-      }).bind( this ) )
-
-    }
+    console.log( 'too many products, producer discards his product' );
+    return;
   }
-});
 
-var producerConsumerProblem = new SProducerConsumerProblem();
+  this.produced.give( item );
+  console.log( 'producer produce item ' + item + _.timeSpent( ' at',this.time ) );
 
-producerConsumerProblem.init();
+  this.printInfo();
+
+}
+
+//
+
+Problem.consume = function( item )
+{
+
+  console.log( 'consumer wants to consume item' + _.timeSpent( ' at',this.time ) );
+  this.produced.got( ( function( err,item )
+  {
+
+    console.log( 'consumer consumes item', item, _.timeSpent( 'at',this.time ) );
+    this.printInfo();
+
+  }).bind( this ) );
+
+}
+
+//
+
+Problem.init();
