@@ -1,5 +1,5 @@
-# Producer Consumer
+# Producer-Consumer
 
-Producer Consumer is classical synchronization problem...
+Producer-Consumer is classical synchronization problem...
 
 description
