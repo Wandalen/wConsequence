@@ -15,11 +15,14 @@ function SProducerConsumerProblem()
   this.consumerLock = wConsequence();
 }
 
+//
+
 SProducerConsumerProblem.prototype = Object.create(ProducerConsumerProblem,
 {
-  producerAppend:
+
+  producerAppend :
   {
-    value: function( item )
+    value : function( item )
     {
 
       this.producerLock.got( (function() {
@@ -28,9 +31,9 @@ SProducerConsumerProblem.prototype = Object.create(ProducerConsumerProblem,
       }).bind( this ) )
     }
   },
-  consumerGet:
+  consumerGet :
   {
-    value: function( item )
+    value : function( item )
     {
       this.consumerLock.got( ( function() {
         var item = this.buffer.getItem( item );

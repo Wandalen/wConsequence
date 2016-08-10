@@ -4,7 +4,7 @@
  * can be grouped together. For example, if two threads call Hydrogen, and then a third thread calls Oxygen, the third
  * thread should wake up the first two threads and they should then all return.
  *
- * source: https://inst.eecs.berkeley.edu/~cs162/sp10/hand-outs/synch-problems.html
+ * source : https://inst.eecs.berkeley.edu/~cs162/sp10/hand-outs/synch-problems.html
  */
 
 if( typeof module !== 'undefined' )
@@ -14,23 +14,25 @@ if( typeof module !== 'undefined' )
 
 var elementsAppendList =
 [
-  { element: 'H', delay: 500 },
-  { element: 'H', delay: 1000 },
-  { element: 'H', delay: 1500 },
-  { element: 'O', delay: 2000 },
-  { element: 'O', delay: 2500 },
-  { element: 'H', delay: 3000 },
-  { element: '0', delay: 3500 },
-  { element: 'H', delay: 4000 },
-  { element: 'H', delay: 4500 },
-  { element: '0', delay: 5000 },
-  { element: 'H', delay: 5500 },
-  { element: 'H', delay: 6000 },
+  { element : 'H', delay : 500 },
+  { element : 'H', delay : 1000 },
+  { element : 'H', delay : 1500 },
+  { element : 'O', delay : 2000 },
+  { element : 'O', delay : 2500 },
+  { element : 'H', delay : 3000 },
+  { element : '0', delay : 3500 },
+  { element : 'H', delay : 4000 },
+  { element : 'H', delay : 4500 },
+  { element : '0', delay : 5000 },
+  { element : 'H', delay : 5500 },
+  { element : 'H', delay : 6000 },
 ];
 
 var waitingH = 0,
     waitingO = 0,
     molecule = 0;
+
+//
 
 function appendElement()
 {
@@ -59,22 +61,34 @@ function appendElement()
   }
 }
 
-function oxygen() {
+//
+
+function oxygen()
+{
   waitingH++;
   createWaterMolecule();
 }
 
-function hydrogen() {
+//
+
+function hydrogen()
+{
   waitingO++;
   createWaterMolecule();
 }
 
-function createWaterMolecule() {
-  if( waitingO >= 1 && waitingH >= 2 ) {
+//
+
+function createWaterMolecule()
+{
+  if( waitingO >= 1 && waitingH >= 2 )
+  {
     molecule++;
     console.log( 'water molecule # ' + molecule + ' creating' );
   }
 }
+
+//
 
 var Self =
 {
@@ -82,7 +96,7 @@ var Self =
   createWaterMolecule : createWaterMolecule,
   oxygen : oxygen,
   hydrogen : hydrogen,
-};
+}
 
 //
 

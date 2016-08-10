@@ -71,7 +71,7 @@ var Parent = null;
    * @param {*} err Error object, or any other type, that represent or describe an error reason. If during resolving
       value no exception occurred, it will be set to null;
      @param {*} value resolved by wConsequence value;
-   * @callback wConsequence~correspondent
+   * @callback wConsequence~Correspondent
    */
 
   /**
@@ -118,9 +118,6 @@ var init = function init( options )
   if( options )
   self.copy( options );
 
-  //_.assert( self.mode === 'promise' || self.mode === 'event' );
-  //_.constant( self,{ mode : self.mode } );
-
   if( self.constructor === Self )
   Object.preventExtensions( self );
 
@@ -134,7 +131,7 @@ var init = function init( options )
    * Method created and appends correspondent object, based on passed options into wConsequence correspondents queue.
    *
    * @param {Object} o options object
-   * @param {wConsequence~correspondent|wConsequence} o.onGot correspondent callback
+   * @param {wConsequence~Correspondent|wConsequence} o.onGot correspondent callback
    * @param {Object} [o.context] if defined, it uses as 'this' context in correspondent function.
    * @param {Array<*>|ArrayLike} [o.argument] values, that will be used as binding arguments in correspondent.
    * @param {string} [o.name=null] name for correspondent function
@@ -253,9 +250,9 @@ var _correspondentAppend = function( o )
        // handler 1: bar
        // handler 2: baz
        //
-   * @param {wConsequence~correspondent|wConsequence} [correspondent] callback, that accepts resolved value or exception reason.
+   * @param {wConsequence~Correspondent|wConsequence} [correspondent] callback, that accepts resolved value or exception reason.
    * @returns {wConsequence}
-   * @see {@link wConsequence~correspondent} correspondent callback
+   * @see {@link wConsequence~Correspondent} correspondent callback
    * @throws {Error} if passed more than one argument.
    * @method got
    * @memberof wConsequence
@@ -325,11 +322,11 @@ var got = function got( correspondent )
      // second gotHandler1 is legitimate.
 
    *
-   * @param {wConsequence~correspondent|wConsequence} correspondent callback, that accepts resolved value or exception reason.
+   * @param {wConsequence~Correspondent|wConsequence} correspondent callback, that accepts resolved value or exception reason.
    * @returns {wConsequence}
    * @throws {Error} if passed more than one argument.
    * @throws {Error} if correspondent.name is not string.
-   * @see {@link wConsequence~correspondent} correspondent callback
+   * @see {@link wConsequence~Correspondent} correspondent callback
    * @see {@link wConsequence#got} got method
    * @method gotOnce
    * @memberof wConsequence
@@ -390,11 +387,11 @@ var gotOnce = function gotOnce( correspondent )
      // handler 1: 5
      // handler 3: 6
 
-   * @param {wConsequence~correspondent|wConsequence} correspondent callback, that accepts resolved value or exception reason.
+   * @param {wConsequence~Correspondent|wConsequence} correspondent callback, that accepts resolved value or exception reason.
    * @returns {wConsequence}
    * @throws {Error} if missed correspondent.
    * @throws {Error} if passed more than one argument.
-   * @see {@link wConsequence~correspondent} correspondent callback
+   * @see {@link wConsequence~Correspondent} correspondent callback
    * @see {@link wConsequence#got} got method
    * @method then_
    * @memberof wConsequence
@@ -520,12 +517,12 @@ var thenReportError = function thenReportError( context,correspondent,args )
      // handler 1: 4
      // handler 3: 5
 
-   * @param {wConsequence~correspondent|wConsequence} correspondent callback, that accepts resolved value or exception
+   * @param {wConsequence~Correspondent|wConsequence} correspondent callback, that accepts resolved value or exception
      reason.
    * @returns {*}
    * @throws {Error} if passed more than one argument.
    * @throws {Error} if correspondent is defined as anonymous function including anonymous function expression.
-   * @see {@link wConsequence~correspondent} correspondent callback
+   * @see {@link wConsequence~Correspondent} correspondent callback
    * @see {@link wConsequence#then_} then_ method
    * @see {@link wConsequence#gotOnce} gotOnce method
    * @method thenOnce
@@ -641,7 +638,7 @@ var thenClone = function thenClone()
      // handler 2: 1
      // handler 3: 4
 
-   * @param {wConsequence~correspondent|wConsequence} correspondent callback, that accepts resolved value or exception
+   * @param {wConsequence~Correspondent|wConsequence} correspondent callback, that accepts resolved value or exception
      reason.
    * @returns {wConsequence}
    * @throws {Error} if passed more than one arguments
@@ -784,7 +781,7 @@ var passThru = function passThru( err,data )
      // handler 3 val: 8
      // handler 1: 14
 
-   * @param {wConsequence~correspondent|wConsequence} correspondent callback, that accepts exception  reason and value .
+   * @param {wConsequence~Correspondent|wConsequence} correspondent callback, that accepts exception  reason and value .
    * @returns {wConsequence}
    * @throws {Error} if passed more than one arguments
    * @see {@link wConsequence#got} then_ method
@@ -911,7 +908,7 @@ var thenDebug = function thenDebug()
      // handler 2: 91
 
    * @param {number} time delay in milliseconds
-   * @param {wConsequence~correspondent|wConsequence} correspondent callback, that accepts exception reason and value.
+   * @param {wConsequence~Correspondent|wConsequence} correspondent callback, that accepts exception reason and value.
    * @returns {wConsequence}
    * @throws {Error} if missed arguments.
    * @throws {Error} if passed extra arguments.
@@ -1005,7 +1002,7 @@ var thenTimeOut = function thenTimeOut( time,correspondent )
      // message handler 1: baz
      // message handler 2: baz
 
-   * @param {wConsequence~correspondent|wConsequence} correspondent callback, that accepts exception reason and value.
+   * @param {wConsequence~Correspondent|wConsequence} correspondent callback, that accepts exception reason and value.
    * @returns {wConsequence}
    * @throws {Error} if missed arguments.
    * @throws {Error} if passed extra arguments.
@@ -1031,7 +1028,7 @@ var persist = function persist( correspondent )
 }
 
 // --
-// reverse chainer
+// advanced
 // --
 
   /**
@@ -1109,9 +1106,9 @@ var and = function and( srcs )
 
   possible scenarios for "and" :
 
-1. do not give back messages to src consequences( thenning = false )
+1. do not give back messages to src consequences( andGet )
 2. give back massages to src consequences immediately
-3. give back massages to src consequences once all come( thenning = true )
+3. give back massages to src consequences once all come( and )
 
 */
 
@@ -1289,7 +1286,7 @@ var first = function first( src )
 }
 
 // --
-// messager
+// messanger
 // --
 
   /**
@@ -1455,7 +1452,7 @@ var ping = function( error,argument )
 }
 
 // --
-// mechanism
+// handling mechanism
 // --
 
   /**
@@ -1662,8 +1659,8 @@ var _handleGot = function _handleGot()
 
   return result;
 }
-//
 
+//
 
   /**
    * If `consequence` if instance of wConsequence, method pass arg and error if defined to it's message sequence.
@@ -2279,7 +2276,7 @@ var Proto =
   _give_class : _give_class,
 
 
-  // mechanism
+  // handling mechanism
 
   _handleError : _handleError,
   _handleGot : _handleGot,
