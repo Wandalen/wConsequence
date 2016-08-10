@@ -15,30 +15,24 @@ if( typeof module !== 'undefined' )
 
 //
 
-var producerEventList =
+var eventList =
 [
-  { item : '1', delay : 1500 },
-  { item : '2', delay : 5000 },
-  { item : '3', delay : 5000 },
-  { item : '4', delay : 1500 },
-  { item : '5', delay : 4500 },
-  { item : '6', delay : 6500 },
-  { item : '7', delay : 2500 },
-  { item : '8', delay : 7000 },
-];
-
-//
-
-var consumerEventList =
-[
-  { delay : 1000 },
-  { delay : 3000 },
-  { delay : 3500 },
-  { delay : 5500 },
-  { delay : 6000 },
-  { delay : 6500 },
-  { delay : 7500 },
-  { delay : 8000 },
+  { emitter: 'consumer', delay : 1000 },
+  { emitter: 'producer', item : '1', delay : 1500 },
+  { emitter: 'consumer', delay : 3000 },
+  { emitter: 'producer', item : '2', delay : 5000 },
+  { emitter: 'producer', item : '3', delay : 5000 },
+  { emitter: 'producer', item : '4', delay : 1500 },
+  { emitter: 'consumer', delay : 3500 },
+  { emitter: 'consumer', delay : 5500 },
+  { emitter: 'producer', item : '5', delay : 4500 },
+  { emitter: 'producer', item : '6', delay : 6500 },
+  { emitter: 'consumer', delay : 6000 },
+  { emitter: 'consumer', delay : 6500 },
+  { emitter: 'consumer', delay : 7500 },
+  { emitter: 'consumer', delay : 8000 },
+  { emitter: 'producer', item : '7', delay : 2500 },
+  { emitter: 'producer', item : '8', delay : 7000 },
 ];
 
 //
@@ -72,36 +66,28 @@ var buffer =
 
 //
 
-function producerEventGenerator(  )
+function eventGenerator(  )
 {
   var i = 0,
-    len = producerEventList.length;
+    len = eventList.length;
 
   for( ; i < len; i++ )
   {
-    var item = producerEventList[ i ].item;
-    setTimeout( ( function( item )
+    var event = eventList[ i ];
+    setTimeout( ( function( event )
     {
-      this.producerAppend( item );
-    } ).bind( this, item ),  producerEventList[ i ].delay );
+      if( event.emitter === 'producer' )
+      {
+        this.producerAppend( event.item );
+      }
+      else if( event.emitter === 'consumer' )
+      {
+        this.consumerGet();
+      }
+    } ).bind( this, event ),  eventList[ i ].delay );
   }
 }
 
-//
-
-function consumerEventGenerator(  )
-{
-  var i = 0,
-    len = consumerEventList.length;
-
-  for( ; i < len; i++ )
-  {
-    setTimeout( ( function()
-    {
-      this.consumerGet();
-    } ).bind( this ),  consumerEventList[ i ].delay );
-  }
-}
 
 //
 
@@ -122,8 +108,7 @@ function consumerGet()
 
 function init()
 {
-  this.producerEventGenerator();
-  this.consumerEventGenerator();
+  this.eventGenerator();
 }
 
 //
@@ -131,8 +116,7 @@ function init()
 var Self =
 {
   buffer : buffer,
-  consumerEventGenerator : consumerEventGenerator,
-  producerEventGenerator : producerEventGenerator,
+  eventGenerator : eventGenerator,
   producerAppend : producerAppend,
   consumerGet : consumerGet,
   init : init,

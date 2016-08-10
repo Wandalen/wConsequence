@@ -20,10 +20,10 @@ var elementsAppendList =
   { element: 'O', delay: 2000 },
   { element: 'O', delay: 2500 },
   { element: 'H', delay: 3000 },
-  { element: '0', delay: 3500 },
+  { element: 'O', delay: 3500 },
   { element: 'H', delay: 4000 },
   { element: 'H', delay: 4500 },
-  { element: '0', delay: 5000 },
+  { element: 'O', delay: 5000 },
   { element: 'H', delay: 5500 },
   { element: 'H', delay: 6000 },
 ];
@@ -32,9 +32,8 @@ var waitingH = 0,
     waitingO = 0,
     molecule = 0;
 
-function appendElement()
+function appendElements()
 {
-
   var i = 0,
     len = elementsAppendList.length,
     time = _.timeNow();
@@ -49,28 +48,30 @@ function appendElement()
       console.log( ' element append ' + element + ' at ' + _.timeSpent( ' ',time ) );
       if( element === 'O' )
       {
-        oxygen()
+        this.oxygen()
       }
       else if ( element === 'H' )
       {
-        hydrogen()
+        this.hydrogen()
       }
     }).bind( this, element ),  elementsAppendList[ i ].delay );
   }
 }
 
 function oxygen() {
-  waitingH++;
-  createWaterMolecule();
-}
-
-function hydrogen() {
   waitingO++;
   createWaterMolecule();
 }
 
+function hydrogen() {
+  waitingH++;
+  createWaterMolecule();
+}
+
 function createWaterMolecule() {
-  if( waitingO >= 1 && waitingH >= 2 ) {
+  if( (waitingO >= 1) && (waitingH >= 2) ) {
+    waitingH -= 2;
+    waitingO--;
     molecule++;
     console.log( 'water molecule # ' + molecule + ' creating' );
   }
@@ -78,7 +79,7 @@ function createWaterMolecule() {
 
 var Self =
 {
-  appendElement : appendElement,
+  appendElements : appendElements,
   createWaterMolecule : createWaterMolecule,
   oxygen : oxygen,
   hydrogen : hydrogen,
@@ -90,5 +91,5 @@ if( typeof module !== 'undefined' )
 {
   module[ 'exports' ] = Self;
   if( !module.parent )
-    Self.appendElement();
+    Self.appendElements();
 }
