@@ -2,8 +2,8 @@ if( typeof module !== 'undefined' )
 {
   var _ = require( 'wTools' );
   /* require( 'wConsequence' ); */
-  require( '../staging/abase/syn/Consequence.s' );
-  var H2OProblem = require( './BuildingH2OProblem.js' );
+  require( '../../staging/abase/syn/Consequence.s' );
+  var H2OProblem = require( './Problem.js' );
 }
 
 var waitingH = wConsequence(),
