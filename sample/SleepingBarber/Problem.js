@@ -29,7 +29,7 @@ var clientsList =  // list of clients
  * @returns {wConsequence}
  */
 
-function clientsGenerator( con )
+function clientsGenerator()
 {
   var i = 0,
     len = clientsList.length;
@@ -37,36 +37,37 @@ function clientsGenerator( con )
   for( ; i < len; i++ )
   {
     var client = { name : clientsList[ i ].name };
-    setTimeout(( function( client )
+    var time = _.timeNow();
+    setTimeout(( function( client, time )
     {
       /* sending clients to shop */
-      con.give( client );
-    }).bind( null, client ), clientsList[ i ].arrivedTime );
+      this.barberShopArrive( client, time );
+    }).bind( this, client, time ), clientsList[ i ].arrivedTime );
   }
-
-  return con;
 }
 
 //
 
 /* initializing */
 
-var clientSequence = wConsequence();
-var time = _.timeNow();
-
 /* listening for client appending in shop */
 
-clientSequence.persist( ( err, client ) =>
+function barberShopArrive( client, time )
 {
-
-  if( err )
-  throw _.errLog( err );
-
   /* clients arrived to barber shop */
   console.log( 'new client is coming : ' + client.name + _.timeSpent( ' ',time ) );
 
-});
+};
 
-/* send clients to barber shop. */
+var Self =
+{
+  clientsGenerator : clientsGenerator,
+  barberShopArrive : barberShopArrive,
+}
 
-clientsGenerator( clientSequence );
+if( typeof module !== 'undefined' )
+{
+  module[ 'exports' ] = Self;
+  if( !module.parent )
+    Self.clientsGenerator();
+}
