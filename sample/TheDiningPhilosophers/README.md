@@ -14,13 +14,13 @@
   image source: https://en.wikipedia.org/wiki/Dining_philosophers_problem
 
   The solution based on wConsequence offer the next:
-    1. ech fork represents its onw wConsequence
-       - when fork wConsequence is resolved by message, we consider that its fork is free.
-       - when philosopher get fork, he got its wConsequence message, and we consider that without message fork is locked
-       for other philosophers
-    2. When philosopher gets hungry he queue up for both of his forks;
-       - for that using wConsequence().andGet() method with both fork`s wConsequences as arguments.
-       - when become philosopher`s turn in both fork`s queue, the andGet() invokes, and then philosopher gets both forks,
-       and start eat.
-       - after eating philosopher give messages for wConsequences of forks, that signals to the next philosophers in
-       forks queues that they are free.
+  1. ech fork represents its onw wConsequence
+     - when fork wConsequence is resolved by message, we consider that its fork is free.
+     - when philosopher get fork, he got its wConsequence message, and we consider that without message fork is locked
+     for other philosophers
+  2. When philosopher gets hungry he queue up for both of his forks;
+     - for that using wConsequence().andGet() method with both fork`s wConsequences as arguments.
+     - when become philosopher`s turn in both fork`s queue, the andGet() invokes, and then philosopher gets both forks,
+     and start eat.
+     - after eating philosopher give messages for wConsequences of forks, that signals to the next philosophers in
+     forks queues that they are free.
