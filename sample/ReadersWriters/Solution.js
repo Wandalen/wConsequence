@@ -2,7 +2,7 @@ if( typeof module !== 'undefined' )
 {
   var _ = require( 'wTools' );
   /* require( 'wConsequence' ); */
-  require( '../staging/abase/syn/Consequence.s' );
+  require( '../../staging/abase/syn/Consequence.s' );
   var ReadersWritersProblem = require( './ReadersWritersProblem.js' );
 }
 
