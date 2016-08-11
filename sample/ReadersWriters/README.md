@@ -11,5 +11,5 @@ a reader or another writer).
   ![readers diagram]
   (./readersWriters1.png)
 
-  ![writers diagram
+  ![writers diagram]
   (./readersWriters2.png)
