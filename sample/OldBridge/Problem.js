@@ -43,16 +43,17 @@ function carsArrive()
   for( ; i < len; i++ )
   {
     var car = carsArriveList[ i ];
+    car.name = i;
 
-    setTimeout( ( function( car, name )
+    setTimeout( ( function( car )
     {
-      console.log( ' car #' + name + ' arrive at ' + _.timeSpent( ' ',time ) );
-      this.arriveBridge( car, name );
-    }).bind( this, car, i ),  carsArriveList[ i ].delay );
+      console.log( ' car #' + car.name + ' arrive at ' + _.timeSpent( ' ',time ) );
+      this.arriveBridge( car );
+    }).bind( this, car ),  carsArriveList[ i ].delay );
   }
 }
 
-function arriveBridge( car, name )
+function arriveBridge( car )
 {
   carsOnBridge.push(car);
 
@@ -70,20 +71,21 @@ function arriveBridge( car, name )
       process.exit();
     }
   }
-  setTimeout( this.exitBridge.bind(this, car, name ), car.duration );
+  setTimeout( this.exitBridge.bind(this, car ), car.duration );
 }
 
-function exitBridge( car, name )
+function exitBridge( car )
 {
-  _.arrayRemoveOnce( carsOnBridge, car);
-  console.log( 'car #' + name + 'exit from bridge' );
+  _.arrayRemoveOnce( this.carsOnBridge, car);
+  console.log( 'car #' + car.name + 'exit from bridge' );
 }
 
 var Self =
 {
   carsArrive : carsArrive,
   arriveBridge : arriveBridge,
-  exitBridge : exitBridge
+  exitBridge : exitBridge,
+  carsOnBridge: carsOnBridge
 };
 
 //
