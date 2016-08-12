@@ -10,3 +10,8 @@
   room is empty, client go to barber and check, if barber chair is free, he wake up barber, and begin cut one's hair.
   Else place first seat in waiting room. When no places in waiting room, client go off.
   When barber end to cut client, he go to waiting room and take next client. If room is empty barber go to sleep again.
+
+  The Sleeping Barber problem is a partial case of a Producer-Consumer problem (see appropriate sample).
+
+  ![sleaping barber diagram]
+  (./SleepingBarber.png)
