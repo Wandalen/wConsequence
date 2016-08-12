@@ -13,5 +13,5 @@
 
   The Sleeping Barber problem is a partial case of a Producer-Consumer problem (see appropriate sample).
 
-  ![sleaping barber diagram]
+  ![sleeping barber diagram]
   (./SleepingBarber.png)
