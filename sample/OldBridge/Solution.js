@@ -7,8 +7,8 @@ if( typeof module !== 'undefined' )
 }
 
 var waitQueue = {
-  '0': [],
-  '1': []
+  '0': wConsequence(),
+  '1': wConsequence()
 };
 
 Problem.arriveBridge = function( car )
@@ -20,7 +20,7 @@ Problem.arriveBridge = function( car )
   }
   else
   {
-    waitQueue[ car.direction ].push( car );
+    waitQueue[ car.direction ].give( car );
   }
 
 };
@@ -39,18 +39,22 @@ Problem.exitBridge = function( car )
 {
   _.arrayRemoveOnce( this.carsOnBridge, car);
   console.log( ' < car #' + car.name + ' exit from bridge ' );
-  if( waitQueue[ car.direction ].length > 0 )
+  if( waitQueue[ car.direction ].messagesGet().length > 0 )
   {
-    var newCar = waitQueue[ car.direction ].shift()
-    this.goCrossBridge( newCar );
+    waitQueue[ car.direction ].got( ( function(err, newCar)
+    {
+      this.goCrossBridge( newCar );
+    } ).bind(this) );
   }
-  else if( this.carsOnBridge.length === 0 && waitQueue[ 1 - car.direction ].length > 1 )
+  else if( this.carsOnBridge.length === 0 && waitQueue[ 1 - car.direction ].messagesGet().length > 1 )
   {
-    var l = Math.min( waitQueue[ 1 - car.direction ].length, 3 );
+    var l = Math.min( waitQueue[ 1 - car.direction ].messagesGet().length, 3 );
     while( l-- )
     {
-      var newCar = waitQueue[ 1 - car.direction ].shift();
-      this.goCrossBridge( newCar );
+      var newCar = waitQueue[ 1 - car.direction ].got( ( function(err, newCar)
+      {
+        this.goCrossBridge( newCar );
+      } ).bind(this));
     }
   }
 }
