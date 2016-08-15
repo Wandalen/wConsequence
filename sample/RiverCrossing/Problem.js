@@ -96,6 +96,10 @@ function rowBoat()
   {
     console.log( 'problem: safety not guaranteed' );
   }
+  else
+  {
+    console.log( 'row boat: safety on board guaranteed' );
+  }
   peopleOnBoard = [];
 }
 
