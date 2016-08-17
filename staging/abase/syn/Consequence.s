@@ -103,7 +103,7 @@ var Self = function wConsequence( options )
    * @param {Object|Function|wConsequence} [options] initialization options
    * @private
    * @method pathCurrent
-   * @memberof wConsequence
+   * @memberof wConsequence#
    */
 
 var init = function init( options )
@@ -143,7 +143,7 @@ var init = function init( options )
    * @returns {wConsequence}
    * @private
    * @method _correspondentAppend
-   * @memberof wConsequence
+   * @memberof wConsequence#
    */
 
 var _correspondentAppend = function( o )
@@ -255,7 +255,7 @@ var _correspondentAppend = function( o )
    * @see {@link wConsequence~Correspondent} correspondent callback
    * @throws {Error} if passed more than one argument.
    * @method got
-   * @memberof wConsequence
+   * @memberof wConsequence#
    */
 
 var got = function got( correspondent )
@@ -329,7 +329,7 @@ var got = function got( correspondent )
    * @see {@link wConsequence~Correspondent} correspondent callback
    * @see {@link wConsequence#got} got method
    * @method gotOnce
-   * @memberof wConsequence
+   * @memberof wConsequence#
    */
 
 var gotOnce = function gotOnce( correspondent )
@@ -394,7 +394,7 @@ var gotOnce = function gotOnce( correspondent )
    * @see {@link wConsequence~Correspondent} correspondent callback
    * @see {@link wConsequence#got} got method
    * @method then_
-   * @memberof wConsequence
+   * @memberof wConsequence#
    */
 
 var then_ = function then_( correspondent )
@@ -424,7 +424,7 @@ var then_ = function then_( correspondent )
    * @param {Array<*>} [args] arguments arguments that seals for correspondent callback
    * @returns {wConsequence}
    * @method thenSealed
-   * @memberof wConsequence
+   * @memberof wConsequence#
    */
 
 var thenSealed = function thenSealed( context,correspondent,args )
@@ -459,7 +459,7 @@ var thenSealed = function thenSealed( context,correspondent,args )
    * @returns {wConsequence}
    * @throws {Error} If called with any argument.
    * @method thenReportError
-   * @memberof wConsequence
+   * @memberof wConsequence#
    */
 
 var thenReportError = function thenReportError( context,correspondent,args )
@@ -526,7 +526,7 @@ var thenReportError = function thenReportError( context,correspondent,args )
    * @see {@link wConsequence#then_} then_ method
    * @see {@link wConsequence#gotOnce} gotOnce method
    * @method thenOnce
-   * @memberof wConsequence
+   * @memberof wConsequence#
    */
 
 var thenOnce = function thenOnce( correspondent )
@@ -591,7 +591,7 @@ var thenOnce = function thenOnce( correspondent )
    * @returns {wConsequence}
    * @throws {Error} if passed any argument.
    * @method thenClone
-   * @memberof wConsequence
+   * @memberof wConsequence#
    */
 
 var thenClone = function thenClone()
@@ -644,7 +644,7 @@ var thenClone = function thenClone()
    * @throws {Error} if passed more than one arguments
    * @see {@link wConsequence#got} got method
    * @method tap
-   * @memberof wConsequence
+   * @memberof wConsequence#
    */
 
 var tap = function tap( correspondent )
@@ -676,7 +676,7 @@ var tap = function tap( correspondent )
    * @throws {Error} if passed more than one arguments
    * @see {@link wConsequence#got} then_ method
    * @method ifErrorThen
-   * @memberof wConsequence
+   * @memberof wConsequence#
    */
 
 var ifNoErrorThen = function()
@@ -709,7 +709,7 @@ var ifNoErrorThen = function()
    * @returns {corespondent}
    * @static
    * @throws {Error} If missed arguments or passed extra one;
-   * @method ifNoErrorThen_class
+   * @method ifNoErrorThen
    * @memberof wConsequence
    */
 
@@ -742,6 +742,16 @@ var ifNoErrorThen_class = function()
 }
 
 //
+
+  /**
+   * Can use as correspondent. If `err` is not null, throws exception based on `err`. Returns `data`.
+   * @callback wConsequence.passThru
+   * @param {*} err Error object, or any other type, that represent or describe an error reason. If during resolving
+   value no exception occurred, it will be set to null;
+   * @param {*} data resolved by wConsequence value;
+   * @returns {*}
+   * @memberof wConsequence
+   */
 
 var passThru = function passThru( err,data )
 {
@@ -786,7 +796,7 @@ var passThru = function passThru( err,data )
    * @throws {Error} if passed more than one arguments
    * @see {@link wConsequence#got} then_ method
    * @method ifErrorThen
-   * @memberof wConsequence
+   * @memberof wConsequence#
    */
 
 var ifErrorThen = function()
@@ -818,7 +828,7 @@ var ifErrorThen = function()
    * @returns {correspondent}
    * @static
    * @thorws If missed arguments or passed extra ones.
-   * @method ifErrorThen_class
+   * @method ifErrorThen
    * @memberof wConsequence
    * @see {@link wConsequence#ifErrorThen}
    */
@@ -861,7 +871,7 @@ var ifErrorThen_class = function()
    * @returns {wConsequence}
    * @throws {Error} If try to call method with any argument.
    * @method thenDebug
-   * @memberof wConsequence
+   * @memberof wConsequence#
    */
 
 var thenDebug = function thenDebug()
@@ -914,7 +924,7 @@ var thenDebug = function thenDebug()
    * @throws {Error} if passed extra arguments.
    * @see {@link wConsequence~then_} then_ method
    * @method thenTimeOut
-   * @memberof wConsequence
+   * @memberof wConsequence#
    */
 
 var thenTimeOut = function thenTimeOut( time,correspondent )
@@ -1008,7 +1018,7 @@ var thenTimeOut = function thenTimeOut( time,correspondent )
    * @throws {Error} if passed extra arguments.
    * @see {@link wConsequence~got} got method
    * @method persist
-   * @memberof wConsequence
+   * @memberof wConsequence#
    */
 
 
@@ -1081,7 +1091,7 @@ var persist = function persist( correspondent )
    * @throws {Error} if missed arguments.
    * @throws {Error} if passed extra arguments.
    * @method andGet
-   * @memberof wConsequence
+   * @memberof wConsequence#
    */
 
 var andGet = function andGet( srcs )
@@ -1092,6 +1102,15 @@ var andGet = function andGet( srcs )
 }
 
 //
+
+  /**
+   * Works like andGet() method, but unlike andGet() and() give back massages to src consequences once all come.
+   * @see wConsequence#andGet
+   * @param {wConsequence[]|wConsequence} srcs Array of wConsequence objects
+   * @throws {Error} If missed or passed extra argument.
+   * @method and
+   * @memberof wConsequence#
+   */
 
 var and = function and( srcs )
 {
@@ -1243,7 +1262,7 @@ var _and = function _and( srcs,thenning )
    * @returns {wConsequence}
    * @throws {Error} if `src` has unexpected type.
    * @method first
-   * @memberof wConsequence
+   * @memberof wConsequence#
    */
 
 var first = function first( src )
@@ -1309,7 +1328,7 @@ var first = function first( src )
    * @returns {wConsequence} consequence current wConsequence instance.
    * @throws {Error} if passed extra parameters.
    * @method give
-   * @memberof wConsequence
+   * @memberof wConsequence#
    */
 
 var give = function give( message )
@@ -1363,7 +1382,7 @@ var give = function give( message )
    * @param {*|Error} error error, or value that represent error reason
    * @throws {Error} if passed extra parameters.
    * @method error
-   * @memberof wConsequence
+   * @memberof wConsequence#
    */
 
 var error = function( error )
@@ -1386,7 +1405,7 @@ var error = function( error )
    * @private
    * @throws {Error} if missed arguments or passed extra arguments
    * @method _giveWithError
-   * @memberof wConsequence
+   * @memberof wConsequence#
    */
 
 var _giveWithError = function( error,argument )
@@ -1430,7 +1449,7 @@ var _giveWithError = function( error,argument )
    * @returns {*} result
    * @throws {Error} if missed arguments or passed extra arguments
    * @method ping
-   * @memberof wConsequence
+   * @memberof wConsequence#
    */
 
 var ping = function( error,argument )
@@ -1462,7 +1481,7 @@ var ping = function( error,argument )
    * @returns {wConsequence}
    * @private
    * @method _handleError
-   * @memberof wConsequence
+   * @memberof wConsequence#
    */
 
 var _handleError = function _handleError( err )
@@ -1527,7 +1546,7 @@ var _handleError = function _handleError( err )
    * @throws {Error} if on invocation moment the _message queue is empty.
    * @private
    * @method _handleGot
-   * @memberof wConsequence
+   * @memberof wConsequence#
    */
 
 var _handleGot = function _handleGot()
@@ -1724,7 +1743,7 @@ var give_class = function( consequence )
 //
 
   /**
-   * If `o.consequence` if instance of wConsequence, method pass o.args and o.error if defined, to it's message sequence.
+   * If `o.consequence` is instance of wConsequence, method pass o.args and o.error if defined, to it's message sequence.
    * If `o.consequence` is routine, method pass o.args as arguments to it and return result.
    * @param {Object} o parameters object.
    * @param {Function|wConsequence} o.consequence wConsequence or routine.
@@ -1847,6 +1866,18 @@ var error_class = function( consequence,error )
 }
 
 //
+
+  /**
+   * Works like [give]{@link wConsequence.give} but accepts also context, that will be sealed to correspondent.
+   * @see wConsequence.give
+   * @param {Function|wConsequence} consequence wConsequence or routine.
+   * @param {Object} context sealed context
+   * @param {*} err error reason
+   * @param {*} got arguments
+   * @returns {*}
+   * @method giveWithContextAndError
+   * @memberof wConsequence
+   */
 
 var giveWithContextAndError_class = function giveWithContextAndError_class( consequence,context,err,got )
 {
@@ -2195,6 +2226,16 @@ var toStr = function()
 }
 
 //
+
+  /**
+   * Can use as correspondent. If `err` is not null, throws exception based on `err`. Returns `data`.
+   * @callback wConsequence._onDebug
+   * @param {*} err Error object, or any other type, that represent or describe an error reason. If during resolving
+   value no exception occurred, it will be set to null;
+   * @param {*} data resolved by wConsequence value;
+   * @returns {*}
+   * @memberof wConsequence
+   */
 
 var _onDebug = function( err,data )
 {
