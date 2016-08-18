@@ -502,7 +502,7 @@ var then = function( test )
       con.give( givSequence.shift() );
       try
       {
-        con.thenSealed( null, testTaker1 );
+        con.thenSealed( null, testTaker1, [] );
       }
       catch( err )
       {
@@ -526,7 +526,7 @@ var then = function( test )
       try
       {
         con.error( givSequence.shift() );
-        con.thenSealed( null, testTaker1 );
+        con.thenSealed( null, testTaker1, [] );
       }
       catch( err )
       {
@@ -561,8 +561,8 @@ var then = function( test )
 
       try
       {
-        con.thenSealed( null, testTaker1 );
-        con.thenSealed( null, testTaker2 );
+        con.thenSealed( null, testTaker1, [] );
+        con.thenSealed( null, testTaker2, [] );
       }
       catch( err )
       {
