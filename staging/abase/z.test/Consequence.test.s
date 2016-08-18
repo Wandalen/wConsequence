@@ -7,6 +7,7 @@ if( typeof module !== 'undefined' )
   try
   {
     require( 'wTesting' );
+    require( '../syn/Consequence.s' );
   }
   catch( err )
   {
@@ -401,6 +402,228 @@ var then = function( test )
 
 }
 
+  var thenSealed_ = function( test )
+  {
+
+    var testCase1 =
+
+      {
+        givSequence: [ 5 ],
+        got:
+        {
+          gotSequence: [],
+          throwErr: false
+        },
+        expected:
+        {
+          gotSequence:
+          [
+            { err: null, value: 5, takerId: 'taker1' }
+          ],
+          throwErr: false
+        }
+      },
+      testCase2 =
+      {
+        givSequence:
+        [
+          'err msg'
+        ],
+        got:
+        {
+          gotSequence: [],
+          throwErr: false
+        },
+        expected:
+        {
+          gotSequence:
+          [
+            { err: 'err msg', value: void 0, takerId: 'taker1' }
+          ],
+          throwErr: false
+        }
+      },
+      testCase3 =
+      {
+        givSequence: [ 5, 4 ],
+        got:
+        {
+          gotSequence: [],
+          throwErr: false
+        },
+        expected:
+        {
+          gotSequence:
+          [
+            { err: null, value: 5, takerId: 'taker1' },
+            { err: null, value: 4, takerId: 'taker2' }
+          ],
+          throwErr: false
+        }
+      },
+      testCase4 =
+      {
+        givSequence: [ 5 ],
+        got:
+        {
+          gotSequence: [],
+          throwErr: false
+        },
+        expected:
+        {
+          gotSequence:
+          [
+            {
+              err: null,
+              value: 5,
+              takerId: 'taker1',
+              context: 'ContextConstructor',
+              sealed: 'bar' ,
+              contVariable: 'foo'
+            },
+          ],
+          throwErr: false
+        }
+      };
+
+
+    /* common wConsequence corespondent tests. */
+
+    test.description = 'single value in give sequence, and single taker: attached taker after value resolved';
+    ( function ( { givSequence, got, expected }  )
+    {
+      function testTaker1( err, value )
+      {
+        var takerId = 'taker1';
+        got.gotSequence.push( { err, value, takerId } );
+      }
+
+      var con = wConsequence();
+      con.give( givSequence.shift() );
+      try
+      {
+        con.thenSealed( null, testTaker1 );
+      }
+      catch( err )
+      {
+        got.throwErr = !! err;
+      }
+      test.identical( got, expected );
+    } )( testCase1 );
+
+    /**/
+
+    test.description = 'single err in give sequence, and single taker: attached taker after value resolved';
+    ( function ( { givSequence, got, expected }  )
+    {
+      function testTaker1( err, value )
+      {
+        var takerId = 'taker1';
+        got.gotSequence.push( { err, value, takerId } );
+      }
+
+      var con = wConsequence();
+      try
+      {
+        con.error( givSequence.shift() );
+        con.thenSealed( null, testTaker1 );
+      }
+      catch( err )
+      {
+        got.throwErr = !! err;
+      }
+      test.identical( got, expected );
+    } )( testCase2 );
+
+    /**/
+
+    test.description = 'test thenSealed in chain';
+
+    ( function ( { givSequence, got, expected }  )
+    {
+      function testTaker1( err, value )
+      {
+        var takerId = 'taker1';
+        got.gotSequence.push( { err, value, takerId } );
+        value++;
+        return value;
+      }
+
+      function testTaker2( err, value )
+      {
+        var takerId = 'taker2';
+        got.gotSequence.push( { err, value, takerId } );
+      }
+
+      var con = wConsequence();
+      for (let given of givSequence)
+        con.give( given );
+
+      try
+      {
+        con.thenSealed( null, testTaker1 );
+        con.thenSealed( null, testTaker2 );
+      }
+      catch( err )
+      {
+        got.throwErr = !! err;
+      }
+      test.identical( got, expected );
+    } )( testCase3 );
+
+    /* test particular gotOnce features test. */
+
+    test.description = 'thenSealed with sealed context and argument';
+    ( function ( { givSequence, got, expected }  )
+    {
+      function testTaker1( sealed, err, value )
+      {
+        console.log( sealed + err + value )
+        var takerId = 'taker1',
+          context = this.constructor.name,
+          contVariable = this.contVariable;
+          got.gotSequence.push( { err, value, takerId, context, contVariable, sealed } );
+      }
+
+      function ContextConstructor()
+      {
+        this.contVariable = 'foo';
+      }
+
+      var con = wConsequence();
+
+      for( let given of givSequence )
+      {
+        con.give( given );
+      }
+
+      try
+      {
+        con.thenSealed( new ContextConstructor(), testTaker1, [ 'bar' ] );
+      }
+      catch( err )
+      {
+        console.log(err);
+        got.throwErr = !! err;
+      }
+      console.log(JSON.stringify(expected));
+      test.identical( got, expected );
+    } )( testCase4 );
+
+
+    if( Config.debug )
+    {
+      var conDeb1 = wConsequence();
+
+      test.description = 'missed context arguments';
+      test.shouldThrowError( function()
+      {
+        conDeb1.thenSealed( function( err, val) { logger.log( 'foo' ); } );
+      } );
+    }
+
+  };
+
 // --
 // proto
 // --
@@ -408,13 +631,15 @@ var then = function( test )
 var Proto =
 {
 
+  verbose : 1,
   tests :
   {
 
-    ordinarMessage : ordinarMessage,
-    persistantMessage : persistantMessage,
-
-    then : then,
+    // ordinarMessage : ordinarMessage,
+    // persistantMessage : persistantMessage,
+    //
+    // then : then,
+    thenSealed_: thenSealed_,
 
   },
 
