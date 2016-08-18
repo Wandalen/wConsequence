@@ -22,6 +22,34 @@
 
 */
 
+/*
+
+chainer :
+
+1. ignore / use returned
+2. append / prepend returned
+3.
+*/
+
+  // got : got,
+  // done : got,
+  // gotOnce : gotOnce, /* experimental */
+  //
+  // then_ : then_,
+  // thenSealed : thenSealed,
+  // thenReportError : thenReportError, /* experimental */
+  //
+  // thenOnce : thenOnce, /* experimental */
+  // thenClone : thenClone,
+  //
+  // tap : tap,
+  // ifErrorThen : ifErrorThen,
+  // ifNoErrorThen : ifNoErrorThen,
+  // thenDebug : thenDebug, /* experimental */
+  // thenTimeOut : thenTimeOut,
+  //
+  // persist : persist, /* experimental */
+
 if( typeof module !== 'undefined' )
 {
 
@@ -1886,7 +1914,7 @@ var giveWithContextAndError_class = function giveWithContextAndError_class( cons
   err = null;
 
   console.warn( 'deprecated' );
-  debugger;
+  //debugger;
 
   var args = [ got ];
   if( arguments.length > 4 )
