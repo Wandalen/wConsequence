@@ -9,6 +9,8 @@ buffer, one at a time, and consumer process which take items from buffer and pro
   
   A consumer cannot consume unless there is at least one produced item.
 
+  The partial case of a Producer-Consumer problem is a Sleeping barber problem (see appropriate sample).
+
 ![diagram1]
 (./producerConsumer1.png)
 ![diagram2]
