@@ -1162,10 +1162,10 @@ var then = function( test )
     {
       var conDeb1 = wConsequence();
 
-      test.description = 'missed context arguments';
+      test.description = 'missed arguments';
       test.shouldThrowError( function()
       {
-        conDeb1.thenSealed( function( err, val) { logger.log( 'foo' ); } );
+        conDeb1.tap();
       } );
     }
 
