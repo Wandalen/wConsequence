@@ -977,6 +977,200 @@ var then = function( test )
 
   };
 
+  //
+  var conseqTester = wConsequence();
+
+  var tap = function( test )
+  {
+
+    var testCase1 =
+
+      {
+        givSequence: [ 5 ],
+        got:
+        {
+          gotSequence: [],
+          throwErr: false
+        },
+        expected:
+        {
+          gotSequence:
+            [
+              { err: null, value: 5, takerId: 'taker1' }
+            ],
+          throwErr: false
+        }
+      },
+      testCase2 =
+      {
+        givSequence:
+          [
+            'err msg'
+          ],
+        got:
+        {
+          gotSequence: [],
+          throwErr: false
+        },
+        expected:
+        {
+          gotSequence:
+            [
+              { err: 'err msg', value: void 0, takerId: 'taker1' }
+            ],
+          throwErr: false
+        }
+      },
+      testCase3 =
+      {
+        givSequence: [ 5, 4 ],
+        got:
+        {
+          gotSequence: [],
+          throwErr: false
+        },
+        expected:
+        {
+          gotSequence:
+            [
+              { err: null, value: 5, takerId: 'taker1' },
+              { err: null, value: 5, takerId: 'taker2' },
+              { err: null, value: 5, takerId: 'taker3' }
+            ],
+          throwErr: false
+        }
+      },
+      testCase4 =
+      {
+        givSequence: [ 5 ],
+        got:
+        {
+          gotSequence: [],
+          throwErr: false
+        },
+        expected:
+        {
+          gotSequence:
+            [
+              {
+                err: null,
+                value: 5,
+                takerId: 'taker1',
+                context: 'ContextConstructor',
+                sealed: 'bar' ,
+                contVariable: 'foo'
+              },
+            ],
+          throwErr: false
+        }
+      };
+
+
+    /* common wConsequence corespondent tests. */
+
+    test.description = 'single value in give sequence, and single taker: attached taker after value resolved';
+    ( function ( { givSequence, got, expected }  )
+    {
+      function testTaker1( err, value )
+      {
+        var takerId = 'taker1';
+        got.gotSequence.push( { err, value, takerId } );
+      }
+
+      var con = wConsequence();
+      con.give( givSequence.shift() );
+      try
+      {
+        con.tap( testTaker1 );
+      }
+      catch( err )
+      {
+        got.throwErr = !! err;
+      }
+      test.identical( got, expected );
+    } )( testCase1 );
+
+    /**/
+
+    test.description = 'single err in give sequence, and single taker: attached taker after value resolved';
+    ( function ( { givSequence, got, expected }  )
+    {
+      function testTaker1( err, value )
+      {
+        var takerId = 'taker1';
+        got.gotSequence.push( { err, value, takerId } );
+      }
+
+      var con = wConsequence();
+      try
+      {
+        con.error( givSequence.shift() );
+        con.tap( testTaker1 );
+      }
+      catch( err )
+      {
+        got.throwErr = !! err;
+      }
+      test.identical( got, expected );
+    } )( testCase2 );
+
+    /**/
+
+    test.description = 'test tap in chain';
+
+    ( function ( { givSequence, got, expected }  )
+    {
+      function testTaker1( err, value )
+      {
+        var takerId = 'taker1';
+        got.gotSequence.push( { err, value, takerId } );
+        value++;
+        return value;
+      }
+
+      function testTaker2( err, value )
+      {
+        var takerId = 'taker2';
+        got.gotSequence.push( { err, value, takerId } );
+      }
+
+      function testTaker3( err, value )
+      {
+        var takerId = 'taker3';
+        got.gotSequence.push( { err, value, takerId } );
+      }
+
+      var con = wConsequence();
+      for (let given of givSequence)
+        con.give( given );
+
+      try
+      {
+        con.tap( testTaker1 );
+        con.tap( testTaker2 );
+        con.got( testTaker3 );
+
+      }
+      catch( err )
+      {
+        got.throwErr = !! err;
+      }
+      test.identical( got, expected );
+    } )( testCase3 );
+
+    if( Config.debug )
+    {
+      var conDeb1 = wConsequence();
+
+      test.description = 'missed context arguments';
+      test.shouldThrowError( function()
+      {
+        conDeb1.thenSealed( function( err, val) { logger.log( 'foo' ); } );
+      } );
+    }
+
+  };
+
 // --
 // proto
 // --
@@ -994,7 +1188,8 @@ var Proto =
     // then : then,
     // thenSealed_: thenSealed_,
     // thenReportError: thenReportError,
-    thenClone: thenClone
+    // thenClone: thenClone
+    tap: tap
 
   },
 
