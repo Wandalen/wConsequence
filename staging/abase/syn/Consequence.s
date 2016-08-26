@@ -29,6 +29,7 @@ chainer :
 1. ignore / use returned
 2. append / prepend returned
 3.
+
 */
 
   // got : got,
@@ -53,6 +54,7 @@ chainer :
 if( typeof module !== 'undefined' )
 {
 
+  if( typeof wBase === 'undefined' )
   try
   {
     require( '../wTools.s' );
@@ -62,6 +64,7 @@ if( typeof module !== 'undefined' )
     require( 'wTools' );
   }
 
+  if( typeof wCopyable === 'undefined' )
   try
   {
     require( '../mixin/Copyable.s' );
@@ -71,6 +74,7 @@ if( typeof module !== 'undefined' )
     require( 'wCopyable' );
   }
 
+  if( typeof wProto === 'undefined' )
   try
   {
     require( '../component/Proto.s' );
@@ -1525,6 +1529,7 @@ var _handleError = function _handleError( err )
   if( Config.debug && err.attentionNeeded )
   {
     console.error( 'Consequence caught error' );
+    _.errLog( err ); //
     debugger;
 
     _.timeOut( 0, function()
