@@ -1423,7 +1423,7 @@ var then = function( test )
 
     /**/
 
-    test.description = 'test tap in chain';
+    test.description = 'test ifNoErrorThen in chain';
 
     ( function ( { givSequence, got, expected }  )
     {
@@ -1480,6 +1480,171 @@ var then = function( test )
 
   };
 
+  var thenTimeOut = function( test )
+  {
+
+    var testCase1 =
+
+      {
+        givSequence: [ 5 ],
+        got:
+        {
+          gotSequence:
+          [
+            { err: null, value: 5, takerId: 'taker1' }
+          ],
+          throwErr: false
+        },
+        expected:
+        {
+          gotSequence:
+            [
+              { err: null, value: 5, takerId: 'taker1' }
+            ],
+          throwErr: false
+        }
+      },
+      testCase2 =
+      {
+        givSequence:
+          [
+            'err msg'
+          ],
+        got:
+        {
+          gotSequence: [],
+          throwErr: false
+        },
+        expected:
+        {
+          gotSequence:
+            [ ],
+          throwErr: false
+        }
+      },
+      testCase3 =
+      {
+        givSequence: [ 5, 3,  4 ],
+        got:
+        {
+          gotSequence: [],
+          throwErr: false
+        },
+        expected:
+        {
+          gotSequence:
+            [
+              { err: null, value: 4, takerId: 'taker3' },
+              { err: null, value: 3, takerId: 'taker2' },
+            ],
+          throwErr: false
+        }
+      };
+
+
+    /* common wConsequence corespondent tests. */
+
+    test.description = 'single value in give sequence, and single taker: attached taker after value resolved';
+    ( function ( { givSequence, got, expected }  )
+    {
+      function testTaker1( err, value )
+      {
+        var takerId = 'taker1';
+        got.gotSequence.push( { err, value, takerId } );
+      }
+
+      var con = wConsequence();
+      con.give( givSequence.shift() );
+      try
+      {
+        con.thenTimeOut( 0, testTaker1 );
+      }
+      catch( err )
+      {
+        got.throwErr = !! err;
+      }
+      test.identical( got, expected );
+    } )( testCase1 );
+
+    /**/
+
+    test.description = 'single err in give sequence, and single taker: attached taker after value resolved';
+    ( function ( { givSequence, got, expected }  )
+    {
+      function testTaker1( err, value )
+      {
+        var takerId = 'taker1';
+        got.gotSequence.push( { err, value, takerId } );
+      }
+
+      var con = wConsequence();
+      try
+      {
+        con.error( givSequence.shift() );
+        con.thenTimeOut( 0, testTaker1 );
+      }
+      catch( err )
+      {
+        got.throwErr = !! err;
+      }
+      test.identical( got, expected );
+    } )( testCase2 );
+
+    /**/
+
+    test.description = 'test thenTimeOut in chain';
+
+    ( function ( { givSequence, got, expected }  )
+    {
+      function testTaker1( err, value )
+      {
+        var takerId = 'taker1';
+        got.gotSequence.push( { err, value, takerId } );
+        value++;
+        return value;
+      }
+
+      function testTaker2( err, value )
+      {
+        var takerId = 'taker2';
+        got.gotSequence.push( { err, value, takerId } );
+      }
+
+      function testTaker3( err, value )
+      {
+        var takerId = 'taker3';
+        got.gotSequence.push( { err, value, takerId } );
+      }
+
+      var con = wConsequence();
+
+      for (let given of givSequence)
+        con.give( given );
+
+      con.thenTimeOut( 20, testTaker1 );
+      con.thenTimeOut( 10, testTaker2 );
+      con.got( testTaker3 )
+      .got( function() {
+        test.identical( got, expected );
+      } );
+
+
+
+    } )( testCase3 );
+
+    if( Config.debug )
+    {
+      var conDeb1 = wConsequence();
+
+      test.description = 'missed arguments';
+      test.shouldThrowError( function()
+      {
+        conDeb1.thenTimeOut();
+      } );
+    }
+
+  };
+
 // --
 // proto
 // --
@@ -1500,7 +1665,9 @@ var Proto =
     // thenClone: thenClone,
     // tap: tap,
     // ifErrorThen: ifErrorThen,
-    ifNoErrorThen: ifNoErrorThen
+    // ifNoErrorThen: ifNoErrorThen
+
+    thenTimeOut: thenTimeOut
   },
 
   name : 'Consequence',
