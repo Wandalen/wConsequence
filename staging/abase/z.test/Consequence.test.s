@@ -1645,6 +1645,171 @@ var then = function( test )
 
   };
 
+  //
+
+  var _and = function( test )
+  {
+    var testCase1 =
+      {
+        givSequence: [ 5, 4 ],
+        got:
+        {
+          gotSequence: [ ],
+          throwErr: false
+        },
+        expected:
+        {
+          gotSequence:
+            [ ],
+          throwErr: false
+        }
+      },
+      testCase2 =
+      {
+        givSequence: [ 5, 4 ],
+        got:
+        {
+          gotSequence: [],
+          throwErr: false
+        },
+        expected:
+        {
+          gotSequence:
+            [
+              { err: null, value: 5, takerId: 'taker1' },
+              { err: null, value: 4, takerId: 'taker2' },
+            ],
+          throwErr: false
+        }
+      },
+      testCase3 =
+      {
+        givSequence: [ 5, 3,  4 ],
+        got:
+        {
+          gotSequence: [],
+          throwErr: false
+        },
+        expected:
+        {
+          gotSequence:
+            [
+              { err: null, value: 4, takerId: 'taker3' },
+              { err: null, value: 3, takerId: 'taker2' },
+            ],
+          throwErr: false
+        }
+      };
+
+
+    /* common wConsequence corespondent tests. */
+
+    test.description = 'do not give back messages to src consequences';
+    ( function ( { givSequence, got, expected }  )
+    {
+      var con1 = wConsequence(),
+        con2 = wConsequence();
+
+
+      function testTaker1( err, value )
+      {
+        var takerId = 'taker1';
+        got.gotSequence.push( { err, value, takerId } );
+      }
+
+      function testTaker2( err, value )
+      {
+        var takerId = 'taker2';
+        got.gotSequence.push( { err, value, takerId } );
+      }
+
+      var  conOwner = wConsequence();
+
+      conOwner.give();
+
+      con1.got( testTaker1 );
+      con2.got( testTaker2 );
+
+      try
+      {
+        conOwner._and( [con1, con2], true );
+      }
+      catch( err )
+      {
+        got.throwErr = !! err;
+      }
+
+      conOwner.got( function()
+      {
+        test.identical( got, expected );
+      } );
+
+
+      con1.give( givSequence.shift() );
+      con2.give( givSequence.shift() );
+    } )( testCase1 );
+
+    /**/
+
+    test.description = 'give back massages to src consequences once all come';
+    ( function ( { givSequence, got, expected }  )
+    {
+      var con1 = wConsequence(),
+        con2 = wConsequence();
+
+
+      function testTaker1( err, value )
+      {
+        var takerId = 'taker1';
+        got.gotSequence.push( { err, value, takerId } );
+      }
+
+      function testTaker2( err, value )
+      {
+        var takerId = 'taker2';
+        got.gotSequence.push( { err, value, takerId } );
+      }
+
+      var  conOwner = wConsequence();
+
+      conOwner.give();
+
+      con1.got( testTaker1 );
+      con2.got( testTaker2 );
+
+      try
+      {
+        conOwner._and( [con1, con2], false );
+      }
+      catch( err )
+      {
+        got.throwErr = !! err;
+      }
+
+      conOwner.got( function()
+      {
+        test.identical( got, expected );
+      } );
+
+
+
+      con1.give( givSequence.shift() );
+      con2.give( givSequence.shift() );
+    } )( testCase2 );
+
+
+    if( Config.debug )
+    {
+      var conDeb1 = wConsequence();
+
+      test.description = 'missed arguments';
+      test.shouldThrowError( function()
+      {
+        conDeb1._and();
+      } );
+    }
+  };
+
 // --
 // proto
 // --
@@ -1656,18 +1821,20 @@ var Proto =
   tests :
   {
 
-    // ordinarMessage : ordinarMessage,
-    // persistantMessage : persistantMessage,
-    //
-    // then : then,
-    // thenSealed_: thenSealed_,
-    // thenReportError: thenReportError,
-    // thenClone: thenClone,
-    // tap: tap,
-    // ifErrorThen: ifErrorThen,
-    // ifNoErrorThen: ifNoErrorThen
+    ordinarMessage : ordinarMessage,
+    persistantMessage : persistantMessage,
 
-    thenTimeOut: thenTimeOut
+    then : then,
+    thenSealed_: thenSealed_,
+    thenReportError: thenReportError,
+    thenClone: thenClone,
+    tap: tap,
+    ifErrorThen: ifErrorThen,
+    ifNoErrorThen: ifNoErrorThen,
+
+    thenTimeOut: thenTimeOut,
+
+    _and: _and
   },
 
   name : 'Consequence',
