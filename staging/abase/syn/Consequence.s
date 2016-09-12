@@ -132,27 +132,40 @@ var Self = function wConsequence( options )
 
   /**
    * Initialises instance of wConsequence
-   * @param {Object|Function|wConsequence} [options] initialization options
+   * @param {Object|Function|wConsequence} [o] initialization options
    * @private
    * @method pathCurrent
    * @memberof wConsequence#
    */
 
-var init = function init( options )
+var init = function init( o )
 {
   var self = this;
 
-  if( _.routineIs( options ) )
-  options = { all : options };
+  if( _.routineIs( o ) )
+  o = { all : o };
 
   _.mapExtendFiltering( _.filter.notAtomicCloningSrcOwn(),self,Composes );
 
-  if( options )
-  self.copy( options );
+  if( o )
+  self.copy( o );
 
   if( self.constructor === Self )
   Object.preventExtensions( self );
 
+}
+
+//
+
+var make_class = function make_class( o )
+{
+
+  _.assert( arguments.length === 1 );
+
+  if( o instanceof Self )
+  return o;
+
+  return new wConsequence().give( o );
 }
 
 // --
@@ -2294,6 +2307,25 @@ var Restricts =
 {
 }
 
+//
+
+var Static =
+{
+
+  make : make_class,
+
+  give : give_class,
+  error : error_class,
+
+  giveWithContextAndError : giveWithContextAndError_class,
+
+  ifErrorThen : ifErrorThen_class,
+  ifNoErrorThen : ifNoErrorThen_class,
+
+  passThru : passThru,
+
+}
+
 // --
 // proto
 // --
@@ -2302,6 +2334,8 @@ var Proto =
 {
 
   init : init,
+
+  make_class : make_class,
 
 
   // mechanics
@@ -2393,23 +2427,6 @@ var Proto =
 
 //
 
-var Static =
-{
-
-  give : give_class,
-  error : error_class,
-
-  giveWithContextAndError : giveWithContextAndError_class,
-
-  ifErrorThen : ifErrorThen_class,
-  ifNoErrorThen : ifNoErrorThen_class,
-
-  passThru : passThru,
-
-}
-
-//
-
 _.protoMake
 ({
   constructor : Self,
@@ -2453,6 +2470,7 @@ if( typeof module !== 'undefined' )
 }
 
 _global_.wConsequence = wTools.Consequence = Self;
+
 return Self;
 
 })();
