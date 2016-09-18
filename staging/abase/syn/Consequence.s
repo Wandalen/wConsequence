@@ -488,6 +488,7 @@ var thenSealed = function thenSealed( context,correspondent,args )
 
   var correspondentJoined = _.routineSeal( context,correspondent,args );
 
+  debugger;
   return self._correspondentAppend
   ({
     correspondent : correspondentJoined,
@@ -2029,9 +2030,9 @@ var correspondentsGet = function()
 //
 
   /**
-   * If called without arguments, method correspondentsClear() removes all corespondents from wConsequence
+   * If called without arguments, method correspondentsCancel() removes all corespondents from wConsequence
    * correspondents queue.
-   * If as argument passed routine, method correspondentsClear() removes it from corespondents queue if exists.
+   * If as argument passed routine, method correspondentsCancel() removes it from corespondents queue if exists.
    * @example
    function corespondent1(err, val)
    {
@@ -2051,7 +2052,7 @@ var correspondentsGet = function()
    var con = wConsequence();
 
    con.got( corespondent1 ).got( corespondent2 );
-   con.correspondentsClear();
+   con.correspondentsCancel();
 
    con.got( corespondent3 );
    con.give( 'bar' );
@@ -2059,18 +2060,20 @@ var correspondentsGet = function()
    // prints
    // corespondent1 value: bar
    * @param [correspondent]
-   * @method correspondentsClear
+   * @method correspondentsCancel
    * @memberof wConsequence
    */
 
-var correspondentsClear = function correspondentsClear( correspondent )
+var correspondentsCancel = function correspondentsCancel( correspondent )
 {
   var self = this;
 
   _.assert( arguments.length === 0 || _.routineIs( correspondent ) );
 
   if( arguments.length === 0 )
-  self._correspondent.splice( 0,self._correspondent.length );
+  {
+    self._correspondent.splice( 0,self._correspondent.length );
+  }
   else
   {
     throw _.err( 'not tested' );
@@ -2124,7 +2127,7 @@ var messagesGet = function()
   /**
    * If called without arguments, method removes all messages from wConsequence
    * correspondents queue.
-   * If as argument passed value, method messagesClear() removes it from messages queue if messages queue contains it.
+   * If as argument passed value, method messagesCancel() removes it from messages queue if messages queue contains it.
    * @example
    * var con = wConsequence();
 
@@ -2132,18 +2135,18 @@ var messagesGet = function()
      con.give( 'bar ');
      con.error( 'baz' );
 
-     con.messagesClear();
+     con.messagesCancel();
      var messages = con.messagesGet();
 
      console.log( messages );
      // prints: []
    * @param {_messageObject} data message object for removing.
    * @throws {Error} If passed extra arguments.
-   * @method correspondentsClear
+   * @method correspondentsCancel
    * @memberof wConsequence
    */
 
-var messagesClear = function messagesClear( data )
+var messagesCancel = function messagesCancel( data )
 {
   var self = this;
 
@@ -2175,7 +2178,7 @@ var messagesClear = function messagesClear( data )
      conLen = con.hasMessage();
      console.log( conLen );
 
-     con.messagesClear();
+     con.messagesCancel();
 
      conLen = con.hasMessage();
      console.log( conLen );
@@ -2209,8 +2212,8 @@ var clear = function clear( data )
   var self = this;
   _.assert( arguments.length === 0 );
 
-  self.correspondentsClear();
-  self.messagesClear();
+  self.correspondentsCancel();
+  self.messagesCancel();
 
 }
 
@@ -2393,13 +2396,13 @@ var Proto =
   // correspondent
 
   correspondentsGet : correspondentsGet,
-  correspondentsClear : correspondentsClear,
+  correspondentsCancel : correspondentsCancel,
 
 
   // message
 
   messagesGet : messagesGet,
-  messagesClear : messagesClear,
+  messagesCancel : messagesCancel,
 
   hasMessage : hasMessage,
   messageHas : hasMessage,
@@ -2438,7 +2441,7 @@ _.protoMake
 //
 
 if( _global_.wCopyable )
-wCopyable.mixin( Self.prototype );
+wCopyable.mixin( Self );
 
 //
 
