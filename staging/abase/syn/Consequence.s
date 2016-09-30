@@ -14,11 +14,11 @@
 
  !!! test difference :
 
-    if( errs.length )
-    return new wConsequence().error( errs[ 0 ] );
+    if( err )
+    return new wConsequence().error( err );
 
-    if( errs.length )
-    throw _.err( errs[ 0 ] );
+    if( err )
+    throw _.err( err );
 
 */
 
@@ -157,15 +157,19 @@ var init = function init( o )
 
 //
 
-var make_class = function make_class( o )
+var from_class = function from_class( src )
 {
 
   _.assert( arguments.length === 1 );
 
-  if( o instanceof Self )
-  return o;
+  if( src instanceof Self )
+  return src;
 
-  return new wConsequence().give( o );
+  if( _.errorIs( src ) )
+  return new wConsequence().error( src );
+  else
+  return new wConsequence().give( src );
+
 }
 
 // --
@@ -1466,6 +1470,9 @@ var _giveWithError = function( error,argument )
     argument : argument,
   }
 
+  if( argument instanceof Self )
+  throw _.err( 'not tested' );
+
   self._message.push( message );
   self._handleGot();
 
@@ -2315,7 +2322,7 @@ var Restricts =
 var Static =
 {
 
-  make : make_class,
+  from : from_class,
 
   give : give_class,
   error : error_class,
@@ -2338,7 +2345,7 @@ var Proto =
 
   init : init,
 
-  make_class : make_class,
+  from_class : from_class,
 
 
   // mechanics
