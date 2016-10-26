@@ -1635,7 +1635,7 @@ var _handleGot = function _handleGot()
   if( !self._correspondent.length && !self._correspondentPersistent.length )
   return;
 
-  _.assert( self._message.length );
+  _.assert( self._message.length,'_handleGot : none message left' );
   var message = self._message[ 0 ];
 
   /* give message to correspondent consequence */
@@ -1652,6 +1652,7 @@ var _handleGot = function _handleGot()
 
     if( ordinary )
     if( correspondent.thenning )
+    if( self._message.length )
     {
       self._handleGot();
     }
