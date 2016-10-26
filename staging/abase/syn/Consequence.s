@@ -410,8 +410,6 @@ var gotOnce = function gotOnce( correspondent )
   var self = this;
   var key = correspondent.id || correspondent.name;
 
-  debugger;
-
   _.assert( _.strIsNotEmpty( key ) );
   _.assert( arguments.length === 1 );
 
@@ -1383,28 +1381,28 @@ var first = function first( src )
 // messanger
 // --
 
-  /**
-   * Method pushes `message` into wConsequence messages queue.
-   * Method also can accept two parameters: error, and
-   * Returns current wConsequence instance.
-   * @example
-   * var gotHandler1 = function( error, value )
-     {
-       console.log( 'handler 1: ' + value );
-     };
+/**
+ * Method pushes `message` into wConsequence messages queue.
+ * Method also can accept two parameters: error, and
+ * Returns current wConsequence instance.
+ * @example
+ * var gotHandler1 = function( error, value )
+   {
+     console.log( 'handler 1: ' + value );
+   };
 
-     var con1 = new wConsequence();
+   var con1 = new wConsequence();
 
-     con1.got( gotHandler1 );
-     con1.give( 'hello' );
+   con1.got( gotHandler1 );
+   con1.give( 'hello' );
 
-     // prints " handler 1: hello ",
-   * @param {*} [message] Resolved value
-   * @returns {wConsequence} consequence current wConsequence instance.
-   * @throws {Error} if passed extra parameters.
-   * @method give
-   * @memberof wConsequence#
-   */
+   // prints " handler 1: hello ",
+ * @param {*} [message] Resolved value
+ * @returns {wConsequence} consequence current wConsequence instance.
+ * @throws {Error} if passed extra parameters.
+ * @method give
+ * @memberof wConsequence#
+ */
 
 var give = function give( message )
 {
@@ -1418,47 +1416,47 @@ var give = function give( message )
 
 //
 
-  /**
-   * Using for adds to message queue error reason, that using for informing corespondent that will handle it, about
-   * exception
-   * @example
-     var showResult = function(err, val)
+/**
+ * Using for adds to message queue error reason, that using for informing corespondent that will handle it, about
+ * exception
+ * @example
+   var showResult = function(err, val)
+   {
+     if( err )
      {
-       if( err )
-       {
-         console.log( 'handleGot1 error: ' + err );
-       }
-       else
-       {
-         console.log( 'handleGot1 value: ' + val );
-       }
-     };
-
-     var con = new  wConsequence();
-
-     var divade = function( x, y )
-     {
-       var result;
-       if( y!== 0 )
-       {
-         result = x / y;
-         con.give(result);
-       }
-       else
-       {
-         con.error( 'divide by zero' );
-       }
+       console.log( 'handleGot1 error: ' + err );
      }
+     else
+     {
+       console.log( 'handleGot1 value: ' + val );
+     }
+   };
 
-     con.got( showResult );
-     divade( 3, 0 );
+   var con = new  wConsequence();
 
-     // prints: handleGot1 error: divide by zero
-   * @param {*|Error} error error, or value that represent error reason
-   * @throws {Error} if passed extra parameters.
-   * @method error
-   * @memberof wConsequence#
-   */
+   var divade = function( x, y )
+   {
+     var result;
+     if( y!== 0 )
+     {
+       result = x / y;
+       con.give(result);
+     }
+     else
+     {
+       con.error( 'divide by zero' );
+     }
+   }
+
+   con.got( showResult );
+   divade( 3, 0 );
+
+   // prints: handleGot1 error: divide by zero
+ * @param {*|Error} error error, or value that represent error reason
+ * @throws {Error} if passed extra parameters.
+ * @method error
+ * @memberof wConsequence#
+ */
 
 var error = function( error )
 {
@@ -1471,17 +1469,17 @@ var error = function( error )
 
 //
 
-  /**
-   * Method creates and pushes message object into wConsequence messages sequence.
-   * Returns current wConsequence instance.
-   * @param {*} error Error value
-   * @param {*} argument resolved value
-   * @returns {_giveWithError}
-   * @private
-   * @throws {Error} if missed arguments or passed extra arguments
-   * @method _giveWithError
-   * @memberof wConsequence#
-   */
+/**
+ * Method creates and pushes message object into wConsequence messages sequence.
+ * Returns current wConsequence instance.
+ * @param {*} error Error value
+ * @param {*} argument resolved value
+ * @returns {_giveWithError}
+ * @private
+ * @throws {Error} if missed arguments or passed extra arguments
+ * @method _giveWithError
+ * @memberof wConsequence#
+ */
 
 var _giveWithError = function( error,argument )
 {
@@ -1506,29 +1504,29 @@ var _giveWithError = function( error,argument )
 
 //
 
-  /**
-   * Creates and pushes message object into wConsequence messages sequence, and trying to get and return result of
-      handling this message by appropriate correspondent.
-   * @example
-     var con = new  wConsequence();
+/**
+ * Creates and pushes message object into wConsequence messages sequence, and trying to get and return result of
+    handling this message by appropriate correspondent.
+ * @example
+   var con = new  wConsequence();
 
-     var increment = function( err, value )
-     {
-       return ++value;
-     };
+   var increment = function( err, value )
+   {
+     return ++value;
+   };
 
 
-     con.got( increment );
-     var result = con.ping( undefined, 4 );
-     console.log( result );
-     // prints 5;
-   * @param {*} error
-   * @param {*} argument
-   * @returns {*} result
-   * @throws {Error} if missed arguments or passed extra arguments
-   * @method ping
-   * @memberof wConsequence#
-   */
+   con.got( increment );
+   var result = con.ping( undefined, 4 );
+   console.log( result );
+   // prints 5;
+ * @param {*} error
+ * @param {*} argument
+ * @returns {*} result
+ * @throws {Error} if missed arguments or passed extra arguments
+ * @method ping
+ * @memberof wConsequence#
+ */
 
 var ping = function( error,argument )
 {
@@ -1575,10 +1573,10 @@ var _handleError = function _handleError( err )
   if( Config.debug && err.attentionNeeded )
   {
     console.error( 'Consequence caught error' );
-    _.errLog( err ); //
+    err = _.errLog( err );
     debugger;
 
-    _.timeOut( 0, function()
+    _.timeOut( 1, function()
     {
       if( err.attentionNeeded )
       {
@@ -1645,8 +1643,8 @@ var _handleGot = function _handleGot()
   var __giveToConsequence = function( correspondent,ordinary )
   {
 
-    if( self.id === 'F2' || correspondent.id === 'F2' )
-    console.log( self.id,'gives to',correspondent.id );
+    // if( self.id === 'F2' || correspondent.id === 'F2' )
+    // console.log( self.id,'gives to',correspondent.id );
 
     /**/
 
@@ -2565,7 +2563,7 @@ var Proto =
   usingAsyncTaker : 0,
 
 
-  // ident
+  // relationships
 
   constructor : Self,
   Composes : Composes,

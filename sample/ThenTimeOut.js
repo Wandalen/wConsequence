@@ -87,7 +87,7 @@ t.thenTimeOut( 2000, function()
 
   con.give( 90 );
   con.thenTimeOut( 1000, con2 ).got( gotHandler1 );
-  con2.then_( gotHandler2 );
+  con2.thenDo( gotHandler2 );
 
   _.timeOut( 1500, function()
   {
