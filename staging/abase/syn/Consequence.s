@@ -1566,15 +1566,23 @@ var _handleError = function _handleError( err )
   var err = _.err( err );
 
   if( !err.attentionGiven )
-  err.attentionNeeded = 1;
+  {
+    //err.attentionNeeded = 1;
+    //debugger;
+    Object.defineProperty( err, 'attentionNeeded',
+    {
+      enumerable : false,
+      configurable : true,
+      writable : true,
+      value : 1,
+    });
+  }
 
   var result = new wConsequence().error( err );
 
   if( Config.debug && err.attentionNeeded )
   {
-    console.error( 'Consequence caught error' );
-    err = _.errLog( err );
-    debugger;
+    console.error( 'Consequence caught error, details come later' );
 
     _.timeOut( 1, function()
     {
@@ -2456,7 +2464,7 @@ var Restricts =
 
 //
 
-var Static =
+var Statics =
 {
 
   from : from_class,
@@ -2477,7 +2485,7 @@ var Static =
 // proto
 // --
 
-var Proto =
+var Extend =
 {
 
   init : init,
@@ -2574,13 +2582,23 @@ var Proto =
 
 //
 
+var Supplement =
+{
+  Statics : Statics,
+}
+
+//
+
 _.protoMake
 ({
   constructor : Self,
   parent : Parent,
-  extend : Proto,
-  static : Static,
+  extend : Extend,
+  supplement : Supplement,
 });
+
+_.assert( _.routineIs( Self.prototype.passThru ) );
+_.assert( _.routineIs( Self.passThru ) );
 
 //
 
@@ -2614,7 +2632,7 @@ if( typeof module !== 'undefined' )
   module[ 'exports' ] = Self;
 }
 
-_global_.wConsequence = wTools.Consequence = Self;
+_global_[ Self.name ] = wTools.Consequence = Self;
 
 return Self;
 
