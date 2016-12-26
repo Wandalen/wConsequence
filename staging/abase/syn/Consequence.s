@@ -32,25 +32,6 @@ chainer :
 
 */
 
-  // got : got,
-  // done : got,
-  // gotOnce : gotOnce, /* experimental */
-  //
-  // thenDo : thenDo,
-  // thenSealed : thenSealed,
-  // thenReportError : thenReportError, /* experimental */
-  //
-  // thenOnce : thenOnce, /* experimental */
-  // thenClone : thenClone,
-  //
-  // tap : tap,
-  // ifErrorThen : ifErrorThen,
-  // ifNoErrorThen : ifNoErrorThen,
-  // thenDebug : thenDebug, /* experimental */
-  // thenTimeOut : thenTimeOut,
-  //
-  // persist : persist, /* experimental */
-
 if( typeof module !== 'undefined' )
 {
 
@@ -131,11 +112,14 @@ var Self = function wConsequence( options )
   var self = this;
   var wrap = function wConsequence( err,data )
   {
+    _.assert( arguments.length === 0 || arguments.length === 1 || arguments.length === 2 )
     if( arguments.length === 2 )
     self.give( arguments[ 0 ],arguments[ 1 ] );
     else
     self.give( arguments[ 0 ] );
   }
+
+  wrap.prototype = null;
 
   Object.setPrototypeOf( wrap, self );
 
@@ -166,23 +150,6 @@ var init = function init( o )
 
   if( o )
   self.copy( o );
-
-}
-
-//
-
-var from_class = function from_class( src )
-{
-
-  _.assert( arguments.length === 1 );
-
-  if( src instanceof Self )
-  return src;
-
-  if( _.errorIs( src ) )
-  return new wConsequence().error( src );
-  else
-  return new wConsequence().give( src );
 
 }
 
@@ -740,139 +707,44 @@ var tap = function tap( correspondent )
 
 //
 
-  /**
-   * Method pushed `correspondent` callback into wConsequence correspondents queue. That callback will
-     trigger only in that case if accepted error parameter will be null. Else accepted error will be passed to the next
-     correspondent in queue. After handling accepted value, correspondent pass result to the next handler, like thenDo
-     method.
-   * @returns {wConsequence}
-   * @throws {Error} if passed more than one arguments
-   * @see {@link wConsequence#got} thenDo method
-   * @method ifErrorThen
-   * @memberof wConsequence#
-   */
+/**
+ * ifErrorThen method pushed `correspondent` callback into wConsequence correspondents queue. That callback will
+   trigger only in that case if accepted error parameter will be defined and not null. Else accepted parameters will
+   be passed to the next correspondent in queue.
+ * @example
+ *
+   function gotHandler1( error, value )
+   {
+     console.log( 'handler 1: ' + value );
+     value++;
+     return value;
+   }
 
-var ifNoErrorThen = function()
-{
+   function gotHandler3( error, value )
+   {
+     console.log( 'handler 3 err: ' + error );
+     console.log( 'handler 3 val: ' + value );
+   }
 
-  _.assert( arguments.length === 1 );
-  _.assert( this instanceof Self )
-  _.assert( arguments.length <= 3 );
+   var con2 = new wConsequence();
 
-  return this._correspondentAppend
-  ({
-    //correspondent : Self.ifNoErrorThen( arguments[ 0 ] ),
-    correspondent : arguments[ 0 ],
-    context : arguments[ 1 ],
-    argument : arguments[ 2 ],
-    thenning : true,
-    ifNoError : true,
-  });
+   con2._giveWithError( 'error msg', 8 ).give( 14 );
+   con2.ifErrorThen( gotHandler3 ).got( gotHandler1 );
 
-}
+   // prints:
+   // handler 3 err: error msg
+   // handler 3 val: 8
+   // handler 1: 14
 
-//
+ * @param {wConsequence~Correspondent|wConsequence} correspondent callback, that accepts exception  reason and value .
+ * @returns {wConsequence}
+ * @throws {Error} if passed more than one arguments
+ * @see {@link wConsequence#got} thenDo method
+ * @method ifErrorThen
+ * @memberof wConsequence#
+ */
 
-
-  /**
-   * Method accepts correspondent callback. Returns special correspondent that wrap passed one. Passed corespondent will
-   * be invoked only if handling message does not contain error value. Else given message with error will be delegate to
-   * the next handler in wConsequence, to the which result correspondent was added.
-   * @param {correspondent} vallueHandler resolved message handler
-   * @returns {corespondent}
-   * @static
-   * @throws {Error} If missed arguments or passed extra one;
-   * @method ifNoErrorThen
-   * @memberof wConsequence
-   */
-
-var ifNoErrorThen_class = function()
-{
-
-  _.assert( arguments.length === 1 );
-  _.assert( this === Self );
-
-  var onEnd = arguments[ 0 ];
-  _.assert( arguments.length === 1 );
-  _.assert( _.routineIs( onEnd ) );
-
-  return function ifNoErrorThen( err,data )
-  {
-
-    _.assert( arguments.length === 2 );
-
-    if( !err )
-    {
-      return onEnd( err,data );
-    }
-    else
-    {
-      return wConsequence().error( err );
-    }
-
-  }
-
-}
-
-//
-
-  /**
-   * Can use as correspondent. If `err` is not null, throws exception based on `err`. Returns `data`.
-   * @callback wConsequence.passThru
-   * @param {*} err Error object, or any other type, that represent or describe an error reason. If during resolving
-   value no exception occurred, it will be set to null;
-   * @param {*} data resolved by wConsequence value;
-   * @returns {*}
-   * @memberof wConsequence
-   */
-
-var passThru = function passThru( err,data )
-{
-  if( err )
-  throw _.err( err );
-  return data;
-}
-
-//
-
-  /**
-   * ifErrorThen method pushed `correspondent` callback into wConsequence correspondents queue. That callback will
-     trigger only in that case if accepted error parameter will be defined and not null. Else accepted parameters will
-     be passed to the next correspondent in queue.
-   * @example
-   *
-     function gotHandler1( error, value )
-     {
-       console.log( 'handler 1: ' + value );
-       value++;
-       return value;
-     }
-
-     function gotHandler3( error, value )
-     {
-       console.log( 'handler 3 err: ' + error );
-       console.log( 'handler 3 val: ' + value );
-     }
-
-     var con2 = new wConsequence();
-
-     con2._giveWithError( 'error msg', 8 ).give( 14 );
-     con2.ifErrorThen( gotHandler3 ).got( gotHandler1 );
-
-     // prints:
-     // handler 3 err: error msg
-     // handler 3 val: 8
-     // handler 1: 14
-
-   * @param {wConsequence~Correspondent|wConsequence} correspondent callback, that accepts exception  reason and value .
-   * @returns {wConsequence}
-   * @throws {Error} if passed more than one arguments
-   * @see {@link wConsequence#got} thenDo method
-   * @method ifErrorThen
-   * @memberof wConsequence#
-   */
-
-var ifErrorThen = function()
+var ifErrorThen = function ifErrorThen()
 {
 
   _.assert( arguments.length === 1 );
@@ -880,7 +752,6 @@ var ifErrorThen = function()
 
   return this._correspondentAppend
   ({
-    //correspondent : Self.ifErrorThen( arguments[ 0 ] ),
     correspondent : arguments[ 0 ],
     context : arguments[ 1 ],
     argument : arguments[ 2 ],
@@ -892,45 +763,72 @@ var ifErrorThen = function()
 
 //
 
-
-  /**
-   * Method accepts correspondent callback. Returns special correspondent that wrap passed one. Passed corespondent will
-   * be invoked only if handling message contains error value. Else given message will be delegate to the next handler
-   * in wConsequence, to the which result correspondent was added.
-   * @param {correspondent} errHandler handler for error
-   * @returns {correspondent}
-   * @static
-   * @thorws If missed arguments or passed extra ones.
-   * @method ifErrorThen
-   * @memberof wConsequence
-   * @see {@link wConsequence#ifErrorThen}
-   */
-
-var ifErrorThen_class = function()
+var ifErrorGot = function ifErrorGot()
 {
 
   _.assert( arguments.length === 1 );
-  _.assert( this === Self );
+  _.assert( this instanceof Self );
 
-  var onEnd = arguments[ 0 ];
+  return this._correspondentAppend
+  ({
+    correspondent : arguments[ 0 ],
+    context : arguments[ 1 ],
+    argument : arguments[ 2 ],
+    thenning : false,
+    ifError : true,
+  });
+
+}
+
+//
+
+/**
+ * Method pushed `correspondent` callback into wConsequence correspondents queue. That callback will
+   trigger only in that case if accepted error parameter will be null. Else accepted error will be passed to the next
+   correspondent in queue. After handling accepted value, correspondent pass result to the next handler, like thenDo
+   method.
+ * @returns {wConsequence}
+ * @throws {Error} if passed more than one arguments
+ * @see {@link wConsequence#got} thenDo method
+ * @method ifNoErrorThen
+ * @memberof wConsequence#
+ */
+
+var ifNoErrorThen = function ifNoErrorThen()
+{
+
   _.assert( arguments.length === 1 );
-  _.assert( _.routineIs( onEnd ) );
+  _.assert( this instanceof Self )
+  _.assert( arguments.length <= 3 );
 
-  return function ifErrorThen( err,data )
-  {
+  return this._correspondentAppend
+  ({
+    correspondent : arguments[ 0 ],
+    context : arguments[ 1 ],
+    argument : arguments[ 2 ],
+    thenning : true,
+    ifNoError : true,
+  });
 
-    _.assert( arguments.length === 2 );
+}
 
-    if( err )
-    {
-      return onEnd( err,data );
-    }
-    else
-    {
-      return wConsequence().give( data );
-    }
+//
 
-  }
+var ifNoErrorGot = function ifNoErrorGot()
+{
+
+  _.assert( arguments.length === 1 );
+  _.assert( this instanceof Self )
+  _.assert( arguments.length <= 3 );
+
+  return this._correspondentAppend
+  ({
+    correspondent : arguments[ 0 ],
+    context : arguments[ 1 ],
+    argument : arguments[ 2 ],
+    thenning : false,
+    ifNoError : true,
+  });
 
 }
 
@@ -1213,68 +1111,55 @@ var _and = function _and( srcs,thenning )
   if( !_.arrayIs( srcs ) )
   srcs = [ srcs ];
 
-  /**/
+  /* */
 
   var give = function()
   {
 
     if( thenning )
     for( var i = 0 ; i < srcs.length ; i++ )
+    if( srcs[ i ] )
     srcs[ i ].give( returned[ i ][ 0 ],returned[ i ][ 1 ] );
 
     if( anyErr )
     self.error( anyErr );
     else
-    self.give( returned[ srcs.length ][ 0 ],returned[ srcs.length ][ 1 ] );
+    self.give( null,returned[ srcs.length ][ 1 ] );
 
   }
 
-  /**/
+  /* */
 
   var count = srcs.length+1;
-  var collect = function( err,data )
+  var collect = function( index,err,data )
   {
     count -= 1;
     if( err && !anyErr )
     anyErr = err;
 
-    returned[ srcs.indexOf( this ) ] = [ err,data ];
+    returned[ index ] = [ err,data ];
 
     if( count === 0 )
     setTimeout( give,0 );
-
-    //if( err )
-    //throw _.err( err );
-    //return data;
 
   }
 
-  /**/
+  /* */
 
-  self.got( function( err,data )
-  {
-
-    count -= 1;
-    if( err && !anyErr )
-    anyErr = err;
-
-    returned[ srcs.length ] = [ err,data ];
-
-    //if( count === 0 )
-    //give();
-
-    if( count === 0 )
-    setTimeout( give,0 );
-
-  });
+  self.got( _.routineJoin( undefined,collect,[ srcs.length ] ) );
 
   /**/
 
   for( var a = 0 ; a < srcs.length ; a++ )
   {
     var src = srcs[ a ];
-    _.assert( _.objectIs( src ) && _.routineIs( src.got ) );
-    src.got( collect );
+    _.assert( _.consequenceIs( src ) || src === null );
+    if( src === null )
+    {
+      collect( a,null,null );
+      continue;
+    }
+    src.got( _.routineJoin( undefined,collect,[ a ] ) );
   }
 
   return self;
@@ -1651,11 +1536,6 @@ var _handleGot = function _handleGot()
   var __giveToConsequence = function( correspondent,ordinary )
   {
 
-    // if( self.id === 'F2' || correspondent.id === 'F2' )
-    // console.log( self.id,'gives to',correspondent.id );
-
-    /**/
-
     result = correspondent.onGot._giveWithError( message.error,message.argument );
 
     if( ordinary )
@@ -1768,229 +1648,6 @@ var _handleGot = function _handleGot()
   self._handleGot();
 
   return result;
-}
-
-//
-
-  /**
-   * If `consequence` if instance of wConsequence, method pass arg and error if defined to it's message sequence.
-   * If `consequence` is routine, method pass arg as arguments to it and return result.
-   * @example
-   * var showResult = function(err, val)
-     {
-       if( err )
-       {
-         console.log( 'handleGot1 error: ' + err );
-       }
-       else
-       {
-         console.log( 'handleGot1 value: ' + val );
-       }
-     };
-
-     var con = new  wConsequence();
-
-     con.got( showResult );
-
-     wConsequence.give( con, 'hello world' );
-     // prints: handleGot1 value: hello world
-   * @param {Function|wConsequence} consequence
-   * @param {*} arg argument value
-   * @param {*} [error] error value
-   * @returns {*}
-   * @static
-   * @method give
-   * @memberof wConsequence
-   */
-
-var give_class = function( consequence )
-{
-
-  _.assert( arguments.length === 2 || arguments.length === 3 );
-
-  var err,got;
-  if( arguments.length === 2 )
-  {
-    got = arguments[ 1 ];
-  }
-  else if( arguments.length === 3 )
-  {
-    err = arguments[ 1 ];
-    got = arguments[ 2 ];
-  }
-
-  var args = [ got ];
-
-  return _give_class
-  ({
-    consequence : consequence,
-    context : undefined,
-    error : err,
-    args : args,
-  });
-
-}
-
-//
-
-  /**
-   * If `o.consequence` is instance of wConsequence, method pass o.args and o.error if defined, to it's message sequence.
-   * If `o.consequence` is routine, method pass o.args as arguments to it and return result.
-   * @param {Object} o parameters object.
-   * @param {Function|wConsequence} o.consequence wConsequence or routine.
-   * @param {Array} o.args values for wConsequence messages queue or arguments for routine.
-   * @param {*|Error} o.error error value.
-   * @returns {*}
-   * @private
-   * @throws {Error} if missed arguments.
-   * @throws {Error} if passed argument is not object.
-   * @throws {Error} if o.consequence has unexpected type.
-   * @method _give_class
-   * @memberof wConsequence
-   */
-
-var _give_class = function _give_class( o )
-{
-  var context;
-
-  if( !( _.arrayIs( o.args ) && o.args.length <= 1 ) )
-  debugger;
-
-  _.assert( arguments.length === 1 );
-  _.assert( _.objectIs( o ) );
-  _.assert( _.arrayIs( o.args ) && o.args.length <= 1, 'not tested' );
-
-  /**/
-
-  if( _.arrayIs( o.consequence ) )
-  {
-
-    for( var i = 0 ; i < o.consequence.length ; i++ )
-    {
-      var optionsGive = _.mapExtend( {},o );
-      optionsGive.consequence = o.consequence[ i ];
-      _give_class( optionsGive );
-    }
-
-  }
-  else if( o.consequence instanceof Self )
-  {
-
-    _.assert( _.arrayIs( o.args ) && o.args.length <= 1 );
-
-    context = o.consequence;
-
-    if( o.error !== undefined )
-    {
-      o.consequence._giveWithError( o.error,o.args[ 0 ] );
-    }
-    else
-    {
-      o.consequence.give( o.args[ 0 ] );
-    }
-
-  }
-  else if( _.routineIs( o.consequence ) )
-  {
-
-    _.assert( _.arrayIs( o.args ) && o.args.length <= 1 );
-
-    if( o.error !== undefined )
-    {
-      return o.consequence.call( context,o.error,o.args[ 0 ] );
-    }
-    else
-    {
-      return o.consequence.call( context,null,o.args[ 0 ] );
-    }
-
-  }
-  else throw _.err( 'Unknown type of consequence : ' + _.strTypeOf( o.consequence ) );
-
-}
-
-//
-
-  /**
-   * If `consequence` if instance of wConsequence, method error to it's message sequence.
-   * If `consequence` is routine, method pass error as arguments to it and return result.
-   * @example
-   * var showResult = function(err, val)
-     {
-       if( err )
-       {
-         console.log( 'handleGot1 error: ' + err );
-       }
-       else
-       {
-         console.log( 'handleGot1 value: ' + val );
-       }
-     };
-
-     var con = new  wConsequence();
-
-     con.got( showResult );
-
-     wConsequence.error( con, 'something wrong' );
-   // prints: handleGot1 error: something wrong
-   * @param {Function|wConsequence} consequence
-   * @param {*} error error value
-   * @returns {*}
-   * @static
-   * @method error
-   * @memberof wConsequence
-   */
-
-var error_class = function( consequence,error )
-{
-
-  _.assert( arguments.length === 2 );
-
-  return _give_class
-  ({
-    consequence : consequence,
-    context : undefined,
-    error : error,
-    args : [],
-  });
-
-}
-
-//
-
-  /**
-   * Works like [give]{@link wConsequence.give} but accepts also context, that will be sealed to correspondent.
-   * @see wConsequence.give
-   * @param {Function|wConsequence} consequence wConsequence or routine.
-   * @param {Object} context sealed context
-   * @param {*} err error reason
-   * @param {*} got arguments
-   * @returns {*}
-   * @method giveWithContextAndError
-   * @memberof wConsequence
-   */
-
-var giveWithContextAndError_class = function giveWithContextAndError_class( consequence,context,err,got )
-{
-
-  if( err === undefined )
-  err = null;
-
-  console.warn( 'deprecated' );
-  //debugger;
-
-  var args = [ got ];
-  if( arguments.length > 4 )
-  args = _.arraySlice( arguments,3 );
-
-  return _give_class
-  ({
-    consequence : consequence,
-    context : context,
-    error : err,
-    args : args,
-  });
-
 }
 
 // --
@@ -2338,7 +1995,355 @@ var _onDebug = function( err,data )
   return data;
 }
 
+// --
+// static
+// --
+
+var from_static = function from_static( src )
+{
+
+  _.assert( arguments.length === 1 );
+
+  if( src instanceof Self )
+  return src;
+
+  if( _.errorIs( src ) )
+  return new wConsequence().error( src );
+  else
+  return new wConsequence().give( src );
+
+}
+
 //
+
+/**
+ * If `consequence` if instance of wConsequence, method pass arg and error if defined to it's message sequence.
+ * If `consequence` is routine, method pass arg as arguments to it and return result.
+ * @example
+ * var showResult = function(err, val)
+   {
+     if( err )
+     {
+       console.log( 'handleGot1 error: ' + err );
+     }
+     else
+     {
+       console.log( 'handleGot1 value: ' + val );
+     }
+   };
+
+   var con = new  wConsequence();
+
+   con.got( showResult );
+
+   wConsequence.give( con, 'hello world' );
+   // prints: handleGot1 value: hello world
+ * @param {Function|wConsequence} consequence
+ * @param {*} arg argument value
+ * @param {*} [error] error value
+ * @returns {*}
+ * @static
+ * @method give
+ * @memberof wConsequence
+ */
+
+var give_static = function give_static( consequence )
+{
+
+  _.assert( arguments.length === 2 || arguments.length === 3 );
+
+  var err,got;
+  if( arguments.length === 2 )
+  {
+    got = arguments[ 1 ];
+  }
+  else if( arguments.length === 3 )
+  {
+    err = arguments[ 1 ];
+    got = arguments[ 2 ];
+  }
+
+  var args = [ got ];
+
+  return _give_static
+  ({
+    consequence : consequence,
+    context : undefined,
+    error : err,
+    args : args,
+  });
+
+}
+
+//
+
+  /**
+   * If `o.consequence` is instance of wConsequence, method pass o.args and o.error if defined, to it's message sequence.
+   * If `o.consequence` is routine, method pass o.args as arguments to it and return result.
+   * @param {Object} o parameters object.
+   * @param {Function|wConsequence} o.consequence wConsequence or routine.
+   * @param {Array} o.args values for wConsequence messages queue or arguments for routine.
+   * @param {*|Error} o.error error value.
+   * @returns {*}
+   * @private
+   * @throws {Error} if missed arguments.
+   * @throws {Error} if passed argument is not object.
+   * @throws {Error} if o.consequence has unexpected type.
+   * @method _give_static
+   * @memberof wConsequence
+   */
+
+var _give_static = function _give_static( o )
+{
+  var context;
+
+  if( !( _.arrayIs( o.args ) && o.args.length <= 1 ) )
+  debugger;
+
+  _.assert( arguments.length === 1 );
+  _.assert( _.objectIs( o ) );
+  _.assert( _.arrayIs( o.args ) && o.args.length <= 1, 'not tested' );
+
+  /**/
+
+  if( _.arrayIs( o.consequence ) )
+  {
+
+    for( var i = 0 ; i < o.consequence.length ; i++ )
+    {
+      var optionsGive = _.mapExtend( {},o );
+      optionsGive.consequence = o.consequence[ i ];
+      _give_static( optionsGive );
+    }
+
+  }
+  else if( o.consequence instanceof Self )
+  {
+
+    _.assert( _.arrayIs( o.args ) && o.args.length <= 1 );
+
+    context = o.consequence;
+
+    if( o.error !== undefined )
+    {
+      o.consequence._giveWithError( o.error,o.args[ 0 ] );
+    }
+    else
+    {
+      o.consequence.give( o.args[ 0 ] );
+    }
+
+  }
+  else if( _.routineIs( o.consequence ) )
+  {
+
+    _.assert( _.arrayIs( o.args ) && o.args.length <= 1 );
+
+    if( o.error !== undefined )
+    {
+      return o.consequence.call( context,o.error,o.args[ 0 ] );
+    }
+    else
+    {
+      return o.consequence.call( context,null,o.args[ 0 ] );
+    }
+
+  }
+  else throw _.err( 'Unknown type of consequence : ' + _.strTypeOf( o.consequence ) );
+
+}
+
+//
+
+  /**
+   * If `consequence` if instance of wConsequence, method error to it's message sequence.
+   * If `consequence` is routine, method pass error as arguments to it and return result.
+   * @example
+   * var showResult = function(err, val)
+     {
+       if( err )
+       {
+         console.log( 'handleGot1 error: ' + err );
+       }
+       else
+       {
+         console.log( 'handleGot1 value: ' + val );
+       }
+     };
+
+     var con = new  wConsequence();
+
+     con.got( showResult );
+
+     wConsequence.error( con, 'something wrong' );
+   // prints: handleGot1 error: something wrong
+   * @param {Function|wConsequence} consequence
+   * @param {*} error error value
+   * @returns {*}
+   * @static
+   * @method error
+   * @memberof wConsequence
+   */
+
+var error_static = function( consequence,error )
+{
+
+  _.assert( arguments.length === 2 );
+
+  return _give_static
+  ({
+    consequence : consequence,
+    context : undefined,
+    error : error,
+    args : [],
+  });
+
+}
+
+//
+
+  /**
+   * Works like [give]{@link wConsequence.give} but accepts also context, that will be sealed to correspondent.
+   * @see wConsequence.give
+   * @param {Function|wConsequence} consequence wConsequence or routine.
+   * @param {Object} context sealed context
+   * @param {*} err error reason
+   * @param {*} got arguments
+   * @returns {*}
+   * @method giveWithContextAndError
+   * @memberof wConsequence
+   */
+
+var giveWithContextAndError_static = function giveWithContextAndError_static( consequence,context,err,got )
+{
+
+  if( err === undefined )
+  err = null;
+
+  console.warn( 'deprecated' );
+  //debugger;
+
+  var args = [ got ];
+  if( arguments.length > 4 )
+  args = _.arraySlice( arguments,3 );
+
+  return _give_static
+  ({
+    consequence : consequence,
+    context : context,
+    error : err,
+    args : args,
+  });
+
+}
+
+//
+
+/**
+ * Method accepts correspondent callback. Returns special correspondent that wrap passed one. Passed corespondent will
+ * be invoked only if handling message contains error value. Else given message will be delegate to the next handler
+ * in wConsequence, to the which result correspondent was added.
+ * @param {correspondent} errHandler handler for error
+ * @returns {correspondent}
+ * @static
+ * @thorws If missed arguments or passed extra ones.
+ * @method ifErrorThen
+ * @memberof wConsequence
+ * @see {@link wConsequence#ifErrorThen}
+ */
+
+var ifErrorThen_static = function()
+{
+
+  _.assert( arguments.length === 1 );
+  _.assert( this === Self );
+
+  var onEnd = arguments[ 0 ];
+  _.assert( arguments.length === 1 );
+  _.assert( _.routineIs( onEnd ) );
+
+  return function ifErrorThen( err,data )
+  {
+
+    _.assert( arguments.length === 2 );
+
+    if( err )
+    {
+      return onEnd( err,data );
+    }
+    else
+    {
+      return wConsequence().give( data );
+    }
+
+  }
+
+}
+
+//
+
+  /**
+   * Method accepts correspondent callback. Returns special correspondent that wrap passed one. Passed corespondent will
+   * be invoked only if handling message does not contain error value. Else given message with error will be delegate to
+   * the next handler in wConsequence, to the which result correspondent was added.
+   * @param {correspondent} vallueHandler resolved message handler
+   * @returns {corespondent}
+   * @static
+   * @throws {Error} If missed arguments or passed extra one;
+   * @method ifNoErrorThen
+   * @memberof wConsequence
+   */
+
+var ifNoErrorThen_static = function()
+{
+
+  _.assert( arguments.length === 1 );
+  _.assert( this === Self );
+
+  var onEnd = arguments[ 0 ];
+  _.assert( arguments.length === 1 );
+  _.assert( _.routineIs( onEnd ) );
+
+  return function ifNoErrorThen( err,data )
+  {
+
+    _.assert( arguments.length === 2 );
+
+    if( !err )
+    {
+      return onEnd( err,data );
+    }
+    else
+    {
+      return wConsequence().error( err );
+    }
+
+  }
+
+}
+
+//
+
+  /**
+   * Can use as correspondent. If `err` is not null, throws exception based on `err`. Returns `data`.
+   * @callback wConsequence.passThru
+   * @param {*} err Error object, or any other type, that represent or describe an error reason. If during resolving
+   value no exception occurred, it will be set to null;
+   * @param {*} data resolved by wConsequence value;
+   * @returns {*}
+   * @memberof wConsequence
+   */
+
+var passThru_static = function passThru( err,data )
+{
+  if( err )
+  throw _.err( err );
+  return data;
+}
+
+// --
+// experimental
+// --
 
 var FunctionWithin = function FunctionWithin( consequence )
 {
@@ -2385,7 +2390,7 @@ var FunctionThereafter = function FunctionThereafter()
 
 //
 
-if( 1 )
+if( 0 )
 {
   Function.prototype.within = FunctionWithin;
   Function.prototype.thereafter = FunctionThereafter;
@@ -2462,22 +2467,22 @@ var Restricts =
 {
 }
 
-//
-
 var Statics =
 {
 
-  from : from_class,
+  from : from_static,
 
-  give : give_class,
-  error : error_class,
+  _give : _give_static,
+  give : give_static,
 
-  giveWithContextAndError : giveWithContextAndError_class,
+  error : error_static,
 
-  ifErrorThen : ifErrorThen_class,
-  ifNoErrorThen : ifNoErrorThen_class,
+  giveWithContextAndError : giveWithContextAndError_static,
 
-  passThru : passThru,
+  ifErrorThen : ifErrorThen_static,
+  ifNoErrorThen : ifNoErrorThen_static,
+
+  passThru : passThru_static,
 
 }
 
@@ -2489,8 +2494,6 @@ var Extend =
 {
 
   init : init,
-
-  from_class : from_class,
 
 
   // mechanics
@@ -2512,10 +2515,17 @@ var Extend =
   thenClone : thenClone,
 
   tap : tap,
+
   ifErrorThen : ifErrorThen,
+  ifErrorGot : ifErrorGot,
   ifNoErrorThen : ifNoErrorThen,
+  ifNoErrorGot : ifNoErrorGot,
+
   thenDebug : thenDebug, /* experimental */
   thenTimeOut : thenTimeOut,
+
+
+  // persist chainer
 
   persist : persist, /* experimental */
 
@@ -2535,8 +2545,6 @@ var Extend =
   error : error,
   _giveWithError : _giveWithError,
   ping : ping, /* experimental */
-
-  _give_class : _give_class,
 
 
   // handling mechanism
@@ -2603,7 +2611,26 @@ _.assert( _.routineIs( Self.passThru ) );
 //
 
 if( _global_.wCopyable )
-wCopyable.mixin( Self );
+{
+  wCopyable.mixin( Self );
+
+  if( Config.debug )
+  {
+    // debugger;
+    var con = new Self();
+    var x3 = Self._SelfGet();
+
+    var x1 = con.Self;
+    var x2 = Self.prototype.Self;
+    var x4 = Self.Self;
+    // debugger;
+    _.assert( x1 === x2 );
+    _.assert( x1 === x3 );
+    _.assert( x1 === x4 );
+    // debugger;
+  }
+
+}
 
 //
 
