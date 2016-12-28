@@ -468,31 +468,31 @@ var thenDo = function thenDo( correspondent )
    * @memberof wConsequence#
    */
 
-var thenSealed = function thenSealed( context,correspondent,args )
-{
-  var self = this;
-
-  _.assert( arguments.length === 2 || arguments.length === 3 );
-
-  if( arguments.length === 2 )
-  if( _.arrayLike( arguments[ 1 ] ) )
-  {
-    args = arguments[ 1 ];
-    correspondent = arguments[ 0 ];
-    context = undefined;
-  }
-
-  var correspondentJoined = _.routineSeal( context,correspondent,args );
-
-  debugger;
-  return self._correspondentAppend
-  ({
-    correspondent : correspondentJoined,
-    ifNoError : true,
-    thenning : true,
-  });
-
-}
+// var thenSealed = function thenSealed( context,correspondent,args )
+// {
+//   var self = this;
+//
+//   _.assert( arguments.length === 2 || arguments.length === 3 );
+//
+//   if( arguments.length === 2 )
+//   if( _.arrayLike( arguments[ 1 ] ) )
+//   {
+//     args = arguments[ 1 ];
+//     correspondent = arguments[ 0 ];
+//     context = undefined;
+//   }
+//
+//   var correspondentJoined = _.routineSeal( context,correspondent,args );
+//
+//   debugger;
+//   return self._correspondentAppend
+//   ({
+//     correspondent : correspondentJoined,
+//     ifNoError : true,
+//     thenning : true,
+//   });
+//
+// }
 
 //
 
@@ -1260,6 +1260,51 @@ var first = function first( src )
   else throw _.err( 'unexpected' );
 
   return self;
+}
+
+//
+
+var seal = function seal( context,correspondent )
+{
+  var self = this;
+  var result = {};
+
+  /**/
+
+  _.assert( arguments.length === 2 );
+  _.assert( this instanceof Self )
+
+  result.consequence = self;
+
+  result.ifNoErrorThen = function ifNoErrorThen( args )
+  {
+    var c = _.routineSeal( context,correspondent,[ args ] );
+    self.ifNoErrorThen( c );
+    return this;
+  }
+
+  result.ifErrotThen = function ifErrotThen( args )
+  {
+    var c = _.routineSeal( context,correspondent,[ args ] );
+    self.ifErrotThen( c );
+    return this;
+  }
+
+  result.thenDo = function thenDo( args )
+  {
+    var c = _.routineSeal( context,correspondent,[ args ] );
+    self.thenDo( c );
+    return this;
+  }
+
+  result.got = function got( args )
+  {
+    var c = _.routineSeal( context,correspondent,[ args ] );
+    self.got( c );
+    return this;
+  }
+
+  return result;
 }
 
 // --
@@ -2508,7 +2553,7 @@ var Extend =
   gotOnce : gotOnce, /* experimental */
 
   thenDo : thenDo,
-  thenSealed : thenSealed,
+  // thenSealed : thenSealed,
   thenReportError : thenReportError, /* experimental */
 
   thenOnce : thenOnce, /* experimental */
@@ -2537,6 +2582,8 @@ var Extend =
   _and : _and,
 
   first : first,
+
+  seal : seal,
 
 
   // messanger
