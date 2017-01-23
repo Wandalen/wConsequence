@@ -1283,10 +1283,10 @@ var seal = function seal( context,correspondent )
     return this;
   }
 
-  result.ifErrotThen = function ifErrotThen( args )
+  result.ifErrorThen = function ifErrorThen( args )
   {
     var c = _.routineSeal( context,correspondent,[ args ] );
-    self.ifErrotThen( c );
+    self.ifErrorThen( c );
     return this;
   }
 
