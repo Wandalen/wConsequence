@@ -1278,7 +1278,7 @@ var seal = function seal( context,method )
 
   result.ifNoErrorThen = function ifNoErrorThen( _method )
   {
-    var args = method ? arguments : arguments[ 2 ];
+    var args = method ? arguments : arguments[ 1 ];
     var c = _.routineSeal( context,method || _method,args );
     self.ifNoErrorThen( c );
     return this;
@@ -1286,7 +1286,7 @@ var seal = function seal( context,method )
 
   result.ifErrorThen = function ifErrorThen( _method )
   {
-    var args = method ? arguments : arguments[ 2 ];
+    var args = method ? arguments : arguments[ 1 ];
     var c = _.routineSeal( context,method || _method,args );
     self.ifErrorThen( c );
     return this;
@@ -1294,7 +1294,7 @@ var seal = function seal( context,method )
 
   result.thenDo = function thenDo( _method )
   {
-    var args = method ? arguments : arguments[ 2 ];
+    var args = method ? arguments : arguments[ 1 ];
     var c = _.routineSeal( context,method || _method,args );
     self.thenDo( c );
     return this;
