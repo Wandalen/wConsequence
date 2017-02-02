@@ -923,7 +923,7 @@ var thenTimeOut = function thenTimeOut( time,correspondent )
   {
     return _.timeOut( time,function()
     {
-      correspondent._giveWithError( err,data );
+      correspondent.__giveWithError( err,data );
       if( err )
       throw _.err( err );
       return data;
@@ -1264,42 +1264,46 @@ var first = function first( src )
 
 //
 
-var seal = function seal( context,correspondent )
+var seal = function seal( context,method )
 {
   var self = this;
   var result = {};
 
   /**/
 
-  _.assert( arguments.length === 2 );
+  _.assert( arguments.length === 1 || arguments.length === 2 );
   _.assert( this instanceof Self )
 
   result.consequence = self;
 
-  result.ifNoErrorThen = function ifNoErrorThen( args )
+  result.ifNoErrorThen = function ifNoErrorThen( _method )
   {
-    var c = _.routineSeal( context,correspondent,[ args ] );
+    var args = method ? arguments : _.arraySlice( arguments,1 );
+    var c = _.routineSeal( context,method || _method,args );
     self.ifNoErrorThen( c );
     return this;
   }
 
-  result.ifErrorThen = function ifErrorThen( args )
+  result.ifErrorThen = function ifErrorThen( _method )
   {
-    var c = _.routineSeal( context,correspondent,[ args ] );
+    var args = method ? arguments : _.arraySlice( arguments,1 );
+    var c = _.routineSeal( context,method || _method,args );
     self.ifErrorThen( c );
     return this;
   }
 
-  result.thenDo = function thenDo( args )
+  result.thenDo = function thenDo( _method )
   {
-    var c = _.routineSeal( context,correspondent,[ args ] );
+    var args = method ? arguments : _.arraySlice( arguments,1 );
+    var c = _.routineSeal( context,method || _method,args );
     self.thenDo( c );
     return this;
   }
 
-  result.got = function got( args )
+  result.got = function got( _method )
   {
-    var c = _.routineSeal( context,correspondent,[ args ] );
+    var args = method ? arguments : _.arraySlice( arguments,1 );
+    var c = _.routineSeal( context,method || _method,args );
     self.got( c );
     return this;
   }
@@ -1388,13 +1392,13 @@ var give = function give( message )
  * @memberof wConsequence#
  */
 
-var error = function( error )
+var error = function error( error )
 {
   var self = this;
   _.assert( arguments.length === 1 || arguments.length === 0 );
   if( arguments.length === 0  )
   error = _.err();
-  return self._giveWithError( error,undefined );
+  return self.__giveWithError( error,undefined );
 }
 
 //
@@ -1411,11 +1415,23 @@ var error = function( error )
  * @memberof wConsequence#
  */
 
-var _giveWithError = function( error,argument )
+var _giveWithError = function _giveWithError( error,argument )
 {
   var self = this;
 
   _.assert( arguments.length === 2 );
+
+  if( error )
+  error = _.err( error );
+
+  return self.__giveWithError( error,argument );
+}
+
+//
+
+var __giveWithError = function __giveWithError( error,argument )
+{
+  var self = this;
 
   var message =
   {
@@ -1581,7 +1597,7 @@ var _handleGot = function _handleGot()
   var __giveToConsequence = function( correspondent,ordinary )
   {
 
-    result = correspondent.onGot._giveWithError( message.error,message.argument );
+    result = correspondent.onGot.__giveWithError( message.error,message.argument );
 
     if( ordinary )
     if( correspondent.thenning )
@@ -1832,65 +1848,71 @@ var correspondentsCancel = function correspondentsCancel( correspondent )
 // message
 // --
 
-  /**
-   * The internal wConsequence view of message.
-   * @typedef {Object} _messageObject
-   * @property {*} error error value
-   * @property {*} argument resolved value
-   */
+/**
+ * The internal wConsequence view of message.
+ * @typedef {Object} _messageObject
+ * @property {*} error error value
+ * @property {*} argument resolved value
+ */
 
-  /**
-   * Returns messages queue.
-   * @example
-   * var con = wConsequence();
+/**
+ * Returns messages queue.
+ * @example
+ * var con = wConsequence();
 
-     con.give( 'foo' );
-     con.give( 'bar ');
-     con.error( 'baz' );
+   con.give( 'foo' );
+   con.give( 'bar ');
+   con.error( 'baz' );
 
 
-     var messages = con.messagesGet();
+   var messages = con.messagesGet();
 
-     console.log( messages );
+   console.log( messages );
 
-     // prints
-     // [ { error: null, argument: 'foo' },
-     // { error: null, argument: 'bar ' },
-     // { error: 'baz', argument: undefined } ]
+   // prints
+   // [ { error: null, argument: 'foo' },
+   // { error: null, argument: 'bar ' },
+   // { error: 'baz', argument: undefined } ]
 
-   * @returns {_messageObject[]}
-   * @method messagesGet
-   * @memberof wConsequence
-   */
+ * @returns {_messageObject[]}
+ * @method messagesGet
+ * @memberof wConsequence
+ */
 
-var messagesGet = function()
+var messagesGet = function messagesGet( index )
 {
   var self = this;
+  _.assert( arguments.length === 0 || arguments.length === 1 )
+  _.assert( index === undefined || _.numberIs( index ) );
+  if( index !== undefined )
+  return self._message[ index ];
+  else
   return self._message;
 }
 
 //
-  /**
-   * If called without arguments, method removes all messages from wConsequence
-   * correspondents queue.
-   * If as argument passed value, method messagesCancel() removes it from messages queue if messages queue contains it.
-   * @example
-   * var con = wConsequence();
 
-     con.give( 'foo' );
-     con.give( 'bar ');
-     con.error( 'baz' );
+/**
+ * If called without arguments, method removes all messages from wConsequence
+ * correspondents queue.
+ * If as argument passed value, method messagesCancel() removes it from messages queue if messages queue contains it.
+ * @example
+ * var con = wConsequence();
 
-     con.messagesCancel();
-     var messages = con.messagesGet();
+   con.give( 'foo' );
+   con.give( 'bar ');
+   con.error( 'baz' );
 
-     console.log( messages );
-     // prints: []
-   * @param {_messageObject} data message object for removing.
-   * @throws {Error} If passed extra arguments.
-   * @method correspondentsCancel
-   * @memberof wConsequence
-   */
+   con.messagesCancel();
+   var messages = con.messagesGet();
+
+   console.log( messages );
+   // prints: []
+ * @param {_messageObject} data message object for removing.
+ * @throws {Error} If passed extra arguments.
+ * @method correspondentsCancel
+ * @memberof wConsequence
+ */
 
 var messagesCancel = function messagesCancel( data )
 {
@@ -1915,27 +1937,27 @@ var messagesCancel = function messagesCancel( data )
    * @example
    * var con = wConsequence();
 
-     var conLen = con.hasMessage();
+     var conLen = con.messageHas();
      console.log( conLen );
 
      con.give( 'foo' );
      con.give( 'bar' );
      con.error( 'baz' );
-     conLen = con.hasMessage();
+     conLen = con.messageHas();
      console.log( conLen );
 
      con.messagesCancel();
 
-     conLen = con.hasMessage();
+     conLen = con.messageHas();
      console.log( conLen );
      // prints: 0, 3, 0;
 
    * @returns {number}
-   * @method hasMessage
+   * @method messageHas
    * @memberof wConsequence
    */
 
-var hasMessage = function()
+var messageHas = function()
 {
   var self = this;
   if( self._message.length <= self._correspondent.length )
@@ -2171,7 +2193,7 @@ var _give_static = function _give_static( o )
 
     if( o.error !== undefined )
     {
-      o.consequence._giveWithError( o.error,o.args[ 0 ] );
+      o.consequence.__giveWithError( o.error,o.args[ 0 ] );
     }
     else
     {
@@ -2591,6 +2613,7 @@ var Extend =
   give : give,
   error : error,
   _giveWithError : _giveWithError,
+  __giveWithError : __giveWithError,
   ping : ping, /* experimental */
 
 
@@ -2610,10 +2633,8 @@ var Extend =
 
   messagesGet : messagesGet,
   messagesCancel : messagesCancel,
-
-  hasMessage : hasMessage,
-  messageHas : hasMessage,
-
+  messageHas : messageHas,
+  // hasMessage : messageHas,
 
   // etc
 
