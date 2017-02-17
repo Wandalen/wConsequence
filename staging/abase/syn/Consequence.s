@@ -38,32 +38,15 @@ if( typeof module !== 'undefined' )
   if( typeof wBase === 'undefined' )
   try
   {
-    require( '../wTools.s' );
+    require( '../../abase/wTools.s' );
   }
   catch( err )
   {
     require( 'wTools' );
   }
 
-  if( typeof wCopyable === 'undefined' )
-  try
-  {
-    require( '../mixin/Copyable.s' );
-  }
-  catch( err )
-  {
-    require( 'wCopyable' );
-  }
-
-  if( typeof wProto === 'undefined' )
-  try
-  {
-    require( '../component/Proto.s' );
-  }
-  catch( err )
-  {
-    require( 'wProto' );
-  }
+  wTools.include( 'wProto' );
+  wTools.include( 'wCopyable' );
 
 }
 
@@ -176,7 +159,7 @@ var init = function init( o )
  * @memberof wConsequence#
  */
 
-var _correspondentAppend = function( o )
+function _correspondentAppend( o )
 {
   var self = this;
   var correspondent = o.correspondent;
@@ -257,12 +240,12 @@ var _correspondentAppend = function( o )
       After invocation, correspondent will be removed from correspondents queue.
       Returns current wConsequence instance.
    * @example
-       var gotHandler1 = function( error, value )
+       function gotHandler1( error, value )
        {
          console.log( 'handler 1: ' + value );
        };
 
-       var gotHandler2 = function( error, value )
+       function gotHandler2( error, value )
        {
          console.log( 'handler 2: ' + value );
        };
@@ -617,7 +600,7 @@ var thenOnce = function thenOnce( correspondent )
 
      var con1 = new wConsequence();
      con1.give(1).give(2).give(3);
-     var con2 = con1.thenClone();
+     var con2 = con1.thenSplit();
      con2.got( gotHandler2 );
      con2.got( gotHandler2 );
      con1.got( gotHandler1 );
@@ -630,18 +613,31 @@ var thenOnce = function thenOnce( correspondent )
 
    * @returns {wConsequence}
    * @throws {Error} if passed any argument.
-   * @method thenClone
+   * @method thenSplit
    * @memberof wConsequence#
    */
 
-var thenClone = function thenClone()
+var thenSplit = function thenSplit( first )
 {
   var self = this;
 
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0 || arguments.length === 1 );
 
   var result = new wConsequence();
-  self.thenDo( result );
+
+  if( first )
+  {
+    result.thenDo( first );
+    self.got( function( err,data )
+    {
+      this.give( err,data );
+      result.give( err,data );
+    });
+  }
+  else
+  {
+    self.thenDo( result );
+  }
 
   return result;
 }
@@ -1018,7 +1014,7 @@ var persist = function persist( correspondent )
      Returns current wConsequence.
    * @example
    *
-     var handleGot1 = function(err, val)
+     function handleGot1(err, val)
      {
        if( err )
        {
@@ -1113,7 +1109,7 @@ var _and = function _and( srcs,thenning )
 
   /* */
 
-  var give = function()
+  function give()
   {
 
     if( thenning )
@@ -1131,7 +1127,7 @@ var _and = function _and( srcs,thenning )
   /* */
 
   var count = srcs.length+1;
-  var collect = function( index,err,data )
+  function collect( index,err,data )
   {
     count -= 1;
     if( err && !anyErr )
@@ -1167,72 +1163,67 @@ var _and = function _and( srcs,thenning )
 
 //
 
-  /**
-   * If type of `src` is function, the first method run it on begin, and if the result of `src` invocation is instance of
-     wConsequence, the current wConsequence will be wait for it resolving, else method added result to messages sequence
-     of the current instance.
-   * If `src` is instance of wConsequence, the current wConsequence delegates to it his first corespondent.
-   * Returns current wConsequence instance.
-   * @example
-   * var handleGot1 = function(err, val)
+/**
+ * If type of `src` is function, the first method run it on begin, and if the result of `src` invocation is instance of
+   wConsequence, the current wConsequence will be wait for it resolving, else method added result to messages sequence
+   of the current instance.
+ * If `src` is instance of wConsequence, the current wConsequence delegates to it his first corespondent.
+ * Returns current wConsequence instance.
+ * @example
+ * function handleGot1(err, val)
+   {
+     if( err )
      {
-       if( err )
-       {
-         console.log( 'handleGot1 error: ' + err );
-       }
-       else
-       {
-         console.log( 'handleGot1 value: ' + val );
-       }
-     };
+       console.log( 'handleGot1 error: ' + err );
+     }
+     else
+     {
+       console.log( 'handleGot1 value: ' + val );
+     }
+   };
 
-     var con = new  wConsequence();
+   var con = new  wConsequence();
 
-     con.first( function() {
-       return 'foo';
-     } );
+   con.first( function() {
+     return 'foo';
+   } );
 
-   con.give( 100 );
-   con.got( handleGot1 );
-   // prints: handleGot1 value: foo
-  *
-    var handleGot1 = function(err, val)
+ con.give( 100 );
+ con.got( handleGot1 );
+ // prints: handleGot1 value: foo
+*
+  function handleGot1(err, val)
+  {
+    if( err )
     {
-      if( err )
-      {
-        console.log( 'handleGot1 error: ' + err );
-      }
-      else
-      {
-        console.log( 'handleGot1 value: ' + val );
-      }
-    };
+      console.log( 'handleGot1 error: ' + err );
+    }
+    else
+    {
+      console.log( 'handleGot1 value: ' + val );
+    }
+  };
 
-    var con = new  wConsequence();
+  var con = new  wConsequence();
 
-    con.first( function() {
-      return wConsequence().give(3);
-    } );
+  con.first( function() {
+    return wConsequence().give(3);
+  } );
 
-   con.give(100);
-   con.got( handleGot1 );
-   * @param {wConsequence|Function} src wConsequence or routine.
-   * @returns {wConsequence}
-   * @throws {Error} if `src` has unexpected type.
-   * @method first
-   * @memberof wConsequence#
-   */
+ con.give(100);
+ con.got( handleGot1 );
+ * @param {wConsequence|Function} src wConsequence or routine.
+ * @returns {wConsequence}
+ * @throws {Error} if `src` has unexpected type.
+ * @method first
+ * @memberof wConsequence#
+ */
 
 var first = function first( src )
 {
   var self = this;
 
-/*
-  if( onReady )
-  con.first( onReady );
-  else
-  con.give();
-*/
+  _.assert( arguments.length === 1 );
 
   if( src instanceof wConsequence )
   {
@@ -1320,7 +1311,7 @@ var seal = function seal( context,method )
  * Method also can accept two parameters: error, and
  * Returns current wConsequence instance.
  * @example
- * var gotHandler1 = function( error, value )
+ * function gotHandler1( error, value )
    {
      console.log( 'handler 1: ' + value );
    };
@@ -1354,7 +1345,7 @@ var give = function give( message )
  * Using for adds to message queue error reason, that using for informing corespondent that will handle it, about
  * exception
  * @example
-   var showResult = function(err, val)
+   function showResult(err, val)
    {
      if( err )
      {
@@ -1368,7 +1359,7 @@ var give = function give( message )
 
    var con = new  wConsequence();
 
-   var divade = function( x, y )
+   function divade( x, y )
    {
      var result;
      if( y!== 0 )
@@ -1456,7 +1447,7 @@ var __giveWithError = function __giveWithError( error,argument )
  * @example
    var con = new  wConsequence();
 
-   var increment = function( err, value )
+   function increment( err, value )
    {
      return ++value;
    };
@@ -1474,7 +1465,7 @@ var __giveWithError = function __giveWithError( error,argument )
  * @memberof wConsequence#
  */
 
-var ping = function( error,argument )
+function ping( error,argument )
 {
   var self = this;
 
@@ -1528,13 +1519,14 @@ var _handleError = function _handleError( err )
 
   if( Config.debug && err.attentionNeeded )
   {
-    console.error( 'Consequence caught error, details come later' );
+    debugger;
+    logger.error( 'Consequence caught error, details come later' );
 
     _.timeOut( 1, function()
     {
       if( err.attentionNeeded )
       {
-        console.error( 'Uncaught error caught by Consequence :' );
+        logger.error( 'Uncaught error caught by Consequence :' );
         _.errLog( err );
       }
     });
@@ -1594,7 +1586,7 @@ var _handleGot = function _handleGot()
 
   /* give message to correspondent consequence */
 
-  var __giveToConsequence = function( correspondent,ordinary )
+  function __giveToConsequence( correspondent,ordinary )
   {
 
     result = correspondent.onGot.__giveWithError( message.error,message.argument );
@@ -1610,7 +1602,7 @@ var _handleGot = function _handleGot()
 
   /* give message to correspondent routine */
 
-  var __giveToRoutine = function( correspondent,ordinary )
+  function __giveToRoutine( correspondent,ordinary )
   {
 
     if( Config.debug )
@@ -1664,7 +1656,7 @@ var _handleGot = function _handleGot()
 
   /* give to */
 
-  var __giveTo = function( correspondent,ordinary )
+  function __giveTo( correspondent,ordinary )
   {
 
     if( correspondent.onGot instanceof Self )
@@ -1783,7 +1775,7 @@ var _handleGot = function _handleGot()
    * @memberof wConsequence
    */
 
-var correspondentsGet = function()
+function correspondentsGet()
 {
   var self = this;
   return self._correspondent;
@@ -1957,7 +1949,7 @@ var messagesCancel = function messagesCancel( data )
    * @memberof wConsequence
    */
 
-var messageHas = function()
+function messageHas()
 {
   var self = this;
   if( self._message.length <= self._correspondent.length )
@@ -2028,7 +2020,7 @@ var clear = function clear( data )
    * @memberof wConsequence
    */
 
-var toStr = function()
+function toStr()
 {
   var self = this;
   var result = self.nickName;
@@ -2054,7 +2046,7 @@ var toStr = function()
  * @memberof wConsequence
  */
 
-var _onDebug = function( err,data )
+function _onDebug( err,data )
 {
   debugger;
   if( err )
@@ -2087,7 +2079,7 @@ var from_static = function from_static( src )
  * If `consequence` if instance of wConsequence, method pass arg and error if defined to it's message sequence.
  * If `consequence` is routine, method pass arg as arguments to it and return result.
  * @example
- * var showResult = function(err, val)
+ * function showResult(err, val)
    {
      if( err )
      {
@@ -2226,7 +2218,7 @@ var _give_static = function _give_static( o )
    * If `consequence` if instance of wConsequence, method error to it's message sequence.
    * If `consequence` is routine, method pass error as arguments to it and return result.
    * @example
-   * var showResult = function(err, val)
+   * function showResult(err, val)
      {
        if( err )
        {
@@ -2252,7 +2244,7 @@ var _give_static = function _give_static( o )
    * @memberof wConsequence
    */
 
-var error_static = function( consequence,error )
+function error_static( consequence,error )
 {
 
   _.assert( arguments.length === 2 );
@@ -2319,7 +2311,7 @@ var giveWithContextAndError_static = function giveWithContextAndError_static( co
  * @see {@link wConsequence#ifErrorThen}
  */
 
-var ifErrorThen_static = function()
+function ifErrorThen_static()
 {
 
   _.assert( arguments.length === 1 );
@@ -2361,7 +2353,7 @@ var ifErrorThen_static = function()
    * @memberof wConsequence
    */
 
-var ifNoErrorThen_static = function()
+function ifNoErrorThen_static()
 {
 
   _.assert( arguments.length === 1 );
@@ -2465,11 +2457,11 @@ if( 0 )
 
 //
 
-var experimentThereafter = function()
+function experimentThereafter()
 {
   debugger;
 
-  var f = function()
+  function f()
   {
     debugger;
     console.log( 'done2' );
@@ -2484,7 +2476,7 @@ var experimentThereafter = function()
 
 //
 
-var experimentWithin = function()
+function experimentWithin()
 {
 
   debugger;
@@ -2502,7 +2494,7 @@ var experimentWithin = function()
 
 //
 
-var experimentCall = function()
+function experimentCall()
 {
 
   var con = new wConsequence();
@@ -2579,7 +2571,7 @@ var Extend =
   thenReportError : thenReportError, /* experimental */
 
   thenOnce : thenOnce, /* experimental */
-  thenClone : thenClone,
+  thenSplit : thenSplit,
 
   tap : tap,
 
