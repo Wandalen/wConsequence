@@ -1,11 +1,10 @@
 {
   "name": "wConsequence",
-  "version": "0.3.43",
+  "version": "0.3.44",
   "description": "Advanced synchronization mechanism. wConsequence is able to solve any asynchronous problem replacing and including functionality of many other mechanisms, such as: Callback, Event, Signal, Mutex, Semaphore, Async, Promise.",
   "license": "MIT",
   "author": "Kostiantyn Wandalen <wtory.net@domainsbyproxy.com>",
-  "contributors":
-  [
+  "contributors": [
     {
       "name": "Kostiantyn Wandalen",
       "email": "wtory.net@domainsbyproxy.com>"
