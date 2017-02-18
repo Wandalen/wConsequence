@@ -109,6 +109,8 @@ var Self = function wConsequence( options )
   return wrap;
 }
 
+Self.nameShort = 'Consequence';
+
 //
 
   /**
@@ -184,8 +186,6 @@ function _correspondentAppend( o )
     _.assert( o.context === undefined && o.argument === undefined );
   }
 
-  /* */
-
   /* store */
 
   if( o.persistent )
@@ -195,16 +195,21 @@ function _correspondentAppend( o )
     id : id,
   });
   else
-  self._correspondent.push
-  ({
-    onGot : correspondent,
-    thenning : !!o.thenning,
-    tapping : !!o.tapping,
-    ifError :  !!o.ifError,
-    ifNoError : !!o.ifNoError,
-    debug : !!o.debug,
-    id : id,
-  });
+  {
+    var correspondentDescriptor =
+    {
+      onGot : correspondent,
+      thenning : !!o.thenning,
+      tapping : !!o.tapping,
+      ifError :  !!o.ifError,
+      ifNoError : !!o.ifNoError,
+      debug : !!o.debug,
+      id : id,
+    }
+    if( Config.debug )
+    correspondentDescriptor.stack = _.diagnosticStack( 2 );
+    self._correspondent.push( correspondentDescriptor );
+  }
 
   /* got */
 
@@ -509,48 +514,48 @@ var thenReportError = function thenReportError( context,correspondent,args )
 
 //
 
-  /**
-   * Works like thenDo() method, but adds correspondent to queue only if function with same id not exist in queue yet.
-   * Note: this is an experimental tool.
-   *
-   * @example
-     function gotHandler1( error, value )
-     {
-       console.log( 'handler 1: ' + value );
-       value++;
-       return value;
-     };
+/**
+ * Works like thenDo() method, but adds correspondent to queue only if function with same id not exist in queue yet.
+ * Note: this is an experimental tool.
+ *
+ * @example
+   function gotHandler1( error, value )
+   {
+     console.log( 'handler 1: ' + value );
+     value++;
+     return value;
+   };
 
-     function gotHandler2( error, value )
-     {
-       console.log( 'handler 2: ' + value );
-     };
+   function gotHandler2( error, value )
+   {
+     console.log( 'handler 2: ' + value );
+   };
 
-     function gotHandler3( error, value )
-     {
-       console.log( 'handler 3: ' + value );
-     };
+   function gotHandler3( error, value )
+   {
+     console.log( 'handler 3: ' + value );
+   };
 
-     var con1 = new wConsequence();
+   var con1 = new wConsequence();
 
-     con1.thenOnce( gotHandler1 ).thenOnce( gotHandler1 ).got(gotHandler3);
-     con1.give( 4 ).give( 10 );
+   con1.thenOnce( gotHandler1 ).thenOnce( gotHandler1 ).got(gotHandler3);
+   con1.give( 4 ).give( 10 );
 
-     // prints
-     // handler 1: 4
-     // handler 3: 5
+   // prints
+   // handler 1: 4
+   // handler 3: 5
 
-   * @param {wConsequence~Correspondent|wConsequence} correspondent callback, that accepts resolved value or exception
-     reason.
-   * @returns {*}
-   * @throws {Error} if passed more than one argument.
-   * @throws {Error} if correspondent is defined as anonymous function including anonymous function expression.
-   * @see {@link wConsequence~Correspondent} correspondent callback
-   * @see {@link wConsequence#thenDo} thenDo method
-   * @see {@link wConsequence#gotOnce} gotOnce method
-   * @method thenOnce
-   * @memberof wConsequence#
-   */
+ * @param {wConsequence~Correspondent|wConsequence} correspondent callback, that accepts resolved value or exception
+   reason.
+ * @returns {*}
+ * @throws {Error} if passed more than one argument.
+ * @throws {Error} if correspondent is defined as anonymous function including anonymous function expression.
+ * @see {@link wConsequence~Correspondent} correspondent callback
+ * @see {@link wConsequence#thenDo} thenDo method
+ * @see {@link wConsequence#gotOnce} gotOnce method
+ * @method thenOnce
+ * @memberof wConsequence#
+ */
 
 var thenOnce = function thenOnce( correspondent )
 {
@@ -582,40 +587,40 @@ var thenOnce = function thenOnce( correspondent )
 
 //
 
-  /**
-   * Returns new wConsequence instance. If on cloning moment current wConsequence has unhandled resolved values in queue
-     the first of them would be handled by new wConsequence. Else pass accepted
-   * @example
-     function gotHandler1( error, value )
-     {
-       console.log( 'handler 1: ' + value );
-       value++;
-       return value;
-     };
+/**
+ * Returns new wConsequence instance. If on cloning moment current wConsequence has unhandled resolved values in queue
+   the first of them would be handled by new wConsequence. Else pass accepted
+ * @example
+   function gotHandler1( error, value )
+   {
+     console.log( 'handler 1: ' + value );
+     value++;
+     return value;
+   };
 
-     function gotHandler2( error, value )
-     {
-       console.log( 'handler 2: ' + value );
-     };
+   function gotHandler2( error, value )
+   {
+     console.log( 'handler 2: ' + value );
+   };
 
-     var con1 = new wConsequence();
-     con1.give(1).give(2).give(3);
-     var con2 = con1.thenSplit();
-     con2.got( gotHandler2 );
-     con2.got( gotHandler2 );
-     con1.got( gotHandler1 );
-     con1.got( gotHandler1 );
+   var con1 = new wConsequence();
+   con1.give(1).give(2).give(3);
+   var con2 = con1.thenSplit();
+   con2.got( gotHandler2 );
+   con2.got( gotHandler2 );
+   con1.got( gotHandler1 );
+   con1.got( gotHandler1 );
 
-      // prints:
-      // handler 2: 1 // only first value copied into cloned wConsequence
-      // handler 1: 1
-      // handler 1: 2
+    // prints:
+    // handler 2: 1 // only first value copied into cloned wConsequence
+    // handler 1: 1
+    // handler 1: 2
 
-   * @returns {wConsequence}
-   * @throws {Error} if passed any argument.
-   * @method thenSplit
-   * @memberof wConsequence#
-   */
+ * @returns {wConsequence}
+ * @throws {Error} if passed any argument.
+ * @method thenSplit
+ * @memberof wConsequence#
+ */
 
 var thenSplit = function thenSplit( first )
 {
@@ -644,44 +649,44 @@ var thenSplit = function thenSplit( first )
 
 //
 
-  /**
-   * Works like got() method, but value that accepts correspondent, passes to the next taker in takers queue without
-     modification.
-   * @example
-   *
-     function gotHandler1( error, value )
-     {
-       console.log( 'handler 1: ' + value );
-       value++;
-       return value;
-     }
+/**
+ * Works like got() method, but value that accepts correspondent, passes to the next taker in takers queue without
+   modification.
+ * @example
+ *
+   function gotHandler1( error, value )
+   {
+     console.log( 'handler 1: ' + value );
+     value++;
+     return value;
+   }
 
-     function gotHandler2( error, value )
-     {
-       console.log( 'handler 2: ' + value );
-     }
+   function gotHandler2( error, value )
+   {
+     console.log( 'handler 2: ' + value );
+   }
 
-     function gotHandler3( error, value )
-     {
-       console.log( 'handler 3: ' + value );
-     }
+   function gotHandler3( error, value )
+   {
+     console.log( 'handler 3: ' + value );
+   }
 
-     var con1 = new wConsequence();
-     con1.give(1).give(4);
+   var con1 = new wConsequence();
+   con1.give(1).give(4);
 
-     // prints:
-     // handler 1: 1
-     // handler 2: 1
-     // handler 3: 4
+   // prints:
+   // handler 1: 1
+   // handler 2: 1
+   // handler 3: 4
 
-   * @param {wConsequence~Correspondent|wConsequence} correspondent callback, that accepts resolved value or exception
-     reason.
-   * @returns {wConsequence}
-   * @throws {Error} if passed more than one arguments
-   * @see {@link wConsequence#got} got method
-   * @method tap
-   * @memberof wConsequence#
-   */
+ * @param {wConsequence~Correspondent|wConsequence} correspondent callback, that accepts resolved value or exception
+   reason.
+ * @returns {wConsequence}
+ * @throws {Error} if passed more than one arguments
+ * @see {@link wConsequence#got} got method
+ * @method tap
+ * @memberof wConsequence#
+ */
 
 var tap = function tap( correspondent )
 {
@@ -857,42 +862,42 @@ var thenDebug = function thenDebug()
 
 //
 
-  /**
-   * Works like thenDo, but when correspondent accepts message from messages sequence, execution of correspondent will be
-      delayed. The result of correspondent execution will be passed to the handler that is first in correspondent queue
-      on execution end moment.
+/**
+ * Works like thenDo, but when correspondent accepts message from messages sequence, execution of correspondent will be
+    delayed. The result of correspondent execution will be passed to the handler that is first in correspondent queue
+    on execution end moment.
 
-   * @example
-   *
-     function gotHandler1( error, value )
-     {
-       console.log( 'handler 1: ' + value );
-       value++;
-       return value;
-     }
+ * @example
+ *
+   function gotHandler1( error, value )
+   {
+     console.log( 'handler 1: ' + value );
+     value++;
+     return value;
+   }
 
-     function gotHandler2( error, value )
-     {
-       console.log( 'handler 2: ' + value );
-     }
+   function gotHandler2( error, value )
+   {
+     console.log( 'handler 2: ' + value );
+   }
 
-     var con = new wConsequence();
+   var con = new wConsequence();
 
-     con.thenTimeOut(500, gotHandler1).got( gotHandler2 );
-     con.give(90);
-     //  prints:
-     // handler 1: 90
-     // handler 2: 91
+   con.thenTimeOut(500, gotHandler1).got( gotHandler2 );
+   con.give(90);
+   //  prints:
+   // handler 1: 90
+   // handler 2: 91
 
-   * @param {number} time delay in milliseconds
-   * @param {wConsequence~Correspondent|wConsequence} correspondent callback, that accepts exception reason and value.
-   * @returns {wConsequence}
-   * @throws {Error} if missed arguments.
-   * @throws {Error} if passed extra arguments.
-   * @see {@link wConsequence~thenDo} thenDo method
-   * @method thenTimeOut
-   * @memberof wConsequence#
-   */
+ * @param {number} time delay in milliseconds
+ * @param {wConsequence~Correspondent|wConsequence} correspondent callback, that accepts exception reason and value.
+ * @returns {wConsequence}
+ * @throws {Error} if missed arguments.
+ * @throws {Error} if passed extra arguments.
+ * @see {@link wConsequence~thenDo} thenDo method
+ * @method thenTimeOut
+ * @memberof wConsequence#
+ */
 
 var thenTimeOut = function thenTimeOut( time,correspondent )
 {
@@ -941,53 +946,52 @@ var thenTimeOut = function thenTimeOut( time,correspondent )
 
 //
 
-  /**
-   * Correspondents added by persist method, will be accepted every messages resolved by wConsequence, like an event
-      listener. Returns current wConsequence instance.
-   * @example
-     function gotHandler1( error, value )
-     {
-       console.log( 'message handler 1: ' + value );
-       value++;
-       return value;
-     }
+/**
+ * Correspondents added by persist method, will be accepted every messages resolved by wConsequence, like an event
+    listener. Returns current wConsequence instance.
+ * @example
+   function gotHandler1( error, value )
+   {
+     console.log( 'message handler 1: ' + value );
+     value++;
+     return value;
+   }
 
-     function gotHandler2( error, value )
-     {
-       console.log( 'message handler 2: ' + value );
-     }
+   function gotHandler2( error, value )
+   {
+     console.log( 'message handler 2: ' + value );
+   }
 
-     var con = new wConsequence();
+   var con = new wConsequence();
 
-     var messages = [ 'hello', 'world', 'foo', 'bar', 'baz' ],
-     len = messages.length,
-     i = 0;
+   var messages = [ 'hello', 'world', 'foo', 'bar', 'baz' ],
+   len = messages.length,
+   i = 0;
 
-     con.persist( gotHandler1).persist( gotHandler2 );
+   con.persist( gotHandler1).persist( gotHandler2 );
 
-     for( ; i < len; i++) con.give( messages[i] );
+   for( ; i < len; i++) con.give( messages[i] );
 
-     // prints:
-     // message handler 1: hello
-     // message handler 2: hello
-     // message handler 1: world
-     // message handler 2: world
-     // message handler 1: foo
-     // message handler 2: foo
-     // message handler 1: bar
-     // message handler 2: bar
-     // message handler 1: baz
-     // message handler 2: baz
+   // prints:
+   // message handler 1: hello
+   // message handler 2: hello
+   // message handler 1: world
+   // message handler 2: world
+   // message handler 1: foo
+   // message handler 2: foo
+   // message handler 1: bar
+   // message handler 2: bar
+   // message handler 1: baz
+   // message handler 2: baz
 
-   * @param {wConsequence~Correspondent|wConsequence} correspondent callback, that accepts exception reason and value.
-   * @returns {wConsequence}
-   * @throws {Error} if missed arguments.
-   * @throws {Error} if passed extra arguments.
-   * @see {@link wConsequence~got} got method
-   * @method persist
-   * @memberof wConsequence#
-   */
-
+ * @param {wConsequence~Correspondent|wConsequence} correspondent callback, that accepts exception reason and value.
+ * @returns {wConsequence}
+ * @throws {Error} if missed arguments.
+ * @throws {Error} if passed extra arguments.
+ * @see {@link wConsequence~got} got method
+ * @method persist
+ * @memberof wConsequence#
+ */
 
 var persist = function persist( correspondent )
 {
@@ -1008,58 +1012,58 @@ var persist = function persist( correspondent )
 // advanced
 // --
 
-  /**
-   * Method accepts array of wConsequences object. If current wConsequence instance ready to resolve message, it will be
-     wait for all passed wConsequence instances will been resolved, then current wConsequence resolve own message.
-     Returns current wConsequence.
-   * @example
-   *
-     function handleGot1(err, val)
+/**
+ * Method accepts array of wConsequences object. If current wConsequence instance ready to resolve message, it will be
+   wait for all passed wConsequence instances will been resolved, then current wConsequence resolve own message.
+   Returns current wConsequence.
+ * @example
+ *
+   function handleGot1(err, val)
+   {
+     if( err )
      {
-       if( err )
-       {
-         console.log( 'handleGot1 error: ' + err );
-       }
-       else
-       {
-         console.log( 'handleGot1 value: ' + val );
-       }
-     };
-
-     var con1 = new wConsequence();
-     var con2 = new wConsequence();
-
-     con1.got( function( err, value )
+       console.log( 'handleGot1 error: ' + err );
+     }
+     else
      {
-       console.log( 'con1 handler executed with value: ' + value + 'and error: ' + err );
-     } );
+       console.log( 'handleGot1 value: ' + val );
+     }
+   };
 
-     con2.got( function( err, value )
-     {
-       console.log( 'con2 handler executed with value: ' + value + 'and error: ' + err );
-     } );
+   var con1 = new wConsequence();
+   var con2 = new wConsequence();
 
-     var conOwner = new  wConsequence();
+   con1.got( function( err, value )
+   {
+     console.log( 'con1 handler executed with value: ' + value + 'and error: ' + err );
+   } );
 
-     conOwner.and( [ con1, con2 ] );
+   con2.got( function( err, value )
+   {
+     console.log( 'con2 handler executed with value: ' + value + 'and error: ' + err );
+   } );
 
-     conOwner.give( 100 );
-     conOwner.got( handleGot1 );
+   var conOwner = new  wConsequence();
 
-     con1.give( 'value1' );
-     con2.error( 'ups' );
-     // prints
-     // con1 handler executed with value: value1and error: null
-     // con2 handler executed with value: undefinedand error: ups
-     // handleGot1 value: 100
+   conOwner.and( [ con1, con2 ] );
 
-   * @param {wConsequence[]|wConsequence} srcs array of wConsequence
-   * @returns {wConsequence}
-   * @throws {Error} if missed arguments.
-   * @throws {Error} if passed extra arguments.
-   * @method andGet
-   * @memberof wConsequence#
-   */
+   conOwner.give( 100 );
+   conOwner.got( handleGot1 );
+
+   con1.give( 'value1' );
+   con2.error( 'ups' );
+   // prints
+   // con1 handler executed with value: value1and error: null
+   // con2 handler executed with value: undefinedand error: ups
+   // handleGot1 value: 100
+
+ * @param {wConsequence[]|wConsequence} srcs array of wConsequence
+ * @returns {wConsequence}
+ * @throws {Error} if missed arguments.
+ * @throws {Error} if passed extra arguments.
+ * @method andGet
+ * @memberof wConsequence#
+ */
 
 var andGet = function andGet( srcs )
 {
@@ -1070,14 +1074,14 @@ var andGet = function andGet( srcs )
 
 //
 
-  /**
-   * Works like andGet() method, but unlike andGet() and() give back massages to src consequences once all come.
-   * @see wConsequence#andGet
-   * @param {wConsequence[]|wConsequence} srcs Array of wConsequence objects
-   * @throws {Error} If missed or passed extra argument.
-   * @method and
-   * @memberof wConsequence#
-   */
+/**
+ * Works like andGet() method, but unlike andGet() and() give back massages to src consequences once all come.
+ * @see wConsequence#andGet
+ * @param {wConsequence[]|wConsequence} srcs Array of wConsequence objects
+ * @throws {Error} If missed or passed extra argument.
+ * @method and
+ * @memberof wConsequence#
+ */
 
 var and = function and( srcs )
 {
@@ -1222,8 +1226,16 @@ var _and = function _and( srcs,thenning )
 var first = function first( src )
 {
   var self = this;
+  return self._first( src,null );
+}
 
-  _.assert( arguments.length === 1 );
+//
+
+var _first = function _first( src,stack )
+{
+  var self = this;
+
+  _.assert( arguments.length === 2 );
 
   if( src instanceof wConsequence )
   {
@@ -1487,20 +1499,28 @@ function ping( error,argument )
 // handling mechanism
 // --
 
-  /**
-   * Creates and handles error object based on `err` parameter.
-   * Returns new wConsequence instance with error in messages queue.
-   * @param {*} err error value.
-   * @returns {wConsequence}
-   * @private
-   * @method _handleError
-   * @memberof wConsequence#
-   */
+/**
+ * Creates and handles error object based on `err` parameter.
+ * Returns new wConsequence instance with error in messages queue.
+ * @param {*} err error value.
+ * @returns {wConsequence}
+ * @private
+ * @method _handleError
+ * @memberof wConsequence#
+ */
 
-var _handleError = function _handleError( err )
+var _handleError = function _handleError( err,correspondent )
 {
   var self = this;
-  var err = _.err( err );
+  // var err = _.err( err );
+  var err = _._err
+  ({
+    args : [ err ],
+    level : 2,
+  });
+
+  if( Config.debug && correspondent )
+  err.stack = err.stack + '\n+\n' + correspondent.stack;
 
   if( !err.attentionGiven )
   {
@@ -1639,7 +1659,7 @@ var _handleGot = function _handleGot()
     }
     catch( err )
     {
-      result = self._handleError( err );
+      result = self._handleError( err,correspondent );
     }
 
     /**/
@@ -2567,7 +2587,6 @@ var Extend =
   gotOnce : gotOnce, /* experimental */
 
   thenDo : thenDo,
-  // thenSealed : thenSealed,
   thenReportError : thenReportError, /* experimental */
 
   thenOnce : thenOnce, /* experimental */
@@ -2596,8 +2615,9 @@ var Extend =
   _and : _and,
 
   first : first,
+  _first : _first,
 
-  seal : seal,
+  seal : seal, /* experimental */
 
 
   // messanger
@@ -2626,7 +2646,7 @@ var Extend =
   messagesGet : messagesGet,
   messagesCancel : messagesCancel,
   messageHas : messageHas,
-  // hasMessage : messageHas,
+
 
   // etc
 
@@ -2670,27 +2690,28 @@ _.assert( _.routineIs( Self.passThru ) );
 
 //
 
-if( _global_.wCopyable )
-{
-  wCopyable.mixin( Self );
+wCopyable.mixin( Self );
 
-  if( Config.debug )
-  {
-    // debugger;
-    var con = new Self();
-    var x3 = Self._SelfGet();
-
-    var x1 = con.Self;
-    var x2 = Self.prototype.Self;
-    var x4 = Self.Self;
-    // debugger;
-    _.assert( x1 === x2 );
-    _.assert( x1 === x3 );
-    _.assert( x1 === x4 );
-    // debugger;
-  }
-
-}
+// if( _global_.wCopyable )
+// {
+//
+//   if( Config.debug )
+//   {
+//     // debugger;
+//     var con = new Self();
+//     var x3 = Self._SelfGet();
+//
+//     var x1 = con.Self;
+//     var x2 = Self.prototype.Self;
+//     var x4 = Self.Self;
+//     // debugger;
+//     _.assert( x1 === x2 );
+//     _.assert( x1 === x3 );
+//     _.assert( x1 === x4 );
+//     // debugger;
+//   }
+//
+// }
 
 //
 
@@ -2705,12 +2726,11 @@ _.accessor
 //
 
 _.accessorForbid( Self.prototype,
-  {
-    every : 'every',
-    mutex : 'mutex',
-    mode : 'mode',
-  }
-);
+{
+  every : 'every',
+  mutex : 'mutex',
+  mode : 'mode',
+});
 
 //
 
@@ -2719,7 +2739,7 @@ if( typeof module !== 'undefined' )
   module[ 'exports' ] = Self;
 }
 
-_global_[ Self.name ] = wTools.Consequence = Self;
+_global_[ Self.name ] = wTools[ Self.nameShort ] = Self;
 
 return Self;
 
