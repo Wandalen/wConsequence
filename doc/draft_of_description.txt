@@ -78,7 +78,7 @@ var onSuccess = function(errValue, gotValue) {
 
  myWCon(-3, 500).got(onSuccess);
 
- myWCon(-9, 100).thenDo(onSuccess);
+ myWCon(-9, 100).doThen(onSuccess);
 
 
  * as you can see it has several differences:
@@ -96,7 +96,7 @@ var onSuccess = function(errValue, gotValue) {
  *   instead two callback for fulfill/reject in Promise. instead then(), don`t pass handling result into next handlers.
  *   - done() is the alias for got().
  *   - gotOnce(): work similar as got, but ignores passed handler, if it was already added to wConsequence before,
- *   - thenDo(): work similar to got(), and accepts callback with same signature, but pass result of handling into next
+ *   - doThen(): work similar to got(), and accepts callback with same signature, but pass result of handling into next
  *   taker.
  *   - thenOnce_(): is similar to gotOnce, but pass result of handling into next taker, what allow use it in chaining.
  *   And  several methods that will be described later.
@@ -107,7 +107,7 @@ var onSuccess = function(errValue, gotValue) {
  *   pas result into next takers.
  *   - ifNoErrorThen(): has the opposite behavior: accepted taker was invoked only if wConsequence was resolve value
  *   without errors.
- *   Note: all taker handlers passed to wConsequence using such method as got() or thenDo(), accepts error as first
+ *   Note: all taker handlers passed to wConsequence using such method as got() or doThen(), accepts error as first
  *   parameters, what give us ability to handle errors directly in takers.
  *
  * This is only few described syntactic difference list, that will be supplemented later.
@@ -122,10 +122,10 @@ var onSuccess = function(errValue, gotValue) {
      var con = new wConsequence();
 
      con.got( printValue ).give(1).give(3).give(4).got( printValue ).got( printValue )
-     .thenDo( function(err, value)
+     .doThen( function(err, value)
      {
        return ++value;
-     }).thenDo( printValue ).give(5);
+     }).doThen( printValue ).give(5);
 
      // prints 1 3 4 6
 

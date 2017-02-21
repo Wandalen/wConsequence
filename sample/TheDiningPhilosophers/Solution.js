@@ -47,7 +47,7 @@ function tryToEat( c )
   var con = wConsequence().give();
 
   con.andGet( forks )
-  .thenDo( function eating()
+  .doThen( function eating()
   {
 
     console.log( 'P' + c.philosopher.name + ' got both forks and started eating at ' + _.timeSpent( '',c.time ) );
