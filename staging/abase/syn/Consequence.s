@@ -374,8 +374,6 @@ var doThen = function doThen( correspondent )
   return self._correspondentAppend
   ({
     correspondent : correspondent,
-    // context : arguments[ 1 ],
-    // argument : arguments[ 2 ],
     thenning : true,
     kindOfArguments : Self.KindOfArguments.Both,
   });
@@ -394,8 +392,6 @@ var _doThen = function _doThen( correspondent )
   return self._correspondentAppend
   ({
     correspondent : correspondent,
-    // context : arguments[ 1 ],
-    // argument : arguments[ 2 ],
     thenning : true,
     kindOfArguments : Self.KindOfArguments.BothWithCorrespondent,
   });
@@ -637,7 +633,7 @@ var onceThen = function onceThen( correspondent )
  * @memberof wConsequence#
  */
 
-var splitThen = function splitThen( first )
+function splitThen( first )
 {
   var self = this;
 
@@ -1093,7 +1089,7 @@ var persist = function persist( correspondent )
 
    var conOwner = new  wConsequence();
 
-   conOwner.and( [ con1, con2 ] );
+   conOwner.andThen( [ con1, con2 ] );
 
    conOwner.give( 100 );
    conOwner.got( handleGot1 );
@@ -1109,11 +1105,11 @@ var persist = function persist( correspondent )
  * @returns {wConsequence}
  * @throws {Error} if missed arguments.
  * @throws {Error} if passed extra arguments.
- * @method andGet
+ * @method andGot
  * @memberof wConsequence#
  */
 
-var andGet = function andGet( srcs )
+function andGot( srcs )
 {
   var self = this;
   _.assert( arguments.length === 1 );
@@ -1123,15 +1119,15 @@ var andGet = function andGet( srcs )
 //
 
 /**
- * Works like andGet() method, but unlike andGet() and() give back massages to src consequences once all come.
- * @see wConsequence#andGet
+ * Works like andGot() method, but unlike andGot() andThen() give back massages to src consequences once all come.
+ * @see wConsequence#andGot
  * @param {wConsequence[]|wConsequence} srcs Array of wConsequence objects
  * @throws {Error} If missed or passed extra argument.
- * @method and
+ * @method andThen
  * @memberof wConsequence#
  */
 
-var and = function and( srcs )
+function andThen( srcs )
 {
   var self = this;
   _.assert( arguments.length === 1 );
@@ -1140,24 +1136,21 @@ var and = function and( srcs )
 
 //
 
-/**
-
-  possible scenarios for "and" :
-
-1. do not give back messages to src consequences( andGet )
-2. give back massages to src consequences immediately
-3. give back massages to src consequences once all come( and )
-
-*/
-
-var _and = function _and( srcs,thenning )
+function _and( srcs,thenning )
 {
   var self = this;
-  var anyErr;
   var returned = [];
+  var anyErr;
+
+  debugger;
+  throw _.err( 'not tested' );
 
   if( !_.arrayIs( srcs ) )
   srcs = [ srcs ];
+  else
+  srcs = srcs.slice();
+
+  srcs.push( self );
 
   /* */
 
@@ -1165,23 +1158,25 @@ var _and = function _and( srcs,thenning )
   {
 
     if( thenning )
-    for( var i = 0 ; i < srcs.length ; i++ )
+    for( var i = 0 ; i < srcs.length-1 ; i++ )
     if( srcs[ i ] )
     srcs[ i ].give( returned[ i ][ 0 ],returned[ i ][ 1 ] );
 
     if( anyErr )
     self.error( anyErr );
     else
-    self.give( null,returned[ srcs.length ][ 1 ] );
+    self.give( null,returned[ srcs.length-1 ][ 1 ] );
 
   }
 
   /* */
 
-  var count = srcs.length+1;
-  function collect( index,err,data )
+  var count = srcs.length;
+  function got( index,err,data )
   {
+
     count -= 1;
+
     if( err && !anyErr )
     anyErr = err;
 
@@ -1194,9 +1189,9 @@ var _and = function _and( srcs,thenning )
 
   /* */
 
-  self.got( _.routineJoin( undefined,collect,[ srcs.length ] ) );
+  // self.got( _.routineJoin( undefined,got,[ srcs.length ] ) );
 
-  /**/
+  /* */
 
   for( var a = 0 ; a < srcs.length ; a++ )
   {
@@ -1204,10 +1199,10 @@ var _and = function _and( srcs,thenning )
     _.assert( _.consequenceIs( src ) || src === null );
     if( src === null )
     {
-      collect( a,null,null );
+      got( a,null,null );
       continue;
     }
-    src.got( _.routineJoin( undefined,collect,[ a ] ) );
+    src.got( _.routineJoin( undefined,got,[ a ] ) );
   }
 
   return self;
@@ -1215,8 +1210,88 @@ var _and = function _and( srcs,thenning )
 
 //
 
+function eitherGot( srcs )
+{
+  var self = this;
+  _.assert( arguments.length === 1 );
+  return self._either( srcs,false );
+}
+
+//
+
+function eitherThen( srcs )
+{
+  var self = this;
+  _.assert( arguments.length === 1 );
+  return self._either( srcs,true );
+}
+
+//
+
+function eitherThenSplit( srcs )
+{
+  var self = this;
+  _.assert( arguments.length === 1 );
+
+  if( !_.arrayIs( srcs ) )
+  srcs = [ srcs ];
+  else
+  srcs = srcs.slice();
+  srcs.unshift( self );
+
+  var con = new wConsequence().give();
+  con.eitherThen( srcs );
+  return con;
+}
+
+//
+
+function _either( srcs,thenning )
+{
+  var self = this;
+
+  if( !_.arrayIs( srcs ) )
+  srcs = [ srcs ];
+
+  /* */
+
+  var count = 0;
+  function got( index,err,data )
+  {
+
+    count += 1;
+
+    if( count === 1 )
+    self.give( err,data );
+
+    if( thenning )
+    srcs[ index ].give( err,data );
+
+  }
+
+  /* */
+
+  self.got( function( err,data )
+  {
+
+    for( var a = 0 ; a < srcs.length ; a++ )
+    {
+      var src = srcs[ a ];
+      _.assert( _.consequenceIs( src ) || src === null );
+      if( src === null )
+      continue;
+      src.got( _.routineJoin( undefined,got,[ a ] ) );
+    }
+
+  });
+
+  return self;
+}
+
+//
+
 /**
- * If type of `src` is function, the first method run it on begin, and if the result of `src` invocation is instance of
+ * If type of `src` is function, the first method run it on begin, if the result of `src` invocation is instance of
    wConsequence, the current wConsequence will be wait for it resolving, else method added result to messages sequence
    of the current instance.
  * If `src` is instance of wConsequence, the current wConsequence delegates to it his first corespondent.
@@ -1236,9 +1311,10 @@ var _and = function _and( srcs,thenning )
 
    var con = new  wConsequence();
 
-   con.first( function() {
+   con.first( function()
+   {
      return 'foo';
-   } );
+   });
 
  con.give( 100 );
  con.got( handleGot1 );
@@ -1258,9 +1334,10 @@ var _and = function _and( srcs,thenning )
 
   var con = new  wConsequence();
 
-  con.first( function() {
+  con.first( function()
+  {
     return wConsequence().give(3);
-  } );
+  });
 
  con.give(100);
  con.got( handleGot1 );
@@ -1271,7 +1348,7 @@ var _and = function _and( srcs,thenning )
  * @memberof wConsequence#
  */
 
-var first = function first( src )
+function first( src )
 {
   var self = this;
   return self._first( src,null );
@@ -1279,7 +1356,7 @@ var first = function first( src )
 
 //
 
-var _first = function _first( src,stack )
+function _first( src,stack )
 {
   var self = this;
 
@@ -1287,8 +1364,9 @@ var _first = function _first( src,stack )
 
   if( src instanceof wConsequence )
   {
+    throw _.err( 'not tested' );
     src.doThen( self );
-    src.give();
+    // src.give(); // xxx
   }
   else if( _.routineIs( src ) )
   {
@@ -1315,7 +1393,7 @@ var _first = function _first( src,stack )
 
 //
 
-var seal = function seal( context,method )
+function seal( context,method )
 {
   var self = this;
   var result = {};
@@ -2132,18 +2210,44 @@ function _onDebug( err,data )
 // static
 // --
 
-var from_static = function from_static( src )
+function from_static( src,timeOut )
 {
 
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1 || arguments.length === 2 );
+  _.assert( timeOut === undefined || _.numberIs( timeOut ) );
 
-  if( src instanceof Self )
-  return src;
+  if( timeOut !== undefined )
+  {
 
-  if( _.errorIs( src ) )
-  return new wConsequence().error( src );
+    if( src instanceof Self )
+    {
+
+      return src.eitherThenSplit( _.timeOut( timeOut ) );
+
+    }
+    else
+    {
+
+      if( _.errorIs( src ) )
+      return new wConsequence().error( src );
+      else
+      return new wConsequence().give( src );
+
+    }
+
+  }
   else
-  return new wConsequence().give( src );
+  {
+
+    if( src instanceof Self )
+    return src;
+
+    if( _.errorIs( src ) )
+    return new wConsequence().error( src );
+    else
+    return new wConsequence().give( src );
+
+  }
 
 }
 
@@ -2675,9 +2779,14 @@ var Extend =
 
   // advanced
 
-  andGet : andGet,
-  and : and,
+  andGot : andGot,
+  andThen : andThen,
   _and : _and,
+
+  eitherGot : eitherGot,
+  eitherThen : eitherThen,
+  eitherThenSplit : eitherThenSplit,
+  _either : _either,
 
   first : first,
   _first : _first,
