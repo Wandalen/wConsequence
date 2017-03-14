@@ -121,7 +121,7 @@ Self.nameShort = 'Consequence';
    * @memberof wConsequence#
    */
 
-var init = function init( o )
+function init( o )
 {
   var self = this;
 
@@ -302,7 +302,7 @@ _correspondentAppend.defaults =
    * @memberof wConsequence#
    */
 
-var got = function got( correspondent )
+function got( correspondent )
 {
   var self = this;
 
@@ -364,7 +364,7 @@ var got = function got( correspondent )
    * @memberof wConsequence#
    */
 
-var doThen = function doThen( correspondent )
+function doThen( correspondent )
 {
   var self = this;
 
@@ -382,7 +382,7 @@ var doThen = function doThen( correspondent )
 
 //
 
-var _doThen = function _doThen( correspondent )
+function _doThen( correspondent )
 {
   var self = this;
 
@@ -412,7 +412,7 @@ var _doThen = function _doThen( correspondent )
 //  * @memberof wConsequence#
 //  */
 
-// var thenSealed = function thenSealed( context,correspondent,args )
+// function thenSealed( context,correspondent,args )
 // {
 //   var self = this;
 //
@@ -491,7 +491,7 @@ var _doThen = function _doThen( correspondent )
  * @memberof wConsequence#
  */
 
-var onceGot = function onceGot( correspondent )
+function onceGot( correspondent )
 {
   var self = this;
   // var key = correspondent.id || correspondent.name;
@@ -565,7 +565,7 @@ var onceGot = function onceGot( correspondent )
  * @memberof wConsequence#
  */
 
-var onceThen = function onceThen( correspondent )
+function onceThen( correspondent )
 {
   var self = this;
   var key = correspondent.name ? correspondent.name : correspondent;
@@ -699,7 +699,7 @@ function splitThen( first )
  * @memberof wConsequence#
  */
 
-var tapThen = function tapThen( correspondent )
+function tapThen( correspondent )
 {
   var self = this;
 
@@ -720,7 +720,7 @@ var tapThen = function tapThen( correspondent )
 
 //
 
-var ifNoErrorGot = function ifNoErrorGot()
+function ifNoErrorGot()
 {
 
   _.assert( arguments.length === 1 );
@@ -753,7 +753,7 @@ var ifNoErrorGot = function ifNoErrorGot()
  * @memberof wConsequence#
  */
 
-var ifNoErrorThen = function ifNoErrorThen()
+function ifNoErrorThen()
 {
 
   _.assert( arguments.length === 1 );
@@ -774,7 +774,7 @@ var ifNoErrorThen = function ifNoErrorThen()
 
 //
 
-var ifErrorGot = function ifErrorGot()
+function ifErrorGot()
 {
 
   _.assert( arguments.length === 1 );
@@ -830,7 +830,7 @@ var ifErrorGot = function ifErrorGot()
  * @memberof wConsequence#
  */
 
-var ifErrorThen = function ifErrorThen()
+function ifErrorThen()
 {
 
   _.assert( arguments.length === 1 );
@@ -857,7 +857,7 @@ var ifErrorThen = function ifErrorThen()
  * @memberof wConsequence#
  */
 
-var ifErrorThenLogThen = function ifErrorThenLogThen( context,correspondent,args )
+function ifErrorThenLogThen( context,correspondent,args )
 {
   var self = this;
 
@@ -888,7 +888,7 @@ var ifErrorThenLogThen = function ifErrorThenLogThen( context,correspondent,args
 //  * @memberof wConsequence#
 //  */
 
-// var debugThen = function debugThen()
+// function debugThen()
 // {
 //   var self = this;
 //
@@ -941,7 +941,7 @@ var ifErrorThenLogThen = function ifErrorThenLogThen( context,correspondent,args
  * @memberof wConsequence#
  */
 
-var timeOutThen = function timeOutThen( time,correspondent )
+function timeOutThen( time,correspondent )
 {
   var self = this;
 
@@ -1036,7 +1036,7 @@ var timeOutThen = function timeOutThen( time,correspondent )
  * @memberof wConsequence#
  */
 
-var persist = function persist( correspondent )
+function persist( correspondent )
 {
   var self = this;
 
@@ -1142,8 +1142,8 @@ function _and( srcs,thenning )
   var returned = [];
   var anyErr;
 
-  debugger;
-  throw _.err( 'not tested' );
+  // debugger;
+  // throw _.err( 'not tested' );
 
   if( !_.arrayIs( srcs ) )
   srcs = [ srcs ];
@@ -1165,7 +1165,7 @@ function _and( srcs,thenning )
     if( anyErr )
     self.error( anyErr );
     else
-    self.give( null,returned[ srcs.length-1 ][ 1 ] );
+    self.give( returned[ srcs.length-1 ][ 1 ] );
 
   }
 
@@ -1467,7 +1467,7 @@ function seal( context,method )
  * @memberof wConsequence#
  */
 
-var give = function give( message )
+function give( message )
 {
   var self = this;
   _.assert( arguments.length === 2 || arguments.length === 1 || arguments.length === 0, 'expects 0, 1 or 2 arguments, got ' + arguments.length );
@@ -1521,7 +1521,7 @@ var give = function give( message )
  * @memberof wConsequence#
  */
 
-var error = function error( error )
+function error( error )
 {
   var self = this;
   _.assert( arguments.length === 1 || arguments.length === 0 );
@@ -1544,7 +1544,7 @@ var error = function error( error )
  * @memberof wConsequence#
  */
 
-var _giveWithError = function _giveWithError( error,argument )
+function _giveWithError( error,argument )
 {
   var self = this;
 
@@ -1558,7 +1558,7 @@ var _giveWithError = function _giveWithError( error,argument )
 
 //
 
-var __giveWithError = function __giveWithError( error,argument )
+function __giveWithError( error,argument )
 {
   var self = this;
 
@@ -1635,7 +1635,7 @@ function ping( error,argument )
  * @memberof wConsequence#
  */
 
-var _handleError = function _handleError( err,correspondent )
+function _handleError( err,correspondent )
 {
   var self = this;
   // var err = _.err( err );
@@ -1648,29 +1648,19 @@ var _handleError = function _handleError( err,correspondent )
   if( Config.debug && correspondent )
   err.stack = err.stack + '\n+\n' + correspondent.stack;
 
-  if( !err.attentionGiven )
-  {
-    //err.attentionNeeded = 1;
-    //debugger;
-    Object.defineProperty( err, 'attentionNeeded',
-    {
-      enumerable : false,
-      configurable : true,
-      writable : true,
-      value : 1,
-    });
-  }
+  if( !_.errIsAttended( err ) )
+  _.errAttentionRequest( err );
 
   var result = new wConsequence().error( err );
 
-  if( Config.debug && err.attentionNeeded )
+  if( Config.debug && err.attentionRequested )
   {
     debugger;
     logger.error( 'Consequence caught error, details come later' );
 
     _.timeOut( 1, function()
     {
-      if( err.attentionNeeded )
+      if( !_.errIsAttended( err ) )
       {
         logger.error( 'Uncaught error caught by Consequence :' );
         _.errLog( err );
@@ -1718,7 +1708,7 @@ var _handleError = function _handleError( err,correspondent )
  * @memberof wConsequence#
  */
 
-var _handleGot = function _handleGot()
+function _handleGot()
 {
   var self = this;
   var result;
@@ -1970,7 +1960,7 @@ function correspondentsGet()
    * @memberof wConsequence
    */
 
-var correspondentsCancel = function correspondentsCancel( correspondent )
+function correspondentsCancel( correspondent )
 {
   var self = this;
 
@@ -2023,7 +2013,7 @@ var correspondentsCancel = function correspondentsCancel( correspondent )
  * @memberof wConsequence
  */
 
-var messagesGet = function messagesGet( index )
+function messagesGet( index )
 {
   var self = this;
   _.assert( arguments.length === 0 || arguments.length === 1 )
@@ -2058,7 +2048,7 @@ var messagesGet = function messagesGet( index )
  * @memberof wConsequence
  */
 
-var messagesCancel = function messagesCancel( data )
+function messagesCancel( data )
 {
   var self = this;
 
@@ -2119,7 +2109,7 @@ function messageHas()
    * @memberof wConsequence
    */
 
-var clear = function clear( data )
+function clear( data )
 {
   var self = this;
   _.assert( arguments.length === 0 );
@@ -2222,13 +2212,23 @@ function from_static( src,timeOut )
     if( src instanceof Self )
     {
 
-      return src.eitherThenSplit( _.timeOut( timeOut ) );
+      return src.eitherThenSplit( _.timeOutError( timeOut ) );
+
+      // return src.doThen( function( err,data )
+      // {
+      //
+      //   if( err )
+      //   throw err;
+      //
+      //   return src.eitherThenSplit( _.timeOut( timeOut ) );
+      //
+      // });
 
     }
     else
     {
 
-      if( _.errorIs( src ) )
+      if( _.errIs( src ) )
       return new wConsequence().error( src );
       else
       return new wConsequence().give( src );
@@ -2242,7 +2242,7 @@ function from_static( src,timeOut )
     if( src instanceof Self )
     return src;
 
-    if( _.errorIs( src ) )
+    if( _.errIs( src ) )
     return new wConsequence().error( src );
     else
     return new wConsequence().give( src );
@@ -2284,7 +2284,7 @@ function from_static( src,timeOut )
  * @memberof wConsequence
  */
 
-var give_static = function give_static( consequence )
+function give_static( consequence )
 {
 
   _.assert( arguments.length === 2 || arguments.length === 3 );
@@ -2330,7 +2330,7 @@ var give_static = function give_static( consequence )
    * @memberof wConsequence
    */
 
-var _give_static = function _give_static( o )
+function _give_static( o )
 {
   var context;
 
@@ -2451,7 +2451,7 @@ function error_static( consequence,error )
    * @memberof wConsequence
    */
 
-var giveWithContextAndError_static = function giveWithContextAndError_static( consequence,context,err,got )
+function giveWithContextAndError_static( consequence,context,err,got )
 {
 
   if( err === undefined )
@@ -2582,7 +2582,7 @@ var passThru_static = function passThru( err,data )
 // experimental
 // --
 
-var FunctionWithin = function FunctionWithin( consequence )
+function FunctionWithin( consequence )
 {
   var routine = this;
   var args;
@@ -2609,7 +2609,7 @@ var FunctionWithin = function FunctionWithin( consequence )
 
 //
 
-var FunctionThereafter = function FunctionThereafter()
+function FunctionThereafter()
 {
   var con = new wConsequence();
   var routine = this;
