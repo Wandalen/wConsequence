@@ -306,7 +306,7 @@ function got( correspondent )
 {
   var self = this;
 
-  _.assert( arguments.length === 0 || arguments.length === 1 );
+  _.assert( arguments.length === 0 || arguments.length === 1,'got : expects none or single argument, got',arguments.length );
 
   if( arguments.length === 0 )
   {
@@ -1172,7 +1172,7 @@ function _and( srcs,thenning )
   /* */
 
   var count = srcs.length;
-  function got( index,err,data )
+  function __got( index,err,data )
   {
 
     count -= 1;
@@ -1193,17 +1193,24 @@ function _and( srcs,thenning )
 
   /* */
 
-  for( var a = 0 ; a < srcs.length ; a++ )
+  self.got( function _andGot( err,data )
   {
-    var src = srcs[ a ];
-    _.assert( _.consequenceIs( src ) || src === null );
-    if( src === null )
+
+    for( var a = 0 ; a < srcs.length-1 ; a++ )
     {
-      got( a,null,null );
-      continue;
+      var src = srcs[ a ];
+      _.assert( _.consequenceIs( src ) || src === null );
+      if( src === null )
+      {
+        __got( a,null,null );
+        continue;
+      }
+      src.got( _.routineJoin( undefined,__got,[ a ] ) );
     }
-    src.got( _.routineJoin( undefined,got,[ a ] ) );
-  }
+
+    __got( srcs.length-1,err,data );
+
+  });
 
   return self;
 }

@@ -25,7 +25,7 @@
     "production"
   ],
   "scripts": {
-    "test": "node ./staging/abase/z.test/Consequence.test.s",
+    "test": "wtest staging",
     "make_doc": "./doc.sh"
   },
   "repository": {
