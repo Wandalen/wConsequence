@@ -316,8 +316,6 @@ function got( correspondent )
   return self._correspondentAppend
   ({
     correspondent : correspondent,
-    // context : arguments[ 1 ],
-    // argument : arguments[ 2 ],
     thenning : false,
     kindOfArguments : Self.KindOfArguments.Both,
   });
@@ -1403,7 +1401,7 @@ function _first( src,stack )
 function seal( context,method )
 {
   var self = this;
-  var result = {};
+  var result = Object.create( null );
 
   /**/
 
@@ -1853,91 +1851,26 @@ function _handleGot()
 }
 
 // --
-// correspondent
+// accounting
 // --
 
-  /**
-   * The _corespondentMap object
-   * @typedef {Object} _corespondentMap
-   * @property {Function|wConsequence} onGot function or wConsequence instance, that accepts resolved messages from
-   * messages queue.
-   * @property {boolean} thenning determines if corespondent pass his result back into messages queue.
-   * @property {boolean} tapping determines if corespondent return accepted message back into  messages queue.
-   * @property {boolean} ifError turn on corespondent only if message represent error;
-   * @property {boolean} ifNoError turn on corespondent only if message represent no error;
-   * @property {boolean} debug enables debugging.
-   * @property {string} id corespondent id.
-   */
+/**
+ * The _corespondentMap object
+ * @typedef {Object} _corespondentMap
+ * @property {Function|wConsequence} onGot function or wConsequence instance, that accepts resolved messages from
+ * messages queue.
+ * @property {boolean} thenning determines if corespondent pass his result back into messages queue.
+ * @property {boolean} tapping determines if corespondent return accepted message back into  messages queue.
+ * @property {boolean} ifError turn on corespondent only if message represent error;
+ * @property {boolean} ifNoError turn on corespondent only if message represent no error;
+ * @property {boolean} debug enables debugging.
+ * @property {string} id corespondent id.
+ */
 
-  /**
-   * Returns array of corespondents
-   * @example
-   * function corespondent1(err, val)
-     {
-       console.log( 'corespondent1 value: ' + val );
-     };
-
-     function corespondent2(err, val)
-     {
-       console.log( 'corespondent2 value: ' + val );
-     };
-
-     function corespondent3(err, val)
-     {
-       console.log( 'corespondent1 value: ' + val );
-     };
-
-     var con = wConsequence();
-
-     con.tapThen( corespondent1 ).doThen( corespondent2 ).got( corespondent3 );
-
-     var corespondents = con.correspondentsGet();
-
-     console.log( corespondents );
-
-     // prints
-     // [ {
-     //  onGot: [Function: corespondent1],
-     //  thenning: true,
-     //  tapping: true,
-     //  ifError: false,
-     //  ifNoError: false,
-     //  debug: false,
-     //  id: 'corespondent1' },
-     // { onGot: [Function: corespondent2],
-     //   thenning: true,
-     //   tapping: false,
-     //   ifError: false,
-     //   ifNoError: false,
-     //   debug: false,
-     //   id: 'corespondent2' },
-     // { onGot: [Function: corespondent3],
-     //   thenning: false,
-     //   tapping: false,
-     //   ifError: false,
-     //   ifNoError: false,
-     //   debug: false,
-     //   id: 'corespondent3'
-     // } ]
-   * @returns {_corespondentMap[]}
-   * @method correspondentsGet
-   * @memberof wConsequence
-   */
-
-function correspondentsGet()
-{
-  var self = this;
-  return self._correspondent;
-}
-
-//
-
-  /**
-   * If called without arguments, method correspondentsCancel() removes all corespondents from wConsequence
-   * correspondents queue.
-   * If as argument passed routine, method correspondentsCancel() removes it from corespondents queue if exists.
-   * @example
-   function corespondent1(err, val)
+/**
+ * Returns array of corespondents
+ * @example
+ * function corespondent1(err, val)
    {
      console.log( 'corespondent1 value: ' + val );
    };
@@ -1954,18 +1887,83 @@ function correspondentsGet()
 
    var con = wConsequence();
 
-   con.got( corespondent1 ).got( corespondent2 );
-   con.correspondentsCancel();
+   con.tapThen( corespondent1 ).doThen( corespondent2 ).got( corespondent3 );
 
-   con.got( corespondent3 );
-   con.give( 'bar' );
+   var corespondents = con.correspondentsGet();
+
+   console.log( corespondents );
 
    // prints
-   // corespondent1 value: bar
-   * @param [correspondent]
-   * @method correspondentsCancel
-   * @memberof wConsequence
-   */
+   // [ {
+   //  onGot: [Function: corespondent1],
+   //  thenning: true,
+   //  tapping: true,
+   //  ifError: false,
+   //  ifNoError: false,
+   //  debug: false,
+   //  id: 'corespondent1' },
+   // { onGot: [Function: corespondent2],
+   //   thenning: true,
+   //   tapping: false,
+   //   ifError: false,
+   //   ifNoError: false,
+   //   debug: false,
+   //   id: 'corespondent2' },
+   // { onGot: [Function: corespondent3],
+   //   thenning: false,
+   //   tapping: false,
+   //   ifError: false,
+   //   ifNoError: false,
+   //   debug: false,
+   //   id: 'corespondent3'
+   // } ]
+ * @returns {_corespondentMap[]}
+ * @method correspondentsGet
+ * @memberof wConsequence
+ */
+
+function correspondentsGet()
+{
+  var self = this;
+  return self._correspondent;
+}
+
+//
+
+/**
+ * If called without arguments, method correspondentsCancel() removes all corespondents from wConsequence
+ * correspondents queue.
+ * If as argument passed routine, method correspondentsCancel() removes it from corespondents queue if exists.
+ * @example
+ function corespondent1(err, val)
+ {
+   console.log( 'corespondent1 value: ' + val );
+ };
+
+ function corespondent2(err, val)
+ {
+   console.log( 'corespondent2 value: ' + val );
+ };
+
+ function corespondent3(err, val)
+ {
+   console.log( 'corespondent1 value: ' + val );
+ };
+
+ var con = wConsequence();
+
+ con.got( corespondent1 ).got( corespondent2 );
+ con.correspondentsCancel();
+
+ con.got( corespondent3 );
+ con.give( 'bar' );
+
+ // prints
+ // corespondent1 value: bar
+ * @param [correspondent]
+ * @method correspondentsCancel
+ * @memberof wConsequence
+ */
 
 function correspondentsCancel( correspondent )
 {
@@ -1985,9 +1983,7 @@ function correspondentsCancel( correspondent )
 
 }
 
-// --
-// message
-// --
+//
 
 /**
  * The internal wConsequence view of message.
@@ -2106,15 +2102,13 @@ function messageHas()
   return self._message.length - self._correspondent.length;
 }
 
-// --
-// etc
-// --
+//
 
-  /**
-   * Clears all messages and corespondents of wConsequence.
-   * @method clear
-   * @memberof wConsequence
-   */
+/**
+ * Clears all messages and corespondents of wConsequence.
+ * @method clear
+ * @memberof wConsequence
+ */
 
 function clear( data )
 {
@@ -2128,46 +2122,60 @@ function clear( data )
 
 //
 
-  /**
-   * Serializes current wConsequence instance.
-   * @example
-   * function corespondent1(err, val)
-     {
-       console.log( 'corespondent1 value: ' + val );
-     };
+function cancel()
+{
+  var self = this;
+  _.assert( arguments.length === 0 );
 
-     var con = wConsequence();
-     con.got( corespondent1 );
+  self.clear();
 
-     var conStr = con.toStr();
+  return self;
+}
 
-     console.log( conStr );
+// --
+// etc
+// --
 
-     con.give( 'foo' );
-     con.give( 'bar' );
-     con.error( 'baz' );
+/**
+ * Serializes current wConsequence instance.
+ * @example
+ * function corespondent1(err, val)
+   {
+     console.log( 'corespondent1 value: ' + val );
+   };
 
-     conStr = con.toStr();
+   var con = wConsequence();
+   con.got( corespondent1 );
 
-     console.log( conStr );
-     // prints:
+   var conStr = con.toStr();
 
-     // wConsequence( 0 )
-     // message : 0
-     // correspondents : 1
-     // correspondent names : corespondent1
+   console.log( conStr );
 
-     // corespondent1 value: foo
+   con.give( 'foo' );
+   con.give( 'bar' );
+   con.error( 'baz' );
 
-     // wConsequence( 0 )
-     // message : 2
-     // correspondents : 0
-     // correspondent names :
+   conStr = con.toStr();
 
-   * @returns {string}
-   * @method toStr
-   * @memberof wConsequence
-   */
+   console.log( conStr );
+   // prints:
+
+   // wConsequence( 0 )
+   // message : 0
+   // correspondents : 1
+   // correspondent names : corespondent1
+
+   // corespondent1 value: foo
+
+   // wConsequence( 0 )
+   // message : 2
+   // correspondents : 0
+   // correspondent names :
+
+ * @returns {string}
+ * @method toStr
+ * @memberof wConsequence
+ */
 
 function toStr()
 {
@@ -2355,7 +2363,7 @@ function _give_static( o )
 
     for( var i = 0 ; i < o.consequence.length ; i++ )
     {
-      var optionsGive = _.mapExtend( {},o );
+      var optionsGive = _.mapExtend( Object.create( null ),o );
       optionsGive.consequence = o.consequence[ i ];
       _give_static( optionsGive );
     }
@@ -2816,22 +2824,21 @@ var Extend =
   _handleGot : _handleGot,
 
 
-  // correspondent
+  // accounting
 
   correspondentsGet : correspondentsGet,
   correspondentsCancel : correspondentsCancel,
-
-
-  // message
 
   messagesGet : messagesGet,
   messagesCancel : messagesCancel,
   messageHas : messageHas,
 
+  clear : clear, /* experimental */
+  cancel : cancel, /* experimental */
+
 
   // etc
 
-  clear : clear,
   toStr : toStr,
   _onDebug : _onDebug,
 
