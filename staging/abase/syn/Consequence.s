@@ -50,6 +50,12 @@ if( typeof module !== 'undefined' )
 
 }
 
+if( _global_.wConsequence )
+return;
+
+if( _global_.wConsequence )
+throw wTools.err( 'consequence included several times' );
+
 //
 
 var _ = wTools;
@@ -498,7 +504,7 @@ function onceGot( correspondent )
   _.assert( _.strIsNotEmpty( key ) );
   _.assert( arguments.length === 1 );
 
-  debugger;
+  // debugger;
 
   var i = _.arrayLeftIndexOf( self._correspondent,key,function( a )
   {
@@ -614,7 +620,7 @@ function onceThen( correspondent )
 
    var con1 = new wConsequence();
    con1.give(1).give(2).give(3);
-   var con2 = con1.splitThen();
+   var con2 = con1.split();
    con2.got( gotHandler2 );
    con2.got( gotHandler2 );
    con1.got( gotHandler1 );
@@ -627,11 +633,11 @@ function onceThen( correspondent )
 
  * @returns {wConsequence}
  * @throws {Error} if passed any argument.
- * @method splitThen
+ * @method split
  * @memberof wConsequence#
  */
 
-function splitThen( first )
+function split( first )
 {
   var self = this;
 
@@ -693,11 +699,11 @@ function splitThen( first )
  * @returns {wConsequence}
  * @throws {Error} if passed more than one arguments
  * @see {@link wConsequence#got} got method
- * @method tapThen
+ * @method tap
  * @memberof wConsequence#
  */
 
-function tapThen( correspondent )
+function tap( correspondent )
 {
   var self = this;
 
@@ -709,7 +715,7 @@ function tapThen( correspondent )
     correspondent : correspondent,
     // context : undefined,
     // argument : arguments[ 2 ],
-    thenning : true,
+    thenning : false,
     tapping : true,
     kindOfArguments : Self.KindOfArguments.Both,
   });
@@ -1685,7 +1691,7 @@ function _handleError( err,correspondent )
     There are several cases of _handleGot behavior:
     - if corespondent is regular function:
       trying to pass messages error and argument values into corespondent and execute. If during execution exception
-      occurred, it will be catch by _handleError method. If corespondent was not added by tapThen or persist method,
+      occurred, it will be catch by _handleError method. If corespondent was not added by tap or persist method,
       _handleGot will remove message from head of queue.
 
       If corespondent was added by doThen, onceThen, ifErrorThen, or by other "thenable" method of wConsequence, then:
@@ -1700,7 +1706,7 @@ function _handleError( err,correspondent )
     - if corespondent is instance of wConsequence:
       in that case _handleGot pass message into corespondent`s messages queue.
 
-      If corespondent was added by tapThen, or one of doThen, onceThen, ifErrorThen, or by other "thenable" method of
+      If corespondent was added by tap, or one of doThen, onceThen, ifErrorThen, or by other "thenable" method of
       wConsequence then _handleGot try to pass current message to the next handler in corespondents sequence.
 
     - if in current wConsequence are present corespondents added by persist method, then _handleGot passes message to
@@ -1887,7 +1893,7 @@ function _handleGot()
 
    var con = wConsequence();
 
-   con.tapThen( corespondent1 ).doThen( corespondent2 ).got( corespondent3 );
+   con.tap( corespondent1 ).doThen( corespondent2 ).got( corespondent3 );
 
    var corespondents = con.correspondentsGet();
 
@@ -1981,6 +1987,20 @@ function correspondentsCancel( correspondent )
     _.arrayRemoveOnce( self._correspondent,correspondent );
   }
 
+}
+
+//
+
+function _correspondentNextGet()
+{
+  var self = this;
+
+  if( !self._correspondent[ 0 ] )
+  return;
+
+  debugger;
+
+  return self._correspondent[ 0 ].onGot;
 }
 
 //
@@ -2186,9 +2206,18 @@ function toStr()
 
   result += '\n  message : ' + self.messagesGet().length;
   result += '\n  correspondents : ' + self.correspondentsGet().length;
-  result += '\n  correspondent names : ' + names.join( ' ' );
+  // result += '\n  correspondent names : ' + names.join( ' ' );
 
   return result;
+}
+
+//
+
+function toString()
+{
+  var self = this;
+
+  return self.toStr();
 }
 
 //
@@ -2773,8 +2802,8 @@ var Extend =
   onceGot : onceGot, /* experimental */
   onceThen : onceThen, /* experimental */
 
-  splitThen : splitThen,
-  tapThen : tapThen,
+  split : split,
+  tap : tap,
 
   ifNoErrorGot : ifNoErrorGot,
   ifNoErrorThen : ifNoErrorThen,
@@ -2828,6 +2857,7 @@ var Extend =
 
   correspondentsGet : correspondentsGet,
   correspondentsCancel : correspondentsCancel,
+  _correspondentNextGet : _correspondentNextGet,
 
   messagesGet : messagesGet,
   messagesCancel : messagesCancel,
@@ -2840,6 +2870,7 @@ var Extend =
   // etc
 
   toStr : toStr,
+  toString : toString,
   _onDebug : _onDebug,
 
 
@@ -2908,6 +2939,7 @@ _.accessor
   object : Self.prototype,
   names :
   {
+    correspondentNext : 'correspondentNext',
   }
 });
 
