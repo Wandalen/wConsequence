@@ -171,12 +171,24 @@ function _correspondentAppend( o )
 {
   var self = this;
   var correspondent = o.correspondent;
-  // var id = o.id || correspondent ? correspondent.id : null || null;
 
   _.routineOptions( _correspondentAppend,o );
   _.assert( arguments.length === 1 );
   _.assert( _.routineIs( correspondent ) || correspondent instanceof Self );
   _.assert( o.kindOfArguments >= 1 );
+
+  /* */
+
+  if( o.times !== 1 )
+  {
+    var optionsForAppend = _.mapExtend( null,o );
+    optionsForAppend.times = 1;
+    for( var t = 0 ; t < o.times ; t++ )
+    self._correspondentAppend( optionsForAppend );
+    return self;
+  }
+
+  /* */
 
   if( _.routineIs( correspondent ) )
   {
@@ -185,13 +197,6 @@ function _correspondentAppend( o )
     if( o.kindOfArguments === Self.KindOfArguments.IfError || o.kindOfArguments === Self.KindOfArguments.IfNoError )
     _.assert( correspondent.length <= 1 );
 
-    // if( o.context !== undefined || o.argument !== undefined )
-    // correspondent = _.routineJoin( o.context,correspondent,o.argument );
-
-  }
-  else
-  {
-    // _.assert( o.context === undefined && o.argument === undefined );
   }
 
   /* store */
@@ -200,7 +205,6 @@ function _correspondentAppend( o )
   self._correspondentPersistent.push
   ({
     onGot : correspondent,
-    // id : id,
   });
   else
   {
@@ -211,10 +215,6 @@ function _correspondentAppend( o )
       thenning : !!o.thenning,
       tapping : !!o.tapping,
       kindOfArguments : o.kindOfArguments,
-      // ifError :  !!o.ifError,
-      // ifNoError : !!o.ifNoError,
-      // debug : !!o.debug,
-      // id : id,
     }
     if( Config.debug )
     correspondentDescriptor.stack = _.diagnosticStack( 2 );
@@ -251,9 +251,7 @@ _correspondentAppend.defaults =
   tapping : null,
   kindOfArguments : null,
   persistent : 0,
-  // ifError : null,
-  // ifNoError : null,
-  // debug : null,
+  times : 1,
 }
 
 // --
@@ -311,6 +309,7 @@ _correspondentAppend.defaults =
 function got( correspondent )
 {
   var self = this;
+  var times = 1;
 
   _.assert( arguments.length === 0 || arguments.length === 1,'got : expects none or single argument, got',arguments.length );
 
@@ -319,11 +318,18 @@ function got( correspondent )
     correspondent = function(){};
   }
 
+  if( _.numberIs( correspondent ) )
+  {
+    times = correspondent;
+    correspondent = function(){};
+  }
+
   return self._correspondentAppend
   ({
     correspondent : correspondent,
     thenning : false,
     kindOfArguments : Self.KindOfArguments.Both,
+    times : times,
   });
 
 }
@@ -517,8 +523,6 @@ function onceGot( correspondent )
   return self._correspondentAppend
   ({
     correspondent : correspondent,
-    // context : arguments[ 1 ],
-    // argument : arguments[ 2 ],
     thenning : false,
     kindOfArguments : Self.KindOfArguments.Both,
   });
@@ -593,8 +597,6 @@ function onceThen( correspondent )
   return self._correspondentAppend
   ({
     correspondent : correspondent,
-    // context : arguments[ 1 ],
-    // argument : arguments[ 2 ],
     thenning : true,
     kindOfArguments : Self.KindOfArguments.Both,
   });
@@ -650,8 +652,8 @@ function split( first )
     result.doThen( first );
     self.got( function( err,data )
     {
-      this.give( err,data );
       result.give( err,data );
+      this.give( err,data );
     });
   }
   else
@@ -713,8 +715,6 @@ function tap( correspondent )
   return self._correspondentAppend
   ({
     correspondent : correspondent,
-    // context : undefined,
-    // argument : arguments[ 2 ],
     thenning : false,
     tapping : true,
     kindOfArguments : Self.KindOfArguments.Both,
@@ -950,14 +950,13 @@ function timeOutThen( time,correspondent )
   var self = this;
 
   _.assert( arguments.length === 1 || arguments.length === 2 );
-  //_.assert( arguments.length === 1 || _.routineIs( correspondent ),'not implemented' );
 
-  /**/
+  /* */
 
   if( !correspondent )
   correspondent = Self.passThru;
 
-  /**/
+  /* */
 
   var _correspondent;
   if( _.routineIs( correspondent ) )
@@ -977,15 +976,12 @@ function timeOutThen( time,correspondent )
     });
   }
 
-  /**/
+  /* */
 
   return self._correspondentAppend
   ({
     correspondent : _correspondent,
-    // context : arguments[ 1 ],
-    // argument : arguments[ 2 ],
     thenning : true,
-    /*debug : true,*/
     kindOfArguments : Self.KindOfArguments.Both,
   });
 
@@ -2216,7 +2212,6 @@ function toStr()
 function toString()
 {
   var self = this;
-
   return self.toStr();
 }
 
@@ -2244,6 +2239,12 @@ function _onDebug( err,data )
 // static
 // --
 
+/*
+
+var onReady = caching.fileWatcher.onReady.eitherThenSplit( _.timeOutError( timeOut ) );
+
+*/
+
 function from_static( src,timeOut )
 {
 
@@ -2257,16 +2258,6 @@ function from_static( src,timeOut )
     {
 
       return src.eitherThenSplit( _.timeOutError( timeOut ) );
-
-      // return src.doThen( function( err,data )
-      // {
-      //
-      //   if( err )
-      //   throw err;
-      //
-      //   return src.eitherThenSplit( _.timeOut( timeOut ) );
-      //
-      // });
 
     }
     else
