@@ -2889,7 +2889,7 @@ var Supplement =
 
 _.protoMake
 ({
-  constructor : Self,
+  cls : Self,
   parent : Parent,
   extend : Extend,
   supplement : Supplement,
