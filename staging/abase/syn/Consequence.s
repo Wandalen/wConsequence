@@ -1980,7 +1980,7 @@ function correspondentsCancel( correspondent )
   else
   {
     throw _.err( 'not tested' );
-    _.arrayRemoveOnce( self._correspondent,correspondent );
+    _.__arrayRemoveOnce( self._correspondent,correspondent );
   }
 
 }
@@ -2078,7 +2078,7 @@ function messagesCancel( data )
   else
   {
     throw _.err( 'not tested' );
-    _.arrayRemoveOnce( self._message,data );
+    _.__arrayRemoveOnce( self._message,data );
   }
 
 }
