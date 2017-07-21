@@ -875,6 +875,55 @@ function doThen( test )
 
 }
 
+function doThenAsync( test )
+{
+  var currentTick = 0;
+
+  var setAsync = function( taking, giving )
+  {
+    wConsequence.prototype.asyncTaking = taking;
+    wConsequence.prototype.asyncGiving = giving;
+    test.description = 'asyncTaking : ' + taking + ' asyncGiving : ' + giving;
+    _.timeSoon( () => currentTick++ );
+  }
+
+  var testCon = new wConsequence().give()
+
+  /* asyncTaking : 0, asyncGiving : 1 */
+
+  .doThen( () => setAsync( 0, 1 ) )
+  .doThen( function ()
+  {
+    return new wConsequence()
+    .give( currentTick )
+    .doThen( ( err, tickGot ) => test.identical( tickGot, currentTick ) )
+  })
+
+  /* asyncTaking : 1, asyncGiving : 1 */
+
+  .doThen( () => setAsync( 1, 1 ) )
+  .doThen( function ()
+  {
+    return new wConsequence()
+    .give( currentTick )
+    .doThen( ( err, tickGot ) => test.identical( tickGot, currentTick ) )
+  })
+
+  /* asyncTaking : 1, asyncGiving : 0 */
+
+  .doThen( () => setAsync( 1, 0 ) )
+  .doThen( function ()
+  {
+    return new wConsequence()
+    .give( currentTick )
+    .doThen( ( err, tickGot ) => test.identical( currentTick - tickGot, 1 ) );
+  })
+
+  testCon.doThen( () => setAsync( 0, 0 ) );
+
+  return testCon;
+}
+
 //
 
 // function thenSealed_( test )
@@ -2952,6 +3001,7 @@ var Self =
     ordinarMessage : ordinarMessage,
 
     doThen : doThen,
+    doThenAsync : doThenAsync,
 
     onceGot : onceGot,
     onceThen : onceThen,
