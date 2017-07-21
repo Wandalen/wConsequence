@@ -896,6 +896,11 @@ function doThenAsync( test )
   {
     return new wConsequence()
     .give( currentTick )
+    .doThen( function ( err, tickGot )
+    {
+      test.identical( tickGot, currentTick );
+      return tickGot;
+    })
     .doThen( ( err, tickGot ) => test.identical( tickGot, currentTick ) )
   })
 
@@ -906,6 +911,11 @@ function doThenAsync( test )
   {
     return new wConsequence()
     .give( currentTick )
+    .doThen( function ( err, tickGot )
+    {
+      test.identical( tickGot, currentTick );
+      return tickGot;
+    })
     .doThen( ( err, tickGot ) => test.identical( tickGot, currentTick ) )
   })
 
@@ -916,7 +926,12 @@ function doThenAsync( test )
   {
     return new wConsequence()
     .give( currentTick )
-    .doThen( ( err, tickGot ) => test.identical( currentTick - tickGot, 1 ) );
+    .doThen( function ( err, tickGot )
+    {
+      test.identical( currentTick - tickGot, 1 );
+      return tickGot;
+    })
+    .doThen( ( err, tickGot ) => test.identical( tickGot, currentTick - 1 ) )
   })
 
   testCon.doThen( () => setAsync( 0, 0 ) );
