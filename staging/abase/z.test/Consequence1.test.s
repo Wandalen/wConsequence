@@ -878,45 +878,37 @@ function doThen( test )
 function doThenAsync( test )
 {
   var currentTick = 0;
+  var testMsg = 'msg';
 
   var setAsync = function( taking, giving )
   {
     wConsequence.prototype.asyncTaking = taking;
     wConsequence.prototype.asyncGiving = giving;
     test.description = 'asyncTaking : ' + taking + ' asyncGiving : ' + giving;
-    _.timeSoon( () => currentTick++ );
   }
 
   var testCon = new wConsequence().give()
 
-  /* asyncTaking : 0, asyncGiving : 1 */
+  /* asyncTaking : 0, asyncGiving : 0 */
 
-  .doThen( () => setAsync( 0, 1 ) )
+  .doThen( () => setAsync( 0, 0 ) )
   .doThen( function ()
   {
-    return new wConsequence()
-    .give( currentTick )
-    .doThen( function ( err, tickGot )
+    function correspondent( err, got )
     {
-      test.identical( tickGot, currentTick );
-      return tickGot;
-    })
-    .doThen( ( err, tickGot ) => test.identical( tickGot, currentTick ) )
-  })
+      test.identical( err , null )
+      test.identical( got , testMsg );
+    }
+    var con = new wConsequence();
+    con.give( testMsg );
+    test.identical( con.messagesGet().length, 1 )
+    test.identical( con.messagesGet()[ 0 ], { error : null, argument : testMsg } )
+    con.doThen( correspondent );
+    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.messagesGet().length, 1 )
+    test.identical( con.messagesGet()[ 0 ], { error : null, argument : undefined } );
 
-  /* asyncTaking : 1, asyncGiving : 1 */
-
-  .doThen( () => setAsync( 1, 1 ) )
-  .doThen( function ()
-  {
-    return new wConsequence()
-    .give( currentTick )
-    .doThen( function ( err, tickGot )
-    {
-      test.identical( tickGot, currentTick );
-      return tickGot;
-    })
-    .doThen( ( err, tickGot ) => test.identical( tickGot, currentTick ) )
+    return con;
   })
 
   /* asyncTaking : 1, asyncGiving : 0 */
@@ -924,14 +916,74 @@ function doThenAsync( test )
   .doThen( () => setAsync( 1, 0 ) )
   .doThen( function ()
   {
-    return new wConsequence()
-    .give( currentTick )
-    .doThen( function ( err, tickGot )
+    function correspondent( err, got )
     {
-      test.identical( currentTick - tickGot, 1 );
-      return tickGot;
+      test.identical( err , null )
+      test.identical( got , testMsg );
+    }
+    var con = new wConsequence();
+    con.give( testMsg );
+    con.doThen( correspondent );
+    test.identical( con.messagesGet().length, 1 )
+    test.identical( con.messagesGet()[ 0 ], { error : null, argument : testMsg } )
+    test.identical( con.correspondentsGet().length, 1 );
+
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 1 )
+      test.identical( con.messagesGet()[ 0 ], { error : null, argument : undefined } )
     })
-    .doThen( ( err, tickGot ) => test.identical( tickGot, currentTick - 1 ) )
+  })
+
+  /* asyncTaking : 0, asyncGiving : 1 */
+
+  .doThen( () => setAsync( 0, 1 ) )
+  .doThen( function ()
+  {
+    function correspondent( err, got )
+    {
+      test.identical( err , null )
+      test.identical( got , testMsg );
+    }
+    var con = new wConsequence();
+    con.give( testMsg );
+    con.doThen( correspondent );
+    test.identical( con.messagesGet().length, 1 )
+    test.identical( con.messagesGet()[ 0 ], { error : null, argument : testMsg } )
+    test.identical( con.correspondentsGet().length, 1 );
+
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 )
+      test.identical( con.messagesGet().length, 1 )
+      test.identical( con.messagesGet()[ 0 ], { error : null, argument : undefined } )
+    })
+  })
+
+  /* asyncTaking : 1, asyncGiving : 1 */
+
+  .doThen( () => setAsync( 1, 1 ) )
+  .doThen( function ()
+  {
+    function correspondent( err, got )
+    {
+      test.identical( err , null )
+      test.identical( got , testMsg );
+    }
+    var con = new wConsequence();
+    con.give( testMsg );
+    con.doThen( correspondent );
+    test.identical( con.correspondentsGet().length, 1 )
+    test.identical( con.messagesGet().length, 1 )
+    test.identical( con.messagesGet()[ 0 ], { error : null, argument : testMsg } )
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 )
+      test.identical( con.messagesGet().length, 1 )
+      test.identical( con.messagesGet()[ 0 ], { error : null, argument : undefined } )
+    })
+
   })
 
   testCon.doThen( () => setAsync( 0, 0 ) );
