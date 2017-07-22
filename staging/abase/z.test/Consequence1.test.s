@@ -1217,153 +1217,245 @@ function doThenAsync( test )
 
 //
 
+// function split( test )
+// {
+//   var testCase1 =
+//
+//     {
+//       givSequence : [ 5 ],
+//       got :
+//       {
+//         gotSequence : [],
+//         throwErr : false
+//       },
+//       expected :
+//       {
+//         gotSequence :
+//           [
+//             { err : null, value : 5, takerId : 'taker1' }
+//           ],
+//         throwErr : false
+//       }
+//     },
+//     testCase2 =
+//     {
+//       givSequence :
+//         [ 5 ],
+//       got :
+//       {
+//         gotSequence : [],
+//         throwErr : false
+//       },
+//       expected :
+//       {
+//         gotSequence :
+//           [
+//             { err : null, value : 5, takerId : 'taker1' }
+//           ],
+//         throwErr : false
+//       }
+//     },
+//     testCase3 =
+//     {
+//       givSequence : [ 5, 4 ],
+//       got :
+//       {
+//         gotSequence : [],
+//         throwErr : false
+//       },
+//       expected :
+//       {
+//         gotSequence :
+//           [
+//             { err : null, value : 5, takerId : 'taker1' },
+//           ],
+//         throwErr : false
+//       }
+//     };
+//
+//
+//   /* common wConsequence corespondent tests. */
+//
+//   test.description = 'then clone : run after resolve value';
+//   ( function ( { givSequence, got, expected }  )
+//   {
+//     function testTaker1( err, value )
+//     {
+//       var takerId = 'taker1';
+//       got.gotSequence.push( { err, value, takerId } );
+//     }
+//
+//     var newCon;
+//     var con = wConsequence();
+//     con.give( givSequence.shift() );
+//     try
+//     {
+//       newCon = con.split();
+//       newCon.got( testTaker1 )
+//     }
+//     catch( err )
+//     {
+//       got.throwErr = !! err;
+//     }
+//     test.identical( got, expected );
+//   } )( testCase1 );
+//
+//   /**/
+//
+//   test.description = 'then clone : run before resolve value';
+//   ( function ( { givSequence, got, expected }  )
+//   {
+//     function testTaker1( err, value )
+//     {
+//       var takerId = 'taker1';
+//       got.gotSequence.push( { err, value, takerId } );
+//     }
+//
+//     var newCon;
+//     var con = wConsequence();
+//     try
+//     {
+//       newCon = con.split();
+//       newCon.got( testTaker1 );
+//       con.give( givSequence.shift() );
+//     }
+//     catch( err )
+//     {
+//       got.throwErr = !! err;
+//     }
+//     test.identical( got, expected );
+//   } )( testCase2 );
+//
+//   /**/
+//
+//   test.description = 'test thenSealed in chain';
+//
+//   ( function ( { givSequence, got, expected }  )
+//   {
+//     function testTaker1( err, value )
+//     {
+//       var takerId = 'taker1';
+//       got.gotSequence.push( { err, value, takerId } );
+//       value++;
+//       return value;
+//     }
+//
+//     function testTaker2( err, value )
+//     {
+//       var takerId = 'taker2';
+//       got.gotSequence.push( { err, value, takerId } );
+//     }
+//
+//     var con = wConsequence();
+//     for (let given of givSequence)
+//       con.give( given );
+//
+//     var newCon;
+//     try
+//     {
+//       newCon = con.split();
+//       newCon.got( testTaker1 );
+//       newCon.got( testTaker2 );
+//     }
+//     catch( err )
+//     {
+//       got.throwErr = !! err;
+//     }
+//     test.identical( got, expected );
+//   } )( testCase3 );
+// };
+
+//
+
 function split( test )
 {
-  var testCase1 =
+  var testCon = new wConsequence().give()
 
-    {
-      givSequence : [ 5 ],
-      got :
-      {
-        gotSequence : [],
-        throwErr : false
-      },
-      expected :
-      {
-        gotSequence :
-          [
-            { err : null, value : 5, takerId : 'taker1' }
-          ],
-        throwErr : false
-      }
-    },
-    testCase2 =
-    {
-      givSequence :
-        [ 5 ],
-      got :
-      {
-        gotSequence : [],
-        throwErr : false
-      },
-      expected :
-      {
-        gotSequence :
-          [
-            { err : null, value : 5, takerId : 'taker1' }
-          ],
-        throwErr : false
-      }
-    },
-    testCase3 =
-    {
-      givSequence : [ 5, 4 ],
-      got :
-      {
-        gotSequence : [],
-        throwErr : false
-      },
-      expected :
-      {
-        gotSequence :
-          [
-            { err : null, value : 5, takerId : 'taker1' },
-          ],
-        throwErr : false
-      }
-    };
-
-
-  /* common wConsequence corespondent tests. */
-
-  test.description = 'then clone : run after resolve value';
-  ( function ( { givSequence, got, expected }  )
+  .doThen( function ()
   {
-    function testTaker1( err, value )
+    test.description = 'split : run after resolve value';
+    var con = new wConsequence().give( 5 );
+    var con2 = con.split();
+    test.identical( con2.messagesGet().length, 1 );
+    con2.got( function( err, got )
     {
-      var takerId = 'taker1';
-      got.gotSequence.push( { err, value, takerId } );
-    }
+      test.identical( got, 5 );
+      test.identical( err, null );
+    });
 
-    var newCon;
-    var con = wConsequence();
-    con.give( givSequence.shift() );
-    try
-    {
-      newCon = con.split();
-      newCon.got( testTaker1 )
-    }
-    catch( err )
-    {
-      got.throwErr = !! err;
-    }
-    test.identical( got, expected );
-  } )( testCase1 );
+    test.identical( con.messagesGet().length, 1 );
+    test.identical( con2.messagesGet().length, 0 );
+  })
 
-  /**/
-
-  test.description = 'then clone : run before resolve value';
-  ( function ( { givSequence, got, expected }  )
+  .doThen( function ()
   {
-    function testTaker1( err, value )
+    test.description = 'split : run before resolve value';
+    var con = new wConsequence();
+    var con2 = con.split();
+    con2.got( function( err, got )
     {
-      var takerId = 'taker1';
-      got.gotSequence.push( { err, value, takerId } );
-    }
+      test.identical( got, 5 );
+      test.identical( err, null );
+    });
+    con.give( 5 );
+    test.identical( con.messagesGet().length, 1 );
+    test.identical( con2.messagesGet().length, 0 );
+  })
 
-    var newCon;
-    var con = wConsequence();
-    try
-    {
-      newCon = con.split();
-      newCon.got( testTaker1 );
-      con.give( givSequence.shift() );
-    }
-    catch( err )
-    {
-      got.throwErr = !! err;
-    }
-    test.identical( got, expected );
-  } )( testCase2 );
-
-  /**/
-
-  test.description = 'test thenSealed in chain';
-
-  ( function ( { givSequence, got, expected }  )
+  .doThen( function ()
   {
-    function testTaker1( err, value )
+    test.description = 'test split in chain';
+    var _got = [];
+    var _err = [];
+    function correspondent( err, got )
     {
-      var takerId = 'taker1';
-      got.gotSequence.push( { err, value, takerId } );
-      value++;
-      return value;
+      _got.push( got );
+      _err.push( err );
     }
 
-    function testTaker2( err, value )
+    var con = new wConsequence();
+    con.give( 5 );
+    con.give( 6 );
+    test.identical( con.messagesGet().length, 2 );
+    var con2 = con.split();
+    test.identical( con2.messagesGet().length, 1 );
+    con2.got( correspondent );
+    con2.got( correspondent );
+
+    test.identical( con2.messagesGet().length, 0 );
+    test.identical( con2.correspondentsGet().length, 1 );
+    test.identical( con.messagesGet().length, 2 );
+    test.identical( _got, [ 5 ] )
+    test.identical( _err, [ null ] )
+  })
+
+  .doThen( function ()
+  {
+    test.description = 'passing correspondent as argument';
+    var _got = [];
+    var _err = [];
+    function correspondent( err, got )
     {
-      var takerId = 'taker2';
-      got.gotSequence.push( { err, value, takerId } );
+      _got.push( got );
+      _err.push( err );
     }
 
-    var con = wConsequence();
-    for (let given of givSequence)
-      con.give( given );
+    var con = new wConsequence();
+    con.give( 5 );
+    con.give( 6 );
+    test.identical( con.messagesGet().length, 2 );
+    var con2 = con.split( correspondent );
 
-    var newCon;
-    try
-    {
-      newCon = con.split();
-      newCon.got( testTaker1 );
-      newCon.got( testTaker2 );
-    }
-    catch( err )
-    {
-      got.throwErr = !! err;
-    }
-    test.identical( got, expected );
-  } )( testCase3 );
-};
+    test.identical( con2.messagesGet().length, 1 );
+    test.identical( con2.messagesGet()[ 0 ], { error : null, argument : undefined } );
+    test.identical( con2.correspondentsGet().length, 0 );
+    test.identical( con.messagesGet().length, 2 );
+    test.identical( _got, [ 5 ] )
+    test.identical( _err, [ null ] )
+  })
+
+  return testCon;
+}
 
 //
 
