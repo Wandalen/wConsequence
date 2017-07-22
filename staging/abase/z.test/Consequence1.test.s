@@ -497,160 +497,490 @@ function andThen( test )
 // test part 2
 // --
 
+// function ordinarMessage( test )
+// {
+//   var self = this;
+//
+//   var samples =
+//   [
+//
+//     {
+//       giveMethod : { give : 'give' },
+//       gotArgument : 1,
+//       anotherArgument : 0,
+//       anotherArgumentValue : null,
+//     },
+//
+//     {
+//       giveMethod : { error : 'error' },
+//       gotArgument : 0,
+//       anotherArgument : 1,
+//       anotherArgumentValue : undefined,
+//     },
+//
+//   ];
+//
+//
+//   //
+//
+//   for( var s = 0 ; s < samples.length ; s++ )
+//   {
+//     var sample = samples[ s ];
+//
+//     sample.giveMethod = _.nameUnfielded( sample.giveMethod ).coded;
+//
+//     /**/
+//
+//     var con = new wConsequence();
+//
+//     con.got( function( err,data )
+//     {
+//
+//       test.identical( arguments[ sample.gotArgument ],1 );
+//       test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
+//
+//     });
+//
+//     con.got( function( err,data )
+//     {
+//
+//       test.identical( arguments[ sample.gotArgument ],2 );
+//       test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
+//
+//     });
+//
+//     con[ sample.giveMethod ]( 1 );
+//     con[ sample.giveMethod ]( 2 );
+//     con[ sample.giveMethod ]( 3 );
+//     con[ sample.giveMethod ]( 4 );
+//
+//     con.got( function( err,data )
+//     {
+//
+//       test.identical( arguments[ sample.gotArgument ],3 );
+//       test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
+//
+//     });
+//
+//     con.got( function( err,data )
+//     {
+//
+//       test.identical( arguments[ sample.gotArgument ],4 );
+//       test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
+//
+//     });
+//
+//     con.got( function( err,data )
+//     {
+//
+//       test.identical( arguments[ sample.gotArgument ],5 );
+//       test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
+//
+//     });
+//
+//     con.got( function( err,data )
+//     {
+//
+//       test.identical( arguments[ sample.gotArgument ],6 );
+//       test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
+//
+//     });
+//
+//     con[ sample.giveMethod ]( 5 );
+//     con[ sample.giveMethod ]( 6 );
+//
+//     /**/
+//
+//     var con = new wConsequence();
+//
+//     con[ sample.giveMethod ]( 1 );
+//     con[ sample.giveMethod ]( 2 );
+//
+//     con.got( function( err,data )
+//     {
+//
+//       test.identical( arguments[ sample.gotArgument ],1 );
+//       test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
+//
+//     });
+//
+//     con.got( function( err,data )
+//     {
+//
+//       test.identical( arguments[ sample.gotArgument ],2 );
+//       test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
+//
+//     });
+//
+//     con.got( function( err,data )
+//     {
+//
+//       test.identical( arguments[ sample.gotArgument ],3 );
+//       test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
+//
+//     });
+//
+//     con.got( function( err,data )
+//     {
+//
+//       test.identical( arguments[ sample.gotArgument ],4 );
+//       test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
+//
+//     });
+//
+//     con[ sample.giveMethod ]( 3 );
+//     con[ sample.giveMethod ]( 4 );
+//     con[ sample.giveMethod ]( 5 );
+//     con[ sample.giveMethod ]( 6 );
+//
+//     con.got( function( err,data )
+//     {
+//
+//       test.identical( arguments[ sample.gotArgument ],5 );
+//       test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
+//
+//     });
+//
+//     con.got( function( err,data )
+//     {
+//
+//       test.identical( arguments[ sample.gotArgument ],6 );
+//       test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
+//
+//     });
+//
+//   }
+//
+// }
+
+//
+
 function ordinarMessage( test )
 {
-  var self = this;
-
-  var samples =
-  [
-
-    {
-      giveMethod : { give : 'give' },
-      gotArgument : 1,
-      anotherArgument : 0,
-      anotherArgumentValue : null,
-    },
-
-    {
-      giveMethod : { error : 'error' },
-      gotArgument : 0,
-      anotherArgument : 1,
-      anotherArgumentValue : undefined,
-    },
-
-  ];
-
-
-  //
-
-  for( var s = 0 ; s < samples.length ; s++ )
+  var setAsync = function( taking, giving )
   {
-    var sample = samples[ s ];
-
-    sample.giveMethod = _.nameUnfielded( sample.giveMethod ).coded;
-
-    /**/
-
-    var con = new wConsequence();
-
-    con.got( function( err,data )
-    {
-
-      test.identical( arguments[ sample.gotArgument ],1 );
-      test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
-
-    });
-
-    con.got( function( err,data )
-    {
-
-      test.identical( arguments[ sample.gotArgument ],2 );
-      test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
-
-    });
-
-    con[ sample.giveMethod ]( 1 );
-    con[ sample.giveMethod ]( 2 );
-    con[ sample.giveMethod ]( 3 );
-    con[ sample.giveMethod ]( 4 );
-
-    con.got( function( err,data )
-    {
-
-      test.identical( arguments[ sample.gotArgument ],3 );
-      test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
-
-    });
-
-    con.got( function( err,data )
-    {
-
-      test.identical( arguments[ sample.gotArgument ],4 );
-      test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
-
-    });
-
-    con.got( function( err,data )
-    {
-
-      test.identical( arguments[ sample.gotArgument ],5 );
-      test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
-
-    });
-
-    con.got( function( err,data )
-    {
-
-      test.identical( arguments[ sample.gotArgument ],6 );
-      test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
-
-    });
-
-    con[ sample.giveMethod ]( 5 );
-    con[ sample.giveMethod ]( 6 );
-
-    /**/
-
-    var con = new wConsequence();
-
-    con[ sample.giveMethod ]( 1 );
-    con[ sample.giveMethod ]( 2 );
-
-    con.got( function( err,data )
-    {
-
-      test.identical( arguments[ sample.gotArgument ],1 );
-      test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
-
-    });
-
-    con.got( function( err,data )
-    {
-
-      test.identical( arguments[ sample.gotArgument ],2 );
-      test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
-
-    });
-
-    con.got( function( err,data )
-    {
-
-      test.identical( arguments[ sample.gotArgument ],3 );
-      test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
-
-    });
-
-    con.got( function( err,data )
-    {
-
-      test.identical( arguments[ sample.gotArgument ],4 );
-      test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
-
-    });
-
-    con[ sample.giveMethod ]( 3 );
-    con[ sample.giveMethod ]( 4 );
-    con[ sample.giveMethod ]( 5 );
-    con[ sample.giveMethod ]( 6 );
-
-    con.got( function( err,data )
-    {
-
-      test.identical( arguments[ sample.gotArgument ],5 );
-      test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
-
-    });
-
-    con.got( function( err,data )
-    {
-
-      test.identical( arguments[ sample.gotArgument ],6 );
-      test.identical( arguments[ sample.anotherArgument ],sample.anotherArgumentValue );
-
-    });
-
+    wConsequence.prototype.asyncTaking = taking;
+    wConsequence.prototype.asyncGiving = giving;
   }
 
+  test.description = 'give single message'
+
+  var testCon = new wConsequence().give()
+
+   /* asyncTaking : 0, asyncGiving : 0 */
+
+  .doThen( () => setAsync( 0, 0 ) )
+  .doThen( function ()
+  {
+    var con = new wConsequence();
+    con.give( 1 );
+    test.identical( con.messagesGet().length, 1 );
+    con.got( function ( err, got )
+    {
+      test.identical( err, null )
+      test.identical( got, 1 );
+    })
+    test.identical( con.messagesGet().length, 0 );
+    test.identical( con.correspondentsGet().length, 0 );
+  })
+
+  /* asyncTaking : 1, asyncGiving : 0 */
+
+  .doThen( () => setAsync( 1, 0 ) )
+  .doThen( function ()
+  {
+    var con = new wConsequence();
+    con.give( 1 );
+    test.identical( con.messagesGet().length, 1 );
+    con.got( function ( err, got )
+    {
+      test.identical( err, null )
+      test.identical( got, 1 );
+    })
+    test.identical( con.messagesGet().length, 1 );
+    test.identical( con.correspondentsGet().length, 1 );
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.messagesGet().length, 0 );
+      test.identical( con.correspondentsGet().length, 0 );
+    })
+  })
+
+  /* asyncTaking : 0, asyncGiving : 1 */
+
+  .doThen( () => setAsync( 0, 1 ) )
+  .doThen( function ()
+  {
+    var con = new wConsequence();
+    con.give( 1 );
+    con.got( function ( err, got )
+    {
+      test.identical( err, null )
+      test.identical( got, 1 );
+    })
+    test.identical( con.messagesGet().length, 1 );
+    test.identical( con.correspondentsGet().length, 1 );
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.messagesGet().length, 0 );
+      test.identical( con.correspondentsGet().length, 0 );
+    })
+  })
+
+  /* asyncTaking : 1, asyncGiving : 1 */
+
+  .doThen( () => setAsync( 1, 1 ) )
+  .doThen( function ()
+  {
+    var con = new wConsequence();
+    con.give( 1 );
+    con.got( function ( err, got )
+    {
+      test.identical( err, null )
+      test.identical( got, 1 );
+    })
+    test.identical( con.messagesGet().length, 1 );
+    test.identical( con.correspondentsGet().length, 1 );
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.messagesGet().length, 0 );
+      test.identical( con.correspondentsGet().length, 0 );
+    })
+  });
+
+  test.description = 'give several messages';
+
+  /* asyncTaking : 0, asyncGiving : 0 */
+
+  testCon.doThen( () => setAsync( 0, 0 ) )
+  .doThen( function ()
+  {
+    var con = new wConsequence();
+    con.give( 1 ).give( 2 ).give( 3 );
+    test.identical( con.messagesGet().length, 3 );
+    con.got( ( err, got ) => test.identical( got, 1 ) );
+    con.got( ( err, got ) => test.identical( got, 2 ) );
+    con.got( ( err, got ) => test.identical( got, 3 ) );
+    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.messagesGet().length, 0 );
+  })
+
+  /* asyncTaking : 1, asyncGiving : 0 */
+
+  testCon.doThen( () => setAsync( 1, 0 ) )
+  .doThen( function ()
+  {
+    var con = new wConsequence();
+    con.give( 1 ).give( 2 ).give( 3 );
+    con.got( ( err, got ) => test.identical( got, 1 ) );
+    con.got( ( err, got ) => test.identical( got, 2 ) );
+    con.got( ( err, got ) => test.identical( got, 3 ) );
+    test.identical( con.correspondentsGet().length, 3 );
+    test.identical( con.messagesGet().length, 3 );
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+    })
+  })
+
+  /* asyncTaking : 0, asyncGiving : 1 */
+
+  testCon.doThen( () => setAsync( 0, 1 ) )
+  .doThen( function ()
+  {
+    var con = new wConsequence();
+    con.give( 1 ).give( 2 ).give( 3 );
+    con.got( ( err, got ) => test.identical( got, 1 ) );
+    con.got( ( err, got ) => test.identical( got, 2 ) );
+    con.got( ( err, got ) => test.identical( got, 3 ) );
+    test.identical( con.correspondentsGet().length, 3 );
+    test.identical( con.messagesGet().length, 3 );
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+    })
+  })
+
+  /* asyncTaking : 1, asyncGiving : 1 */
+
+  testCon.doThen( () => setAsync( 1, 1 ) )
+  .doThen( function ()
+  {
+    var con = new wConsequence();
+    con.give( 1 ).give( 2 ).give( 3 );
+    con.got( ( err, got ) => test.identical( got, 1 ) );
+    con.got( ( err, got ) => test.identical( got, 2 ) );
+    con.got( ( err, got ) => test.identical( got, 3 ) );
+    test.identical( con.correspondentsGet().length, 3 );
+    test.identical( con.messagesGet().length, 3 );
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+    })
+  });
+
+  test.description = 'give single error';
+
+  /* asyncTaking : 0, asyncGiving : 0 */
+
+  testCon.doThen( () => setAsync( 0, 0 ) )
+  .doThen( function ()
+  {
+    var con = new wConsequence();
+    con.error( 'err' );
+    test.identical( con.messagesGet().length, 1 );
+    con.got( function ( err, got )
+    {
+      test.identical( err, 'err' )
+      test.identical( got, undefined );
+    })
+    test.identical( con.messagesGet().length, 0 );
+    test.identical( con.correspondentsGet().length, 0 );
+  })
+
+  /* asyncTaking : 1, asyncGiving : 0 */
+
+  .doThen( () => setAsync( 1, 0 ) )
+  .doThen( function ()
+  {
+    var con = new wConsequence();
+    con.error( 'err' );
+    test.identical( con.messagesGet().length, 1 );
+    con.got( function ( err, got )
+    {
+      test.identical( err, 'err' )
+      test.identical( got, undefined );
+    })
+    test.identical( con.messagesGet().length, 1 );
+    test.identical( con.correspondentsGet().length, 1 );
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.messagesGet().length, 0 );
+      test.identical( con.correspondentsGet().length, 0 );
+    })
+  })
+
+  /* asyncTaking : 0, asyncGiving : 1 */
+
+  .doThen( () => setAsync( 0, 1 ) )
+  .doThen( function ()
+  {
+    var con = new wConsequence();
+    con.error( 'err' );
+    con.got( function ( err, got )
+    {
+      test.identical( err, 'err' )
+      test.identical( got, undefined );
+    })
+    test.identical( con.messagesGet().length, 1 );
+    test.identical( con.correspondentsGet().length, 1 );
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.messagesGet().length, 0 );
+      test.identical( con.correspondentsGet().length, 0 );
+    })
+  })
+
+  /* asyncTaking : 1, asyncGiving : 1 */
+
+  .doThen( () => setAsync( 1, 1 ) )
+  .doThen( function ()
+  {
+    var con = new wConsequence();
+    con.error( 'err' );
+    con.got( function ( err, got )
+    {
+      test.identical( err, 'err' )
+      test.identical( got, undefined );
+    })
+    test.identical( con.messagesGet().length, 1 );
+    test.identical( con.correspondentsGet().length, 1 );
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.messagesGet().length, 0 );
+      test.identical( con.correspondentsGet().length, 0 );
+    })
+  });
+
+  test.description = 'give several error messages';
+
+  /* asyncTaking : 0, asyncGiving : 0 */
+
+  testCon.doThen( () => setAsync( 0, 0 ) )
+  .doThen( function ()
+  {
+    var con = new wConsequence();
+    con.error( 'err1' ).error( 'err2' ).error( 'err3' );
+    test.identical( con.messagesGet().length, 3 );
+    con.got( ( err, got ) => test.identical( err, 'err1' ) );
+    con.got( ( err, got ) => test.identical( err, 'err2' ) );
+    con.got( ( err, got ) => test.identical( err, 'err3' ) );
+    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.messagesGet().length, 0 );
+  })
+
+  /* asyncTaking : 1, asyncGiving : 0 */
+
+  testCon.doThen( () => setAsync( 1, 0 ) )
+  .doThen( function ()
+  {
+    var con = new wConsequence();
+    con.error( 'err1' ).error( 'err2' ).error( 'err3' );
+    con.got( ( err, got ) => test.identical( err, 'err1' ) );
+    con.got( ( err, got ) => test.identical( err, 'err2' ) );
+    con.got( ( err, got ) => test.identical( err, 'err3' ) );
+    test.identical( con.correspondentsGet().length, 3 );
+    test.identical( con.messagesGet().length, 3 );
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+    })
+  })
+
+  /* asyncTaking : 0, asyncGiving : 1 */
+
+  testCon.doThen( () => setAsync( 0, 1 ) )
+  .doThen( function ()
+  {
+    var con = new wConsequence();
+    con.error( 'err1' ).error( 'err2' ).error( 'err3' );
+    con.got( ( err, got ) => test.identical( err, 'err1' ) );
+    con.got( ( err, got ) => test.identical( err, 'err2' ) );
+    con.got( ( err, got ) => test.identical( err, 'err3' ) );
+    test.identical( con.correspondentsGet().length, 3 );
+    test.identical( con.messagesGet().length, 3 );
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+    })
+  })
+
+  /* asyncTaking : 1, asyncGiving : 1 */
+
+  testCon.doThen( () => setAsync( 1, 1 ) )
+  .doThen( function ()
+  {
+    var con = new wConsequence();
+    con.error( 'err1' ).error( 'err2' ).error( 'err3' );
+    con.got( ( err, got ) => test.identical( err, 'err1' ) );
+    con.got( ( err, got ) => test.identical( err, 'err2' ) );
+    con.got( ( err, got ) => test.identical( err, 'err3' ) );
+    test.identical( con.correspondentsGet().length, 3 );
+    test.identical( con.messagesGet().length, 3 );
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+    })
+  });
+
+  testCon.doThen( () => setAsync( 0, 0 ) )
+  return testCon;
 }
 
 //
