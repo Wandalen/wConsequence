@@ -526,6 +526,7 @@ function onceGot( correspondent )
   var i = _.arrayLeftIndexOf( self._correspondent,key,function( a )
   {
     return a.id || correspondent.name;
+    // return a.id || a.onGot.name;
   });
 
   if( i >= 0 )
@@ -595,6 +596,7 @@ function onceThen( correspondent )
   var i = _.arrayLeftIndexOf( self._correspondent,key,function( a )
   {
     return a.id;
+    // return a.id || a.onGot.name;
   });
 
   if( i >= 0 )
