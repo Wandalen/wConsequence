@@ -857,20 +857,20 @@ function ifErrorThen()
  * @memberof wConsequence#
  */
 
-function ifErrorThenLogThen( context,correspondent,args )
+function ifErrorThenLogThen()
 {
   var self = this;
 
   _.assert( arguments.length === 0 );
 
-  var correspondent = function reportError( err )
+  function reportError( err )
   {
     throw _.errLogOnce( err );
   }
 
   return self.__correspondentAppend
   ({
-    correspondent : correspondent,
+    correspondent : reportError,
     thenning : true,
     kindOfArguments : Self.KindOfArguments.IfError,
   });
@@ -3291,6 +3291,7 @@ _.accessorForbid( Self.prototype,
 
 if( typeof module !== 'undefined' )
 module[ 'exports' ] = Self;
+// _global_[ 'wConsequence' ] =
 _global_[ Self.name ] = wTools[ Self.nameShort ] = Self;
 
 //
