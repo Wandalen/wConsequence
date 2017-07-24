@@ -1750,6 +1750,127 @@ function doThen( test )
       test.identical( con2.correspondentsGet().length, 0 );
     })
   })
+
+  /* asyncTaking : 0, asyncGiving : 0 */
+
+   .doThen( function() 
+  { 
+    setAsync( 0, 0 );
+    test.description += 'correspondent returns consequence with msg';
+  })
+  .doThen( function ()
+  { 
+    var con = new wConsequence();
+    var con2 = new wConsequence();
+    con.give();
+    con.doThen( function()
+    {
+      return con2.give( testMsg );
+    });
+
+    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.messagesGet().length, 1 );
+    test.identical( con.messagesGet()[ 0 ].argument, testMsg );
+
+    test.identical( con2.messagesGet().length, 1 );
+    test.identical( con2.messagesGet()[ 0 ].argument, testMsg );
+    
+  })
+
+  /* asyncTaking : 1, asyncGiving : 0 */
+
+   .doThen( function() 
+  { 
+    setAsync( 1, 0 );
+    test.description += 'correspondent returns consequence with msg';
+  })
+  .doThen( function ()
+  { 
+    var con = new wConsequence();
+    var con2 = new wConsequence();
+    con.give();
+    con.doThen( function()
+    {
+      return con2.give( testMsg );
+    });
+
+    test.identical( con.correspondentsGet().length, 1 );
+
+    return _.timeOut( 1, function()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 1 );
+      test.identical( con.messagesGet()[ 0 ].argument, testMsg );
+
+      test.identical( con2.messagesGet().length, 1 );
+      test.identical( con2.messagesGet()[ 0 ].argument, testMsg );
+    })
+  })
+
+  /* asyncTaking : 0, asyncGiving : 1 */
+
+   .doThen( function() 
+  { 
+    setAsync( 0, 1 );
+    test.description += 'correspondent returns consequence with msg';
+  })
+  .doThen( function ()
+  { 
+    var con = new wConsequence();
+    var con2 = new wConsequence();
+    con.give();
+
+    test.identical( con.messagesGet().length, 1 );
+
+    return _.timeOut( 1, function()
+    { 
+      con.doThen( function()
+      {
+        return con2.give( testMsg );
+      });
+
+      return con;
+    })
+    .doThen( function()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 1 );
+      test.identical( con.messagesGet()[ 0 ].argument, testMsg );
+
+      test.identical( con2.messagesGet().length, 1 );
+      test.identical( con2.messagesGet()[ 0 ].argument, testMsg );
+    })
+  })
+
+  /* asyncTaking : 1, asyncGiving : 1 */
+
+   .doThen( function() 
+  { 
+    setAsync( 1, 1 );
+    test.description += 'correspondent returns consequence with msg';
+  })
+  .doThen( function ()
+  { 
+    var con = new wConsequence();
+    var con2 = new wConsequence();
+    con.give();
+    con.doThen( function()
+    {
+      return con2.give( testMsg );
+    });
+
+    test.identical( con.messagesGet().length, 1 );
+
+    return _.timeOut( 1, function()
+    { 
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 1 );
+      test.identical( con.messagesGet()[ 0 ].argument, testMsg );
+
+      test.identical( con2.messagesGet().length, 1 );
+      test.identical( con2.messagesGet()[ 0 ].argument, testMsg );
+    })
+  })
   
   testCon.doThen( () => setAsync( 0, 0 ) );
 
