@@ -3745,248 +3745,381 @@ function onceGot( test )
 
 //
 
+// function onceThen( test )
+// {
+
+//   var testCase1 =
+
+//     {
+//       givSequence: [ 5 ],
+//       got:
+//       {
+//         gotSequence: [],
+//         throwErr: false
+//       },
+//       expected:
+//       {
+//         gotSequence:
+//           [
+//             { err: null, value: 5, takerId: 'taker1' }
+//           ],
+//         throwErr: false
+//       }
+//     },
+//     testCase2 =
+//     {
+//       givSequence:
+//         [
+//           'err msg'
+//         ],
+//       got:
+//       {
+//         gotSequence: [],
+//         throwErr: false
+//       },
+//       expected:
+//       {
+//         gotSequence:
+//           [
+//             { err: 'err msg', value: void 0, takerId: 'taker1' }
+//           ],
+//         throwErr: false
+//       }
+//     },
+//     testCase3 =
+//     {
+//       givSequence: [ 5, 4 ],
+//       got:
+//       {
+//         gotSequence: [],
+//         throwErr: false
+//       },
+//       expected:
+//       {
+//         gotSequence:
+//           [
+//             { err: null, value: 5, takerId: 'taker1' },
+//             { err: null, value: 4, takerId: 'taker2' },
+//             { err: null, value: 6, takerId: 'taker3' }
+//           ],
+//         throwErr: false
+//       }
+//     },
+//     testCase4 =
+//     {
+//       givSequence: [ 5 ],
+//       got:
+//       {
+//         gotSequence: [],
+//         throwErr: false
+//       },
+//       expected:
+//       {
+//         gotSequence:
+//           [
+//             { err: null, value: 5, takerId: 'taker1' },
+//             { err: null, value: 6, takerId: 'taker2' },
+//           ],
+//         throwErr: false
+//       }
+//     };
+
+
+//   /* common wConsequence corespondent tests. */
+
+//   test.description = 'single value in give sequence, and single taker: attached taker after value resolved';
+//   ( function ( { givSequence, got, expected }  )
+//   {
+//     function testTaker1( err, value )
+//     {
+//       var takerId = 'taker1';
+//       got.gotSequence.push( { err, value, takerId } );
+//     }
+
+//     var con = wConsequence();
+//     con.give( givSequence.shift() );
+//     try
+//     {
+//       con.onceThen( testTaker1 );
+//     }
+//     catch( err )
+//     {
+//       got.throwErr = !! err;
+//     }
+//     test.identical( got, expected );
+//   } )( testCase1 );
+
+//   /**/
+
+//   test.description = 'single err in give sequence, and single taker: attached taker after value resolved';
+//   ( function ( { givSequence, got, expected }  )
+//   {
+//     function testTaker1( err, value )
+//     {
+//       var takerId = 'taker1';
+//       got.gotSequence.push( { err, value, takerId } );
+//     }
+
+//     var con = wConsequence();
+//     try
+//     {
+//       con.error( givSequence.shift() );
+//       con.onceThen( testTaker1 );
+//     }
+//     catch( err )
+//     {
+//       got.throwErr = !! err;
+//     }
+//     test.identical( got, expected );
+//   } )( testCase2 );
+
+//   /**/
+
+//   test.description = 'test onceThen in chain';
+
+//   ( function ( { givSequence, got, expected }  )
+//   {
+//     function testTaker1( err, value )
+//     {
+//       var takerId = 'taker1';
+//       got.gotSequence.push( { err, value, takerId } );
+//       value++;
+//       return value;
+//     }
+
+//     function testTaker2( err, value )
+//     {
+//       var takerId = 'taker2';
+//       got.gotSequence.push( { err, value, takerId } );
+//     }
+
+//     function testTaker3( err, value )
+//     {
+//       var takerId = 'taker3';
+//       got.gotSequence.push( { err, value, takerId } );
+//     }
+
+//     var con = wConsequence();
+//     for (let given of givSequence)
+//       con.give( given );
+
+//     try
+//     {
+//       con.onceThen( testTaker1 );
+//       con.onceThen( testTaker2 );
+//       con.got( testTaker3 );
+//     }
+//     catch( err )
+//     {
+//       got.throwErr = !! err;
+//     }
+//     test.identical( got, expected );
+//   } )( testCase3 );
+
+//   /* test particular onceThen features test. */
+
+//   test.description = 'added several corespondents with same name';
+//   ( function ( { givSequence, got, expected }  )
+//   {
+//     function testTaker1( err, value )
+//     {
+//       var takerId = 'taker1';
+//       got.gotSequence.push( { err, value, takerId } );
+//       value++;
+//       return value;
+//     }
+
+//     function testTaker2( err, value )
+//     {
+//       var takerId = 'taker2';
+//       got.gotSequence.push( { err, value, takerId } );
+//     }
+
+//     function testTaker3( err, value )
+//     {
+//       var takerId = 'taker3';
+//       got.gotSequence.push( { err, value, takerId } );
+//     }
+
+//     var con = wConsequence();
+
+//     try
+//     {
+//       debugger
+//       con.onceThen( testTaker1 );
+//       con.onceThen( testTaker1 );
+//       con.onceThen( testTaker2 );
+
+//       for( let given of givSequence )
+//       {
+//         con.give( given );
+//       }
+//     }
+//     catch( err )
+//     {
+//       console.log(err);
+//       got.throwErr = !! err;
+//     }
+
+//     test.identical( got, expected );
+//   } )( testCase4 );
+
+
+//   if( Config.debug )
+//   {
+//     var conDeb1 = wConsequence();
+
+//     test.description = 'try to pass as parameter anonymous function';
+//     test.shouldThrowError( function()
+//     {
+//       conDeb1.onceThen( function( err, val) { logger.log( 'i em anonymous' ); } );
+//     } );
+
+//     var conDeb2 = wConsequence();
+
+//     test.description = 'try to pass as parameter anonymous function (defined in expression)';
+
+//     function testHandler( err, val) { logger.log( 'i em anonymous' ); }
+//     test.shouldThrowError( function()
+//     {
+//       conDeb2.onceThen( testHandler );
+//     } );
+//   }
+
+// };
+
+//
+
 function onceThen( test )
-{
-
-  var testCase1 =
-
-    {
-      givSequence: [ 5 ],
-      got:
-      {
-        gotSequence: [],
-        throwErr: false
-      },
-      expected:
-      {
-        gotSequence:
-          [
-            { err: null, value: 5, takerId: 'taker1' }
-          ],
-        throwErr: false
-      }
-    },
-    testCase2 =
-    {
-      givSequence:
-        [
-          'err msg'
-        ],
-      got:
-      {
-        gotSequence: [],
-        throwErr: false
-      },
-      expected:
-      {
-        gotSequence:
-          [
-            { err: 'err msg', value: void 0, takerId: 'taker1' }
-          ],
-        throwErr: false
-      }
-    },
-    testCase3 =
-    {
-      givSequence: [ 5, 4 ],
-      got:
-      {
-        gotSequence: [],
-        throwErr: false
-      },
-      expected:
-      {
-        gotSequence:
-          [
-            { err: null, value: 5, takerId: 'taker1' },
-            { err: null, value: 4, takerId: 'taker2' },
-            { err: null, value: 6, takerId: 'taker3' }
-          ],
-        throwErr: false
-      }
-    },
-    testCase4 =
-    {
-      givSequence: [ 5 ],
-      got:
-      {
-        gotSequence: [],
-        throwErr: false
-      },
-      expected:
-      {
-        gotSequence:
-          [
-            { err: null, value: 5, takerId: 'taker1' },
-            { err: null, value: 6, takerId: 'taker2' },
-          ],
-        throwErr: false
-      }
-    };
-
+{ 
+  var testMsg = 'msg';
+  var testCon = new wConsequence().give()
 
   /* common wConsequence corespondent tests. */
 
-  test.description = 'single value in give sequence, and single taker: attached taker after value resolved';
-  ( function ( { givSequence, got, expected }  )
+  .doThen( function()
   {
-    function testTaker1( err, value )
-    {
-      var takerId = 'taker1';
-      got.gotSequence.push( { err, value, takerId } );
+    test.description = 'single value in give sequence, and single taker: attached taker after value resolved';
+    function correspondent( err, got )
+    { 
+      test.identical( got, testMsg );
+      test.identical( err, null );
+      return got;
     }
+    var con = new wConsequence();
+    con.give( testMsg );
+    con.onceThen( correspondent );
+    con.got( ( err, got ) => test.identical( got, testMsg ) );
+  })
 
-    var con = wConsequence();
-    con.give( givSequence.shift() );
-    try
-    {
-      con.onceThen( testTaker1 );
-    }
-    catch( err )
-    {
-      got.throwErr = !! err;
-    }
-    test.identical( got, expected );
-  } )( testCase1 );
+  /* */
 
-  /**/
-
-  test.description = 'single err in give sequence, and single taker: attached taker after value resolved';
-  ( function ( { givSequence, got, expected }  )
+  .doThen( function()
   {
-    function testTaker1( err, value )
-    {
-      var takerId = 'taker1';
-      got.gotSequence.push( { err, value, takerId } );
+    test.description = 'single err in give sequence, and single taker: attached taker after value resolved';
+
+    function correspondent( err, got )
+    { 
+      test.identical( err, testMsg );
+      test.identical( got, undefined );
+      return err;
     }
+    var con = new wConsequence();
+    con.error( testMsg );
+    con.onceThen( correspondent );
+    con.got( ( err, got ) => test.identical( got, testMsg ) );
+  })
 
-    var con = wConsequence();
-    try
-    {
-      con.error( givSequence.shift() );
-      con.onceThen( testTaker1 );
-    }
-    catch( err )
-    {
-      got.throwErr = !! err;
-    }
-    test.identical( got, expected );
-  } )( testCase2 );
+  /* */
 
-  /**/
-
-  test.description = 'test onceThen in chain';
-
-  ( function ( { givSequence, got, expected }  )
+  .doThen( function()
   {
-    function testTaker1( err, value )
-    {
-      var takerId = 'taker1';
-      got.gotSequence.push( { err, value, takerId } );
-      value++;
-      return value;
+    test.description = 'test onceThen in chain';
+
+    function correspondent1( err, got )
+    { 
+      test.identical( got, testMsg );
+      return testMsg + 1;
     }
-
-    function testTaker2( err, value )
-    {
-      var takerId = 'taker2';
-      got.gotSequence.push( { err, value, takerId } );
+    function correspondent2( err, got )
+    { 
+      test.identical( got, testMsg );
+      return testMsg + 2;
     }
+    var con = new wConsequence();
+    con.give( testMsg );
+    con.give( testMsg );
+    con.onceThen( correspondent1 );
+    con.onceThen( correspondent2 );
+    con.got( ( err, got ) => test.identical( got, testMsg + 1 ) );
+    con.got( ( err, got ) => test.identical( got, testMsg + 2 ) );
+  })
 
-    function testTaker3( err, value )
-    {
-      var takerId = 'taker3';
-      got.gotSequence.push( { err, value, takerId } );
-    }
+  /* test particular onceGot features test. */
 
-    var con = wConsequence();
-    for (let given of givSequence)
-      con.give( given );
-
-    try
-    {
-      con.onceThen( testTaker1 );
-      con.onceThen( testTaker2 );
-      con.got( testTaker3 );
-    }
-    catch( err )
-    {
-      got.throwErr = !! err;
-    }
-    test.identical( got, expected );
-  } )( testCase3 );
-
-  /* test particular onceThen features test. */
-
-  test.description = 'added several corespondents with same name';
-  ( function ( { givSequence, got, expected }  )
+  .doThen( function()
   {
-    function testTaker1( err, value )
-    {
-      var takerId = 'taker1';
-      got.gotSequence.push( { err, value, takerId } );
-      value++;
-      return value;
+    test.description = 'added several corespondents with same name';
+    var correspondent1Count = 0;
+    var correspondent2Count = 0;
+    function correspondent1( err, got )
+    { 
+      test.identical( got, testMsg );
+      correspondent1Count++;
+      return got;
     }
-
-    function testTaker2( err, value )
-    {
-      var takerId = 'taker2';
-      got.gotSequence.push( { err, value, takerId } );
+    function correspondent2( err, got )
+    { 
+      test.identical( got, testMsg );
+      correspondent2Count++;
+      return got;
     }
+    var con = new wConsequence();
+    
+    con.onceThen( correspondent1 );
+    con.onceThen( correspondent1 );
+    con.onceThen( correspondent2 );
 
-    function testTaker3( err, value )
-    {
-      var takerId = 'taker3';
-      got.gotSequence.push( { err, value, takerId } );
-    }
+    test.identical( con.correspondentsGet().length, 2 );
 
-    var con = wConsequence();
+    con.give( testMsg );
 
-    try
-    {
-      debugger
-      con.onceThen( testTaker1 );
-      con.onceThen( testTaker1 );
-      con.onceThen( testTaker2 );
+    test.identical( correspondent1Count, 1 );
+    test.identical( correspondent2Count, 1 );
 
-      for( let given of givSequence )
-      {
-        con.give( given );
-      }
-    }
-    catch( err )
-    {
-      console.log(err);
-      got.throwErr = !! err;
-    }
+    test.identical( con.messagesGet().length, 1 );
+    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.messagesGet()[ 0 ].argument, testMsg );
+    
+  })
 
-    test.identical( got, expected );
-  } )( testCase4 );
-
-
-  if( Config.debug )
+  /* */
+  
+  .doThen( function()
   {
-    var conDeb1 = wConsequence();
-
+    if( !Config.debug )
+    return;
+    
+    var con = new wConsequence();
+    
     test.description = 'try to pass as parameter anonymous function';
     test.shouldThrowError( function()
-    {
-      conDeb1.onceThen( function( err, val) { logger.log( 'i em anonymous' ); } );
-    } );
-
-    var conDeb2 = wConsequence();
+    { 
+      con.onceThen( function( err, val) { logger.log( 'i em anonymous' ); } );
+    });
+    
+    /* */
 
     test.description = 'try to pass as parameter anonymous function (defined in expression)';
-
     function testHandler( err, val) { logger.log( 'i em anonymous' ); }
     test.shouldThrowError( function()
     {
-      conDeb2.onceThen( testHandler );
-    } );
-  }
+      con.onceThen( testHandler );
+    });
+  })
 
-};
+  return testCon;
+}
 
 //
 
