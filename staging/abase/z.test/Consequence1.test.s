@@ -452,45 +452,385 @@ function simple( test )
 
 //
 
-function andThen( test )
-{
-  var con1 = new wConsequence();
-  var con2 = new wConsequence();
+// function andThen( test )
+// {
+//   var con1 = new wConsequence();
+//   var con2 = new wConsequence();
 
-  var gotCounter = 0;
-  function shouldGotData( expected )
+//   var gotCounter = 0;
+//   function shouldGotData( expected )
+//   {
+
+//     return function( err,data )
+//     {
+
+//       gotCounter += 1;
+//       test.identical( err,null );
+//       test.identical( data,expected );
+
+//     }
+
+//   }
+
+//   //
+
+//   test.description = 'andThen should take over';
+
+//   con1.give( 1 );
+//   con1.got( shouldGotData( 1 ) );
+//   con1.got( shouldGotData( 2 ) );
+
+//   con2.andThen( con1 );
+//   con2.got( shouldGotData( '4b' ) );
+
+//   con1.got( shouldGotData( 3 ) ); // got 4a
+//   con1.got( shouldGotData( '4a' ) ); // got 3
+//   con1.give( 2 );
+//   con1.give( 3 );
+//   con1.give( '4a' );
+
+//   con2.give( '4b' );
+
+// }
+
+//
+
+function andGot( test )
+{ 
+  var testMsg = 'msg';
+  var testCon = new wConsequence().give()
+  
+   /* */
+
+  .doThen( function()
   {
+    test.description = 'andGot waits only for first message, dont return the message';
+    var delay = 100;
+    var mainCon = new wConsequence();
+    var con = new wConsequence();
 
-    return function( err,data )
+    mainCon.give( testMsg );
+
+    mainCon.andGot( con );
+
+    mainCon.doThen( function()
+    { 
+      test.identical( mainCon.messagesGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+      test.identical( con.correspondentsGet().length, 0 );
+    });
+    
+    _.timeOut( delay, () => { con.give( delay ) });
+    _.timeOut( delay * 2, () => { con.give( delay * 2 ) });
+
+    return _.timeOut( delay * 2, function()
+    { 
+      test.identical( con.messagesGet().length, 1 );
+      test.identical( con.messagesGet()[ 0 ].argument, delay * 2 );
+    })
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'dont give message back to single consequence returned from passed routine';
+    var delay = 100;
+    var mainCon = new wConsequence();
+    var con = new wConsequence();
+
+    mainCon.give( testMsg );
+
+    mainCon.andGot( () => con );
+
+    mainCon.doThen( function()
+    { 
+      test.identical( mainCon.messagesGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+      test.identical( con.correspondentsGet().length, 0 );
+    });
+
+    _.timeOut( delay, () => { con.give( delay ) });
+
+    return mainCon;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'dont give messages back to several consequences with different delays';
+    var delay = 100;
+    var mainCon = new wConsequence();
+    var con1 = new wConsequence();
+    var con2 = new wConsequence();
+    var con3 = new wConsequence();
+
+    var srcs = [ con1, con2, con3 ];
+
+    mainCon.give( testMsg );
+
+    mainCon.andGot( srcs );
+
+    mainCon.doThen( function()
+    { 
+      test.identical( mainCon.messagesGet().length, 0 );
+
+      test.identical( con1.messagesGet(), []);
+      test.identical( con1.correspondentsGet().length, 0 );
+
+      test.identical( con2.messagesGet(), []);
+      test.identical( con2.correspondentsGet().length, 0 );
+
+      test.identical( con3.messagesGet(), []);
+      test.identical( con3.correspondentsGet().length, 0 );
+    });
+
+    _.timeOut( delay, () => { con1.give( delay ) });
+    _.timeOut( delay * 2, () => { con2.give( delay * 2 ) });
+    con3.give( testMsg );
+
+    return mainCon;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'passed consequence dont give any message';
+    var mainCon = new wConsequence();
+    var con = new wConsequence();
+    mainCon.give();
+    mainCon.andGot( con );
+    mainCon.doThen( () => test.identical( 0, 1 ) );
+    test.identical( mainCon.messagesGet().length, 0 );
+    test.identical( mainCon.correspondentsGet().length, 1 );
+    test.identical( con.messagesGet().length, 0 );
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'returned consequence dont give any message';
+    var mainCon = new wConsequence();
+    var con = new wConsequence();
+    mainCon.give();
+    mainCon.andGot( () => con );
+    mainCon.doThen( () => test.identical( 0, 1 ) );
+    test.identical( mainCon.messagesGet().length, 0 );
+    test.identical( mainCon.correspondentsGet().length, 1 );
+    test.identical( con.messagesGet().length, 0 );
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'one of srcs dont give any message';
+    var delay = 100;
+    var mainCon = new wConsequence();
+    var con1 = new wConsequence();
+    var con2 = new wConsequence();
+    var con3 = new wConsequence();
+
+    var srcs = [ con1, con2, con3 ];
+
+    mainCon.give( testMsg );
+
+    mainCon.andGot( srcs );
+
+    mainCon.doThen( () => test.identical( 0, 1) );
+    
+    _.timeOut( delay, () => { con1.give( delay ) });
+    _.timeOut( delay * 2, () => { con2.give( delay * 2 ) });
+
+    return _.timeOut( delay * 2, function()
     {
+      test.identical( mainCon.messagesGet().length, 0 );
+      test.identical( mainCon.correspondentsGet().length, 1 );
 
-      gotCounter += 1;
-      test.identical( err,null );
-      test.identical( data,expected );
+      test.identical( con1.messagesGet().length, 0);
+      test.identical( con2.messagesGet().length, 0);
+      test.identical( con3.messagesGet().length, 0);
+    });
 
-    }
+  })
 
-  }
+  return testCon;
+}
 
-  //
+//
 
-  test.description = 'andThen should take over';
+function andThen( test )
+{ 
+  var testMsg = 'msg';
+  var testCon = new wConsequence().give()
 
-  con1.give( 1 );
-  con1.got( shouldGotData( 1 ) );
-  con1.got( shouldGotData( 2 ) );
+  /* */
 
-  con2.andThen( con1 );
-  con2.got( shouldGotData( '4b' ) );
+  .doThen( function()
+  {
+    test.description = 'andThen waits only for first message and return it back';
+    var delay = 100;
+    var mainCon = new wConsequence();
+    var con = new wConsequence();
 
-  con1.got( shouldGotData( 3 ) ); // got 4a
-  con1.got( shouldGotData( '4a' ) ); // got 3
-  con1.give( 2 );
-  con1.give( 3 );
-  con1.give( '4a' );
+    mainCon.give( testMsg );
 
-  con2.give( '4b' );
+    mainCon.andThen( con );
 
+    mainCon.doThen( function()
+    { 
+      test.identical( mainCon.messagesGet().length, 0 );
+      test.identical( con.messagesGet(), [{ error : null, argument : delay }] );
+      test.identical( con.correspondentsGet().length, 0 );
+    });
+    
+    _.timeOut( delay, () => { con.give( delay ) });
+    _.timeOut( delay * 2, () => { con.give( delay * 2 ) });
+
+    return _.timeOut( delay * 2, function()
+    { 
+      test.identical( con.messagesGet().length, 2 );
+      test.identical( con.messagesGet()[ 1 ].argument, delay * 2 );
+    })
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'andThen waits for first message from consequence returned by routine call and returns message back';
+    var delay = 100;
+    var mainCon = new wConsequence();
+    var con = new wConsequence();
+
+    mainCon.give( testMsg );
+
+    mainCon.andThen( () => con );
+
+    mainCon.doThen( function()
+    { 
+      test.identical( mainCon.messagesGet().length, 0 );
+      test.identical( con.messagesGet().length, 1 );
+      test.identical( con.messagesGet()[ 0 ], { error : null, argument : delay } );
+      test.identical( con.correspondentsGet().length, 0 );
+    });
+
+    _.timeOut( delay, () => { con.give( delay ) });
+    _.timeOut( delay * 2, () => { con.give( delay * 2 ) });
+
+    return _.timeOut( delay * 2, function()
+    {
+      test.identical( con.messagesGet().length, 2 );
+      test.identical( con.messagesGet()[ 1 ], { error : null, argument : delay * 2 } );
+    })
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'give back messages to several consequences, different delays';
+    var delay = 100;
+    var mainCon = new wConsequence();
+    var con1 = new wConsequence();
+    var con2 = new wConsequence();
+    var con3 = new wConsequence();
+
+    var srcs = [ con1, con2, con3 ];
+
+    mainCon.give( testMsg );
+
+    mainCon.andThen( srcs );
+
+    mainCon.doThen( function()
+    { 
+      test.identical( mainCon.messagesGet().length, 0 );
+      
+      test.identical( con1.messagesGet(), [ { error : null, argument : delay } ]);
+      test.identical( con1.correspondentsGet().length, 0 );
+
+      test.identical( con2.messagesGet(), [ { error : null, argument : delay * 2 } ]);
+      test.identical( con2.correspondentsGet().length, 0 );
+
+      test.identical( con3.messagesGet(), [ { error : null, argument : testMsg } ]);
+      test.identical( con3.correspondentsGet().length, 0 );
+    });
+
+    _.timeOut( delay, () => { con1.give( delay ) });
+    _.timeOut( delay * 2, () => { con2.give( delay * 2 ) });
+    con3.give( testMsg );
+
+    return mainCon;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'passed consequence dont give any message';
+    var mainCon = new wConsequence();
+    var con = new wConsequence();
+    mainCon.give();
+    mainCon.andThen( con );
+    mainCon.doThen( () => test.identical( 0, 1 ) );
+    test.identical( mainCon.messagesGet().length, 0 );
+    test.identical( mainCon.correspondentsGet().length, 1 );
+    test.identical( con.messagesGet().length, 0 );
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'returned consequence dont give any message';
+    var mainCon = new wConsequence();
+    var con = new wConsequence();
+    mainCon.give();
+    mainCon.andThen( () => con );
+    mainCon.doThen( () => test.identical( 0, 1 ) );
+    test.identical( mainCon.messagesGet().length, 0 );
+    test.identical( mainCon.correspondentsGet().length, 1 );
+    test.identical( con.messagesGet().length, 0 );
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'one of srcs dont give any message';
+    var delay = 100;
+    var mainCon = new wConsequence();
+    var con1 = new wConsequence();
+    var con2 = new wConsequence();
+    var con3 = new wConsequence();
+
+    var srcs = [ con1, con2, con3 ];
+
+    mainCon.give( testMsg );
+
+    mainCon.andThen( srcs );
+
+    mainCon.doThen( () => test.identical( 0, 1) );
+    
+    _.timeOut( delay, () => { con1.give( delay ) });
+    _.timeOut( delay * 2, () => { con2.give( delay * 2 ) });
+
+    return _.timeOut( delay * 2, function()
+    {
+      test.identical( mainCon.messagesGet().length, 0 );
+      test.identical( mainCon.correspondentsGet().length, 1 );
+
+      test.identical( con1.messagesGet().length, 0);
+      test.identical( con2.messagesGet().length, 0);
+      test.identical( con3.messagesGet().length, 0);
+    });
+
+  })
+
+  return testCon;
 }
 
 // --
@@ -2776,7 +3116,7 @@ function tap( test )
   { 
     if( !Config.debug )
     return;
-    
+
     test.description = 'missed arguments';
     
     var con = wConsequence();
@@ -3595,167 +3935,245 @@ function timeOutThen( test )
 
 //
 
+// function _and( test )
+// {
+//   var testCase1 =
+//     {
+//       givSequence : [ 5, 4 ],
+//       got :
+//       {
+//         gotSequence : [ ],
+//         throwErr : false
+//       },
+//       expected :
+//       {
+//         gotSequence :
+//           [ ],
+//         throwErr : false
+//       }
+//     },
+//     testCase2 =
+//     {
+//       givSequence : [ 5, 4 ],
+//       got :
+//       {
+//         gotSequence : [],
+//         throwErr : false
+//       },
+//       expected :
+//       {
+//         gotSequence :
+//           [
+//             { err : null, value : 5, takerId : 'taker1' },
+//             { err : null, value : 4, takerId : 'taker2' },
+//           ],
+//         throwErr : false
+//       }
+//     },
+//     testCase3 =
+//     {
+//       givSequence : [ 5, 3,  4 ],
+//       got :
+//       {
+//         gotSequence : [],
+//         throwErr : false
+//       },
+//       expected :
+//       {
+//         gotSequence :
+//           [
+//             { err : null, value : 4, takerId : 'taker3' },
+//             { err : null, value : 3, takerId : 'taker2' },
+//           ],
+//         throwErr : false
+//       }
+//     };
+
+
+//   /* common wConsequence corespondent tests. */
+
+//   test.description = 'do not give back messages to src consequences';
+//   ( function ( { givSequence, got, expected }  )
+//   {
+//     var con1 = wConsequence(),
+//       con2 = wConsequence();
+
+
+//     function testTaker1( err, value )
+//     {
+//       var takerId = 'taker1';
+//       got.gotSequence.push( { err, value, takerId } );
+//     }
+
+//     function testTaker2( err, value )
+//     {
+//       var takerId = 'taker2';
+//       got.gotSequence.push( { err, value, takerId } );
+//     }
+
+//     var  conOwner = new wConsequence();
+
+//     conOwner.give();
+
+//     con1.got( testTaker1 );
+//     con2.got( testTaker2 );
+
+//     try
+//     {
+//       debugger
+//       conOwner._and( [con1, con2], true );
+//     }
+//     catch( err )
+//     {
+//       got.throwErr = !! err;
+//     }
+
+//     conOwner.got( function()
+//     {
+//       test.identical( got, expected );
+//     } );
+
+
+//     con1.give( givSequence.shift() );
+//     con2.give( givSequence.shift() );
+//   } )( testCase1 );
+
+//   /**/
+
+//   test.description = 'give back massages to src consequences once all come';
+//   ( function ( { givSequence, got, expected }  )
+//   {
+//     var con1 = wConsequence(),
+//       con2 = wConsequence();
+
+
+//     function testTaker1( err, value )
+//     {
+//       var takerId = 'taker1';
+//       got.gotSequence.push( { err, value, takerId } );
+//     }
+
+//     function testTaker2( err, value )
+//     {
+//       var takerId = 'taker2';
+//       got.gotSequence.push( { err, value, takerId } );
+//     }
+
+//     var  conOwner = wConsequence();
+
+//     conOwner.give();
+
+//     con1.got( testTaker1 );
+//     con2.got( testTaker2 );
+
+//     try
+//     {
+//       conOwner._and( [con1, con2], false );
+//     }
+//     catch( err )
+//     {
+//       got.throwErr = !! err;
+//     }
+
+//     conOwner.got( function()
+//     {
+//       test.identical( got, expected );
+//     } );
+
+//     con1.give( givSequence.shift() );
+//     con2.give( givSequence.shift() );
+//   } )( testCase2 );
+
+
+//   if( Config.debug )
+//   {
+//     var conDeb1 = wConsequence();
+
+//     test.description = 'missed arguments';
+//     test.shouldThrowError( function()
+//     {
+//       conDeb1._and();
+//     } );
+//   }
+// };
+
+//
+
 function _and( test )
 {
-  var testCase1 =
-    {
-      givSequence : [ 5, 4 ],
-      got :
-      {
-        gotSequence : [ ],
-        throwErr : false
-      },
-      expected :
-      {
-        gotSequence :
-          [ ],
-        throwErr : false
-      }
-    },
-    testCase2 =
-    {
-      givSequence : [ 5, 4 ],
-      got :
-      {
-        gotSequence : [],
-        throwErr : false
-      },
-      expected :
-      {
-        gotSequence :
-          [
-            { err : null, value : 5, takerId : 'taker1' },
-            { err : null, value : 4, takerId : 'taker2' },
-          ],
-        throwErr : false
-      }
-    },
-    testCase3 =
-    {
-      givSequence : [ 5, 3,  4 ],
-      got :
-      {
-        gotSequence : [],
-        throwErr : false
-      },
-      expected :
-      {
-        gotSequence :
-          [
-            { err : null, value : 4, takerId : 'taker3' },
-            { err : null, value : 3, takerId : 'taker2' },
-          ],
-        throwErr : false
-      }
-    };
-
+  var testMsg = 'msg';
+  var delay = 500;
+  var testCon = new wConsequence().give()
 
   /* common wConsequence corespondent tests. */
 
-  test.description = 'do not give back messages to src consequences';
-  ( function ( { givSequence, got, expected }  )
+  .doThen( function ()
   {
-    var con1 = wConsequence(),
-      con2 = wConsequence();
+    test.description = 'give back messages to src consequences';
 
+    var mainCon = new wConsequence();
+    var con1 = new wConsequence();
+    var con2 = new wConsequence();
 
-    function testTaker1( err, value )
-    {
-      var takerId = 'taker1';
-      got.gotSequence.push( { err, value, takerId } );
-    }
+    mainCon.give( testMsg );
 
-    function testTaker2( err, value )
-    {
-      var takerId = 'taker2';
-      got.gotSequence.push( { err, value, takerId } );
-    }
+    mainCon._and( [ con1, con2 ], true );
 
-    var  conOwner = new wConsequence();
+    con1.got( ( err, got ) => test.identical( got, delay ) );
+    con2.got( ( err, got ) => test.identical( got, delay * 2 ) );
 
-    conOwner.give();
+    mainCon.doThen( function( err, got )
+    { 
+      //at that moment all messages from srcs are processed
+      test.identical( con1.messagesGet().length, 0 );
+      test.identical( con1.correspondentsGet().length, 0 );
+      test.identical( con2.messagesGet().length, 0 );
+      test.identical( con2.correspondentsGet().length, 0 );
+      test.identical( got, testMsg );
+    });
 
-    con1.got( testTaker1 );
-    con2.got( testTaker2 );
+    _.timeOut( delay, () => { con1.give( delay ) } );
+    _.timeOut( delay * 2, () => { con2.give( delay * 2 ) } );
 
-    try
-    {
-      debugger
-      conOwner._and( [con1, con2], true );
-    }
-    catch( err )
-    {
-      got.throwErr = !! err;
-    }
-
-    conOwner.got( function()
-    {
-      test.identical( got, expected );
-    } );
-
-
-    con1.give( givSequence.shift() );
-    con2.give( givSequence.shift() );
-  } )( testCase1 );
-
-  /**/
-
-  test.description = 'give back massages to src consequences once all come';
-  ( function ( { givSequence, got, expected }  )
+    return mainCon;
+  })
+  
+  /* */
+  
+   .doThen( function ()
   {
-    var con1 = wConsequence(),
-      con2 = wConsequence();
+    test.description = 'dont give back messages to src consequences';
 
+    var mainCon = new wConsequence();
+    var con1 = new wConsequence();
+    var con2 = new wConsequence();
+    
+    mainCon.give( testMsg );
+    
+    debugger
+    mainCon._and( [ con1, con2 ], false );
+    
+    con1.got( ( err, got ) => test.identical( 0, 1 ) );
+    con2.got( ( err, got ) => test.identical( 0, 1 ) );
 
-    function testTaker1( err, value )
-    {
-      var takerId = 'taker1';
-      got.gotSequence.push( { err, value, takerId } );
-    }
+    mainCon.doThen( function( err, got )
+    { 
+      /* no messages returned back to srcs, their correspondents must not be invoked */
+      test.identical( con1.messagesGet().length, 0 );
+      test.identical( con1.correspondentsGet().length, 1 );
+      test.identical( con2.messagesGet().length, 0 );
+      test.identical( con2.correspondentsGet().length, 1 );
+      test.identical( got, testMsg );
+    });
 
-    function testTaker2( err, value )
-    {
-      var takerId = 'taker2';
-      got.gotSequence.push( { err, value, takerId } );
-    }
+    _.timeOut( delay, () => { con1.give( delay ) } );
+    _.timeOut( delay * 2, () => { con2.give( delay * 2 ) } );
 
-    var  conOwner = wConsequence();
+    return mainCon;
+  })
 
-    conOwner.give();
-
-    con1.got( testTaker1 );
-    con2.got( testTaker2 );
-
-    try
-    {
-      conOwner._and( [con1, con2], false );
-    }
-    catch( err )
-    {
-      got.throwErr = !! err;
-    }
-
-    conOwner.got( function()
-    {
-      test.identical( got, expected );
-    } );
-
-    con1.give( givSequence.shift() );
-    con2.give( givSequence.shift() );
-  } )( testCase2 );
-
-
-  if( Config.debug )
-  {
-    var conDeb1 = wConsequence();
-
-    test.description = 'missed arguments';
-    test.shouldThrowError( function()
-    {
-      conDeb1._and();
-    } );
-  }
-};
+  return testCon;
+}
 
 // --
 // test part 3
@@ -4716,6 +5134,7 @@ var Self =
 
     timeOutThen : timeOutThen,
 
+    andGot : andGot,
     andThen : andThen,
     _and : _and,
   },
