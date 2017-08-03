@@ -20,36 +20,36 @@
   </head>
   <body>
     <script>
-       
+
       var con = new wConsequence();
 
-      function handleMouseMove()
+      function heavyHandler()
       {
         var x = 0;
-        for( var i = 0; i < 1000000; i++ )
-        { 
-          if( x )
-          x += i;
+        for( var i = 0; i < 300000000; i++ )
+        {
+          if( x % 13 )
+          x += i/13;
         }
+        console.log( 'Done',x );
       }
-      
+
       window.addEventListener( 'mousemove', function(e)
-      { 
+      {
         con.give( e );
-        wTools.timeOut( 2000, addHandler );
+        wTools.timeOut( 100, handle );
       });
 
-      function addHandler()
-      { 
+      function handle()
+      {
         con.got( function()
-        { 
-          handleMouseMove();
-          
-          console.log( 'Done' );
-          con.messagesCancel();
+        {
+          console.log( con.messagesGet().length );
+          if( !con.messagesGet().length )
+          heavyHandler();
         });
       }
-      
+
     </script>
   </body>
 </html>
