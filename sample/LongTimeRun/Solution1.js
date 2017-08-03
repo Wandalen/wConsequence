@@ -1,7 +1,3 @@
-
-require( 'wTools' );
-require( 'wConsequence' );
-
 /* 
   Task :
   Implement timeout for long-time routine.
