@@ -3215,7 +3215,7 @@ var Supplement =
 
 //
 
-// _.protoMake
+// _.prototypeMake
 // ({
 //   cls : Parent,
 //   parent : null,
@@ -3226,7 +3226,7 @@ var Supplement =
 //
 // wCopyable.mixin( Parent );
 //
-// _.protoMake
+// _.prototypeMake
 // ({
 //   cls : Self,
 //   parent : Parent,
@@ -3234,7 +3234,7 @@ var Supplement =
 // });
 
 // debugger;
-_.protoMake
+_.prototypeMake
 ({
   cls : wConsequence,
   parent : null,
@@ -3330,6 +3330,44 @@ _global_[ Self.name ] = wTools[ Self.nameShort ] = Self;
 // con1.give( 1 );
 // debugger;
 // con1( 2 );
+// debugger;
+
+// debugger;
+// {
+//
+//   var delay = 300;
+//   var mainCon = new wConsequence({ tag : 'mainCon' });
+//   var con = new wConsequence({ tag : 'con' });
+//
+//   con.doThen( function()
+//   {
+//     console.log( 'con.doThen :' );
+//     console.log( con.toStr() );
+//     console.log( mainCon.toStr() );
+//     debugger;
+//   });
+//
+//   mainCon.give( 13 );
+//   mainCon.andGot( con );
+//
+//   mainCon.doThen( function()
+//   {
+//     console.log( 'mainCon.doThen :' );
+//     console.log( con.toStr() );
+//     console.log( mainCon.toStr() );
+//     debugger;
+//   });
+//
+//   _.timeOut( delay, () => con.give() );
+//   _.timeOut( 13000, function()
+//   {
+//     console.log( 'timeOut 3000 :' );
+//     console.log( con.toStr() );
+//     console.log( mainCon.toStr() );
+//     debugger;
+//   });
+//
+// }
 // debugger;
 
 })();
