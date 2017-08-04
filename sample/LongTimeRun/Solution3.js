@@ -7,19 +7,17 @@ require( 'wConsequence' );
   Implement timeout for long-time routine.
 */
 
-/* Solution 3 */
+/* Solution with eitherGot, without cancel */
 
 function routine()
 {
   var con = new wConsequence();
-  con.give().timeOutThen( 13000, () => console.log( 'Done!' ) );
+  con.give().timeOutThen( 5000, () => 'Done!' );
   return con;
 }
 
 var consequence = new wConsequence().give();
-// debugger;
-// var a = [ routine(),_.timeOutError( 1500 ) ];
-debugger;
 consequence.eitherGot([ routine(),_.timeOutError( 1500 ) ]);
+consequence.got( ( err,arg ) => console.log( err,arg ) );
 
 console.log( 'Expected error is comming' );
