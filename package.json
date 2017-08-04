@@ -42,7 +42,8 @@
     "wCopyable": ""
   },
   "devDependencies": {
-    "wTesting": ""
+    "wTesting": "",
+    "wConsequence": ""
   },
   "keywords": [
     "wTools",

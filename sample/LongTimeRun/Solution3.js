@@ -1,27 +1,25 @@
 
-require( 'wTools' );
+var _ = require( 'wTools' );
 require( 'wConsequence' );
 
-/* 
+/*
   Task :
   Implement timeout for long-time routine.
 */
 
 /* Solution 3 */
 
-function runner( routine, timeout )
-{ 
-  var runner = new wConsequence();
-  runner.eitherThenSplit([ routine(), wTools.timeOutError( timeout ) ]);
-  return runner;
-}
-
 function routine()
 {
-  var longTimeRun = new wConsequence();
-  longTimeRun.give();
-  longTimeRun.timeOutThen( 3000, () => console.log( 'Done!' ) );
-  return longTimeRun;
+  var con = new wConsequence();
+  con.give().timeOutThen( 13000, () => console.log( 'Done!' ) );
+  return con;
 }
 
-runner( routine, 1500 );
+var consequence = new wConsequence().give();
+// debugger;
+// var a = [ routine(),_.timeOutError( 1500 ) ];
+debugger;
+consequence.eitherGot([ routine(),_.timeOutError( 1500 ) ]);
+
+console.log( 'Expected error is comming' );

@@ -1,4 +1,4 @@
-( function _Consequence1_test_s_( ) {
+( function _Consequence_test_s_( ) {
 
 'use strict';
 
