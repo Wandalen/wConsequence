@@ -957,29 +957,33 @@ function timeOutThen( time,correspondent )
   /* */
 
   var _correspondent;
-  if( _.routineIs( correspondent ) )
+  if( _.consequenceIs( correspondent ) )
   _correspondent = function __timeOutThen( err,data )
   {
-    return _.timeOut( time,self,correspondent,[ err,data ] );
-  }
-  else
-  _correspondent = function __timeOutThen( err,data )
-  {
+    debugger;
     return _.timeOut( time,function()
     {
+      debugger;
       correspondent.__giveAct( err,data );
       if( err )
       throw _.err( err );
       return data;
     });
   }
+  else
+  _correspondent = function __timeOutThen( err,data )
+  {
+    return _.timeOut( time,self,correspondent,[ err,data ] );
+  }
+
+  // _correspondent.
 
   /* */
 
   return self.__correspondentAppend
   ({
-    correspondent : _correspondent,
     thenning : true,
+    correspondent : _correspondent,
     kindOfArguments : Self.KindOfArguments.Both,
   });
 
