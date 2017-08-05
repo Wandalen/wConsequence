@@ -976,8 +976,6 @@ function timeOutThen( time,correspondent )
     return _.timeOut( time,self,correspondent,[ err,data ] );
   }
 
-  // _correspondent.
-
   /* */
 
   return self.__correspondentAppend
