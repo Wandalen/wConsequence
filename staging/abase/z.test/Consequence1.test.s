@@ -2224,7 +2224,7 @@ function doThen( test )
 // function thenSealed_( test )
 // {
 //
-//   var testCase1 =
+//   var testCheck1 =
 //
 //     {
 //       givSequence : [ 5 ],
@@ -2242,7 +2242,7 @@ function doThen( test )
 //         throwErr : false
 //       }
 //     },
-//     testCase2 =
+//     testCheck2 =
 //     {
 //       givSequence :
 //       [
@@ -2262,7 +2262,7 @@ function doThen( test )
 //         throwErr : false
 //       }
 //     },
-//     testCase3 =
+//     testCheck3 =
 //     {
 //       givSequence : [ 5, 4 ],
 //       got :
@@ -2280,7 +2280,7 @@ function doThen( test )
 //         throwErr : false
 //       }
 //     },
-//     testCase4 =
+//     testCheck4 =
 //     {
 //       givSequence : [ 5 ],
 //       got :
@@ -2328,7 +2328,7 @@ function doThen( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase1 );
+//   } )( testCheck1 );
 //
 //   /**/
 //
@@ -2352,7 +2352,7 @@ function doThen( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase2 );
+//   } )( testCheck2 );
 //
 //   /**/
 //
@@ -2388,7 +2388,7 @@ function doThen( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase3 );
+//   } )( testCheck3 );
 //
 //   /* test particular onceGot features test. */
 //
@@ -2427,7 +2427,7 @@ function doThen( test )
 //     }
 //     console.log(JSON.stringify(expected));
 //     test.identical( got, expected );
-//   } )( testCase4 );
+//   } )( testCheck4 );
 //
 //
 //   if( Config.debug )
@@ -2447,7 +2447,7 @@ function doThen( test )
 
 // function split( test )
 // {
-//   var testCase1 =
+//   var testCheck1 =
 //
 //     {
 //       givSequence : [ 5 ],
@@ -2465,7 +2465,7 @@ function doThen( test )
 //         throwErr : false
 //       }
 //     },
-//     testCase2 =
+//     testCheck2 =
 //     {
 //       givSequence :
 //         [ 5 ],
@@ -2483,7 +2483,7 @@ function doThen( test )
 //         throwErr : false
 //       }
 //     },
-//     testCase3 =
+//     testCheck3 =
 //     {
 //       givSequence : [ 5, 4 ],
 //       got :
@@ -2526,7 +2526,7 @@ function doThen( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase1 );
+//   } )( testCheck1 );
 //
 //   /**/
 //
@@ -2552,7 +2552,7 @@ function doThen( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase2 );
+//   } )( testCheck2 );
 //
 //   /**/
 //
@@ -2590,7 +2590,7 @@ function doThen( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase3 );
+//   } )( testCheck3 );
 // };
 
 //
@@ -2690,7 +2690,7 @@ function split( test )
 // function thenReportError( test )
 // {
 //
-//   var testCase1 =
+//   var testCheck1 =
 //
 //     {
 //       givSequence : [ 5 ],
@@ -2705,7 +2705,7 @@ function split( test )
 //         throwErr : false
 //       }
 //     },
-//     testCase2 =
+//     testCheck2 =
 //     {
 //       givSequence :
 //         [
@@ -2723,7 +2723,7 @@ function split( test )
 //         throwErr : false
 //       }
 //     },
-//     testCase3 =
+//     testCheck3 =
 //     {
 //       givSequence : [ 5, 4 ],
 //       got :
@@ -2741,7 +2741,7 @@ function split( test )
 //         throwErr : false
 //       }
 //     },
-//     testCase4 =
+//     testCheck4 =
 //     {
 //       givSequence : [ 5, 4 ],
 //       got :
@@ -2777,7 +2777,7 @@ function split( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase1 );
+//   } )( testCheck1 );
 //
 //   /**/
 //
@@ -2801,7 +2801,7 @@ function split( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase2 );
+//   } )( testCheck2 );
 //
 //   /**/
 //
@@ -2838,7 +2838,7 @@ function split( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase3 );
+//   } )( testCheck3 );
 //   //
 //   /* test particular onceGot features test. */
 //
@@ -2875,7 +2875,7 @@ function split( test )
 //       con.give( given );
 //
 //     test.identical( got, expected );
-//   } )( testCase4 );
+//   } )( testCheck4 );
 //
 //
 //   if( Config.debug )
@@ -2896,7 +2896,7 @@ function split( test )
 // function tap( test )
 // {
 
-//   var testCase1 =
+//   var testCheck1 =
 
 //     {
 //       givSequence : [ 5 ],
@@ -2914,7 +2914,7 @@ function split( test )
 //         throwErr : false
 //       }
 //     },
-//     testCase2 =
+//     testCheck2 =
 //     {
 //       givSequence :
 //         [
@@ -2934,7 +2934,7 @@ function split( test )
 //         throwErr : false
 //       }
 //     },
-//     testCase3 =
+//     testCheck3 =
 //     {
 //       givSequence : [ 5, 4 ],
 //       got :
@@ -2977,7 +2977,7 @@ function split( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase1 );
+//   } )( testCheck1 );
 
 //   /**/
 
@@ -3001,7 +3001,7 @@ function split( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase2 );
+//   } )( testCheck2 );
 
 //   /**/
 
@@ -3045,7 +3045,7 @@ function split( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase3 );
+//   } )( testCheck3 );
 
 //   if( Config.debug )
 //   {
@@ -3135,7 +3135,7 @@ function tap( test )
 // function ifErrorThen( test )
 // {
 
-//   var testCase1 =
+//   var testCheck1 =
 
 //     {
 //       givSequence : [ 5 ],
@@ -3150,7 +3150,7 @@ function tap( test )
 //         throwErr : false
 //       }
 //     },
-//     testCase2 =
+//     testCheck2 =
 //     {
 //       givSequence :
 //         [
@@ -3170,7 +3170,7 @@ function tap( test )
 //         throwErr : false
 //       }
 //     },
-//     testCase3 =
+//     testCheck3 =
 //     {
 //       givSequence : [ 5, 'err msg',  4 ],
 //       got :
@@ -3211,7 +3211,7 @@ function tap( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase1 );
+//   } )( testCheck1 );
 
 //   /**/
 
@@ -3235,7 +3235,7 @@ function tap( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase2 );
+//   } )( testCheck2 );
 
 //   /**/
 
@@ -3281,7 +3281,7 @@ function tap( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase3 );
+//   } )( testCheck3 );
 
 //   if( Config.debug )
 //   {
@@ -3400,7 +3400,7 @@ function ifErrorThen( test )
 // function ifNoErrorThen( test )
 // {
 
-//   var testCase1 =
+//   var testCheck1 =
 
 //     {
 //       givSequence : [ 5 ],
@@ -3418,7 +3418,7 @@ function ifErrorThen( test )
 //         throwErr : false
 //       }
 //     },
-//     testCase2 =
+//     testCheck2 =
 //     {
 //       givSequence :
 //         [
@@ -3436,7 +3436,7 @@ function ifErrorThen( test )
 //         throwErr : false
 //       }
 //     },
-//     testCase3 =
+//     testCheck3 =
 //     {
 //       givSequence : [ 5, 'err msg',  4 ],
 //       got :
@@ -3478,7 +3478,7 @@ function ifErrorThen( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase1 );
+//   } )( testCheck1 );
 
 //   /**/
 
@@ -3502,7 +3502,7 @@ function ifErrorThen( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase2 );
+//   } )( testCheck2 );
 
 //   /**/
 
@@ -3548,7 +3548,7 @@ function ifErrorThen( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase3 );
+//   } )( testCheck3 );
 
 //   if( Config.debug )
 //   {
@@ -3686,7 +3686,7 @@ function ifNoErrorThen( test )
 // function timeOutThen( test )
 // {
 
-//   var testCase1 =
+//   var testCheck1 =
 
 //     {
 //       givSequence : [ 5 ],
@@ -3707,7 +3707,7 @@ function ifNoErrorThen( test )
 //         throwErr : false
 //       }
 //     },
-//     testCase2 =
+//     testCheck2 =
 //     {
 //       givSequence :
 //         [
@@ -3725,7 +3725,7 @@ function ifNoErrorThen( test )
 //         throwErr : false
 //       }
 //     },
-//     testCase3 =
+//     testCheck3 =
 //     {
 //       givSequence : [ 5, 3,  4 ],
 //       got :
@@ -3767,7 +3767,7 @@ function ifNoErrorThen( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase1 );
+//   } )( testCheck1 );
 
 //   /**/
 
@@ -3791,7 +3791,7 @@ function ifNoErrorThen( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase2 );
+//   } )( testCheck2 );
 
 //   /**/
 
@@ -3833,7 +3833,7 @@ function ifNoErrorThen( test )
 
 
 
-//   } )( testCase3 );
+//   } )( testCheck3 );
 
 //   if( Config.debug )
 //   {
@@ -3937,7 +3937,7 @@ function timeOutThen( test )
 
 // function _and( test )
 // {
-//   var testCase1 =
+//   var testCheck1 =
 //     {
 //       givSequence : [ 5, 4 ],
 //       got :
@@ -3952,7 +3952,7 @@ function timeOutThen( test )
 //         throwErr : false
 //       }
 //     },
-//     testCase2 =
+//     testCheck2 =
 //     {
 //       givSequence : [ 5, 4 ],
 //       got :
@@ -3970,7 +3970,7 @@ function timeOutThen( test )
 //         throwErr : false
 //       }
 //     },
-//     testCase3 =
+//     testCheck3 =
 //     {
 //       givSequence : [ 5, 3,  4 ],
 //       got :
@@ -4036,7 +4036,7 @@ function timeOutThen( test )
 
 //     con1.give( givSequence.shift() );
 //     con2.give( givSequence.shift() );
-//   } )( testCase1 );
+//   } )( testCheck1 );
 
 //   /**/
 
@@ -4082,7 +4082,7 @@ function timeOutThen( test )
 
 //     con1.give( givSequence.shift() );
 //     con2.give( givSequence.shift() );
-//   } )( testCase2 );
+//   } )( testCheck2 );
 
 
 //   if( Config.debug )
@@ -4184,7 +4184,7 @@ function _and( test )
 
 //   var conseqTester = wConsequence(); // for correct testing async aspects of wConsequence
 
-//   var testCases =
+//   var testChecks =
 //     [
 //       {
 //         givSequence: [ 5 ],
@@ -4249,7 +4249,7 @@ function _and( test )
 //     con.give( givSequence.shift() );
 //     con.onceGot( testTaker1 );
 //     test.identical( gotSequence, expectedSequence );
-//   } )( testCases[ 0 ] );
+//   } )( testChecks[ 0 ] );
 
 //   /**/
 
@@ -4266,7 +4266,7 @@ function _and( test )
 //     con.error( givSequence.shift() );
 //     con.onceGot( testTaker1 );
 //     test.identical( gotSequence, expectedSequence );
-//   } )( testCases[ 1 ] );
+//   } )( testChecks[ 1 ] );
 
 //   /**/
 
@@ -4295,7 +4295,7 @@ function _and( test )
 //     con.onceGot( testTaker1 );
 //     con.onceGot( testTaker2 );
 //     test.identical( gotSequence, expectedSequence );
-//   } )( testCases[ 2 ] );
+//   } )( testChecks[ 2 ] );
 
 //   /* test particular onceGot features test. */
 
@@ -4325,7 +4325,7 @@ function _and( test )
 //     con.onceGot( testTaker1 );
 //     con.onceGot( testTaker2 );
 //     test.identical( gotSequence, expectedSequence );
-//   } )( testCases[ 3 ] );
+//   } )( testChecks[ 3 ] );
 
 //   /**/
 
@@ -4357,7 +4357,7 @@ function _and( test )
 //     }
 
 //     testCon.doThen( () => test.identical( gotSequence, expectedSequence ) );
-//   } )( testCases[ 4 ] );
+//   } )( testChecks[ 4 ] );
 
 //   /**/
 
@@ -4540,7 +4540,7 @@ function onceGot( test )
 // function onceThen( test )
 // {
 
-//   var testCase1 =
+//   var testCheck1 =
 
 //     {
 //       givSequence: [ 5 ],
@@ -4558,7 +4558,7 @@ function onceGot( test )
 //         throwErr: false
 //       }
 //     },
-//     testCase2 =
+//     testCheck2 =
 //     {
 //       givSequence:
 //         [
@@ -4578,7 +4578,7 @@ function onceGot( test )
 //         throwErr: false
 //       }
 //     },
-//     testCase3 =
+//     testCheck3 =
 //     {
 //       givSequence: [ 5, 4 ],
 //       got:
@@ -4597,7 +4597,7 @@ function onceGot( test )
 //         throwErr: false
 //       }
 //     },
-//     testCase4 =
+//     testCheck4 =
 //     {
 //       givSequence: [ 5 ],
 //       got:
@@ -4639,7 +4639,7 @@ function onceGot( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase1 );
+//   } )( testCheck1 );
 
 //   /**/
 
@@ -4663,7 +4663,7 @@ function onceGot( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase2 );
+//   } )( testCheck2 );
 
 //   /**/
 
@@ -4706,7 +4706,7 @@ function onceGot( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase3 );
+//   } )( testCheck3 );
 
 //   /* test particular onceThen features test. */
 
@@ -4754,7 +4754,7 @@ function onceGot( test )
 //     }
 
 //     test.identical( got, expected );
-//   } )( testCase4 );
+//   } )( testCheck4 );
 
 
 //   if( Config.debug )
@@ -4918,7 +4918,7 @@ function onceThen( test )
 // function persist( test )
 // {
 //
-//   var testCase1 =
+//   var testCheck1 =
 //
 //     {
 //       givSequence: [ 5 ],
@@ -4936,7 +4936,7 @@ function onceThen( test )
 //         throwErr: false
 //       }
 //     },
-//     testCase2 =
+//     testCheck2 =
 //     {
 //       givSequence:
 //         [
@@ -4956,7 +4956,7 @@ function onceThen( test )
 //         throwErr: false
 //       }
 //     },
-//     testCase3 =
+//     testCheck3 =
 //     {
 //       givSequence: [ 5, 4 ],
 //       got:
@@ -4978,7 +4978,7 @@ function onceThen( test )
 //         throwErr: false
 //       }
 //     },
-//     testCase4 =
+//     testCheck4 =
 //     {
 //       givSequence: [ 5 ],
 //       got:
@@ -5020,7 +5020,7 @@ function onceThen( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase1 );
+//   } )( testCheck1 );
 //
 //   /**/
 //
@@ -5044,7 +5044,7 @@ function onceThen( test )
 //       got.throwErr = !! err;
 //     }
 //     test.identical( got, expected );
-//   } )( testCase2 );
+//   } )( testCheck2 );
 //
 //   /**/
 //
@@ -5091,7 +5091,7 @@ function onceThen( test )
 //
 //     test.identical( got, expected );
 //
-//   } )( testCase3 );
+//   } )( testCheck3 );
 //
 //   if( Config.debug )
 //   {
@@ -5143,6 +5143,6 @@ var Self =
 
 Self = wTestSuite( Self );
 if( typeof module !== 'undefined' && !module.parent )
-_.Testing.test( Self.name );
+_.Tester.test( Self.name );
 
 } )( );

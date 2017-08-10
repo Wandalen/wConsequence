@@ -9,7 +9,7 @@ require( 'wConsequence' );
 
 function routine()
 {
-  return _.timeOut( 3000, () => 'Done!' );
+  return _.timeOut( 13000, () => 'Done!' );
 }
 
 /* Solution with eitherGot and cancel of routine */

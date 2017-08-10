@@ -1447,7 +1447,7 @@ function _first( src,stack )
     self.give( result );
 
   }
-  else throw _.err( 'unexpected' );
+  else _.assert( 0,'first expects consequence of routine, but got',_.strTypeOf( src ) );
 
   return self;
 }
@@ -3091,7 +3091,7 @@ var Statics =
   passThru : passThru_static,
 
   KindOfArguments : KindOfArguments,
-  diagnostics : 0,
+  diagnostics : 1,
   usingStack : 0,
   asyncTaking : 0,
   asyncGiving : 0,
@@ -3295,7 +3295,6 @@ _.accessorForbid( Self.prototype,
 
 if( typeof module !== 'undefined' )
 module[ 'exports' ] = Self;
-// _global_[ 'wConsequence' ] =
 _global_[ Self.name ] = wTools[ Self.nameShort ] = Self;
 
 //
