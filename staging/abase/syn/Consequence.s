@@ -1186,7 +1186,7 @@ function _and( srcs,thenning )
     {
       // if( _.workerIs() )
       // debugger;
-      _.__arrayRemoveOnceStrictly( self.dependsOf , srcs[ index ] );
+      _.arrayRemoveOnceStrictly( self.dependsOf , srcs[ index ] );
     }
 
     if( count === 0 )
@@ -1824,7 +1824,7 @@ function __handleGotAct()
     if( Config.debug )
     if( self.diagnostics )
     {
-      _.__arrayRemoveOnceStrictly( correspondent.onGot.dependsOf , self );
+      _.arrayRemoveOnceStrictly( correspondent.onGot.dependsOf , self );
       if( self.debug || correspondent.onGot.debug )
       debugger;
     }
@@ -2283,7 +2283,7 @@ function correspondentsCancel( correspondent )
   else
   {
     throw _.err( 'not tested' );
-    _.__arrayRemoveOnce( self._correspondent,correspondent );
+    _.arrayRemoveOnce( self._correspondent,correspondent );
   }
 
 }
@@ -2379,7 +2379,7 @@ function messagesCancel( data )
   else
   {
     throw _.err( 'not tested' );
-    _.__arrayRemoveOnce( self._message,data );
+    _.arrayRemoveOnce( self._message,data );
   }
 
 }
