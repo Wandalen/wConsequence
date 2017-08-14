@@ -5106,6 +5106,724 @@ function onceThen( test )
 //
 // };
 
+function first( test )
+{
+  var testMsg = 'msg';
+  var setAsync = function( taking, giving )
+  {
+    wConsequence.prototype.asyncTaking = taking;
+    wConsequence.prototype.asyncGiving = giving;
+  }
+  var testCon = new wConsequence().give()
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'simplest, empty routine';
+    var con = new wConsequence();
+    con.first( () => {} );
+    con.give( testMsg );
+    con.doThen( function( err, got )
+    {
+      test.identical( got, undefined );
+      test.identical( con.messagesGet(), [{ error : null, argument : testMsg }] );
+    })
+    return con;
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'routine returns something';
+    var con = new wConsequence();
+    con.first( () => testMsg );
+    con.give( testMsg + 2 );
+    con.doThen( function( err, got )
+    {
+      test.identical( got, testMsg );
+      test.identical( con.messagesGet(), [{ error : null, argument : testMsg + 2 }] );
+    })
+    return con;
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'routine throws error';
+    var con = new wConsequence();
+    con.first( () => { throw testMsg });
+    con.doThen( function( err, got )
+    {
+      test.shouldBe( _.errIs( err ) );
+      test.identical( got, undefined );
+      test.identical( con.messagesGet(),[] );
+    })
+    return con;
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'routine returns consequence with message';
+    var con = new wConsequence();
+    con.first( () => new wConsequence().give( testMsg ));
+    con.doThen( function( err, got )
+    {
+      test.identical( err, null );
+      test.identical( got, testMsg );
+      test.identical( con.messagesGet(),[] );
+    })
+    return con;
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'routine returns consequence with err message';
+    var con = new wConsequence();
+    con.first( () => new wConsequence().error( testMsg ));
+    con.doThen( function( err, got )
+    {
+      test.identical( err, testMsg );
+      test.identical( got, undefined );
+      test.identical( con.messagesGet(),[] );
+    })
+    return con;
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'routine returns consequence that gives message with timeout';
+    var con = new wConsequence();
+    var timeBefore = _.timeNow();
+    con.first( () => _.timeOut( 1000, () => {} ));
+    con.doThen( function( err, got )
+    {
+      test.shouldBe( _.timeNow() - timeBefore >= 1000 );
+      test.identical( err, null );
+      test.identical( got, undefined );
+      test.identical( con.messagesGet(),[] );
+    })
+    return con;
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'passed consequence shares own message';
+    var con = new wConsequence();
+    var con2 = new wConsequence().give( testMsg );
+    con.first( con2 );
+    con.doThen( function( err, got )
+    {
+      test.identical( err, null );
+      test.identical( got, testMsg );
+      test.identical( con.messagesGet(),[] );
+      test.identical( con2.messagesGet(), [{ error : null, argument : testMsg }] );
+    })
+    return con;
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'passed consequence shares own message with timeout';
+    var con = new wConsequence();
+    var con2 = _.timeOut( 1000, () => testMsg );
+    var timeBefore = _.timeNow();
+    con.first( con2 );
+    con.doThen( function( err, got )
+    {
+      test.shouldBe( _.timeNow() - timeBefore >= 1000 );
+      test.identical( err, null );
+      test.identical( got, testMsg );
+      test.identical( con.messagesGet(),[] );
+      test.identical( con2.messagesGet(),[{ error : null, argument : testMsg }] );
+    })
+    return con;
+  })
+
+  /* Async taking, Sync giving */
+
+  testCon.doThen( () => setAsync( 1, 0 ) )
+
+   .doThen( function()
+  {
+    test.description = 'simplest, empty routine';
+    var con = new wConsequence();
+    con.first( () => {} );
+    con.give( testMsg );
+    con.got( function( err, got )
+    {
+      test.identical( got, undefined );
+      test.identical( con.messagesGet(), [{ error : null, argument : testMsg }] );
+    })
+
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 1 );
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'routine returns something';
+    var con = new wConsequence();
+    con.first( () => testMsg );
+    con.give( testMsg + 2 );
+    con.got( function( err, got )
+    {
+      test.identical( got, testMsg );
+    })
+
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet(), [{ error : null, argument : testMsg + 2 }] );
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'routine throws error';
+    var con = new wConsequence();
+    con.first( () => { throw testMsg });
+    con.got( function( err, got )
+    {
+      test.shouldBe( _.errIs( err ) );
+      test.identical( got, undefined );
+      test.identical( con.messagesGet(),[] );
+    })
+
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'routine returns consequence with message';
+    var con = new wConsequence();
+    con.first( () => new wConsequence().give( testMsg ));
+    con.got( function( err, got )
+    {
+      test.identical( err, null );
+      test.identical( got, testMsg );
+    })
+
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'routine returns consequence with err message';
+    var con = new wConsequence();
+    con.first( () => new wConsequence().error( testMsg ));
+    con.got( function( err, got )
+    {
+      test.identical( err, testMsg );
+      test.identical( got, undefined );
+      test.identical( con.messagesGet(),[] );
+    })
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'routine returns consequence that gives message with timeout';
+    var con = new wConsequence();
+    var timeBefore = _.timeNow();
+    con.first( () => _.timeOut( 1000, () => {} ));
+    con.got( function( err, got )
+    {
+      test.shouldBe( _.timeNow() - timeBefore >= 1000 );
+      test.identical( err, null );
+      test.identical( got, undefined );
+      test.identical( con.messagesGet(),[] );
+    })
+    return _.timeOut( 1001, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'passed consequence shares own message';
+    var con = new wConsequence();
+    var con2 = new wConsequence().give( testMsg );
+    con.first( con2 );
+    con.got( function( err, got )
+    {
+      test.identical( err, null );
+      test.identical( got, testMsg );
+      test.identical( con.messagesGet(),[] );
+      test.identical( con2.messagesGet(), [{ error : null, argument : testMsg }] );
+    })
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'passed consequence shares own message with timeout';
+    var con = new wConsequence();
+    var con2 = _.timeOut( 1000, () => testMsg );
+    var timeBefore = _.timeNow();
+    con.first( con2 );
+    con.got( function( err, got )
+    {
+      test.shouldBe( _.timeNow() - timeBefore >= 1000 );
+      test.identical( err, null );
+      test.identical( got, testMsg );
+      test.identical( con.messagesGet(),[] );
+      test.identical( con2.messagesGet(),[{ error : null, argument : testMsg }] );
+    })
+    return _.timeOut( 1001, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+    })
+  })
+
+  /* Sync taking, Async giving */
+
+  testCon.doThen( () => setAsync( 0, 1 ) )
+
+   .doThen( function()
+  {
+    test.description = 'simplest, empty routine';
+    var con = new wConsequence();
+    con.got( function( err, got )
+    {
+      test.identical( got, undefined );
+    });
+    con.first( () => {} );
+
+    con.give( testMsg );
+
+    test.identical( con.messagesGet().length, 2 );
+    test.identical( con.correspondentsGet().length, 1 );
+
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet(), [{ error : null, argument : testMsg }] );
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'routine returns something';
+    var con = new wConsequence();
+    con.got( function( err, got )
+    {
+      test.identical( got, testMsg );
+    })
+    con.first( () => testMsg );
+
+    con.give( testMsg + 2 );
+
+    test.identical( con.messagesGet().length, 2 );
+    test.identical( con.correspondentsGet().length, 1 );
+
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet(), [{ error : null, argument : testMsg + 2 }] );
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'routine throws error';
+    var con = new wConsequence();
+    con.first( () => { throw testMsg });
+
+    test.identical( con.messagesGet().length, 0 );
+
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.messagesGet().length, 1 );
+      con.got( function( err, got )
+      {
+        test.shouldBe( _.errIs( err ) );
+        test.identical( got, undefined );
+      });
+    })
+    .doThen( function()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'routine returns consequence with message';
+    var con = new wConsequence();
+    con.first( () => new wConsequence().give( testMsg ));
+
+    test.identical( con.messagesGet().length, 0 );
+
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.messagesGet().length, 1 );
+
+      con.got( function( err, got )
+      {
+        test.identical( err, null );
+        test.identical( got, testMsg );
+      })
+    })
+    .doThen( function()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'routine returns consequence with err message';
+    var con = new wConsequence();
+    con.first( () => new wConsequence().error( testMsg ));
+
+    test.identical( con.messagesGet().length, 0 );
+
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.messagesGet().length, 1 );
+
+      con.got( function( err, got )
+      {
+        test.identical( err, testMsg );
+        test.identical( got, undefined );
+      })
+    })
+    .doThen( function()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'routine returns consequence that gives message with timeout';
+    var con = new wConsequence();
+    var timeBefore = _.timeNow();
+    con.first( () => _.timeOut( 1000, () => {} ));
+
+    test.identical( con.messagesGet().length, 0 );
+
+    return _.timeOut( 1001, function ()
+    {
+      test.identical( con.messagesGet().length, 1 );
+
+      con.got( function( err, got )
+      {
+        test.shouldBe( _.timeNow() - timeBefore >= 1000 );
+        test.identical( err, null );
+        test.identical( got, undefined );
+      })
+    })
+    .doThen( function()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'passed consequence shares own message';
+    var con = new wConsequence();
+    var con2 = new wConsequence().give( testMsg );
+    con.first( con2 );
+
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.messagesGet().length, 1 );
+
+      con.got( function( err, got )
+      {
+        test.identical( err, null );
+        test.identical( got, testMsg );
+      })
+    })
+    .doThen( function()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+      test.identical( con2.messagesGet().length, 1 );
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'passed consequence shares own message with timeout';
+    var con = new wConsequence();
+    var con2 = _.timeOut( 1000, () => testMsg );
+    var timeBefore = _.timeNow();
+    con.first( con2 );
+
+    return _.timeOut( 1001, function ()
+    {
+      test.identical( con.messagesGet().length, 1 );
+
+      con.got( function( err, got )
+      {
+        test.shouldBe( _.timeNow() - timeBefore >= 1000 );
+        test.identical( err, null );
+        test.identical( got, testMsg );
+      })
+    })
+    .doThen( function()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+      test.identical( con2.messagesGet().length, 1 );
+    })
+  })
+
+  /* Async taking, Async giving */
+
+  testCon.doThen( () => setAsync( 1, 1 ) )
+
+   .doThen( function()
+  {
+    test.description = 'simplest, empty routine';
+    var con = new wConsequence();
+    con.got( function( err, got )
+    {
+      test.identical( got, undefined );
+    });
+    con.first( () => {} );
+    con.give( testMsg );
+
+    test.identical( con.messagesGet().length, 2 );
+    test.identical( con.correspondentsGet().length, 1 );
+
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet(), [{ error : null, argument : testMsg }] );
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'routine returns something';
+    var con = new wConsequence();
+    con.got( function( err, got )
+    {
+      test.identical( got, testMsg );
+    })
+    con.first( () => testMsg );
+
+    con.give( testMsg + 2 );
+
+    test.identical( con.messagesGet().length, 2 );
+    test.identical( con.correspondentsGet().length, 1 );
+
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet(), [{ error : null, argument : testMsg + 2 }] );
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'routine throws error';
+    var con = new wConsequence();
+    con.first( () => { throw testMsg });
+    con.got( function( err, got )
+    {
+      test.shouldBe( _.errIs( err ) );
+      test.identical( got, undefined );
+    });
+
+    test.identical( con.messagesGet().length, 0 );
+
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'routine returns consequence with message';
+    var con = new wConsequence();
+    con.first( () => new wConsequence().give( testMsg ));
+    con.got( function( err, got )
+    {
+      test.identical( err, null );
+      test.identical( got, testMsg );
+    })
+    test.identical( con.messagesGet().length, 0 );
+
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'routine returns consequence with err message';
+    var con = new wConsequence();
+    con.first( () => new wConsequence().error( testMsg ));
+    con.got( function( err, got )
+    {
+      test.identical( err, testMsg );
+      test.identical( got, undefined );
+    })
+    test.identical( con.messagesGet().length, 0 );
+
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'routine returns consequence that gives message with timeout';
+    var con = new wConsequence();
+    var timeBefore = _.timeNow();
+    con.first( () => _.timeOut( 1000, () => {} ));
+    con.got( function( err, got )
+    {
+      test.shouldBe( _.timeNow() - timeBefore >= 1000 );
+      test.identical( err, null );
+      test.identical( got, undefined );
+    })
+    test.identical( con.messagesGet().length, 0 );
+
+    return _.timeOut( 1001, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'passed consequence shares own message';
+    var con = new wConsequence();
+    var con2 = new wConsequence().give( testMsg );
+    con.first( con2 );
+    con.got( function( err, got )
+    {
+      test.identical( err, null );
+      test.identical( got, testMsg );
+    })
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+      test.identical( con2.messagesGet().length, 1 );
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'passed consequence shares own message with timeout';
+    var con = new wConsequence();
+    var con2 = _.timeOut( 1000, () => testMsg );
+    var timeBefore = _.timeNow();
+    con.first( con2 );
+    con.got( function( err, got )
+    {
+      test.shouldBe( _.timeNow() - timeBefore >= 1000 );
+      test.identical( err, null );
+      test.identical( got, testMsg );
+    })
+    return _.timeOut( 1001, function ()
+    {
+      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.messagesGet().length, 0 );
+      test.identical( con2.messagesGet().length, 1 );
+    })
+  })
+
+  return testCon;
+}
+
+first.timeOut = 20000;
+
 // --
 // proto
 // --
@@ -5137,6 +5855,8 @@ var Self =
     andGot : andGot,
     andThen : andThen,
     _and : _and,
+
+    first : first
   },
 
 };

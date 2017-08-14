@@ -1424,7 +1424,7 @@ function _first( src,stack )
 
   if( _.consequenceIs( src ) )
   {
-    throw _.err( 'not tested' );
+    // throw _.err( 'not tested' );
     src.doThen( self );
     // src.give(); // xxx
   }
