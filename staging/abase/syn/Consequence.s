@@ -318,6 +318,24 @@ function got( correspondent )
 
 //
 
+function promiseGot()
+{
+  var self = this;
+
+  return new Promise( function( resolve, reject )
+  {
+    self.got( function( err, got )
+    {
+      if( err )
+      reject( err );
+      else
+      resolve( got );
+    })
+  })
+}
+
+//
+
 /**
  * Method accepts handler for resolved value/error. This handler method doThen adds to wConsequence correspondents sequence.
     After processing accepted value, correspondent return value will be pass to the next handler in correspondents queue.
@@ -386,6 +404,25 @@ function _doThen( correspondent )
     kindOfArguments : Self.KindOfArguments.BothWithCorrespondent,
   });
 
+}
+
+//
+
+function promiseThen()
+{
+  var self = this;
+
+  return new Promise( function( resolve, reject )
+  {
+    self.got( function( err, got )
+    {
+      self.give( err, got );
+      if( err )
+      reject( err );
+      else
+      resolve( got );
+    })
+  })
 }
 
 //
@@ -2595,11 +2632,18 @@ function from_static( src,timeOut )
 
     if( _.errIs( src ) )
     return new wConsequence().error( src );
-    else
+
+    if( _.promiseIs( src ) )
+    {
+      var con = new wConsequence();
+      var onFulfilled = ( got ) => { con.give( got ); }
+      var onRejected = ( err ) => { con.error( err ); }
+      src.then( onFulfilled, onRejected );
+      return con;
+    }
+
     return new wConsequence().give( src );
-
   }
-
 }
 
 //
@@ -3113,9 +3157,11 @@ var Extend =
   // chainer
 
   got : got,
+  promiseGot : promiseGot,
   done : got,
   doThen : doThen,
   _doThen : _doThen,
+  promiseThen : promiseThen,
 
   choke : choke,
   chokeThen : chokeThen,
