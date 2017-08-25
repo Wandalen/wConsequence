@@ -1382,7 +1382,6 @@ function promiseGot( test )
       test.identical( con.messagesGet().length, 0 );
       test.identical( con.correspondentsGet().length, 0 );
     })
-
     return wConsequence.from( promise );
   })
 
@@ -1402,6 +1401,7 @@ function promiseGot( test )
       test.identical( con.messagesGet().length, 0 );
       test.identical( con.correspondentsGet().length, 0 );
     })
+    return wConsequence.from( promise );
   })
 
   /* */
@@ -1422,6 +1422,7 @@ function promiseGot( test )
       test.identical( con.messagesGet().length, 2 );
       test.identical( con.correspondentsGet().length, 0 );
     })
+    return wConsequence.from( promise );
   })
 
   /* */
@@ -1444,7 +1445,7 @@ function promiseGot( test )
     test.identical( con.messagesGet().length, 1 );
     return _.timeOut( 1, function()
     {
-      promise = promise.then( function( got )
+      promise.then( function( got )
       {
         test.identical( got, testMsg );
         test.shouldBe( _.promiseIs( promise ) );
@@ -1463,21 +1464,21 @@ function promiseGot( test )
     var con = new wConsequence();
     var promise = con.promiseGot();
     con.error( testMsg );
+    promise.catch( function( err )
+    {
+      test.identical( err, testMsg );
+      test.shouldBe( _.promiseIs( promise ) );
+    });
     test.identical( con.messagesGet().length, 1 );
     test.identical( con.correspondentsGet().length, 1 );
     return _.timeOut( 1, function()
     {
-      promise = promise.catch( function( err )
-      {
-        test.identical( err, testMsg );
-        test.shouldBe( _.promiseIs( promise ) );
-        test.identical( con.messagesGet().length, 0 );
-        test.identical( con.correspondentsGet().length, 0 );
-      });
-
+      test.identical( con.messagesGet().length, 0 );
+      test.identical( con.correspondentsGet().length, 0 );
       return wConsequence.from( promise );
     });
   })
+
 
   /* */
 
@@ -1525,7 +1526,7 @@ function promiseGot( test )
     test.identical( con.messagesGet().length, 1 );
     return _.timeOut( 1, function()
     {
-      promise = promise.then( function( got )
+      promise.then( function( got )
       {
         test.identical( got, testMsg );
         test.shouldBe( _.promiseIs( promise ) );
@@ -1544,18 +1545,17 @@ function promiseGot( test )
     var con = new wConsequence();
     con.error( testMsg );
     var promise = con.promiseGot();
+    promise.catch( function( err )
+    {
+      test.identical( err, testMsg );
+      test.shouldBe( _.promiseIs( promise ) );
+    });
     test.identical( con.messagesGet().length, 1 );
     test.identical( con.correspondentsGet().length, 1 );
     return _.timeOut( 1, function()
     {
-      promise = promise.catch( function( err )
-      {
-        test.identical( err, testMsg );
-        test.shouldBe( _.promiseIs( promise ) );
-        test.identical( con.messagesGet().length, 0 );
-        test.identical( con.correspondentsGet().length, 0 );
-      });
-
+      test.identical( con.messagesGet().length, 0 );
+      test.identical( con.correspondentsGet().length, 0 );
       return wConsequence.from( promise );
     });
   })
@@ -1606,7 +1606,7 @@ function promiseGot( test )
     test.identical( con.messagesGet().length, 1 );
     return _.timeOut( 1, function()
     {
-      promise = promise.then( function( got )
+      promise.then( function( got )
       {
         test.identical( got, testMsg );
         test.shouldBe( _.promiseIs( promise ) );
@@ -1625,18 +1625,17 @@ function promiseGot( test )
     var con = new wConsequence();
     con.error( testMsg );
     var promise = con.promiseGot();
+    promise.catch( function( err )
+    {
+      test.identical( err, testMsg );
+      test.shouldBe( _.promiseIs( promise ) );
+    });
     test.identical( con.messagesGet().length, 1 );
     test.identical( con.correspondentsGet().length, 1 );
     return _.timeOut( 1, function()
     {
-      promise = promise.catch( function( err )
-      {
-        test.identical( err, testMsg );
-        test.shouldBe( _.promiseIs( promise ) );
-        test.identical( con.messagesGet().length, 0 );
-        test.identical( con.correspondentsGet().length, 0 );
-      });
-
+      test.identical( con.messagesGet().length, 0 );
+      test.identical( con.correspondentsGet().length, 0 );
       return wConsequence.from( promise );
     });
   })
@@ -2609,6 +2608,7 @@ function promiseThen( test )
       test.identical( con.messagesGet(), [{ error : testMsg, argument : undefined }] );
       test.identical( con.correspondentsGet().length, 0 );
     })
+    return wConsequence.from( promise );
   })
 
   /* */
@@ -2629,6 +2629,7 @@ function promiseThen( test )
       test.identical( con.messagesGet().length, 3 );
       test.identical( con.correspondentsGet().length, 0 );
     })
+    return wConsequence.from( promise );
   })
 
   /* */
@@ -2651,7 +2652,7 @@ function promiseThen( test )
     test.identical( con.messagesGet().length, 1 );
     return _.timeOut( 1, function()
     {
-      promise = promise.then( function( got )
+      promise.then( function( got )
       {
         test.identical( got, testMsg );
         test.shouldBe( _.promiseIs( promise ) );
@@ -2669,19 +2670,18 @@ function promiseThen( test )
     test.description = 'async giving, error message';
     var con = new wConsequence();
     var promise = con.promiseThen();
+    promise.catch( function( err )
+    {
+      test.identical( err, testMsg );
+      test.shouldBe( _.promiseIs( promise ) );
+    });
     con.error( testMsg );
     test.identical( con.messagesGet().length, 1 );
     test.identical( con.correspondentsGet().length, 1 );
     return _.timeOut( 1, function()
     {
-      promise = promise.catch( function( err )
-      {
-        test.identical( err, testMsg );
-        test.shouldBe( _.promiseIs( promise ) );
-        test.identical( con.messagesGet(), [{ error : testMsg, argument : undefined }] );
-        test.identical( con.correspondentsGet().length, 0 );
-      });
-
+      test.identical( con.messagesGet(), [{ error : testMsg, argument : undefined }] );
+      test.identical( con.correspondentsGet().length, 0 );
       return wConsequence.from( promise );
     });
   })
@@ -2732,7 +2732,7 @@ function promiseThen( test )
     test.identical( con.messagesGet().length, 1 );
     return _.timeOut( 1, function()
     {
-      promise = promise.then( function( got )
+      promise.then( function( got )
       {
         test.identical( got, testMsg );
         test.shouldBe( _.promiseIs( promise ) );
@@ -2751,18 +2751,17 @@ function promiseThen( test )
     var con = new wConsequence();
     con.error( testMsg );
     var promise = con.promiseThen();
+    promise.catch( function( err )
+    {
+      test.identical( err, testMsg );
+      test.shouldBe( _.promiseIs( promise ) );
+    });
     test.identical( con.messagesGet().length, 1 );
     test.identical( con.correspondentsGet().length, 1 );
     return _.timeOut( 1, function()
     {
-      promise = promise.catch( function( err )
-      {
-        test.identical( err, testMsg );
-        test.shouldBe( _.promiseIs( promise ) );
-        test.identical( con.messagesGet(), [{ error : testMsg, argument : undefined }] );
-        test.identical( con.correspondentsGet().length, 0 );
-      });
-
+      test.identical( con.messagesGet(), [{ error : testMsg, argument : undefined }] );
+      test.identical( con.correspondentsGet().length, 0 );
       return wConsequence.from( promise );
     });
   })
@@ -2813,7 +2812,7 @@ function promiseThen( test )
     test.identical( con.messagesGet().length, 1 );
     return _.timeOut( 1, function()
     {
-      promise = promise.then( function( got )
+      promise.then( function( got )
       {
         test.identical( got, testMsg );
         test.shouldBe( _.promiseIs( promise ) );
@@ -2832,18 +2831,17 @@ function promiseThen( test )
     var con = new wConsequence();
     con.error( testMsg );
     var promise = con.promiseThen();
+    promise.catch( function( err )
+    {
+      test.identical( err, testMsg );
+      test.shouldBe( _.promiseIs( promise ) );
+    });
     test.identical( con.messagesGet().length, 1 );
     test.identical( con.correspondentsGet().length, 1 );
     return _.timeOut( 1, function()
     {
-      promise = promise.catch( function( err )
-      {
-        test.identical( err, testMsg );
-        test.shouldBe( _.promiseIs( promise ) );
-        test.identical( con.messagesGet(), [{ error : testMsg, argument : undefined }] );
-        test.identical( con.correspondentsGet().length, 0 );
-      });
-
+      test.identical( con.messagesGet(), [{ error : testMsg, argument : undefined }] );
+      test.identical( con.correspondentsGet().length, 0 );
       return wConsequence.from( promise );
     });
   })
