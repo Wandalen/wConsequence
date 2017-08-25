@@ -1666,6 +1666,11 @@ function promiseGot( test )
       return wConsequence.from( promise );
     })
   })
+  .doThen( function()
+  {
+    wConsequence.prototype.asyncGiving = 0;
+    wConsequence.prototype.asyncTaking = 0;
+  })
 
   return testCon;
 }
@@ -2867,6 +2872,11 @@ function promiseThen( test )
       })
       return wConsequence.from( promise );
     })
+  })
+  .doThen( function()
+  {
+    wConsequence.prototype.asyncGiving = 0;
+    wConsequence.prototype.asyncTaking = 0;
   })
 
   return testCon;
