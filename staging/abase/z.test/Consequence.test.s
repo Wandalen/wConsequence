@@ -5831,7 +5831,8 @@ first.timeOut = 20000;
 var Self =
 {
 
-  name : 'Consequence1',
+  name : 'Consequence',
+  silencing : 1,
   // verbosity : 7,
 
   tests :
