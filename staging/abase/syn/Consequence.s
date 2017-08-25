@@ -3263,7 +3263,7 @@ var Supplement =
 
 //
 
-// _.prototypeMake
+// _.classMake
 // ({
 //   cls : Parent,
 //   parent : null,
@@ -3274,7 +3274,7 @@ var Supplement =
 //
 // wCopyable.mixin( Parent );
 //
-// _.prototypeMake
+// _.classMake
 // ({
 //   cls : Self,
 //   parent : Parent,
@@ -3282,7 +3282,7 @@ var Supplement =
 // });
 
 // debugger;
-_.prototypeMake
+_.classMake
 ({
   cls : wConsequence,
   parent : null,
