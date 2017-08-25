@@ -17,6 +17,7 @@ if( typeof module !== 'undefined' )
 
   var _ = wTools;
 
+  require( '../syn/Consequence.s' );
   _.include( 'wTesting' );
 
 }
@@ -1345,6 +1346,332 @@ function ordinarMessage( test )
 
 //
 
+function promiseGot( test )
+{
+  var testMsg = 'testMsg';
+  var testCon = new wConsequence().give()
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'no message';
+    var con = new wConsequence();
+    var promise = con.promiseGot();
+    test.identical( con.messagesGet().length, 0 );
+    test.identical( con.correspondentsGet().length, 1 );
+    promise.then( function( got )
+    {
+      test.identical( 0, 1 );
+    })
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'single message';
+    var con = new wConsequence();
+    con.give( testMsg );
+    test.identical( con.messagesGet().length, 1 );
+    var promise = con.promiseGot();
+    promise.then( function( got )
+    {
+      test.identical( got, testMsg );
+      test.shouldBe( _.promiseIs( promise ) );
+      test.identical( con.messagesGet().length, 0 );
+      test.identical( con.correspondentsGet().length, 0 );
+    })
+
+    return wConsequence.from( promise );
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'single error';
+    var con = new wConsequence();
+    con.error( testMsg );
+    test.identical( con.messagesGet().length, 1 );
+    var promise = con.promiseGot();
+    promise.catch( function( err )
+    {
+      test.identical( err, testMsg );
+      test.shouldBe( _.promiseIs( promise ) );
+      test.identical( con.messagesGet().length, 0 );
+      test.identical( con.correspondentsGet().length, 0 );
+    })
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'several messages';
+    var con = new wConsequence();
+    con.give( testMsg  + 1 );
+    con.give( testMsg  + 2 );
+    con.give( testMsg  + 3 );
+    test.identical( con.messagesGet().length, 3 );
+    var promise = con.promiseGot();
+    promise.then( function( got )
+    {
+      test.identical( got, testMsg + 1 );
+      test.shouldBe( _.promiseIs( promise ) );
+      test.identical( con.messagesGet().length, 2 );
+      test.identical( con.correspondentsGet().length, 0 );
+    })
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    wConsequence.prototype.asyncGiving = 1;
+    wConsequence.prototype.asyncTaking = 0;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'async giving, single message';
+    var con = new wConsequence();
+    var promise = con.promiseGot();
+    con.give( testMsg );
+    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.messagesGet().length, 1 );
+    return _.timeOut( 1, function()
+    {
+      promise = promise.then( function( got )
+      {
+        test.identical( got, testMsg );
+        test.shouldBe( _.promiseIs( promise ) );
+        test.identical( con.messagesGet().length, 0 );
+        test.identical( con.correspondentsGet().length, 0 );
+      });
+      return wConsequence.from( promise );
+    })
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'async giving, single error';
+    var con = new wConsequence();
+    var promise = con.promiseGot();
+    con.error( testMsg );
+    test.identical( con.messagesGet().length, 1 );
+    test.identical( con.correspondentsGet().length, 1 );
+    return _.timeOut( 1, function()
+    {
+      promise = promise.catch( function( err )
+      {
+        test.identical( err, testMsg );
+        test.shouldBe( _.promiseIs( promise ) );
+        test.identical( con.messagesGet().length, 0 );
+        test.identical( con.correspondentsGet().length, 0 );
+      });
+
+      return wConsequence.from( promise );
+    });
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'async giving, several messages';
+    var con = new wConsequence();
+    var promise = con.promiseGot();
+    con.give( testMsg  + 1 );
+    con.give( testMsg  + 2 );
+    con.give( testMsg  + 3 );
+    test.identical( con.messagesGet().length, 3 );
+    test.identical( con.correspondentsGet().length, 1 );
+
+    return _.timeOut( 1, function()
+    {
+      promise.then( function( got )
+      {
+        test.identical( got, testMsg + 1 );
+        test.shouldBe( _.promiseIs( promise ) );
+        test.identical( con.messagesGet().length, 2 );
+        test.identical( con.correspondentsGet().length, 0 );
+      })
+      return wConsequence.from( promise );
+    })
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    wConsequence.prototype.asyncGiving = 0;
+    wConsequence.prototype.asyncTaking = 1;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'async taking, single message';
+    var con = new wConsequence();
+    con.give( testMsg );
+    var promise = con.promiseGot();
+    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.messagesGet().length, 1 );
+    return _.timeOut( 1, function()
+    {
+      promise = promise.then( function( got )
+      {
+        test.identical( got, testMsg );
+        test.shouldBe( _.promiseIs( promise ) );
+        test.identical( con.messagesGet().length, 0 );
+        test.identical( con.correspondentsGet().length, 0 );
+      });
+      return wConsequence.from( promise );
+    })
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'async taking, error message';
+    var con = new wConsequence();
+    con.error( testMsg );
+    var promise = con.promiseGot();
+    test.identical( con.messagesGet().length, 1 );
+    test.identical( con.correspondentsGet().length, 1 );
+    return _.timeOut( 1, function()
+    {
+      promise = promise.catch( function( err )
+      {
+        test.identical( err, testMsg );
+        test.shouldBe( _.promiseIs( promise ) );
+        test.identical( con.messagesGet().length, 0 );
+        test.identical( con.correspondentsGet().length, 0 );
+      });
+
+      return wConsequence.from( promise );
+    });
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'async taking, several messages';
+    var con = new wConsequence();
+    con.give( testMsg  + 1 );
+    con.give( testMsg  + 2 );
+    con.give( testMsg  + 3 );
+    var promise = con.promiseGot();
+    test.identical( con.messagesGet().length, 3 );
+    test.identical( con.correspondentsGet().length, 1 );
+
+    return _.timeOut( 1, function()
+    {
+      promise.then( function( got )
+      {
+        test.identical( got, testMsg + 1 );
+        test.shouldBe( _.promiseIs( promise ) );
+        test.identical( con.messagesGet().length, 2 );
+        test.identical( con.correspondentsGet().length, 0 );
+      })
+      return wConsequence.from( promise );
+    })
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    wConsequence.prototype.asyncGiving = 1;
+    wConsequence.prototype.asyncTaking = 1;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'async taking+giving signle message';
+    var con = new wConsequence();
+    con.give( testMsg );
+    var promise = con.promiseGot();
+    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.messagesGet().length, 1 );
+    return _.timeOut( 1, function()
+    {
+      promise = promise.then( function( got )
+      {
+        test.identical( got, testMsg );
+        test.shouldBe( _.promiseIs( promise ) );
+        test.identical( con.messagesGet().length, 0 );
+        test.identical( con.correspondentsGet().length, 0 );
+      });
+      return wConsequence.from( promise );
+    })
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'async taking+giving error message';
+    var con = new wConsequence();
+    con.error( testMsg );
+    var promise = con.promiseGot();
+    test.identical( con.messagesGet().length, 1 );
+    test.identical( con.correspondentsGet().length, 1 );
+    return _.timeOut( 1, function()
+    {
+      promise = promise.catch( function( err )
+      {
+        test.identical( err, testMsg );
+        test.shouldBe( _.promiseIs( promise ) );
+        test.identical( con.messagesGet().length, 0 );
+        test.identical( con.correspondentsGet().length, 0 );
+      });
+
+      return wConsequence.from( promise );
+    });
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'async taking+giving several messages';
+    var con = new wConsequence();
+    con.give( testMsg  + 1 );
+    con.give( testMsg  + 2 );
+    con.give( testMsg  + 3 );
+    var promise = con.promiseGot();
+    test.identical( con.messagesGet().length, 3 );
+    test.identical( con.correspondentsGet().length, 1 );
+
+    return _.timeOut( 1, function()
+    {
+      promise.then( function( got )
+      {
+        test.identical( got, testMsg + 1 );
+        test.shouldBe( _.promiseIs( promise ) );
+        test.identical( con.messagesGet().length, 2 );
+        test.identical( con.correspondentsGet().length, 0 );
+      })
+      return wConsequence.from( promise );
+    })
+  })
+
+  return testCon;
+}
+
+//
+
 // function persistantMessage( test )
 // {
 //   var self = this;
@@ -2217,6 +2544,332 @@ function doThen( test )
 
   return testCon;
 
+}
+
+//
+
+function promiseThen( test )
+{
+  var testMsg = 'testMsg';
+  var testCon = new wConsequence().give()
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'no message';
+    var con = new wConsequence();
+    var promise = con.promiseThen();
+    test.identical( con.messagesGet().length, 0 );
+    test.identical( con.correspondentsGet().length, 1 );
+    promise.then( function( got )
+    {
+      test.identical( 0, 1 );
+    })
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'single message';
+    var con = new wConsequence();
+    con.give( testMsg );
+    test.identical( con.messagesGet().length, 1 );
+    var promise = con.promiseThen();
+    promise.then( function( got )
+    {
+      test.identical( got, testMsg );
+      test.shouldBe( _.promiseIs( promise ) );
+      test.identical( con.messagesGet(), [{ error : null, argument : testMsg }] );
+      test.identical( con.correspondentsGet().length, 0 );
+    })
+
+    return wConsequence.from( promise );
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'error message';
+    var con = new wConsequence();
+    con.error( testMsg );
+    test.identical( con.messagesGet().length, 1 );
+    var promise = con.promiseThen();
+    promise.catch( function( err )
+    {
+      test.identical( err, testMsg );
+      test.shouldBe( _.promiseIs( promise ) );
+      test.identical( con.messagesGet(), [{ error : testMsg, argument : undefined }] );
+      test.identical( con.correspondentsGet().length, 0 );
+    })
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'several messages';
+    var con = new wConsequence();
+    con.give( testMsg  + 1 );
+    con.give( testMsg  + 2 );
+    con.give( testMsg  + 3 );
+    test.identical( con.messagesGet().length, 3 );
+    var promise = con.promiseThen();
+    promise.then( function( got )
+    {
+      test.identical( got, testMsg + 1 );
+      test.shouldBe( _.promiseIs( promise ) );
+      test.identical( con.messagesGet().length, 3 );
+      test.identical( con.correspondentsGet().length, 0 );
+    })
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    wConsequence.prototype.asyncGiving = 1;
+    wConsequence.prototype.asyncTaking = 0;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'async giving, single message';
+    var con = new wConsequence();
+    var promise = con.promiseThen();
+    con.give( testMsg );
+    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.messagesGet().length, 1 );
+    return _.timeOut( 1, function()
+    {
+      promise = promise.then( function( got )
+      {
+        test.identical( got, testMsg );
+        test.shouldBe( _.promiseIs( promise ) );
+        test.identical( con.messagesGet(), [{ error : null, argument : testMsg }] );
+        test.identical( con.correspondentsGet().length, 0 );
+      });
+      return wConsequence.from( promise );
+    })
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'async giving, error message';
+    var con = new wConsequence();
+    var promise = con.promiseThen();
+    con.error( testMsg );
+    test.identical( con.messagesGet().length, 1 );
+    test.identical( con.correspondentsGet().length, 1 );
+    return _.timeOut( 1, function()
+    {
+      promise = promise.catch( function( err )
+      {
+        test.identical( err, testMsg );
+        test.shouldBe( _.promiseIs( promise ) );
+        test.identical( con.messagesGet(), [{ error : testMsg, argument : undefined }] );
+        test.identical( con.correspondentsGet().length, 0 );
+      });
+
+      return wConsequence.from( promise );
+    });
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'async giving, several messages';
+    var con = new wConsequence();
+    var promise = con.promiseThen();
+    con.give( testMsg  + 1 );
+    con.give( testMsg  + 2 );
+    con.give( testMsg  + 3 );
+    test.identical( con.messagesGet().length, 3 );
+    test.identical( con.correspondentsGet().length, 1 );
+
+    return _.timeOut( 1, function()
+    {
+      promise.then( function( got )
+      {
+        test.identical( got, testMsg + 1 );
+        test.shouldBe( _.promiseIs( promise ) );
+        test.identical( con.messagesGet().length, 3 );
+        test.identical( con.correspondentsGet().length, 0 );
+      })
+      return wConsequence.from( promise );
+    })
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    wConsequence.prototype.asyncGiving = 0;
+    wConsequence.prototype.asyncTaking = 1;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'async taking, single message';
+    var con = new wConsequence();
+    con.give( testMsg );
+    var promise = con.promiseThen();
+    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.messagesGet().length, 1 );
+    return _.timeOut( 1, function()
+    {
+      promise = promise.then( function( got )
+      {
+        test.identical( got, testMsg );
+        test.shouldBe( _.promiseIs( promise ) );
+        test.identical( con.messagesGet(), [{ error : null, argument : testMsg }] );
+        test.identical( con.correspondentsGet().length, 0 );
+      });
+      return wConsequence.from( promise );
+    })
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'async taking, error message';
+    var con = new wConsequence();
+    con.error( testMsg );
+    var promise = con.promiseThen();
+    test.identical( con.messagesGet().length, 1 );
+    test.identical( con.correspondentsGet().length, 1 );
+    return _.timeOut( 1, function()
+    {
+      promise = promise.catch( function( err )
+      {
+        test.identical( err, testMsg );
+        test.shouldBe( _.promiseIs( promise ) );
+        test.identical( con.messagesGet(), [{ error : testMsg, argument : undefined }] );
+        test.identical( con.correspondentsGet().length, 0 );
+      });
+
+      return wConsequence.from( promise );
+    });
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'async taking, several messages';
+    var con = new wConsequence();
+    con.give( testMsg  + 1 );
+    con.give( testMsg  + 2 );
+    con.give( testMsg  + 3 );
+    var promise = con.promiseThen();
+    test.identical( con.messagesGet().length, 3 );
+    test.identical( con.correspondentsGet().length, 1 );
+
+    return _.timeOut( 1, function()
+    {
+      promise.then( function( got )
+      {
+        test.identical( got, testMsg + 1 );
+        test.shouldBe( _.promiseIs( promise ) );
+        test.identical( con.messagesGet().length, 3 );
+        test.identical( con.correspondentsGet().length, 0 );
+      })
+      return wConsequence.from( promise );
+    })
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    wConsequence.prototype.asyncGiving = 1;
+    wConsequence.prototype.asyncTaking = 1;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'async taking+giving, single message';
+    var con = new wConsequence();
+    con.give( testMsg );
+    var promise = con.promiseThen();
+    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.messagesGet().length, 1 );
+    return _.timeOut( 1, function()
+    {
+      promise = promise.then( function( got )
+      {
+        test.identical( got, testMsg );
+        test.shouldBe( _.promiseIs( promise ) );
+        test.identical( con.messagesGet(), [{ error : null, argument : testMsg }] );
+        test.identical( con.correspondentsGet().length, 0 );
+      });
+      return wConsequence.from( promise );
+    })
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'async taking+giving, error message';
+    var con = new wConsequence();
+    con.error( testMsg );
+    var promise = con.promiseThen();
+    test.identical( con.messagesGet().length, 1 );
+    test.identical( con.correspondentsGet().length, 1 );
+    return _.timeOut( 1, function()
+    {
+      promise = promise.catch( function( err )
+      {
+        test.identical( err, testMsg );
+        test.shouldBe( _.promiseIs( promise ) );
+        test.identical( con.messagesGet(), [{ error : testMsg, argument : undefined }] );
+        test.identical( con.correspondentsGet().length, 0 );
+      });
+
+      return wConsequence.from( promise );
+    });
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'async taking+giving, several messages';
+    var con = new wConsequence();
+    con.give( testMsg  + 1 );
+    con.give( testMsg  + 2 );
+    con.give( testMsg  + 3 );
+    var promise = con.promiseThen();
+    test.identical( con.messagesGet().length, 3 );
+    test.identical( con.correspondentsGet().length, 1 );
+
+    return _.timeOut( 1, function()
+    {
+      promise.then( function( got )
+      {
+        test.identical( got, testMsg + 1 );
+        test.shouldBe( _.promiseIs( promise ) );
+        test.identical( con.messagesGet().length, 3 );
+        test.identical( con.correspondentsGet().length, 0 );
+      })
+      return wConsequence.from( promise );
+    })
+  })
+
+  return testCon;
 }
 
 //
@@ -5839,8 +6492,10 @@ var Self =
   {
     simple : simple,
     ordinarMessage : ordinarMessage,
+    promiseGot : promiseGot,
 
     doThen : doThen,
+    promiseThen : promiseThen,
 
     onceGot : onceGot,
     onceThen : onceThen,
