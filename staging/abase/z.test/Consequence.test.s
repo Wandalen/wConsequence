@@ -5029,14 +5029,14 @@ function _and( test )
 //     test.description = 'try to pass as parameter anonymous function';
 //     test.shouldThrowError( function()
 //     {
-//       conDeb1.onceGot( function( err, val) { logger.log( 'i em anonymous' ); } );
+//       conDeb1.onceGot( function( err, val) { logger.log( 'i am anonymous' ); } );
 //     });
 
 //     var conDeb2 = wConsequence();
 
 //     test.description = 'try to pass as parameter anonymous function (defined in expression)';
 
-//     function testHandler( err, val) { logger.log( 'i em anonymous' ); }
+//     function testHandler( err, val) { logger.log( 'i am anonymous' ); }
 //     test.shouldThrowError( function()
 //     {
 //       conDeb2.onceGot( testHandler );
@@ -5180,15 +5180,16 @@ function onceGot( test )
     test.description = 'try to pass as parameter anonymous function';
     test.shouldThrowError( function()
     {
-      con.onceGot( function( err, val) { logger.log( 'i em anonymous' ); } );
+      con.onceGot( function( err, val) { logger.log( 'i am anonymous' ); } );
     });
 
     /* */
 
     test.description = 'try to pass as parameter anonymous function (defined in expression)';
-    function testHandler( err, val) { logger.log( 'i em anonymous' ); }
+    function testHandler( err, val ) { logger.log( 'i am anonymous' ); }
     test.shouldThrowError( function()
     {
+      debugger;
       con.onceGot( testHandler );
     });
   })
@@ -5425,14 +5426,14 @@ function onceGot( test )
 //     test.description = 'try to pass as parameter anonymous function';
 //     test.shouldThrowError( function()
 //     {
-//       conDeb1.onceThen( function( err, val) { logger.log( 'i em anonymous' ); } );
+//       conDeb1.onceThen( function( err, val) { logger.log( 'i am anonymous' ); } );
 //     } );
 
 //     var conDeb2 = wConsequence();
 
 //     test.description = 'try to pass as parameter anonymous function (defined in expression)';
 
-//     function testHandler( err, val) { logger.log( 'i em anonymous' ); }
+//     function testHandler( err, val) { logger.log( 'i am anonymous' ); }
 //     test.shouldThrowError( function()
 //     {
 //       conDeb2.onceThen( testHandler );
@@ -5558,13 +5559,13 @@ function onceThen( test )
     test.description = 'try to pass as parameter anonymous function';
     test.shouldThrowError( function()
     {
-      con.onceThen( function( err, val) { logger.log( 'i em anonymous' ); } );
+      con.onceThen( function( err, val) { logger.log( 'i am anonymous' ); } );
     });
 
     /* */
 
     test.description = 'try to pass as parameter anonymous function (defined in expression)';
-    function testHandler( err, val) { logger.log( 'i em anonymous' ); }
+    function testHandler( err, val) { logger.log( 'i am anonymous' ); }
     test.shouldThrowError( function()
     {
       con.onceThen( testHandler );
@@ -6498,6 +6499,7 @@ var Self =
 
   tests :
   {
+
     simple : simple,
     ordinarMessage : ordinarMessage,
     promiseGot : promiseGot,
@@ -6520,7 +6522,8 @@ var Self =
     andThen : andThen,
     _and : _and,
 
-    first : first
+    first : first,
+
   },
 
 };
