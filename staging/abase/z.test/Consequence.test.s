@@ -6480,11 +6480,386 @@ function first( test )
       test.identical( con2.messagesGet().length, 1 );
     })
   })
+  .doThen( () => setAsync( 0, 0 ) );
 
   return testCon;
 }
 
 first.timeOut = 20000;
+
+//
+
+function from( test )
+{
+  var testMsg = 'value';
+  var testCon = new wConsequence().give()
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'passing value';
+    var con = wConsequence.from( testMsg );
+    test.identical( con.messagesGet(), [ { error : null, argument : testMsg } ] );
+    test.identical( con.correspondentsGet(), [] );
+    return con;
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'passing an error';
+    var err = _.err( testMsg );
+    var con = wConsequence.from( err );
+    test.identical( con.messagesGet(), [ { error : err, argument : undefined } ] );
+    test.identical( con.correspondentsGet(), [] );
+    return con;
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'passing consequence';
+    var src = new wConsequence().give( testMsg );
+    var con = wConsequence.from( src );
+    test.identical( con, src );
+    test.identical( con.messagesGet(), [ { error : null, argument : testMsg } ] );
+    test.identical( con.correspondentsGet(), [] );
+    return con;
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'passing resolved promise';
+    var src = Promise.resolve( testMsg );
+    var con = wConsequence.from( src );
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.messagesGet(), [ { error : null, argument : testMsg } ] );
+      test.identical( con.correspondentsGet(), [] );
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'passing rejected promise';
+    var src = Promise.reject( testMsg );
+    var con = wConsequence.from( src );
+    return _.timeOut( 1, function ()
+    {
+      test.identical( con.messagesGet(), [ { error : testMsg, argument : undefined } ] );
+      test.identical( con.correspondentsGet(), [] );
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    wConsequence.prototype.asyncTaking = 0;
+    wConsequence.prototype.asyncGiving = 1;
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'async giving passing value';
+    var con = wConsequence.from( testMsg );
+    con.got( ( err, got ) => test.identical( got, testMsg ) )
+    test.identical( con.messagesGet(), [ { error : null, argument : testMsg } ] );
+    return _.timeOut( 1, function()
+    {
+      test.identical( con.messagesGet(), [] );
+      test.identical( con.correspondentsGet(), [] );
+    })
+
+    return con;
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'passing an error';
+    var src = _.err( testMsg );
+    var con = wConsequence.from( src );
+    con.got( ( err, got ) => test.identical( err, src ) )
+    test.identical( con.messagesGet(), [ { error : src, argument : undefined } ] );
+    return _.timeOut( 1, function()
+    {
+      test.identical( con.messagesGet(), [] );
+      test.identical( con.correspondentsGet(), [] );
+    })
+
+    return con;
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'passing consequence';
+    var src = new wConsequence().give( testMsg );
+    var con = wConsequence.from( src );
+    con.got( ( err, got ) => test.identical( got, testMsg ) );
+    test.identical( src.messagesGet(), [ { error : null, argument : testMsg } ] );
+    test.identical( con, src );
+    return _.timeOut( 1, function()
+    {
+      test.identical( con.messagesGet(), [] );
+      test.identical( con.correspondentsGet(), [] );
+    })
+
+    return con;
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'passing resolved promise';
+    var src = Promise.resolve( testMsg );
+    var con = wConsequence.from( src );
+    con.got( ( err, got ) => test.identical( got, testMsg ) );
+    test.identical( con.messagesGet().length, 0 )
+    return _.timeOut( 1, function()
+    {
+      test.identical( con.messagesGet().length, 0 )
+      test.identical( con.correspondentsGet().length, 0 )
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'passing rejected promise';
+    var src = Promise.reject( testMsg );
+    var con = wConsequence.from( src );
+    con.got( ( err, got ) => test.identical( err, testMsg ) );
+    test.identical( con.messagesGet().length, 0 )
+    return _.timeOut( 1, function()
+    {
+      test.identical( con.messagesGet().length, 0 )
+      test.identical( con.correspondentsGet().length, 0 )
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    wConsequence.prototype.asyncTaking = 1;
+    wConsequence.prototype.asyncGiving = 0;
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'async taking, passing value';
+    var con = wConsequence.from( testMsg );
+    con.got( ( err, got ) => test.identical( got, testMsg ) )
+    test.identical( con.messagesGet(), [ { error : null, argument : testMsg } ] );
+    test.identical( con.correspondentsGet().length, 1 );
+    return _.timeOut( 1, function()
+    {
+      test.identical( con.messagesGet(), [] );
+      test.identical( con.correspondentsGet(), [] );
+    })
+
+    return con;
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'async taking,passing an error';
+    var src = _.err( testMsg );
+    var con = wConsequence.from( src );
+    con.got( ( err, got ) => test.identical( err, src ) )
+    test.identical( con.messagesGet(), [ { error : src, argument : undefined } ] );
+    test.identical( con.correspondentsGet().length, 1 );
+    return _.timeOut( 1, function()
+    {
+      test.identical( con.messagesGet(), [] );
+      test.identical( con.correspondentsGet(), [] );
+    })
+
+    return con;
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'async taking,passing consequence';
+    var src = new wConsequence().give( testMsg );
+    var con = wConsequence.from( src );
+    con.got( ( err, got ) => test.identical( got, testMsg ) );
+    test.identical( src.messagesGet(), [ { error : null, argument : testMsg } ] );
+    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con, src );
+    return _.timeOut( 1, function()
+    {
+      test.identical( con.messagesGet(), [] );
+      test.identical( con.correspondentsGet(), [] );
+    })
+
+    return con;
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'async taking,passing resolved promise';
+    var src = Promise.resolve( testMsg );
+    var con = wConsequence.from( src );
+    con.got( ( err, got ) => test.identical( got, testMsg ) );
+    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.messagesGet().length, 0 )
+    return _.timeOut( 1, function()
+    {
+      test.identical( con.messagesGet().length, 0 )
+      test.identical( con.correspondentsGet().length, 0 )
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'async taking,passing rejected promise';
+    var src = Promise.reject( testMsg );
+    var con = wConsequence.from( src );
+    con.got( ( err, got ) => test.identical( err, testMsg ) );
+    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.messagesGet().length, 0 )
+    return _.timeOut( 1, function()
+    {
+      test.identical( con.messagesGet().length, 0 )
+      test.identical( con.correspondentsGet().length, 0 )
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    wConsequence.prototype.asyncTaking = 1;
+    wConsequence.prototype.asyncGiving = 1;
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'async, passing value';
+    var con = wConsequence.from( testMsg );
+    con.got( ( err, got ) => test.identical( got, testMsg ) )
+    test.identical( con.messagesGet(), [ { error : null, argument : testMsg } ] );
+    test.identical( con.correspondentsGet().length, 1 );
+    return _.timeOut( 1, function()
+    {
+      test.identical( con.messagesGet(), [] );
+      test.identical( con.correspondentsGet(), [] );
+    })
+
+    return con;
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'async,passing an error';
+    var src = _.err( testMsg );
+    var con = wConsequence.from( src );
+    con.got( ( err, got ) => test.identical( err, src ) )
+    test.identical( con.messagesGet(), [ { error : src, argument : undefined } ] );
+    test.identical( con.correspondentsGet().length, 1 );
+    return _.timeOut( 1, function()
+    {
+      test.identical( con.messagesGet(), [] );
+      test.identical( con.correspondentsGet(), [] );
+    })
+
+    return con;
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'async,passing consequence';
+    var src = new wConsequence().give( testMsg );
+    var con = wConsequence.from( src );
+    con.got( ( err, got ) => test.identical( got, testMsg ) );
+    test.identical( src.messagesGet(), [ { error : null, argument : testMsg } ] );
+    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con, src );
+    return _.timeOut( 1, function()
+    {
+      test.identical( con.messagesGet(), [] );
+      test.identical( con.correspondentsGet(), [] );
+    })
+
+    return con;
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'async,passing resolved promise';
+    var src = Promise.resolve( testMsg );
+    var con = wConsequence.from( src );
+    con.got( ( err, got ) => test.identical( got, testMsg ) );
+    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.messagesGet().length, 0 )
+    return _.timeOut( 1, function()
+    {
+      test.identical( con.messagesGet().length, 0 )
+      test.identical( con.correspondentsGet().length, 0 )
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'async,passing rejected promise';
+    var src = Promise.reject( testMsg );
+    var con = wConsequence.from( src );
+    con.got( ( err, got ) => test.identical( err, testMsg ) );
+    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.messagesGet().length, 0 )
+    return _.timeOut( 1, function()
+    {
+      test.identical( con.messagesGet().length, 0 )
+      test.identical( con.correspondentsGet().length, 0 )
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    wConsequence.prototype.asyncTaking = 0;
+    wConsequence.prototype.asyncGiving = 0;
+  })
+
+  return testCon;
+}
 
 // --
 // proto
@@ -6523,6 +6898,8 @@ var Self =
     _and : _and,
 
     first : first,
+
+    from : from,
 
   },
 
