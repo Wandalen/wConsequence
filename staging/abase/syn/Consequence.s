@@ -2600,50 +2600,31 @@ var onReady = caching.fileWatcher.onReady.eitherThenSplit( _.timeOutError( timeO
 
 function from_static( src,timeOut )
 {
-
   _.assert( arguments.length === 1 || arguments.length === 2 );
   _.assert( timeOut === undefined || _.numberIs( timeOut ) );
 
-  if( timeOut !== undefined )
+  var con = src;
+
+  if( _.promiseIs( src ) )
   {
-
-    if( _.consequenceIs( src ) )
-    {
-
-      return src.eitherThenSplit( _.timeOutError( timeOut ) );
-
-    }
-    else
-    {
-
-      if( _.errIs( src ) )
-      return new wConsequence().error( src );
-      else
-      return new wConsequence().give( src );
-
-    }
-
+    con = new wConsequence();
+    var onFulfilled = ( got ) => { con.give( got ); }
+    var onRejected = ( err ) => { con.error( err ); }
+    src.then( onFulfilled, onRejected );
   }
-  else
+
+  if( _.consequenceIs( con ) )
   {
+    if( timeOut !== undefined )
+    return con.eitherThenSplit( _.timeOutError( timeOut ) );
 
-    if( _.consequenceIs( src ) )
-    return src;
-
-    if( _.errIs( src ) )
-    return new wConsequence().error( src );
-
-    if( _.promiseIs( src ) )
-    {
-      var con = new wConsequence();
-      var onFulfilled = ( got ) => { con.give( got ); }
-      var onRejected = ( err ) => { con.error( err ); }
-      src.then( onFulfilled, onRejected );
-      return con;
-    }
-
-    return new wConsequence().give( src );
+    return con;
   }
+
+  if( _.errIs( src ) )
+  return new wConsequence().error( src );
+
+  return new wConsequence().give( src );
 }
 
 //
