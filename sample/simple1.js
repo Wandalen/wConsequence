@@ -1,9 +1,7 @@
 
 if( typeof module !== 'undefined' )
-{
-  require( 'wTools' );
-  require( 'wConsequence' );
-}
+require( 'wConsequence' );
+
 
 var _ = wTools;
 var con = new wConsequence();

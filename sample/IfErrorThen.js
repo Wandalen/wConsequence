@@ -1,10 +1,7 @@
 
 if( typeof module !== 'undefined' )
-{
-  require( 'wTools' );
-  /* require( 'wConsequence' ); */
-  require( '../staging/dwtools/abase/oclass/Consequence.s' );
-}
+require( 'wConsequence' );
+
 
 /* correspondents */
 

@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "wTesting": "",
-    "wConsequence": ""
+    "wConsequence": "."
   },
   "keywords": [
     "wTools",
