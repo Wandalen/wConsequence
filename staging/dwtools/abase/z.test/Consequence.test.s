@@ -3051,7 +3051,7 @@ function promiseThen( test )
 //     test.identical( got, expected );
 //   } )( testCheck3 );
 //
-//   /* test particular onceGot features test. */
+//   /* test particular _onceGot features test. */
 //
 //   test.description = 'thenSealed with sealed context and argument';
 //   ( function( { givSequence, got, expected }  )
@@ -3501,7 +3501,7 @@ function split( test )
 //     test.identical( got, expected );
 //   } )( testCheck3 );
 //   //
-//   /* test particular onceGot features test. */
+//   /* test particular _onceGot features test. */
 //
 //   test.description = 'test thenSealed in chain #2';
 //   ( function( { givSequence, got, expected }  )
@@ -4840,7 +4840,7 @@ function _and( test )
 // test part 3
 // --
 
-// function onceGot( test )
+// function _onceGot( test )
 // {
 
 //   var conseqTester = wConsequence(); // for correct testing async aspects of wConsequence
@@ -4908,7 +4908,7 @@ function _and( test )
 
 //     var con = wConsequence();
 //     con.give( givSequence.shift() );
-//     con.onceGot( testTaker1 );
+//     con._onceGot( testTaker1 );
 //     test.identical( gotSequence, expectedSequence );
 //   } )( testChecks[ 0 ] );
 
@@ -4925,13 +4925,13 @@ function _and( test )
 
 //     var con = wConsequence();
 //     con.error( givSequence.shift() );
-//     con.onceGot( testTaker1 );
+//     con._onceGot( testTaker1 );
 //     test.identical( gotSequence, expectedSequence );
 //   } )( testChecks[ 1 ] );
 
 //   /**/
 
-//   test.description = 'test onceGot in chain';
+//   test.description = 'test _onceGot in chain';
 
 //   ( function( { givSequence, gotSequence, expectedSequence }  )
 //   {
@@ -4953,12 +4953,12 @@ function _and( test )
 //     for (let given of givSequence)
 //     con.give( given );
 
-//     con.onceGot( testTaker1 );
-//     con.onceGot( testTaker2 );
+//     con._onceGot( testTaker1 );
+//     con._onceGot( testTaker2 );
 //     test.identical( gotSequence, expectedSequence );
 //   } )( testChecks[ 2 ] );
 
-//   /* test particular onceGot features test. */
+//   /* test particular _onceGot features test. */
 
 //   test.description = 'several takers with same name: appending after given values are resolved';
 //   ( function( { givSequence, gotSequence, expectedSequence }  )
@@ -4982,9 +4982,9 @@ function _and( test )
 //       con.give( given );
 //     }
 
-//     con.onceGot( testTaker1 );
-//     con.onceGot( testTaker1 );
-//     con.onceGot( testTaker2 );
+//     con._onceGot( testTaker1 );
+//     con._onceGot( testTaker1 );
+//     con._onceGot( testTaker2 );
 //     test.identical( gotSequence, expectedSequence );
 //   } )( testChecks[ 3 ] );
 
@@ -5008,9 +5008,9 @@ function _and( test )
 //     var con = new wConsequence();
 //     var testCon = new wConsequence().give();
 
-//     con.onceGot( testTaker1 );
-//     con.onceGot( testTaker1 );
-//     con.onceGot( testTaker2 );
+//     con._onceGot( testTaker1 );
+//     con._onceGot( testTaker1 );
+//     con._onceGot( testTaker2 );
 
 //     for( let given of givSequence ) // pass all values in givSequence to consequenced
 //     {
@@ -5029,7 +5029,7 @@ function _and( test )
 //     test.description = 'try to pass as parameter anonymous function';
 //     test.shouldThrowError( function()
 //     {
-//       conDeb1.onceGot( function( err, val) { logger.log( 'i am anonymous' ); } );
+//       conDeb1._onceGot( function( err, val) { logger.log( 'i am anonymous' ); } );
 //     });
 
 //     var conDeb2 = wConsequence();
@@ -5039,7 +5039,7 @@ function _and( test )
 //     function testHandler( err, val) { logger.log( 'i am anonymous' ); }
 //     test.shouldThrowError( function()
 //     {
-//       conDeb2.onceGot( testHandler );
+//       conDeb2._onceGot( testHandler );
 //     } );
 //   }
 
@@ -5049,7 +5049,7 @@ function _and( test )
 
 //
 
-function onceGot( test )
+function _onceGot( test )
 {
   var testMsg = 'msg';
   var testCon = new wConsequence().give()
@@ -5066,7 +5066,7 @@ function onceGot( test )
     }
     var con = new wConsequence();
     con.give( testMsg );
-    con.onceGot( correspondent );
+    con._onceGot( correspondent );
   })
 
   /* */
@@ -5082,14 +5082,14 @@ function onceGot( test )
     }
     var con = new wConsequence();
     con.error( testMsg );
-    con.onceGot( correspondent );
+    con._onceGot( correspondent );
   })
 
   /* */
 
   .doThen( function()
   {
-    test.description = 'test onceGot in chain';
+    test.description = 'test _onceGot in chain';
 
     function correspondent1( err, got )
     {
@@ -5103,11 +5103,11 @@ function onceGot( test )
     var con = new wConsequence();
     con.give( testMsg + 1 );
     con.give( testMsg + 2 );
-    con.onceGot( correspondent1 );
-    con.onceGot( correspondent2 );
+    con._onceGot( correspondent1 );
+    con._onceGot( correspondent2 );
   })
 
-  /* test particular onceGot features test. */
+  /* test particular _onceGot features test. */
 
   .doThen( function()
   {
@@ -5129,9 +5129,9 @@ function onceGot( test )
     con.give( testMsg );
     con.give( testMsg );
     con.give( testMsg );
-    con.onceGot( correspondent1 );
-    con.onceGot( correspondent1 );
-    con.onceGot( correspondent2 );
+    con._onceGot( correspondent1 );
+    con._onceGot( correspondent1 );
+    con._onceGot( correspondent2 );
 
     test.identical( correspondent1Count, 2 );
     test.identical( correspondent2Count, 1 );
@@ -5156,9 +5156,9 @@ function onceGot( test )
     }
     var con = new wConsequence();
 
-    con.onceGot( correspondent1 );
-    con.onceGot( correspondent1 );
-    con.onceGot( correspondent2 );
+    con._onceGot( correspondent1 );
+    con._onceGot( correspondent1 );
+    con._onceGot( correspondent2 );
 
     con.give( testMsg );
     con.give( testMsg );
@@ -5180,7 +5180,7 @@ function onceGot( test )
     test.description = 'try to pass as parameter anonymous function';
     test.shouldThrowError( function()
     {
-      con.onceGot( function( err, val) { logger.log( 'i am anonymous' ); } );
+      con._onceGot( function( err, val) { logger.log( 'i am anonymous' ); } );
     });
 
     /* */
@@ -5190,7 +5190,7 @@ function onceGot( test )
     test.shouldThrowError( function()
     {
       debugger;
-      con.onceGot( testHandler );
+      con._onceGot( testHandler );
     });
   })
 
@@ -5199,7 +5199,7 @@ function onceGot( test )
 
 //
 
-// function onceThen( test )
+// function _onceThen( test )
 // {
 
 //   var testCheck1 =
@@ -5294,7 +5294,7 @@ function onceGot( test )
 //     con.give( givSequence.shift() );
 //     try
 //     {
-//       con.onceThen( testTaker1 );
+//       con._onceThen( testTaker1 );
 //     }
 //     catch( err )
 //     {
@@ -5318,7 +5318,7 @@ function onceGot( test )
 //     try
 //     {
 //       con.error( givSequence.shift() );
-//       con.onceThen( testTaker1 );
+//       con._onceThen( testTaker1 );
 //     }
 //     catch( err )
 //     {
@@ -5329,7 +5329,7 @@ function onceGot( test )
 
 //   /**/
 
-//   test.description = 'test onceThen in chain';
+//   test.description = 'test _onceThen in chain';
 
 //   ( function( { givSequence, got, expected }  )
 //   {
@@ -5359,8 +5359,8 @@ function onceGot( test )
 
 //     try
 //     {
-//       con.onceThen( testTaker1 );
-//       con.onceThen( testTaker2 );
+//       con._onceThen( testTaker1 );
+//       con._onceThen( testTaker2 );
 //       con.got( testTaker3 );
 //     }
 //     catch( err )
@@ -5370,7 +5370,7 @@ function onceGot( test )
 //     test.identical( got, expected );
 //   } )( testCheck3 );
 
-//   /* test particular onceThen features test. */
+//   /* test particular _onceThen features test. */
 
 //   test.description = 'added several corespondents with same name';
 //   ( function( { givSequence, got, expected }  )
@@ -5400,9 +5400,9 @@ function onceGot( test )
 //     try
 //     {
 //       debugger
-//       con.onceThen( testTaker1 );
-//       con.onceThen( testTaker1 );
-//       con.onceThen( testTaker2 );
+//       con._onceThen( testTaker1 );
+//       con._onceThen( testTaker1 );
+//       con._onceThen( testTaker2 );
 
 //       for( let given of givSequence )
 //       {
@@ -5426,7 +5426,7 @@ function onceGot( test )
 //     test.description = 'try to pass as parameter anonymous function';
 //     test.shouldThrowError( function()
 //     {
-//       conDeb1.onceThen( function( err, val) { logger.log( 'i am anonymous' ); } );
+//       conDeb1._onceThen( function( err, val) { logger.log( 'i am anonymous' ); } );
 //     } );
 
 //     var conDeb2 = wConsequence();
@@ -5436,7 +5436,7 @@ function onceGot( test )
 //     function testHandler( err, val) { logger.log( 'i am anonymous' ); }
 //     test.shouldThrowError( function()
 //     {
-//       conDeb2.onceThen( testHandler );
+//       conDeb2._onceThen( testHandler );
 //     } );
 //   }
 
@@ -5444,7 +5444,7 @@ function onceGot( test )
 
 //
 
-function onceThen( test )
+function _onceThen( test )
 {
   var testMsg = 'msg';
   var testCon = new wConsequence().give()
@@ -5462,7 +5462,7 @@ function onceThen( test )
     }
     var con = new wConsequence();
     con.give( testMsg );
-    con.onceThen( correspondent );
+    con._onceThen( correspondent );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
   })
 
@@ -5480,7 +5480,7 @@ function onceThen( test )
     }
     var con = new wConsequence();
     con.error( testMsg );
-    con.onceThen( correspondent );
+    con._onceThen( correspondent );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
   })
 
@@ -5488,7 +5488,7 @@ function onceThen( test )
 
   .doThen( function()
   {
-    test.description = 'test onceThen in chain';
+    test.description = 'test _onceThen in chain';
 
     function correspondent1( err, got )
     {
@@ -5503,13 +5503,13 @@ function onceThen( test )
     var con = new wConsequence();
     con.give( testMsg );
     con.give( testMsg );
-    con.onceThen( correspondent1 );
-    con.onceThen( correspondent2 );
+    con._onceThen( correspondent1 );
+    con._onceThen( correspondent2 );
     con.got( ( err, got ) => test.identical( got, testMsg + 1 ) );
     con.got( ( err, got ) => test.identical( got, testMsg + 2 ) );
   })
 
-  /* test particular onceGot features test. */
+  /* test particular _onceGot features test. */
 
   .doThen( function()
   {
@@ -5530,9 +5530,9 @@ function onceThen( test )
     }
     var con = new wConsequence();
 
-    con.onceThen( correspondent1 );
-    con.onceThen( correspondent1 );
-    con.onceThen( correspondent2 );
+    con._onceThen( correspondent1 );
+    con._onceThen( correspondent1 );
+    con._onceThen( correspondent2 );
 
     test.identical( con.correspondentsGet().length, 2 );
 
@@ -5559,7 +5559,7 @@ function onceThen( test )
     test.description = 'try to pass as parameter anonymous function';
     test.shouldThrowError( function()
     {
-      con.onceThen( function( err, val) { logger.log( 'i am anonymous' ); } );
+      con._onceThen( function( err, val) { logger.log( 'i am anonymous' ); } );
     });
 
     /* */
@@ -5568,7 +5568,7 @@ function onceThen( test )
     function testHandler( err, val) { logger.log( 'i am anonymous' ); }
     test.shouldThrowError( function()
     {
-      con.onceThen( testHandler );
+      con._onceThen( testHandler );
     });
   })
 
@@ -5710,7 +5710,7 @@ function onceThen( test )
 //
 //   /**/
 //
-//   test.description = 'test onceThen in chain';
+//   test.description = 'test _onceThen in chain';
 //
 //   ( function( { givSequence, got, expected }  )
 //   {
@@ -6882,8 +6882,8 @@ var Self =
     doThen : doThen,
     promiseThen : promiseThen,
 
-    onceGot : onceGot,
-    onceThen : onceThen,
+    // _onceGot : _onceGot,
+    // _onceThen : _onceThen,
 
     split : split,
     tap : tap,
