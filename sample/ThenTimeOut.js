@@ -3,7 +3,7 @@ if( typeof module !== 'undefined' )
 {
   var _ = require( 'wTools' );
   /* require( 'wConsequence' ); */
-  require( '../staging/dwtools/abase/syn/Consequence.s' );
+  require( '../staging/dwtools/abase/oclass/Consequence.s' );
 }
 
 /* correspondents */

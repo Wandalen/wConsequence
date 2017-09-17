@@ -19,10 +19,9 @@
       "email": "iostashvxi@gmail.com"
     }
   ],
-  "main": "staging/dwtools/abase/syn/Consequence.s",
+  "main": "staging/dwtools/abase/oclass/Consequence.s",
   "files": [
-    "staging/dwtools/abase/component",
-    "staging/dwtools/abase/syn",
+    "staging/dwtools/abase/oclass",
     "production"
   ],
   "scripts": {
