@@ -19,10 +19,10 @@
       "email": "iostashvxi@gmail.com"
     }
   ],
-  "main": "staging/abase/syn/Consequence.s",
+  "main": "staging/dwtools/abase/syn/Consequence.s",
   "files": [
-    "staging/abase/component",
-    "staging/abase/syn",
+    "staging/dwtools/abase/component",
+    "staging/dwtools/abase/syn",
     "production"
   ],
   "scripts": {
