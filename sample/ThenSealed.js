@@ -1,11 +1,8 @@
 'use strict';
 
 if( typeof module !== 'undefined' )
-{
-  require( 'wTools' );
-  // require( 'wConsequence' );
-  require( '../staging/abase/syn/Consequence.s' );
-}
+require( 'wConsequence' );
+
 
 function corespondent1(err, val)
 {

@@ -38,7 +38,7 @@ if( typeof module !== 'undefined' )
   if( typeof wBase === 'undefined' )
   try
   {
-    require( '../../abase/wTools.s' );
+    require( '../../Base.s' );
   }
   catch( err )
   {
@@ -519,7 +519,7 @@ function chokeThen()
 
    var con1 = new wConsequence();
 
-   con1.onceGot( gotHandler1 ).onceGot( gotHandler1 ).onceGot( gotHandler2 );
+   con1._onceGot( gotHandler1 )._onceGot( gotHandler1 )._onceGot( gotHandler2 );
    con1.give( 'foo' ).give( 'bar' );
 
    // logs:
@@ -532,7 +532,7 @@ function chokeThen()
    var con2 = new wConsequence();
 
    con2.give( 'foo' ).give( 'bar' ).give('baz');
-   con2.onceGot( gotHandler1 ).onceGot( gotHandler1 ).onceGot( gotHandler2 );
+   con2._onceGot( gotHandler1 )._onceGot( gotHandler1 )._onceGot( gotHandler2 );
 
    // logs:
    // handler 1: foo
@@ -548,11 +548,11 @@ function chokeThen()
  * @throws {Error} if correspondent.id is not string.
  * @see {@link wConsequence~Correspondent} correspondent callback
  * @see {@link wConsequence#got} got method
- * @method onceGot
+ * @method _onceGot
  * @memberof wConsequence#
  */
 
-function onceGot( correspondent )
+function _onceGot( correspondent )
 {
   var self = this;
   var key = correspondent.name ? correspondent.name : correspondent;
@@ -603,7 +603,7 @@ function onceGot( correspondent )
 
    var con1 = new wConsequence();
 
-   con1.onceThen( gotHandler1 ).onceThen( gotHandler1 ).got(gotHandler3);
+   con1._onceThen( gotHandler1 )._onceThen( gotHandler1 ).got(gotHandler3);
    con1.give( 4 ).give( 10 );
 
    // prints
@@ -617,12 +617,12 @@ function onceGot( correspondent )
  * @throws {Error} if correspondent is defined as anonymous function including anonymous function expression.
  * @see {@link wConsequence~Correspondent} correspondent callback
  * @see {@link wConsequence#doThen} doThen method
- * @see {@link wConsequence#onceGot} onceGot method
- * @method onceThen
+ * @see {@link wConsequence#_onceGot} _onceGot method
+ * @method _onceThen
  * @memberof wConsequence#
  */
 
-function onceThen( correspondent )
+function _onceThen( correspondent )
 {
   var self = this;
   var key = correspondent.name ? correspondent.name : correspondent;
@@ -1794,7 +1794,7 @@ function __handleError( err,correspondent )
       occurred, it will be catch by __handleError method. If corespondent was not added by tap or persist method,
       __handleGot will remove message from head of queue.
 
-      If corespondent was added by doThen, onceThen, ifErrorThen, or by other "thenable" method of wConsequence, then:
+      If corespondent was added by doThen, _onceThen, ifErrorThen, or by other "thenable" method of wConsequence, then:
 
       1) if result of corespondents is ordinary value, then __handleGot method appends result of corespondent to the
       head of messages queue, and therefore pass it to the next handler in corespondents queue.
@@ -1806,7 +1806,7 @@ function __handleError( err,correspondent )
     - if corespondent is instance of wConsequence:
       in that case __handleGot pass message into corespondent`s messages queue.
 
-      If corespondent was added by tap, or one of doThen, onceThen, ifErrorThen, or by other "thenable" method of
+      If corespondent was added by tap, or one of doThen, _onceThen, ifErrorThen, or by other "thenable" method of
       wConsequence then __handleGot try to pass current message to the next handler in corespondents sequence.
 
     - if in current wConsequence are present corespondents added by persist method, then __handleGot passes message to
@@ -3147,8 +3147,8 @@ var Extend =
   choke : choke,
   chokeThen : chokeThen,
 
-  onceGot : onceGot, /* experimental */
-  onceThen : onceThen, /* experimental */
+  _onceGot : _onceGot, /* experimental */
+  _onceThen : _onceThen, /* experimental */
 
   split : split,
   tap : tap,

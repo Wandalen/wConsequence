@@ -1,6 +1,6 @@
 {
   "name": "wConsequence",
-  "version": "0.3.65",
+  "version": "0.4.2",
   "engine": "node >= 6.0.0",
   "description": "Advanced synchronization mechanism. wConsequence is able to solve any asynchronous problem replacing and including functionality of many other mechanisms, such as: Callback, Event, Signal, Mutex, Semaphore, Async, Promise.",
   "license": "MIT",
@@ -19,10 +19,9 @@
       "email": "iostashvxi@gmail.com"
     }
   ],
-  "main": "staging/abase/syn/Consequence.s",
+  "main": "staging/dwtools/abase/oclass/Consequence.s",
   "files": [
-    "staging/abase/component",
-    "staging/abase/syn",
+    "staging/dwtools/abase/oclass",
     "production"
   ],
   "scripts": {
@@ -43,7 +42,7 @@
   },
   "devDependencies": {
     "wTesting": "",
-    "wConsequence": ""
+    "wConsequence": "."
   },
   "keywords": [
     "wTools",
