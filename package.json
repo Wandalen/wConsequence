@@ -25,7 +25,7 @@
     "production"
   ],
   "scripts": {
-    "test": "wtest staging",
+    "test": "wtest staging verbosity : 9",
     "make_doc": "./doc.sh"
   },
   "repository": {
