@@ -6857,6 +6857,77 @@ function from( test )
     wConsequence.prototype.asyncTaking = 0;
     wConsequence.prototype.asyncGiving = 0;
   })
+  .doThen( function()
+  {
+    test.description = 'sync, resolved promise, timeout';
+    var src = Promise.resolve( testMsg );
+    var con = wConsequence.from( src, 500 );
+    con.got( ( err, got ) => test.identical( got, testMsg ) );
+    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.messagesGet().length, 0 )
+    return _.timeOut( 1, function()
+    {
+      test.identical( con.messagesGet().length, 0 )
+      test.identical( con.correspondentsGet().length, 0 )
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'sync, promise resolved with timeout';
+    var src = new Promise( ( resolve ) =>
+    {
+      setTimeout( () => resolve( testMsg ), 600 );
+    })
+    var con = wConsequence.from( src, 500 );
+    con.got( ( err, got ) => test.shouldBe( _.errIs( err ) ) );
+    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.messagesGet().length, 0 )
+    return _.timeOut( 600, function()
+    {
+      test.identical( con.messagesGet().length, 0 )
+      test.identical( con.correspondentsGet().length, 0 )
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'sync, timeout, src is a consequence';
+    var con = new wConsequence().give( testMsg );
+    con = wConsequence.from( con , 500 );
+    con.got( ( err, got ) => test.identical( got, testMsg ) );
+    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.messagesGet().length, 0 );
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    test.description = 'sync, timeout, src is a consequence';
+    var con = _.timeOut( 600, () => testMsg );
+    con = wConsequence.from( con , 500 );
+    con.got( ( err, got ) => test.shouldBe( _.errIs( err ) ) );
+    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.messagesGet().length, 0 );
+    return _.timeOut( 600, function()
+    {
+      test.identical( con.messagesGet().length, 0 )
+      test.identical( con.correspondentsGet().length, 0 )
+    })
+  })
+
+  /**/
+
+  .doThen( function()
+  {
+    wConsequence.prototype.asyncTaking = 0;
+    wConsequence.prototype.asyncGiving = 0;
+  })
 
   return testCon;
 }
