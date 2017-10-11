@@ -90,60 +90,6 @@ var _ = wTools;
  */
 
 var Parent = null;
-// var Parent = Function;
-// var Parent = wConsequenceFunction;
-
-// var Self = function wConsequence( o )
-// {
-//
-//   // super();
-//
-//   if( !( this instanceof Self ) )
-//   return new( _.routineJoin( Self, Self, arguments ) );
-//
-//   var self = this;
-//
-//   // debugger;
-//
-//   // debugger;
-//   // self = Function.constructor.call( self, 'debugger; return this.__call__( ...args );' );
-//   // self = Function.constructor.call( '...args', 'debugger; return this.__call__( ...args );' );
-//
-//   Self.prototype.init.apply( self,arguments );
-//   var wrap = self;
-//
-//   // debugger;
-//
-//   // var wrap = function wConsequence( err,data )
-//   // {
-//   //   _.assert( arguments.length === 0 || arguments.length === 1 || arguments.length === 2 );
-//   //   if( arguments.length === 2 )
-//   //   self.give( arguments[ 0 ],arguments[ 1 ] );
-//   //   else
-//   //   self.give( arguments[ 0 ] );
-//   // }
-//   //
-//   // Object.setPrototypeOf( wrap, self );
-//
-//   return wrap;
-// }
-//
-// Self.nameShort = 'Consequence';
-
-// class wCallableObject extends Function
-// {
-//   constructor()
-//   {
-//     super( 'debugger; return this.self.__call__.apply( this.self,arguments );' );
-//
-//     var context = Object.create( null );
-//     var self = this.bind( context );
-//     context.self = self;
-//     Object.freeze( context );
-//
-//     return self;
-//   }
-// }
 
 /* heavy optimization */
 
@@ -161,37 +107,14 @@ var wConsequenceProxy = new Proxy( wConsequence,
 {
   apply( original, context, args )
   {
-    // debugger;
     return new original( ...args );
   }
 });
 
-// var ConsequenceParent = wCallableObject;
-//
-// function wConsequence( o )
-// {
-//   if( !( this instanceof Self ) )
-//   if( o instanceof Self )
-//   return o;
-//   else
-//   return new( _.routineJoin( Self, Self, arguments ) );
-//   var self = Parent.call( this );
-//   Self.prototype.init.apply( self,arguments );
-//   return self;
-//   // // return new ConsequenceParent( o );
-//   // if( !( this instanceof Self ) )
-//   // return new( _.routineJoin( Self, Self, arguments ) );
-//   // // return new ( ConsequenceParent.bind( this,o ) )();
-// }
-
-// Object.setPrototypeOf( wConsequence, ConsequenceParent );
-
 var Parent = null;
 var Self = wConsequenceProxy;
-// var Self = ConsequenceParent;
 
 wConsequence.nameShort = 'Consequence';
-// Parent.nameShort = 'Consequence';
 
 //
 
@@ -207,9 +130,9 @@ function init( o )
 {
   var self = this;
 
-  // _.mapComplement( self,self.Composes );
-
-  self._correspondent = [];
+  self.messageCounter = 0;
+  self._correspondentEarly = [];
+  self._correspondentLate = [];
   self._message = [];
 
   if( Config.debug )
@@ -292,12 +215,7 @@ function got( correspondent )
   var self = this;
   var times = 1;
 
-  _.assert( /*arguments.length === 0 ||*/ arguments.length === 1,'got : expects none or single argument, got',arguments.length );
-
-  // if( arguments.length === 0 )
-  // {
-  //   correspondent = function(){};
-  // }
+  _.assert( arguments.length === 1,'got : expects none or single argument, got',arguments.length );
 
   if( _.numberIs( correspondent ) )
   {
@@ -305,15 +223,51 @@ function got( correspondent )
     correspondent = function(){};
   }
 
-  // debugger;
   return self.__correspondentAppend
   ({
     correspondent : correspondent,
     thenning : false,
     kindOfArguments : Self.KindOfArguments.Both,
     times : times,
+    early : true,
   });
 
+}
+
+got.having =
+{
+  consequizing : 1,
+}
+
+//
+
+function lateGot( correspondent )
+{
+  var self = this;
+  var times = 1;
+
+  _.assert( arguments.length === 1,'lateGot : expects none or single argument, lateGot',arguments.length );
+
+  if( _.numberIs( correspondent ) )
+  {
+    times = correspondent;
+    correspondent = function(){};
+  }
+
+  return self.__correspondentAppend
+  ({
+    correspondent : correspondent,
+    thenning : false,
+    kindOfArguments : Self.KindOfArguments.Both,
+    times : times,
+    early : false,
+  });
+
+}
+
+lateGot.having =
+{
+  consequizing : 1,
 }
 
 //
@@ -332,6 +286,11 @@ function promiseGot()
       resolve( got );
     })
   })
+}
+
+promiseGot.having =
+{
+  consequizing : 1,
 }
 
 //
@@ -385,8 +344,14 @@ function doThen( correspondent )
     correspondent : correspondent,
     thenning : true,
     kindOfArguments : Self.KindOfArguments.Both,
+    early : true,
   });
 
+}
+
+doThen.having =
+{
+  consequizing : 1,
 }
 
 //
@@ -402,8 +367,32 @@ function _doThen( correspondent )
     correspondent : correspondent,
     thenning : true,
     kindOfArguments : Self.KindOfArguments.BothWithCorrespondent,
+    early : true,
   });
 
+}
+
+//
+
+function lateThen( correspondent )
+{
+  var self = this;
+
+  _.assert( arguments.length === 1 );
+
+  return self.__correspondentAppend
+  ({
+    correspondent : correspondent,
+    thenning : true,
+    kindOfArguments : Self.KindOfArguments.Both,
+    early : false,
+  });
+
+}
+
+lateThen.having =
+{
+  consequizing : 1,
 }
 
 //
@@ -421,8 +410,14 @@ function promiseThen()
       reject( err );
       else
       resolve( got );
-    })
-  })
+    });
+  });
+
+}
+
+promiseThen.having =
+{
+  consequizing : 1,
 }
 
 //
@@ -461,6 +456,7 @@ function promiseThen()
 //     correspondent : correspondentJoined,
 //     ifNoError : true,
 //     thenning : true,
+//     early : true,
 //   });
 //
 // }
@@ -478,8 +474,14 @@ function choke()
     correspondent : function(){},
     thenning : false,
     kindOfArguments : Self.KindOfArguments.Both,
+    early : true,
   });
 
+}
+
+choke.having =
+{
+  consequizing : 1,
 }
 
 //
@@ -495,8 +497,14 @@ function chokeThen()
     correspondent : function(){},
     thenning : true,
     kindOfArguments : Self.KindOfArguments.Both,
+    early : true,
   });
 
+}
+
+chokeThen.having =
+{
+  consequizing : 1,
 }
 
 //
@@ -560,7 +568,16 @@ function _onceGot( correspondent )
   _.assert( _.strIsNotEmpty( key ) );
   _.assert( arguments.length === 1 );
 
-  var i = _.arrayLeftIndexOf( self._correspondent,key,function( a )
+  var i = _.arrayLeftIndexOf( self._correspondentEarly,key,function( a )
+  {
+    return a.id || correspondent.name;
+    // return a.id || a.onGot.name;
+  });
+
+  if( i >= 0 )
+  return self;
+
+  var i = _.arrayLeftIndexOf( self._correspondentLate,key,function( a )
   {
     return a.id || correspondent.name;
     // return a.id || a.onGot.name;
@@ -574,6 +591,7 @@ function _onceGot( correspondent )
     correspondent : correspondent,
     thenning : false,
     kindOfArguments : Self.KindOfArguments.Both,
+    early : true,
   });
 }
 
@@ -630,7 +648,19 @@ function _onceThen( correspondent )
   _.assert( _.strIsNotEmpty( key ) );
   _.assert( arguments.length === 1 );
 
-  var i = _.arrayLeftIndexOf( self._correspondent,key,function( a )
+  var i = _.arrayLeftIndexOf( self._correspondentEarly,key,function( a )
+  {
+    return a.id;
+    // return a.id || a.onGot.name;
+  });
+
+  if( i >= 0 )
+  {
+    debugger;
+    return self;
+  }
+
+  var i = _.arrayLeftIndexOf( self._correspondentLate,key,function( a )
   {
     return a.id;
     // return a.id || a.onGot.name;
@@ -647,6 +677,7 @@ function _onceThen( correspondent )
     correspondent : correspondent,
     thenning : true,
     kindOfArguments : Self.KindOfArguments.Both,
+    early : true,
   });
 }
 
@@ -693,7 +724,7 @@ function split( first )
 
   _.assert( arguments.length === 0 || arguments.length === 1 );
 
-  var result = new wConsequence();
+  var result = new Self();
 
   if( first )
   {
@@ -710,6 +741,11 @@ function split( first )
   }
 
   return result;
+}
+
+split.having =
+{
+  consequizing : 1,
 }
 
 //
@@ -765,8 +801,14 @@ function tap( correspondent )
     thenning : false,
     tapping : true,
     kindOfArguments : Self.KindOfArguments.Both,
+    early : true,
   });
 
+}
+
+tap.having =
+{
+  consequizing : 1,
 }
 
 //
@@ -781,9 +823,15 @@ function ifNoErrorGot()
   ({
     correspondent : arguments[ 0 ],
     thenning : false,
-    kindOfArguments : Self.KindOfArguments.IfNoError
+    kindOfArguments : Self.KindOfArguments.IfNoError,
+    early : true,
   });
 
+}
+
+ifNoErrorGot.having =
+{
+  consequizing : 1,
 }
 
 //
@@ -811,8 +859,14 @@ function ifNoErrorThen()
     correspondent : arguments[ 0 ],
     thenning : true,
     kindOfArguments : Self.KindOfArguments.IfNoError,
+    early : true,
   });
 
+}
+
+ifNoErrorThen.having =
+{
+  consequizing : 1,
 }
 
 //
@@ -828,8 +882,14 @@ function ifErrorGot()
     correspondent : arguments[ 0 ],
     thenning : false,
     kindOfArguments : Self.KindOfArguments.IfError,
+    early : true,
   });
 
+}
+
+ifErrorGot.having =
+{
+  consequizing : 1,
 }
 
 //
@@ -882,8 +942,14 @@ function ifErrorThen()
     correspondent : arguments[ 0 ],
     thenning : true,
     kindOfArguments : Self.KindOfArguments.IfError,
+    early : true,
   });
 
+}
+
+ifErrorThen.having =
+{
+  consequizing : 1,
 }
 
 //
@@ -912,8 +978,14 @@ function ifErrorThenLogThen()
     correspondent : reportError,
     thenning : true,
     kindOfArguments : Self.KindOfArguments.IfError,
+    early : true,
   });
 
+}
+
+ifErrorThenLogThen.having =
+{
+  consequizing : 1,
 }
 
 // /**
@@ -937,6 +1009,7 @@ function ifErrorThenLogThen()
 //   ({
 //     correspondent : _onDebug,
 //     thenning : true,
+//     early : true,
 //   });
 //
 // }
@@ -993,9 +1066,9 @@ function timeOutThen( time,correspondent )
 
   /* */
 
-  var _correspondent;
+  var cor;
   if( _.consequenceIs( correspondent ) )
-  _correspondent = function __timeOutThen( err,data )
+  cor = function __timeOutThen( err,data )
   {
     debugger;
     return _.timeOut( time,function()
@@ -1008,7 +1081,7 @@ function timeOutThen( time,correspondent )
     });
   }
   else
-  _correspondent = function __timeOutThen( err,data )
+  cor = function __timeOutThen( err,data )
   {
     return _.timeOut( time,self,correspondent,[ err,data ] );
   }
@@ -1018,10 +1091,16 @@ function timeOutThen( time,correspondent )
   return self.__correspondentAppend
   ({
     thenning : true,
-    correspondent : _correspondent,
+    correspondent : cor,
     kindOfArguments : Self.KindOfArguments.Both,
+    early : true,
   });
 
+}
+
+timeOutThen.having =
+{
+  consequizing : 1,
 }
 
 //
@@ -1153,6 +1232,11 @@ function andGot( srcs )
   return self._and( srcs,false );
 }
 
+andGot.having =
+{
+  consequizing : 1,
+}
+
 //
 
 /**
@@ -1169,6 +1253,11 @@ function andThen( srcs )
   var self = this;
   _.assert( arguments.length === 1 );
   return self._and( srcs,true );
+}
+
+andThen.having =
+{
+  consequizing : 1,
 }
 
 //
@@ -1314,6 +1403,11 @@ function eitherGot( srcs )
   return self._either( srcs,false );
 }
 
+eitherGot.having =
+{
+  consequizing : 1,
+}
+
 //
 
 function eitherThen( srcs )
@@ -1321,6 +1415,11 @@ function eitherThen( srcs )
   var self = this;
   _.assert( arguments.length === 1 );
   return self._either( srcs,true );
+}
+
+eitherThen.having =
+{
+  consequizing : 1,
 }
 
 //
@@ -1336,9 +1435,14 @@ function eitherThenSplit( srcs )
   srcs = srcs.slice();
   srcs.unshift( self );
 
-  var con = new wConsequence().give();
+  var con = new Self().give();
   con.eitherThen( srcs );
   return con;
+}
+
+eitherThenSplit.having =
+{
+  consequizing : 1,
 }
 
 //
@@ -1449,6 +1553,11 @@ function first( src )
 {
   var self = this;
   return self._first( src,null );
+}
+
+first.having =
+{
+  consequizing : 1,
 }
 
 //
@@ -1575,6 +1684,11 @@ function give( message )
   return self.__giveAct( null,message );
 }
 
+give.having =
+{
+  consequizing : 1,
+}
+
 //
 
 /**
@@ -1628,6 +1742,11 @@ function error( error )
   return self.__giveAct( error,undefined );
 }
 
+error.having =
+{
+  consequizing : 1,
+}
+
 //
 
 /**
@@ -1669,7 +1788,7 @@ function __giveAct( error,argument )
   }
 
   if( _.consequenceIs( argument ) )
-  throw _.err( 'not tested' );
+  _.assert( 0,'not tested' );
 
   if( self.diagnostics )
   if( Config.debug )
@@ -1678,6 +1797,7 @@ function __giveAct( error,argument )
 
   _.assert( !self.limitNumberOfMessages || self._message.length < self.limitNumberOfMessages );
 
+  self.messageCounter += 1;
   self._message.push( message );
   self.__handleGot();
 
@@ -1710,7 +1830,7 @@ function __giveAct( error,argument )
  * @memberof wConsequence#
  */
 
-function ping( error,argument )
+function _ping( error,argument )
 {
   var self = this;
 
@@ -1760,7 +1880,7 @@ function __handleError( err,correspondent )
   if( !_.errIsAttended( err ) )
   _.errAttentionRequest( err );
 
-  var result = new wConsequence().error( err );
+  var result = new Self().error( err );
 
   if( err.attentionRequested )
   {
@@ -1823,15 +1943,18 @@ function __handleGot()
 {
   var self = this;
 
-  if( !self._correspondent.length && ( !self._correspondentPersistent || !self._correspondentPersistent.length ) )
-  return;
-
   _.assert( self._message.length,'__handleGot : none message left' );
 
   if( self.asyncGiving )
-  _.timeSoon( () => self.__handleGotAct() );
+  {
+    if( !self._correspondentEarly.length && !self._correspondentLate.length )
+    return;
+    _.timeSoon( () => self.__handleGotAct() );
+  }
   else
-  self.__handleGotAct();
+  {
+    self.__handleGotAct();
+  }
 
 }
 
@@ -1843,9 +1966,7 @@ function __handleGotAct()
   var result;
   var spliced = 0;
 
-  // _.assert( self._message.length,'__handleGot : none message left' );
-
-  if( !self._correspondent.length && ( !self._correspondentPersistent || !self._correspondentPersistent.length ) )
+  if( !self._correspondentEarly.length && !self._correspondentLate.length )
   return;
 
   if( !self._message.length )
@@ -1882,6 +2003,7 @@ function __handleGotAct()
   function __giveToRoutine( correspondent,ordinary )
   {
 
+    var early = correspondent.early;
     var ifError = correspondent.kindOfArguments === Self.KindOfArguments.IfError;
     var ifNoError = correspondent.kindOfArguments === Self.KindOfArguments.IfNoError;
 
@@ -1931,10 +2053,12 @@ function __handleGotAct()
 
     if( correspondent.thenning )
     {
+
       if( _.consequenceIs( result ) )
       result.doThen( self );
       else
       self.give( result );
+
     }
 
   }
@@ -1957,29 +2081,33 @@ function __handleGotAct()
 
   /* ordinary */
 
-  var correspondent;
-  if( self._correspondent.length > 0 )
+  if( self._correspondentEarly.length > 0 )
   {
-    correspondent = self._correspondent.shift();
+    var correspondent = self._correspondentEarly.shift();
+    __giveTo( correspondent,1 );
+  }
+  else if( self._correspondentLate.length > 0 )
+  {
+    var correspondent = self._correspondentLate.shift();
     __giveTo( correspondent,1 );
   }
 
   /* persistent */
 
-  if( 0 )
-  if( !correspondent || ( correspondent && !correspondent.tapping ) )
-  {
-
-    for( var i = 0 ; i < self._correspondentPersistent.length ; i++ )
-    {
-      var pTaker = self._correspondentPersistent[ i ];
-      __giveTo( pTaker,0 );
-    }
-
-    if( !spliced && self._correspondentPersistent.length )
-    self._message.shift();
-
-  }
+  // if( 0 )
+  // if( !correspondent || ( correspondent && !correspondent.tapping ) )
+  // {
+  //
+  //   for( var i = 0 ; i < self._correspondentPersistent.length ; i++ )
+  //   {
+  //     var pTaker = self._correspondentPersistent[ i ];
+  //     __giveTo( pTaker,0 );
+  //   }
+  //
+  //   if( !spliced && self._correspondentPersistent.length )
+  //   self._message.shift();
+  //
+  // }
 
   /* next message */
 
@@ -2014,12 +2142,13 @@ function __correspondentAppend( o )
   var self = this;
   var correspondent = o.correspondent;
 
-  _.routineOptions( __correspondentAppend,o );
   _.assert( arguments.length === 1 );
   _.assert( _.consequenceIs( self ) );
   _.assert( _.routineIs( correspondent ) || _.consequenceIs( correspondent ) );
   _.assert( o.kindOfArguments >= 1 );
   _.assert( correspondent !== self,'consquence cant depend of itself' );
+  _.assert( o.early !== undefined,'expects { o.early }' );
+  _.routineOptions( __correspondentAppend,o );
 
   if( Config.debug )
   if( self.diagnostics )
@@ -2053,12 +2182,12 @@ function __correspondentAppend( o )
 
   /* store */
 
-  if( o.persistent )
-  self._correspondentPersistent.push
-  ({
-    onGot : correspondent,
-  });
-  else
+  // if( o.persistent )
+  // self._correspondentPersistent.push
+  // ({
+  //   onGot : correspondent,
+  // });
+  // else
   {
 
     if( Config.debug )
@@ -2082,13 +2211,20 @@ function __correspondentAppend( o )
       thenning : !!o.thenning,
       tapping : !!o.tapping,
       kindOfArguments : o.kindOfArguments,
+      early : o.early,
     }
+
+    if( !o.tenning )
+    self.messageCounter -= 1;
 
     if( Config.debug )
     if( self.diagnostics )
     correspondentDescriptor.stack = _.diagnosticStack( 2 );
 
-    self._correspondent.push( correspondentDescriptor );
+    if( o.early )
+    self._correspondentEarly.push( correspondentDescriptor );
+    else
+    self._correspondentLate.unshift( correspondentDescriptor );
   }
 
   /* got */
@@ -2120,8 +2256,9 @@ __correspondentAppend.defaults =
   thenning : null,
   tapping : null,
   kindOfArguments : null,
-  persistent : 0,
+  // persistent : 0,
   times : 1,
+  early : 1,
 }
 
 // --
@@ -2134,9 +2271,19 @@ function correspondentHas( correspondent )
 
   _.assert( _.consequenceIs( correspondent ) );
 
-  for( var c = 0 ; c < self._correspondent.length ; c++ )
+  for( var c = 0 ; c < self._correspondentEarly.length ; c++ )
   {
-    var cor = self._correspondent[ c ].onGot;
+    var cor = self._correspondentEarly[ c ].onGot;
+    if( cor === correspondent )
+    return true;
+    if( _.consequenceIs( cor ) )
+    if( cor.correspondentHas( correspondent ) )
+    return true;
+  }
+
+  for( var c = 0 ; c < self._correspondentLate.length ; c++ )
+  {
+    var cor = self._correspondentLate[ c ].onGot;
     if( cor === correspondent )
     return true;
     if( _.consequenceIs( cor ) )
@@ -2231,7 +2378,7 @@ function assertNoDeadLockWith( correspondent )
 
    con.tap( corespondent1 ).doThen( corespondent2 ).got( corespondent3 );
 
-   var corespondents = con.correspondentsGet();
+   var corespondents = con.correspondentsEarlyGet();
 
    console.log( corespondents );
 
@@ -2260,14 +2407,22 @@ function assertNoDeadLockWith( correspondent )
    //   id: 'corespondent3'
    // } ]
  * @returns {_corespondentMap[]}
- * @method correspondentsGet
+ * @method correspondentsEarlyGet
  * @memberof wConsequence
  */
 
-function correspondentsGet()
+function correspondentsEarlyGet()
 {
   var self = this;
-  return self._correspondent;
+  return self._correspondentEarly;
+}
+
+//
+
+function correspondentsLateGet()
+{
+  var self = this;
+  return self._correspondentLate;
 }
 
 //
@@ -2315,12 +2470,14 @@ function correspondentsCancel( correspondent )
 
   if( arguments.length === 0 )
   {
-    self._correspondent.splice( 0,self._correspondent.length );
+    self._correspondentEarly.splice( 0,self._correspondentEarly.length );
+    self._correspondentLate.splice( 0,self._correspondentLate.length );
   }
   else
   {
     throw _.err( 'not tested' );
-    _.arrayRemoveOnce( self._correspondent,correspondent );
+    _.arrayRemoveOnce( self._correspondentEarly,correspondent );
+    _.arrayRemoveOnce( self._correspondentLate,correspondent );
   }
 
 }
@@ -2331,10 +2488,18 @@ function _correspondentNextGet()
 {
   var self = this;
 
-  if( !self._correspondent[ 0 ] )
-  return;
+  if( !self._correspondentEarly[ 0 ] )
+  {
+    if( !self._correspondentLate[ 0 ] )
+    return;
+    else
+    return self._correspondentLate[ 0 ].onGot;
+  }
+  else
+  {
+    return self._correspondentEarly[ 0 ].onGot;
+  }
 
-  return self._correspondent[ 0 ].onGot;
 }
 
 //
@@ -2423,37 +2588,39 @@ function messagesCancel( data )
 
 //
 
-  /**
-   * Returns number of messages in current messages queue.
-   * @example
-   * var con = wConsequence();
+/**
+ * Returns number of messages in current messages queue.
+ * @example
+ * var con = wConsequence();
 
-     var conLen = con.messageHas();
-     console.log( conLen );
+   var conLen = con.messageHas();
+   console.log( conLen );
 
-     con.give( 'foo' );
-     con.give( 'bar' );
-     con.error( 'baz' );
-     conLen = con.messageHas();
-     console.log( conLen );
+   con.give( 'foo' );
+   con.give( 'bar' );
+   con.error( 'baz' );
+   conLen = con.messageHas();
+   console.log( conLen );
 
-     con.messagesCancel();
+   con.messagesCancel();
 
-     conLen = con.messageHas();
-     console.log( conLen );
-     // prints: 0, 3, 0;
+   conLen = con.messageHas();
+   console.log( conLen );
+   // prints: 0, 3, 0;
 
-   * @returns {number}
-   * @method messageHas
-   * @memberof wConsequence
-   */
+ * @returns {number}
+ * @method messageHas
+ * @memberof wConsequence
+ */
 
 function messageHas()
 {
   var self = this;
-  if( self._message.length <= self._correspondent.length )
-  return 0;
-  return self._message.length - self._correspondent.length;
+  // debugger;
+  return self.messageCounter > 0;
+  // if( self._message.length <= self._correspondentEarly.length )
+  // return 0;
+  // return self._message.length - self._correspondentEarly.length;
 }
 
 //
@@ -2536,10 +2703,10 @@ function toStr()
   var self = this;
   var result = self.nickName;
 
-  var names = _.entitySelect( self.correspondentsGet(),'*.tag' );
+  var names = _.entitySelect( self.correspondentsEarlyGet(),'*.tag' );
 
   result += '\n  messages : ' + self.messagesGet().length;
-  result += '\n  correspondents : ' + self.correspondentsGet().length;
+  result += '\n  correspondents : ' + self.correspondentsEarlyGet().length;
   result += '\n  tag : ' + self.tag;
   // result += '\n  correspondent names : ' + names.join( ' ' );
 
@@ -2607,7 +2774,7 @@ function from_static( src,timeOut )
 
   if( _.promiseIs( src ) )
   {
-    con = new wConsequence();
+    con = new Self();
     var onFulfilled = ( got ) => { con.give( got ); }
     var onRejected = ( err ) => { con.error( err ); }
     src.then( onFulfilled, onRejected );
@@ -2622,9 +2789,9 @@ function from_static( src,timeOut )
   }
 
   if( _.errIs( src ) )
-  return new wConsequence().error( src );
+  return new Self().error( src );
 
-  return new wConsequence().give( src );
+  return new Self().give( src );
 }
 
 //
@@ -2886,7 +3053,7 @@ function ifErrorThen_static()
     }
     else
     {
-      return wConsequence().give( data );
+      return new Self().give( data );
     }
 
   }
@@ -2928,7 +3095,7 @@ function ifNoErrorThen_static()
     }
     else
     {
-      return wConsequence().error( err );
+      return new Self().error( err );
     }
 
   }
@@ -2987,7 +3154,7 @@ function FunctionWithin( consequence )
 
 function FunctionThereafter()
 {
-  var con = new wConsequence();
+  var con = new Self();
   var routine = this;
   var args = arguments
 
@@ -3051,7 +3218,7 @@ function experimentWithin()
 function experimentCall()
 {
 
-  var con = new wConsequence();
+  var con = new Self();
   con( 123 );
   con.doThen( function( err,data )
   {
@@ -3065,7 +3232,7 @@ function experimentCall()
 }
 
 // --
-// relationships
+// type
 // --
 
 var KindOfArguments =
@@ -3076,11 +3243,16 @@ var KindOfArguments =
   BothWithCorrespondent : 4,
 }
 
+// --
+// relationships
+// --
+
 var Composes =
 {
-  _correspondent : [],
-  // _correspondentPersistent : [],
+  _correspondentEarly : [],
+  _correspondentLate : [],
   _message : [],
+  messageCounter : 0,
 }
 
 var ComposesDebug =
@@ -3125,6 +3297,15 @@ var Statics =
 
 }
 
+var Forbids =
+{
+  every : 'every',
+  mutex : 'mutex',
+  mode : 'mode',
+  _correspondent : '_correspondent',
+  _correspondentPersistent : '_correspondentPersistent',
+}
+
 // --
 // proto
 // --
@@ -3138,10 +3319,13 @@ var Extend =
   // chainer
 
   got : got,
+  lateGot : lateGot,
   promiseGot : promiseGot,
   done : got,
+
   doThen : doThen,
   _doThen : _doThen,
+  lateThen : lateThen,
   promiseThen : promiseThen,
 
   choke : choke,
@@ -3163,7 +3347,7 @@ var Extend =
   /* debugThen : debugThen, experimental */
   timeOutThen : timeOutThen,
 
-  // persist : persist, /* experimental */
+  /* persist : persist, */ /* deprecated */
 
 
   // advanced
@@ -3189,7 +3373,7 @@ var Extend =
   error : error,
   _giveWithError : _giveWithError,
   __giveAct : __giveAct,
-  ping : ping, /* experimental */
+  _ping : _ping, /* experimental */
 
 
   // handling mechanism
@@ -3206,7 +3390,8 @@ var Extend =
   doesDependOf : doesDependOf,
   assertNoDeadLockWith : assertNoDeadLockWith,
 
-  correspondentsGet : correspondentsGet,
+  correspondentsEarlyGet : correspondentsEarlyGet,
+  correspondentsLateGet : correspondentsLateGet,
   correspondentsCancel : correspondentsCancel,
   _correspondentNextGet : _correspondentNextGet,
 
@@ -3244,25 +3429,6 @@ var Supplement =
 
 //
 
-// _.classMake
-// ({
-//   cls : Parent,
-//   parent : null,
-//   extend : Extend,
-//   supplement : Supplement,
-//   usingOriginalPrototype : 1,
-// });
-//
-// wCopyable.mixin( Parent );
-//
-// _.classMake
-// ({
-//   cls : Self,
-//   parent : Parent,
-//   // usingOriginalPrototype : 1,
-// });
-
-// debugger;
 _.classMake
 ({
   cls : wConsequence,
@@ -3271,13 +3437,10 @@ _.classMake
   supplement : Supplement,
   usingOriginalPrototype : 1,
 });
-// debugger;
 
 wCopyable.mixin( wConsequence );
 
 //
-
-// debugger;
 
 _.assert( _.routineIs( wConsequence.prototype.passThru ) );
 _.assert( _.routineIs( wConsequence.passThru ) );
@@ -3295,7 +3458,6 @@ _.assert( _.strIsNotEmpty( wConsequenceProxy.name ) );
 _.assert( _.strIsNotEmpty( wConsequenceProxy.nameShort ) );
 _.assert( _.routineIs( wConsequenceProxy.prototype.give ) );
 
-// _.assert( wConsequenceProxy.name === 'wConsequence' );
 _.assert( wConsequenceProxy.nameShort === 'Consequence' );
 
 //
@@ -3309,14 +3471,7 @@ _.accessor
   }
 });
 
-//
-
-_.accessorForbid( Self.prototype,
-{
-  every : 'every',
-  mutex : 'mutex',
-  mode : 'mode',
-});
+_.accessorForbid( Self.prototype,Forbids );
 
 //
 
@@ -3358,44 +3513,6 @@ _global_[ Self.name ] = wTools[ Self.nameShort ] = Self;
 // con1.give( 1 );
 // debugger;
 // con1( 2 );
-// debugger;
-
-// debugger;
-// {
-//
-//   var delay = 300;
-//   var mainCon = new wConsequence({ tag : 'mainCon' });
-//   var con = new wConsequence({ tag : 'con' });
-//
-//   con.doThen( function()
-//   {
-//     console.log( 'con.doThen :' );
-//     console.log( con.toStr() );
-//     console.log( mainCon.toStr() );
-//     debugger;
-//   });
-//
-//   mainCon.give( 13 );
-//   mainCon.andGot( con );
-//
-//   mainCon.doThen( function()
-//   {
-//     console.log( 'mainCon.doThen :' );
-//     console.log( con.toStr() );
-//     console.log( mainCon.toStr() );
-//     debugger;
-//   });
-//
-//   _.timeOut( delay, () => con.give() );
-//   _.timeOut( 13000, function()
-//   {
-//     console.log( 'timeOut 3000 :' );
-//     console.log( con.toStr() );
-//     console.log( mainCon.toStr() );
-//     debugger;
-//   });
-//
-// }
 // debugger;
 
 })();

@@ -5,7 +5,6 @@
 if( typeof module !== 'undefined' )
 {
 
-  //if( typeof wBase === 'undefined' )
   try
   {
     require( '../../Base.s' );
@@ -518,7 +517,7 @@ function andGot( test )
     {
       test.identical( mainCon.messagesGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
     });
 
     _.timeOut( delay, () => { con.give( delay ) });
@@ -548,7 +547,7 @@ function andGot( test )
     {
       test.identical( mainCon.messagesGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
     });
 
     _.timeOut( delay, () => { con.give( delay ) });
@@ -578,13 +577,13 @@ function andGot( test )
       test.identical( mainCon.messagesGet().length, 0 );
 
       test.identical( con1.messagesGet(), []);
-      test.identical( con1.correspondentsGet().length, 0 );
+      test.identical( con1.correspondentsEarlyGet().length, 0 );
 
       test.identical( con2.messagesGet(), []);
-      test.identical( con2.correspondentsGet().length, 0 );
+      test.identical( con2.correspondentsEarlyGet().length, 0 );
 
       test.identical( con3.messagesGet(), []);
-      test.identical( con3.correspondentsGet().length, 0 );
+      test.identical( con3.correspondentsEarlyGet().length, 0 );
     });
 
     _.timeOut( delay, () => { con1.give( delay ) });
@@ -605,7 +604,7 @@ function andGot( test )
     mainCon.andGot( con );
     mainCon.doThen( () => test.identical( 0, 1 ) );
     test.identical( mainCon.messagesGet().length, 0 );
-    test.identical( mainCon.correspondentsGet().length, 1 );
+    test.identical( mainCon.correspondentsEarlyGet().length, 1 );
     test.identical( con.messagesGet().length, 0 );
   })
 
@@ -620,7 +619,7 @@ function andGot( test )
     mainCon.andGot( () => con );
     mainCon.doThen( () => test.identical( 0, 1 ) );
     test.identical( mainCon.messagesGet().length, 0 );
-    test.identical( mainCon.correspondentsGet().length, 1 );
+    test.identical( mainCon.correspondentsEarlyGet().length, 1 );
     test.identical( con.messagesGet().length, 0 );
   })
 
@@ -649,7 +648,7 @@ function andGot( test )
     return _.timeOut( delay * 2, function()
     {
       test.identical( mainCon.messagesGet().length, 0 );
-      test.identical( mainCon.correspondentsGet().length, 1 );
+      test.identical( mainCon.correspondentsEarlyGet().length, 1 );
 
       test.identical( con1.messagesGet().length, 0);
       test.identical( con2.messagesGet().length, 0);
@@ -685,7 +684,7 @@ function andThen( test )
     {
       test.identical( mainCon.messagesGet().length, 0 );
       test.identical( con.messagesGet(), [{ error : null, argument : delay }] );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
     });
 
     _.timeOut( delay, () => { con.give( delay ) });
@@ -716,7 +715,7 @@ function andThen( test )
       test.identical( mainCon.messagesGet().length, 0 );
       test.identical( con.messagesGet().length, 1 );
       test.identical( con.messagesGet()[ 0 ], { error : null, argument : delay } );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
     });
 
     _.timeOut( delay, () => { con.give( delay ) });
@@ -751,13 +750,13 @@ function andThen( test )
       test.identical( mainCon.messagesGet().length, 0 );
 
       test.identical( con1.messagesGet(), [ { error : null, argument : delay } ]);
-      test.identical( con1.correspondentsGet().length, 0 );
+      test.identical( con1.correspondentsEarlyGet().length, 0 );
 
       test.identical( con2.messagesGet(), [ { error : null, argument : delay * 2 } ]);
-      test.identical( con2.correspondentsGet().length, 0 );
+      test.identical( con2.correspondentsEarlyGet().length, 0 );
 
       test.identical( con3.messagesGet(), [ { error : null, argument : testMsg } ]);
-      test.identical( con3.correspondentsGet().length, 0 );
+      test.identical( con3.correspondentsEarlyGet().length, 0 );
     });
 
     _.timeOut( delay, () => { con1.give( delay ) });
@@ -778,7 +777,7 @@ function andThen( test )
     mainCon.andThen( con );
     mainCon.doThen( () => test.identical( 0, 1 ) );
     test.identical( mainCon.messagesGet().length, 0 );
-    test.identical( mainCon.correspondentsGet().length, 1 );
+    test.identical( mainCon.correspondentsEarlyGet().length, 1 );
     test.identical( con.messagesGet().length, 0 );
   })
 
@@ -793,7 +792,7 @@ function andThen( test )
     mainCon.andThen( () => con );
     mainCon.doThen( () => test.identical( 0, 1 ) );
     test.identical( mainCon.messagesGet().length, 0 );
-    test.identical( mainCon.correspondentsGet().length, 1 );
+    test.identical( mainCon.correspondentsEarlyGet().length, 1 );
     test.identical( con.messagesGet().length, 0 );
   })
 
@@ -822,7 +821,7 @@ function andThen( test )
     return _.timeOut( delay * 2, function()
     {
       test.identical( mainCon.messagesGet().length, 0 );
-      test.identical( mainCon.correspondentsGet().length, 1 );
+      test.identical( mainCon.correspondentsEarlyGet().length, 1 );
 
       test.identical( con1.messagesGet().length, 0);
       test.identical( con2.messagesGet().length, 0);
@@ -1022,7 +1021,7 @@ function ordinarMessage( test )
       test.identical( got, 1 );
     })
     test.identical( con.messagesGet().length, 0 );
-    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.correspondentsEarlyGet().length, 0 );
   })
 
   /* asyncTaking : 1, asyncGiving : 0 */
@@ -1039,11 +1038,11 @@ function ordinarMessage( test )
       test.identical( got, 1 );
     })
     test.identical( con.messagesGet().length, 1 );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet().length, 0 );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
     })
   })
 
@@ -1058,7 +1057,7 @@ function ordinarMessage( test )
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet().length, 1 );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
 
       con.got( function( err, got )
       {
@@ -1069,7 +1068,7 @@ function ordinarMessage( test )
     .doThen( function()
     {
       test.identical( con.messagesGet().length, 0 );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
     })
   })
 
@@ -1086,11 +1085,11 @@ function ordinarMessage( test )
       test.identical( got, 1 );
     })
     test.identical( con.messagesGet().length, 1 );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet().length, 0 );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
     })
   });
 
@@ -1107,7 +1106,7 @@ function ordinarMessage( test )
     con.got( ( err, got ) => test.identical( got, 1 ) );
     con.got( ( err, got ) => test.identical( got, 2 ) );
     con.got( ( err, got ) => test.identical( got, 3 ) );
-    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.correspondentsEarlyGet().length, 0 );
     test.identical( con.messagesGet().length, 0 );
   })
 
@@ -1121,11 +1120,11 @@ function ordinarMessage( test )
     con.got( ( err, got ) => test.identical( got, 1 ) );
     con.got( ( err, got ) => test.identical( got, 2 ) );
     con.got( ( err, got ) => test.identical( got, 3 ) );
-    test.identical( con.correspondentsGet().length, 3 );
+    test.identical( con.correspondentsEarlyGet().length, 3 );
     test.identical( con.messagesGet().length, 3 );
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
     })
   })
@@ -1140,7 +1139,7 @@ function ordinarMessage( test )
 
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 3 );
 
       con.got( ( err, got ) => test.identical( got, 1 ) );
@@ -1149,7 +1148,7 @@ function ordinarMessage( test )
     })
     .doThen( function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
     })
   })
@@ -1164,11 +1163,11 @@ function ordinarMessage( test )
     con.got( ( err, got ) => test.identical( got, 1 ) );
     con.got( ( err, got ) => test.identical( got, 2 ) );
     con.got( ( err, got ) => test.identical( got, 3 ) );
-    test.identical( con.correspondentsGet().length, 3 );
+    test.identical( con.correspondentsEarlyGet().length, 3 );
     test.identical( con.messagesGet().length, 3 );
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
     })
   });
@@ -1189,7 +1188,7 @@ function ordinarMessage( test )
       test.identical( got, undefined );
     })
     test.identical( con.messagesGet().length, 0 );
-    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.correspondentsEarlyGet().length, 0 );
   })
 
   /* asyncTaking : 1, asyncGiving : 0 */
@@ -1206,11 +1205,11 @@ function ordinarMessage( test )
       test.identical( got, undefined );
     })
     test.identical( con.messagesGet().length, 1 );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet().length, 0 );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
     })
   })
 
@@ -1225,7 +1224,7 @@ function ordinarMessage( test )
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet().length, 1 );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
 
       con.got( function( err, got )
       {
@@ -1236,7 +1235,7 @@ function ordinarMessage( test )
     .doThen( function()
     {
       test.identical( con.messagesGet().length, 0 );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
     })
   })
 
@@ -1253,11 +1252,11 @@ function ordinarMessage( test )
       test.identical( got, undefined );
     })
     test.identical( con.messagesGet().length, 1 );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet().length, 0 );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
     })
   });
 
@@ -1274,7 +1273,7 @@ function ordinarMessage( test )
     con.got( ( err, got ) => test.identical( err, 'err1' ) );
     con.got( ( err, got ) => test.identical( err, 'err2' ) );
     con.got( ( err, got ) => test.identical( err, 'err3' ) );
-    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.correspondentsEarlyGet().length, 0 );
     test.identical( con.messagesGet().length, 0 );
   })
 
@@ -1288,11 +1287,11 @@ function ordinarMessage( test )
     con.got( ( err, got ) => test.identical( err, 'err1' ) );
     con.got( ( err, got ) => test.identical( err, 'err2' ) );
     con.got( ( err, got ) => test.identical( err, 'err3' ) );
-    test.identical( con.correspondentsGet().length, 3 );
+    test.identical( con.correspondentsEarlyGet().length, 3 );
     test.identical( con.messagesGet().length, 3 );
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
     })
   })
@@ -1307,7 +1306,7 @@ function ordinarMessage( test )
 
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 3 );
 
       con.got( ( err, got ) => test.identical( err, 'err1' ) );
@@ -1316,7 +1315,7 @@ function ordinarMessage( test )
     })
     .doThen( function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
     })
   })
@@ -1331,11 +1330,11 @@ function ordinarMessage( test )
     con.got( ( err, got ) => test.identical( err, 'err1' ) );
     con.got( ( err, got ) => test.identical( err, 'err2' ) );
     con.got( ( err, got ) => test.identical( err, 'err3' ) );
-    test.identical( con.correspondentsGet().length, 3 );
+    test.identical( con.correspondentsEarlyGet().length, 3 );
     test.identical( con.messagesGet().length, 3 );
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
     })
   });
@@ -1359,7 +1358,7 @@ function promiseGot( test )
     var con = new wConsequence();
     var promise = con.promiseGot();
     test.identical( con.messagesGet().length, 0 );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     promise.then( function( got )
     {
       test.identical( 0, 1 );
@@ -1380,7 +1379,7 @@ function promiseGot( test )
       test.identical( got, testMsg );
       test.shouldBe( _.promiseIs( promise ) );
       test.identical( con.messagesGet().length, 0 );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
     })
     return wConsequence.from( promise );
   })
@@ -1399,7 +1398,7 @@ function promiseGot( test )
       test.identical( err, testMsg );
       test.shouldBe( _.promiseIs( promise ) );
       test.identical( con.messagesGet().length, 0 );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
     })
     return wConsequence.from( promise );
   })
@@ -1420,7 +1419,7 @@ function promiseGot( test )
       test.identical( got, testMsg + 1 );
       test.shouldBe( _.promiseIs( promise ) );
       test.identical( con.messagesGet().length, 2 );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
     })
     return wConsequence.from( promise );
   })
@@ -1441,7 +1440,7 @@ function promiseGot( test )
     var con = new wConsequence();
     var promise = con.promiseGot();
     con.give( testMsg );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     test.identical( con.messagesGet().length, 1 );
     return _.timeOut( 1, function()
     {
@@ -1450,7 +1449,7 @@ function promiseGot( test )
         test.identical( got, testMsg );
         test.shouldBe( _.promiseIs( promise ) );
         test.identical( con.messagesGet().length, 0 );
-        test.identical( con.correspondentsGet().length, 0 );
+        test.identical( con.correspondentsEarlyGet().length, 0 );
       });
       return wConsequence.from( promise );
     })
@@ -1470,11 +1469,11 @@ function promiseGot( test )
       test.shouldBe( _.promiseIs( promise ) );
     });
     test.identical( con.messagesGet().length, 1 );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet().length, 0 );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       return wConsequence.from( promise );
     });
   })
@@ -1491,7 +1490,7 @@ function promiseGot( test )
     con.give( testMsg  + 2 );
     con.give( testMsg  + 3 );
     test.identical( con.messagesGet().length, 3 );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
 
     return _.timeOut( 1, function()
     {
@@ -1500,7 +1499,7 @@ function promiseGot( test )
         test.identical( got, testMsg + 1 );
         test.shouldBe( _.promiseIs( promise ) );
         test.identical( con.messagesGet().length, 2 );
-        test.identical( con.correspondentsGet().length, 0 );
+        test.identical( con.correspondentsEarlyGet().length, 0 );
       })
       return wConsequence.from( promise );
     })
@@ -1522,7 +1521,7 @@ function promiseGot( test )
     var con = new wConsequence();
     con.give( testMsg );
     var promise = con.promiseGot();
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     test.identical( con.messagesGet().length, 1 );
     return _.timeOut( 1, function()
     {
@@ -1531,7 +1530,7 @@ function promiseGot( test )
         test.identical( got, testMsg );
         test.shouldBe( _.promiseIs( promise ) );
         test.identical( con.messagesGet().length, 0 );
-        test.identical( con.correspondentsGet().length, 0 );
+        test.identical( con.correspondentsEarlyGet().length, 0 );
       });
       return wConsequence.from( promise );
     })
@@ -1551,11 +1550,11 @@ function promiseGot( test )
       test.shouldBe( _.promiseIs( promise ) );
     });
     test.identical( con.messagesGet().length, 1 );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet().length, 0 );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       return wConsequence.from( promise );
     });
   })
@@ -1571,7 +1570,7 @@ function promiseGot( test )
     con.give( testMsg  + 3 );
     var promise = con.promiseGot();
     test.identical( con.messagesGet().length, 3 );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
 
     return _.timeOut( 1, function()
     {
@@ -1580,7 +1579,7 @@ function promiseGot( test )
         test.identical( got, testMsg + 1 );
         test.shouldBe( _.promiseIs( promise ) );
         test.identical( con.messagesGet().length, 2 );
-        test.identical( con.correspondentsGet().length, 0 );
+        test.identical( con.correspondentsEarlyGet().length, 0 );
       })
       return wConsequence.from( promise );
     })
@@ -1602,7 +1601,7 @@ function promiseGot( test )
     var con = new wConsequence();
     con.give( testMsg );
     var promise = con.promiseGot();
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     test.identical( con.messagesGet().length, 1 );
     return _.timeOut( 1, function()
     {
@@ -1611,7 +1610,7 @@ function promiseGot( test )
         test.identical( got, testMsg );
         test.shouldBe( _.promiseIs( promise ) );
         test.identical( con.messagesGet().length, 0 );
-        test.identical( con.correspondentsGet().length, 0 );
+        test.identical( con.correspondentsEarlyGet().length, 0 );
       });
       return wConsequence.from( promise );
     })
@@ -1631,11 +1630,11 @@ function promiseGot( test )
       test.shouldBe( _.promiseIs( promise ) );
     });
     test.identical( con.messagesGet().length, 1 );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet().length, 0 );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       return wConsequence.from( promise );
     });
   })
@@ -1651,7 +1650,7 @@ function promiseGot( test )
     con.give( testMsg  + 3 );
     var promise = con.promiseGot();
     test.identical( con.messagesGet().length, 3 );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
 
     return _.timeOut( 1, function()
     {
@@ -1660,7 +1659,7 @@ function promiseGot( test )
         test.identical( got, testMsg + 1 );
         test.shouldBe( _.promiseIs( promise ) );
         test.identical( con.messagesGet().length, 2 );
-        test.identical( con.correspondentsGet().length, 0 );
+        test.identical( con.correspondentsEarlyGet().length, 0 );
       })
       return wConsequence.from( promise );
     })
@@ -1920,7 +1919,7 @@ function doThen( test )
   {
     var con = new wConsequence();
     con.doThen( () => test.identical( 0, 1 ) );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     test.identical( con.messagesGet().length, 0 );
   })
 
@@ -1933,7 +1932,7 @@ function doThen( test )
   {
     var con = new wConsequence();
     con.doThen( () => test.identical( 0, 1 ) );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     test.identical( con.messagesGet().length, 0 );
   })
 
@@ -1946,7 +1945,7 @@ function doThen( test )
   {
     var con = new wConsequence();
     con.doThen( () => test.identical( 0, 1 ) );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     test.identical( con.messagesGet().length, 0 );
   })
 
@@ -1959,7 +1958,7 @@ function doThen( test )
   {
     var con = new wConsequence();
     con.doThen( () => test.identical( 0, 1 ) );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     test.identical( con.messagesGet().length, 0 );
   })
 
@@ -1982,7 +1981,7 @@ function doThen( test )
     test.identical( con.messagesGet().length, 1 )
     test.identical( con.messagesGet()[ 0 ], { error : null, argument : testMsg } )
     con.doThen( correspondent );
-    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.correspondentsEarlyGet().length, 0 );
     test.identical( con.messagesGet().length, 1 )
     test.identical( con.messagesGet()[ 0 ], { error : null, argument : undefined } );
 
@@ -2008,11 +2007,11 @@ function doThen( test )
     con.doThen( correspondent );
     test.identical( con.messagesGet().length, 1 )
     test.identical( con.messagesGet()[ 0 ], { error : null, argument : testMsg } )
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
 
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 1 )
       test.identical( con.messagesGet()[ 0 ], { error : null, argument : undefined } )
     })
@@ -2039,13 +2038,13 @@ function doThen( test )
     {
       test.identical( con.messagesGet().length, 1 )
       test.identical( con.messagesGet()[ 0 ], { error : null, argument : testMsg } )
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
 
       con.doThen( correspondent );
     })
     .doThen( function()
     {
-      test.identical( con.correspondentsGet().length, 0 )
+      test.identical( con.correspondentsEarlyGet().length, 0 )
       test.identical( con.messagesGet().length, 1 )
       test.identical( con.messagesGet()[ 0 ], { error : null, argument : undefined } )
     })
@@ -2068,12 +2067,12 @@ function doThen( test )
     var con = new wConsequence();
     con.give( testMsg );
     con.doThen( correspondent );
-    test.identical( con.correspondentsGet().length, 1 )
+    test.identical( con.correspondentsEarlyGet().length, 1 )
     test.identical( con.messagesGet().length, 1 )
     test.identical( con.messagesGet()[ 0 ], { error : null, argument : testMsg } )
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 )
+      test.identical( con.correspondentsEarlyGet().length, 0 )
       test.identical( con.messagesGet().length, 1 )
       test.identical( con.messagesGet()[ 0 ], { error : null, argument : undefined } )
     })
@@ -2109,7 +2108,7 @@ function doThen( test )
       test.identical( got , testMsg + 2);
       return testMsg + 3;
     });
-    test.identical( con.correspondentsGet().length, 0 )
+    test.identical( con.correspondentsEarlyGet().length, 0 )
     test.identical( con.messagesGet().length, 1 )
     test.identical( con.messagesGet()[ 0 ], { error : null, argument : testMsg + 3 } );
 
@@ -2144,13 +2143,13 @@ function doThen( test )
       test.identical( got , testMsg + 2);
       return testMsg + 3;
     });
-    test.identical( con.correspondentsGet().length, 3 )
+    test.identical( con.correspondentsEarlyGet().length, 3 )
     test.identical( con.messagesGet().length, 1 )
     test.identical( con.messagesGet()[ 0 ], { error : null, argument : testMsg } );
 
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 )
+      test.identical( con.correspondentsEarlyGet().length, 0 )
       test.identical( con.messagesGet().length, 1 )
       test.identical( con.messagesGet()[ 0 ], { error : null, argument : testMsg + 3 } );
     })
@@ -2171,7 +2170,7 @@ function doThen( test )
 
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 )
+      test.identical( con.correspondentsEarlyGet().length, 0 )
       test.identical( con.messagesGet().length, 1 )
       test.identical( con.messagesGet()[ 0 ], { error : null, argument : testMsg } );
 
@@ -2198,7 +2197,7 @@ function doThen( test )
     })
     .doThen( function()
     {
-      test.identical( con.correspondentsGet().length, 0 )
+      test.identical( con.correspondentsEarlyGet().length, 0 )
       test.identical( con.messagesGet().length, 1 )
       test.identical( con.messagesGet()[ 0 ], { error : null, argument : testMsg + 3 } );
     })
@@ -2236,13 +2235,13 @@ function doThen( test )
       return testMsg + 3;
     });
 
-    test.identical( con.correspondentsGet().length, 3 );
+    test.identical( con.correspondentsEarlyGet().length, 3 );
     test.identical( con.messagesGet().length, 1 );
     test.identical( con.messagesGet()[ 0 ], { error : null, argument : testMsg } );
 
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 1 );
       test.identical( con.messagesGet()[ 0 ], { error : null, argument : testMsg + 3} );
     })
@@ -2281,9 +2280,9 @@ function doThen( test )
     {
       test.identical( con2TakerFired, true );
       test.identical( con.messagesGet().length, 0 );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con2.messagesGet().length, 0 );
-      test.identical( con2.correspondentsGet().length, 0 );
+      test.identical( con2.correspondentsEarlyGet().length, 0 );
     });
 
     return con2;
@@ -2318,16 +2317,16 @@ function doThen( test )
 
     test.identical( con2TakerFired, false );
     test.identical( con.messagesGet().length, 1 );
-    test.identical( con.correspondentsGet().length, 2 );
-    test.identical( con2.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 2 );
+    test.identical( con2.correspondentsEarlyGet().length, 1 );
 
     return _.timeOut( 1, function()
     {
       test.identical( con2TakerFired, true );
       test.identical( con.messagesGet().length, 0 );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con2.messagesGet().length, 0 );
-      test.identical( con2.correspondentsGet().length, 0 );
+      test.identical( con2.correspondentsEarlyGet().length, 0 );
     })
 
   })
@@ -2348,8 +2347,8 @@ function doThen( test )
 
     test.identical( con2TakerFired, false );
     test.identical( con.messagesGet().length, 1 );
-    test.identical( con.correspondentsGet().length, 0 );
-    test.identical( con2.correspondentsGet().length, 0 );
+    test.identical( con.correspondentsEarlyGet().length, 0 );
+    test.identical( con2.correspondentsEarlyGet().length, 0 );
 
     return _.timeOut( 1, function()
     {
@@ -2373,9 +2372,9 @@ function doThen( test )
     {
       test.identical( con2TakerFired, true );
       test.identical( con.messagesGet().length, 0 );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con2.messagesGet().length, 1 );
-      test.identical( con2.correspondentsGet().length, 0 );
+      test.identical( con2.correspondentsEarlyGet().length, 0 );
     })
   })
 
@@ -2408,17 +2407,17 @@ function doThen( test )
 
     test.identical( con2TakerFired, false );
     test.identical( con.messagesGet().length, 1 );
-    test.identical( con.correspondentsGet().length, 2 );
-    test.identical( con2.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 2 );
+    test.identical( con2.correspondentsEarlyGet().length, 1 );
     test.identical( con2.messagesGet().length, 0 );
 
     return _.timeOut( 1, function()
     {
       test.identical( con2TakerFired, true );
       test.identical( con.messagesGet().length, 0 );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con2.messagesGet().length, 0 );
-      test.identical( con2.correspondentsGet().length, 0 );
+      test.identical( con2.correspondentsEarlyGet().length, 0 );
     })
   })
 
@@ -2439,7 +2438,7 @@ function doThen( test )
       return con2.give( testMsg );
     });
 
-    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.correspondentsEarlyGet().length, 0 );
     test.identical( con.messagesGet().length, 1 );
     test.identical( con.messagesGet()[ 0 ].argument, testMsg );
 
@@ -2465,11 +2464,11 @@ function doThen( test )
       return con2.give( testMsg );
     });
 
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
 
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 1 );
       test.identical( con.messagesGet()[ 0 ].argument, testMsg );
 
@@ -2504,7 +2503,7 @@ function doThen( test )
     })
     .doThen( function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 1 );
       test.identical( con.messagesGet()[ 0 ].argument, testMsg );
 
@@ -2534,7 +2533,7 @@ function doThen( test )
 
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 1 );
       test.identical( con.messagesGet()[ 0 ].argument, testMsg );
 
@@ -2565,7 +2564,7 @@ function promiseThen( test )
     var con = new wConsequence();
     var promise = con.promiseThen();
     test.identical( con.messagesGet().length, 0 );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     promise.then( function( got )
     {
       test.identical( 0, 1 );
@@ -2586,7 +2585,7 @@ function promiseThen( test )
       test.identical( got, testMsg );
       test.shouldBe( _.promiseIs( promise ) );
       test.identical( con.messagesGet(), [{ error : null, argument : testMsg }] );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
     })
 
     return wConsequence.from( promise );
@@ -2606,7 +2605,7 @@ function promiseThen( test )
       test.identical( err, testMsg );
       test.shouldBe( _.promiseIs( promise ) );
       test.identical( con.messagesGet(), [{ error : testMsg, argument : undefined }] );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
     })
     return wConsequence.from( promise );
   })
@@ -2627,7 +2626,7 @@ function promiseThen( test )
       test.identical( got, testMsg + 1 );
       test.shouldBe( _.promiseIs( promise ) );
       test.identical( con.messagesGet().length, 3 );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
     })
     return wConsequence.from( promise );
   })
@@ -2648,7 +2647,7 @@ function promiseThen( test )
     var con = new wConsequence();
     var promise = con.promiseThen();
     con.give( testMsg );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     test.identical( con.messagesGet().length, 1 );
     return _.timeOut( 1, function()
     {
@@ -2657,7 +2656,7 @@ function promiseThen( test )
         test.identical( got, testMsg );
         test.shouldBe( _.promiseIs( promise ) );
         test.identical( con.messagesGet(), [{ error : null, argument : testMsg }] );
-        test.identical( con.correspondentsGet().length, 0 );
+        test.identical( con.correspondentsEarlyGet().length, 0 );
       });
       return wConsequence.from( promise );
     })
@@ -2677,11 +2676,11 @@ function promiseThen( test )
     });
     con.error( testMsg );
     test.identical( con.messagesGet().length, 1 );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet(), [{ error : testMsg, argument : undefined }] );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       return wConsequence.from( promise );
     });
   })
@@ -2697,7 +2696,7 @@ function promiseThen( test )
     con.give( testMsg  + 2 );
     con.give( testMsg  + 3 );
     test.identical( con.messagesGet().length, 3 );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
 
     return _.timeOut( 1, function()
     {
@@ -2706,7 +2705,7 @@ function promiseThen( test )
         test.identical( got, testMsg + 1 );
         test.shouldBe( _.promiseIs( promise ) );
         test.identical( con.messagesGet().length, 3 );
-        test.identical( con.correspondentsGet().length, 0 );
+        test.identical( con.correspondentsEarlyGet().length, 0 );
       })
       return wConsequence.from( promise );
     })
@@ -2728,7 +2727,7 @@ function promiseThen( test )
     var con = new wConsequence();
     con.give( testMsg );
     var promise = con.promiseThen();
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     test.identical( con.messagesGet().length, 1 );
     return _.timeOut( 1, function()
     {
@@ -2737,7 +2736,7 @@ function promiseThen( test )
         test.identical( got, testMsg );
         test.shouldBe( _.promiseIs( promise ) );
         test.identical( con.messagesGet(), [{ error : null, argument : testMsg }] );
-        test.identical( con.correspondentsGet().length, 0 );
+        test.identical( con.correspondentsEarlyGet().length, 0 );
       });
       return wConsequence.from( promise );
     })
@@ -2757,11 +2756,11 @@ function promiseThen( test )
       test.shouldBe( _.promiseIs( promise ) );
     });
     test.identical( con.messagesGet().length, 1 );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet(), [{ error : testMsg, argument : undefined }] );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       return wConsequence.from( promise );
     });
   })
@@ -2777,7 +2776,7 @@ function promiseThen( test )
     con.give( testMsg  + 3 );
     var promise = con.promiseThen();
     test.identical( con.messagesGet().length, 3 );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
 
     return _.timeOut( 1, function()
     {
@@ -2786,7 +2785,7 @@ function promiseThen( test )
         test.identical( got, testMsg + 1 );
         test.shouldBe( _.promiseIs( promise ) );
         test.identical( con.messagesGet().length, 3 );
-        test.identical( con.correspondentsGet().length, 0 );
+        test.identical( con.correspondentsEarlyGet().length, 0 );
       })
       return wConsequence.from( promise );
     })
@@ -2808,7 +2807,7 @@ function promiseThen( test )
     var con = new wConsequence();
     con.give( testMsg );
     var promise = con.promiseThen();
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     test.identical( con.messagesGet().length, 1 );
     return _.timeOut( 1, function()
     {
@@ -2817,7 +2816,7 @@ function promiseThen( test )
         test.identical( got, testMsg );
         test.shouldBe( _.promiseIs( promise ) );
         test.identical( con.messagesGet(), [{ error : null, argument : testMsg }] );
-        test.identical( con.correspondentsGet().length, 0 );
+        test.identical( con.correspondentsEarlyGet().length, 0 );
       });
       return wConsequence.from( promise );
     })
@@ -2837,11 +2836,11 @@ function promiseThen( test )
       test.shouldBe( _.promiseIs( promise ) );
     });
     test.identical( con.messagesGet().length, 1 );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet(), [{ error : testMsg, argument : undefined }] );
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       return wConsequence.from( promise );
     });
   })
@@ -2857,7 +2856,7 @@ function promiseThen( test )
     con.give( testMsg  + 3 );
     var promise = con.promiseThen();
     test.identical( con.messagesGet().length, 3 );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
 
     return _.timeOut( 1, function()
     {
@@ -2866,7 +2865,7 @@ function promiseThen( test )
         test.identical( got, testMsg + 1 );
         test.shouldBe( _.promiseIs( promise ) );
         test.identical( con.messagesGet().length, 3 );
-        test.identical( con.correspondentsGet().length, 0 );
+        test.identical( con.correspondentsEarlyGet().length, 0 );
       })
       return wConsequence.from( promise );
     })
@@ -3312,7 +3311,7 @@ function split( test )
     con2.got( correspondent );
 
     test.identical( con2.messagesGet().length, 0 );
-    test.identical( con2.correspondentsGet().length, 1 );
+    test.identical( con2.correspondentsEarlyGet().length, 1 );
     test.identical( con.messagesGet().length, 2 );
     test.identical( _got, [ 5 ] )
     test.identical( _err, [ null ] )
@@ -3337,7 +3336,7 @@ function split( test )
 
     test.identical( con2.messagesGet().length, 1 );
     test.identical( con2.messagesGet()[ 0 ], { error : null, argument : undefined } );
-    test.identical( con2.correspondentsGet().length, 0 );
+    test.identical( con2.correspondentsEarlyGet().length, 0 );
     test.identical( con.messagesGet().length, 2 );
     test.identical( _got, [ 5 ] )
     test.identical( _err, [ null ] )
@@ -3738,7 +3737,7 @@ function tap( test )
     con.give( testMsg );
     con.tap( ( err, got ) => test.identical( got, testMsg ) );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
-    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.correspondentsEarlyGet().length, 0 );
     test.identical( con.messagesGet().length, 0 );
   })
 
@@ -3752,7 +3751,7 @@ function tap( test )
     con.error( testMsg );
     con.tap( ( err, got ) => test.identical( err, testMsg ) );
     con.got( ( err, got ) => test.identical( err, testMsg ) );
-    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.correspondentsEarlyGet().length, 0 );
     test.identical( con.messagesGet().length, 0 );
   })
 
@@ -3767,7 +3766,7 @@ function tap( test )
     con.tap( ( err, got ) => test.identical( got, testMsg ) );
     con.tap( ( err, got ) => test.identical( got, testMsg ) );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
-    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.correspondentsEarlyGet().length, 0 );
     test.identical( con.messagesGet().length, 0 );
   })
 
@@ -3975,7 +3974,7 @@ function ifErrorThen( test )
     con.ifErrorThen( ( err ) => test.identical( 0, 1 ) );
     con.got( ( err, got ) => test.identical( got, testMsg ));
 
-    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.correspondentsEarlyGet().length, 0 );
     test.identical( con.messagesGet().length, 0 );
   })
 
@@ -3990,7 +3989,7 @@ function ifErrorThen( test )
     con.ifErrorThen( ( err ) => { test.identical( err,testMsg ) });
     con.got( ( err, got ) => test.identical( got, undefined ) );
 
-    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.correspondentsEarlyGet().length, 0 );
     test.identical( con.messagesGet().length, 0 );
   })
 
@@ -4012,7 +4011,7 @@ function ifErrorThen( test )
     test.identical( con.messagesGet().length, 2 );
     test.identical( con.messagesGet()[ 0 ].error, testMsg + 1 );
     test.identical( con.messagesGet()[ 1 ].error, testMsg + 2 );
-    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.correspondentsEarlyGet().length, 0 );
   })
 
   /* */
@@ -4033,7 +4032,7 @@ function ifErrorThen( test )
     test.identical( con.messagesGet().length, 2 );
     test.identical( con.messagesGet()[ 0 ], { error : null, argument : undefined } );
     test.identical( con.messagesGet()[ 1 ], { error : null, argument : undefined } );
-    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.correspondentsEarlyGet().length, 0 );
   })
 
    /* */
@@ -4242,7 +4241,7 @@ function ifNoErrorThen( test )
     con.ifNoErrorThen( ( got ) => { test.identical( got, testMsg ) } );
     con.got( ( err, got ) => test.identical( got, undefined ) );
 
-    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.correspondentsEarlyGet().length, 0 );
     test.identical( con.messagesGet().length, 0 );
   })
 
@@ -4257,7 +4256,7 @@ function ifNoErrorThen( test )
     con.ifNoErrorThen( ( got ) => { test.identical( 0, 1 ) });
     con.got( ( err, got ) => test.identical( err, testMsg ) );
 
-    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.correspondentsEarlyGet().length, 0 );
     test.identical( con.messagesGet().length, 0 );
   })
 
@@ -4279,7 +4278,7 @@ function ifNoErrorThen( test )
     test.identical( con.messagesGet()[ 0 ].error, testMsg );
     test.identical( con.messagesGet()[ 1 ], { error : null, argument : undefined } );
     test.identical( con.messagesGet()[ 2 ], { error : null, argument : undefined } );
-    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.correspondentsEarlyGet().length, 0 );
   })
 
   /* */
@@ -4300,7 +4299,7 @@ function ifNoErrorThen( test )
     test.identical( con.messagesGet()[ 0 ].error, testMsg );
     test.identical( con.messagesGet()[ 1 ], { error : null, argument : testMsg } );
     test.identical( con.messagesGet()[ 2 ], { error : null, argument : testMsg } );
-    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.correspondentsEarlyGet().length, 0 );
   })
 
   /* */
@@ -4319,7 +4318,7 @@ function ifNoErrorThen( test )
     test.identical( con.messagesGet().length, 2 );
     test.identical( con.messagesGet()[ 0 ], { error : null, argument : undefined } );
     test.identical( con.messagesGet()[ 1 ], { error : null, argument : undefined } );
-    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.correspondentsEarlyGet().length, 0 );
   })
 
    /* */
@@ -4529,7 +4528,7 @@ function timeOutThen( test )
 
     return _.timeOut( 0, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
     })
   })
@@ -4547,7 +4546,7 @@ function timeOutThen( test )
 
     return _.timeOut( 0, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
     })
   })
@@ -4568,7 +4567,7 @@ function timeOutThen( test )
 
     return _.timeOut( delay, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 3 );
       con.messagesGet()
       .every( ( msg ) => test.identical( msg, { error : null, argument : undefined } ) )
@@ -4787,9 +4786,9 @@ function _and( test )
     {
       //at that moment all messages from srcs are processed
       test.identical( con1.messagesGet().length, 0 );
-      test.identical( con1.correspondentsGet().length, 0 );
+      test.identical( con1.correspondentsEarlyGet().length, 0 );
       test.identical( con2.messagesGet().length, 0 );
-      test.identical( con2.correspondentsGet().length, 0 );
+      test.identical( con2.correspondentsEarlyGet().length, 0 );
       test.identical( got, testMsg );
     });
 
@@ -4821,9 +4820,9 @@ function _and( test )
     {
       /* no messages returned back to srcs, their correspondents must not be invoked */
       test.identical( con1.messagesGet().length, 0 );
-      test.identical( con1.correspondentsGet().length, 1 );
+      test.identical( con1.correspondentsEarlyGet().length, 1 );
       test.identical( con2.messagesGet().length, 0 );
-      test.identical( con2.correspondentsGet().length, 1 );
+      test.identical( con2.correspondentsEarlyGet().length, 1 );
       test.identical( got, testMsg );
     });
 
@@ -5534,7 +5533,7 @@ function _onceThen( test )
     con._onceThen( correspondent1 );
     con._onceThen( correspondent2 );
 
-    test.identical( con.correspondentsGet().length, 2 );
+    test.identical( con.correspondentsEarlyGet().length, 2 );
 
     con.give( testMsg );
 
@@ -5542,7 +5541,7 @@ function _onceThen( test )
     test.identical( correspondent2Count, 1 );
 
     test.identical( con.messagesGet().length, 1 );
-    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.correspondentsEarlyGet().length, 0 );
     test.identical( con.messagesGet()[ 0 ].argument, testMsg );
 
   })
@@ -5932,7 +5931,7 @@ function first( test )
 
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 1 );
     })
   })
@@ -5952,7 +5951,7 @@ function first( test )
 
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet(), [{ error : null, argument : testMsg + 2 }] );
     })
   })
@@ -5973,7 +5972,7 @@ function first( test )
 
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
     })
   })
@@ -5993,7 +5992,7 @@ function first( test )
 
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
     })
   })
@@ -6013,7 +6012,7 @@ function first( test )
     })
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
     })
   })
@@ -6035,7 +6034,7 @@ function first( test )
     })
     return _.timeOut( 1001, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
     })
   })
@@ -6057,7 +6056,7 @@ function first( test )
     })
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
     })
   })
@@ -6081,7 +6080,7 @@ function first( test )
     })
     return _.timeOut( 1001, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
     })
   })
@@ -6103,11 +6102,11 @@ function first( test )
     con.give( testMsg );
 
     test.identical( con.messagesGet().length, 2 );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
 
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet(), [{ error : null, argument : testMsg }] );
     })
   })
@@ -6127,11 +6126,11 @@ function first( test )
     con.give( testMsg + 2 );
 
     test.identical( con.messagesGet().length, 2 );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
 
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet(), [{ error : null, argument : testMsg + 2 }] );
     })
   })
@@ -6157,7 +6156,7 @@ function first( test )
     })
     .doThen( function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
     })
   })
@@ -6184,7 +6183,7 @@ function first( test )
     })
     .doThen( function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
     })
   })
@@ -6211,7 +6210,7 @@ function first( test )
     })
     .doThen( function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
     })
   })
@@ -6240,7 +6239,7 @@ function first( test )
     })
     .doThen( function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
     })
   })
@@ -6266,7 +6265,7 @@ function first( test )
     })
     .doThen( function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
       test.identical( con2.messagesGet().length, 1 );
     })
@@ -6295,7 +6294,7 @@ function first( test )
     })
     .doThen( function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
       test.identical( con2.messagesGet().length, 1 );
     })
@@ -6317,11 +6316,11 @@ function first( test )
     con.give( testMsg );
 
     test.identical( con.messagesGet().length, 2 );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
 
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet(), [{ error : null, argument : testMsg }] );
     })
   })
@@ -6341,11 +6340,11 @@ function first( test )
     con.give( testMsg + 2 );
 
     test.identical( con.messagesGet().length, 2 );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
 
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet(), [{ error : null, argument : testMsg + 2 }] );
     })
   })
@@ -6367,7 +6366,7 @@ function first( test )
 
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
     })
   })
@@ -6388,7 +6387,7 @@ function first( test )
 
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
     })
   })
@@ -6409,7 +6408,7 @@ function first( test )
 
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
     })
   })
@@ -6432,7 +6431,7 @@ function first( test )
 
     return _.timeOut( 1001, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
     })
   })
@@ -6452,7 +6451,7 @@ function first( test )
     })
     return _.timeOut( 1, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
       test.identical( con2.messagesGet().length, 1 );
     })
@@ -6475,7 +6474,7 @@ function first( test )
     })
     return _.timeOut( 1001, function()
     {
-      test.identical( con.correspondentsGet().length, 0 );
+      test.identical( con.correspondentsEarlyGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
       test.identical( con2.messagesGet().length, 1 );
     })
@@ -6501,7 +6500,7 @@ function from( test )
     test.description = 'passing value';
     var con = wConsequence.from( testMsg );
     test.identical( con.messagesGet(), [ { error : null, argument : testMsg } ] );
-    test.identical( con.correspondentsGet(), [] );
+    test.identical( con.correspondentsEarlyGet(), [] );
     return con;
   })
 
@@ -6513,7 +6512,7 @@ function from( test )
     var err = _.err( testMsg );
     var con = wConsequence.from( err );
     test.identical( con.messagesGet(), [ { error : err, argument : undefined } ] );
-    test.identical( con.correspondentsGet(), [] );
+    test.identical( con.correspondentsEarlyGet(), [] );
     return con;
   })
 
@@ -6526,7 +6525,7 @@ function from( test )
     var con = wConsequence.from( src );
     test.identical( con, src );
     test.identical( con.messagesGet(), [ { error : null, argument : testMsg } ] );
-    test.identical( con.correspondentsGet(), [] );
+    test.identical( con.correspondentsEarlyGet(), [] );
     return con;
   })
 
@@ -6540,7 +6539,7 @@ function from( test )
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet(), [ { error : null, argument : testMsg } ] );
-      test.identical( con.correspondentsGet(), [] );
+      test.identical( con.correspondentsEarlyGet(), [] );
     })
   })
 
@@ -6554,7 +6553,7 @@ function from( test )
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet(), [ { error : testMsg, argument : undefined } ] );
-      test.identical( con.correspondentsGet(), [] );
+      test.identical( con.correspondentsEarlyGet(), [] );
     })
   })
 
@@ -6577,7 +6576,7 @@ function from( test )
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet(), [] );
-      test.identical( con.correspondentsGet(), [] );
+      test.identical( con.correspondentsEarlyGet(), [] );
     })
 
     return con;
@@ -6595,7 +6594,7 @@ function from( test )
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet(), [] );
-      test.identical( con.correspondentsGet(), [] );
+      test.identical( con.correspondentsEarlyGet(), [] );
     })
 
     return con;
@@ -6614,7 +6613,7 @@ function from( test )
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet(), [] );
-      test.identical( con.correspondentsGet(), [] );
+      test.identical( con.correspondentsEarlyGet(), [] );
     })
 
     return con;
@@ -6632,7 +6631,7 @@ function from( test )
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet().length, 0 )
-      test.identical( con.correspondentsGet().length, 0 )
+      test.identical( con.correspondentsEarlyGet().length, 0 )
     })
   })
 
@@ -6648,7 +6647,7 @@ function from( test )
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet().length, 0 )
-      test.identical( con.correspondentsGet().length, 0 )
+      test.identical( con.correspondentsEarlyGet().length, 0 )
     })
   })
 
@@ -6668,11 +6667,11 @@ function from( test )
     var con = wConsequence.from( testMsg );
     con.got( ( err, got ) => test.identical( got, testMsg ) )
     test.identical( con.messagesGet(), [ { error : null, argument : testMsg } ] );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet(), [] );
-      test.identical( con.correspondentsGet(), [] );
+      test.identical( con.correspondentsEarlyGet(), [] );
     })
 
     return con;
@@ -6687,11 +6686,11 @@ function from( test )
     var con = wConsequence.from( src );
     con.got( ( err, got ) => test.identical( err, src ) )
     test.identical( con.messagesGet(), [ { error : src, argument : undefined } ] );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet(), [] );
-      test.identical( con.correspondentsGet(), [] );
+      test.identical( con.correspondentsEarlyGet(), [] );
     })
 
     return con;
@@ -6706,12 +6705,12 @@ function from( test )
     var con = wConsequence.from( src );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
     test.identical( src.messagesGet(), [ { error : null, argument : testMsg } ] );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     test.identical( con, src );
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet(), [] );
-      test.identical( con.correspondentsGet(), [] );
+      test.identical( con.correspondentsEarlyGet(), [] );
     })
 
     return con;
@@ -6725,12 +6724,12 @@ function from( test )
     var src = Promise.resolve( testMsg );
     var con = wConsequence.from( src );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     test.identical( con.messagesGet().length, 0 )
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet().length, 0 )
-      test.identical( con.correspondentsGet().length, 0 )
+      test.identical( con.correspondentsEarlyGet().length, 0 )
     })
   })
 
@@ -6742,12 +6741,12 @@ function from( test )
     var src = Promise.reject( testMsg );
     var con = wConsequence.from( src );
     con.got( ( err, got ) => test.identical( err, testMsg ) );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     test.identical( con.messagesGet().length, 0 )
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet().length, 0 )
-      test.identical( con.correspondentsGet().length, 0 )
+      test.identical( con.correspondentsEarlyGet().length, 0 )
     })
   })
 
@@ -6767,11 +6766,11 @@ function from( test )
     var con = wConsequence.from( testMsg );
     con.got( ( err, got ) => test.identical( got, testMsg ) )
     test.identical( con.messagesGet(), [ { error : null, argument : testMsg } ] );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet(), [] );
-      test.identical( con.correspondentsGet(), [] );
+      test.identical( con.correspondentsEarlyGet(), [] );
     })
 
     return con;
@@ -6786,11 +6785,11 @@ function from( test )
     var con = wConsequence.from( src );
     con.got( ( err, got ) => test.identical( err, src ) )
     test.identical( con.messagesGet(), [ { error : src, argument : undefined } ] );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet(), [] );
-      test.identical( con.correspondentsGet(), [] );
+      test.identical( con.correspondentsEarlyGet(), [] );
     })
 
     return con;
@@ -6805,12 +6804,12 @@ function from( test )
     var con = wConsequence.from( src );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
     test.identical( src.messagesGet(), [ { error : null, argument : testMsg } ] );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     test.identical( con, src );
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet(), [] );
-      test.identical( con.correspondentsGet(), [] );
+      test.identical( con.correspondentsEarlyGet(), [] );
     })
 
     return con;
@@ -6824,12 +6823,12 @@ function from( test )
     var src = Promise.resolve( testMsg );
     var con = wConsequence.from( src );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     test.identical( con.messagesGet().length, 0 )
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet().length, 0 )
-      test.identical( con.correspondentsGet().length, 0 )
+      test.identical( con.correspondentsEarlyGet().length, 0 )
     })
   })
 
@@ -6841,12 +6840,12 @@ function from( test )
     var src = Promise.reject( testMsg );
     var con = wConsequence.from( src );
     con.got( ( err, got ) => test.identical( err, testMsg ) );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     test.identical( con.messagesGet().length, 0 )
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet().length, 0 )
-      test.identical( con.correspondentsGet().length, 0 )
+      test.identical( con.correspondentsEarlyGet().length, 0 )
     })
   })
 
@@ -6863,12 +6862,12 @@ function from( test )
     var src = Promise.resolve( testMsg );
     var con = wConsequence.from( src, 500 );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     test.identical( con.messagesGet().length, 0 )
     return _.timeOut( 1, function()
     {
       test.identical( con.messagesGet().length, 0 )
-      test.identical( con.correspondentsGet().length, 0 )
+      test.identical( con.correspondentsEarlyGet().length, 0 )
     })
   })
 
@@ -6883,12 +6882,12 @@ function from( test )
     })
     var con = wConsequence.from( src, 500 );
     con.got( ( err, got ) => test.shouldBe( _.errIs( err ) ) );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     test.identical( con.messagesGet().length, 0 )
     return _.timeOut( 600, function()
     {
       test.identical( con.messagesGet().length, 0 )
-      test.identical( con.correspondentsGet().length, 0 )
+      test.identical( con.correspondentsEarlyGet().length, 0 )
     })
   })
 
@@ -6900,7 +6899,7 @@ function from( test )
     var con = new wConsequence().give( testMsg );
     con = wConsequence.from( con , 500 );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
-    test.identical( con.correspondentsGet().length, 0 );
+    test.identical( con.correspondentsEarlyGet().length, 0 );
     test.identical( con.messagesGet().length, 0 );
   })
 
@@ -6912,12 +6911,12 @@ function from( test )
     var con = _.timeOut( 600, () => testMsg );
     con = wConsequence.from( con , 500 );
     con.got( ( err, got ) => test.shouldBe( _.errIs( err ) ) );
-    test.identical( con.correspondentsGet().length, 1 );
+    test.identical( con.correspondentsEarlyGet().length, 1 );
     test.identical( con.messagesGet().length, 0 );
     return _.timeOut( 600, function()
     {
       test.identical( con.messagesGet().length, 0 )
-      test.identical( con.correspondentsGet().length, 0 )
+      test.identical( con.correspondentsEarlyGet().length, 0 )
     })
   })
 
@@ -6980,4 +6979,4 @@ Self = wTestSuite( Self );
 if( typeof module !== 'undefined' && !module.parent )
 _.Tester.test( Self.name );
 
-} )( );
+})();
