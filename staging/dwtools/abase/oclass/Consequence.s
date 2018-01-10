@@ -285,7 +285,8 @@ function promiseGot()
       else
       resolve( got );
     })
-  })
+  });
+
 }
 
 promiseGot.having =
@@ -406,6 +407,7 @@ function promiseThen()
     self.got( function( err, got )
     {
       self.give( err, got );
+
       if( err )
       reject( err );
       else
@@ -463,20 +465,36 @@ promiseThen.having =
 
 //
 
-function choke()
+function choke( times )
 {
   var self = this;
 
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0 || arguments.length === 1 );
 
-  return self.__correspondentAppend
-  ({
-    correspondent : function(){},
-    thenning : false,
-    kindOfArguments : Self.KindOfArguments.Both,
-    early : true,
-  });
+  if( times !== undefined )
+  {
+    _.assert( _.numberIsFinite( times ) );
+    for( var t = 0 ; t < times ; t++ )
+    self.__correspondentAppend
+    ({
+      correspondent : function(){},
+      thenning : false,
+      kindOfArguments : Self.KindOfArguments.Both,
+      early : true,
+    });
+  }
+  else
+  {
+    self.__correspondentAppend
+    ({
+      correspondent : function(){},
+      thenning : false,
+      kindOfArguments : Self.KindOfArguments.Both,
+      early : true,
+    });
+  }
 
+  return self;
 }
 
 choke.having =
@@ -490,16 +508,32 @@ function chokeThen()
 {
   var self = this;
 
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0 || arguments.length === 1 );
 
-  return self.__correspondentAppend
-  ({
-    correspondent : function(){},
-    thenning : true,
-    kindOfArguments : Self.KindOfArguments.Both,
-    early : true,
-  });
+  if( times !== undefined )
+  {
+    _.assert( _.numberIsFinite( times ) );
+    for( var t = 0 ; t < times ; t++ )
+    self.__correspondentAppend
+    ({
+      correspondent : function(){},
+      thenning : true,
+      kindOfArguments : Self.KindOfArguments.Both,
+      early : true,
+    });
+  }
+  else
+  {
+    self.__correspondentAppend
+    ({
+      correspondent : function(){},
+      thenning : true,
+      kindOfArguments : Self.KindOfArguments.Both,
+      early : true,
+    });
+  }
 
+  return self;
 }
 
 chokeThen.having =
@@ -1332,14 +1366,16 @@ function _and( srcs,thenning )
 
     for( var s = 0 ; s < srcs.length-1 ; s++ )
     {
-      if( !_.consequenceIs( srcs[ s ] ) )
+      var src = srcs[ s ];
+      _.assert( _.consequenceIs( src ) || _.routineIs( src ) || src === null,'and expects consequence, routine or null' );
+      if( !_.consequenceIs( src ) )
       continue;
-      // if( !srcs[ s ] || !srcs[ s ].doesDependOf )
+      // if( !src || !src.doesDependOf )
       // debugger;
-      // _.assert( !srcs[ s ].doesDependOf( self ),'dead lock!' );
-      // _.assert( !srcs[ s ].correspondentHas( self ),'dead lock!' );
-      srcs[ s ].assertNoDeadLockWith( self );
-      self.dependsOf.push( srcs[ s ] );
+      // _.assert( !src.doesDependOf( self ),'dead lock!' );
+      // _.assert( !src.correspondentHas( self ),'dead lock!' );
+      src.assertNoDeadLockWith( self );
+      self.dependsOf.push( src );
       // if( _.workerIs() )
       // debugger;
     }
@@ -1891,6 +1927,7 @@ function __handleError( err,correspondent )
 
     _.timeOut( 100, function _unhandledError()
     {
+      debugger;
       if( !_.errIsAttended( err ) )
       {
         logger.error( 'Unhandled error caught by Consequence :' );
@@ -2003,6 +2040,7 @@ function __handleGotAct()
   function __giveToRoutine( correspondent,ordinary )
   {
 
+    var errThrowen = 0;
     var early = correspondent.early;
     var ifError = correspondent.kindOfArguments === Self.KindOfArguments.IfError;
     var ifNoError = correspondent.kindOfArguments === Self.KindOfArguments.IfNoError;
@@ -2046,12 +2084,13 @@ function __handleGotAct()
     }
     catch( err )
     {
+      errThrowen = 1;
       result = self.__handleError( err,correspondent );
     }
 
     /* thenning */
 
-    if( correspondent.thenning )
+    if( correspondent.thenning || errThrowen )
     {
 
       if( _.consequenceIs( result ) )
