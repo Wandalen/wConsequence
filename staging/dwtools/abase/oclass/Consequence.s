@@ -15,7 +15,7 @@
  !!! test difference :
 
     if( err )
-    return new wConsequence().error( err );
+    return new _.Consequence().error( err );
 
     if( err )
     throw _.err( err );
@@ -35,28 +35,37 @@ chainer :
 if( typeof module !== 'undefined' )
 {
 
-  if( typeof wBase === 'undefined' )
-  try
+  if( typeof _global_ === 'undefined' || !_global_.wBase )
   {
-    require( '../../Base.s' );
-  }
-  catch( err )
-  {
-    require( 'wTools' );
+    let toolsPath = '../../../../dwtools/Base.s';
+    let toolsExternal = 0;
+    try
+    {
+      require.resolve( toolsPath )/*hhh*/;
+    }
+    catch( err )
+    {
+      toolsExternal = 1;
+      require( 'wTools' );
+    }
+    if( !toolsExternal )
+    require( toolsPath )/*hhh*/;
   }
 
-  wTools.include( 'wProto' );
-  wTools.include( 'wCopyable' );
+  var _ = _global_.wTools;
+
+  _.include( 'wProto' );
+  _.include( 'wCopyable' );
 
 }
+
+var _ = _global_.wTools;
 
 if( _global_.wConsequence )
 return;
 
 if( _global_.wConsequence )
-throw wTools.err( 'consequence included several times' );
-
-var _ = wTools;
+throw _.err( 'consequence included several times' );
 
 //
 
@@ -78,10 +87,10 @@ var _ = wTools;
 /**
  * Creates instance of wConsequence
  * @example
-   var con = new wConsequence();
+   var con = new _.Consequence();
    con.give( 'hello' ).got( function( err, value) { console.log( value ); } ); // hello
 
-   var con = wConsequence();
+   var con = _.Consequence();
    con.got( function( err, value) { console.log( value ); } ).give('world'); // world
  * @param {Object|Function|wConsequence} [o] initialization options
  * @returns {wConsequence}
@@ -179,21 +188,21 @@ function init( o )
        console.log( 'handler 2: ' + value );
      };
 
-     var con1 = new wConsequence();
+     var con1 = new _.Consequence();
 
      con1.got( gotHandler1 );
      con1.give( 'hello' ).give( 'world' );
 
      // prints only " handler 1: hello ",
 
-     var con2 = new wConsequence();
+     var con2 = new _.Consequence();
 
      con2.got( gotHandler1 ).got( gotHandler2 );
      con2.give( 'foo' );
 
      // prints only " handler 1: foo "
 
-     var con3 = new wConsequence();
+     var con3 = new _.Consequence();
 
      con3.got( gotHandler1 ).got( gotHandler2 );
      con3.give( 'bar' ).give( 'baz' );
@@ -314,7 +323,7 @@ promiseGot.having =
      console.log( 'handler 3: ' + value );
    };
 
-   var con1 = new wConsequence();
+   var con1 = new _.Consequence();
 
    con1.doThen( gotHandler1 ).doThen( gotHandler1 ).got(gotHandler3);
    con1.give( 4 ).give( 10 );
@@ -559,7 +568,7 @@ chokeThen.having =
      console.log( 'handler 2: ' + value );
    };
 
-   var con1 = new wConsequence();
+   var con1 = new _.Consequence();
 
    con1._onceGot( gotHandler1 )._onceGot( gotHandler1 )._onceGot( gotHandler2 );
    con1.give( 'foo' ).give( 'bar' );
@@ -571,7 +580,7 @@ chokeThen.having =
 
    // but:
 
-   var con2 = new wConsequence();
+   var con2 = new _.Consequence();
 
    con2.give( 'foo' ).give( 'bar' ).give('baz');
    con2._onceGot( gotHandler1 )._onceGot( gotHandler1 )._onceGot( gotHandler2 );
@@ -653,7 +662,7 @@ function _onceGot( correspondent )
      console.log( 'handler 3: ' + value );
    };
 
-   var con1 = new wConsequence();
+   var con1 = new _.Consequence();
 
    con1._onceThen( gotHandler1 )._onceThen( gotHandler1 ).got(gotHandler3);
    con1.give( 4 ).give( 10 );
@@ -733,7 +742,7 @@ function _onceThen( correspondent )
      console.log( 'handler 2: ' + value );
    };
 
-   var con1 = new wConsequence();
+   var con1 = new _.Consequence();
    con1.give(1).give(2).give(3);
    var con2 = con1.split();
    con2.got( gotHandler2 );
@@ -806,7 +815,7 @@ split.having =
      console.log( 'handler 3: ' + value );
    }
 
-   var con1 = new wConsequence();
+   var con1 = new _.Consequence();
    con1.give(1).give(4);
 
    // prints:
@@ -947,7 +956,7 @@ ifErrorGot.having =
      console.log( 'handler 3 val: ' + value );
    }
 
-   var con2 = new wConsequence();
+   var con2 = new _.Consequence();
 
    con2._giveWithError( 'error msg', 8 ).give( 14 );
    con2.ifErrorThen( gotHandler3 ).got( gotHandler1 );
@@ -1069,7 +1078,7 @@ ifErrorThenLogThen.having =
      console.log( 'handler 2: ' + value );
    }
 
-   var con = new wConsequence();
+   var con = new _.Consequence();
 
    con.timeOutThen(500, gotHandler1).got( gotHandler2 );
    con.give(90);
@@ -1155,7 +1164,7 @@ timeOutThen.having =
 //      console.log( 'message handler 2: ' + value );
 //    }
 //
-//    var con = new wConsequence();
+//    var con = new _.Consequence();
 //
 //    var messages = [ 'hello', 'world', 'foo', 'bar', 'baz' ],
 //    len = messages.length,
@@ -1224,8 +1233,8 @@ timeOutThen.having =
      }
    };
 
-   var con1 = new wConsequence();
-   var con2 = new wConsequence();
+   var con1 = new _.Consequence();
+   var con2 = new _.Consequence();
 
    con1.got( function( err, value )
    {
@@ -1237,7 +1246,7 @@ timeOutThen.having =
      console.log( 'con2 handler executed with value: ' + value + 'and error: ' + err );
    } );
 
-   var conOwner = new  wConsequence();
+   var conOwner = new  _.Consequence();
 
    conOwner.andThen( [ con1, con2 ] );
 
@@ -1546,7 +1555,7 @@ function _either( srcs,thenning )
      }
    };
 
-   var con = new  wConsequence();
+   var con = new  _.Consequence();
 
    con.first( function()
    {
@@ -1569,11 +1578,11 @@ function _either( srcs,thenning )
     }
   };
 
-  var con = new  wConsequence();
+  var con = new  _.Consequence();
 
   con.first( function()
   {
-    return wConsequence().give(3);
+    return _.Consequence().give(3);
   });
 
  con.give(100);
@@ -1697,7 +1706,7 @@ function seal( context,method )
      console.log( 'handler 1: ' + value );
    };
 
-   var con1 = new wConsequence();
+   var con1 = new _.Consequence();
 
    con1.got( gotHandler1 );
    con1.give( 'hello' );
@@ -1743,7 +1752,7 @@ give.having =
      }
    };
 
-   var con = new  wConsequence();
+   var con = new  _.Consequence();
 
    function divade( x, y )
    {
@@ -1846,7 +1855,7 @@ function __giveAct( error,argument )
  * Creates and pushes message object into wConsequence messages sequence, and trying to get and return result of
     handling this message by appropriate correspondent.
  * @example
-   var con = new  wConsequence();
+   var con = new  _.Consequence();
 
    function increment( err, value )
    {
@@ -2413,7 +2422,7 @@ function assertNoDeadLockWith( correspondent )
      console.log( 'corespondent1 value: ' + val );
    };
 
-   var con = wConsequence();
+   var con = _.Consequence();
 
    con.tap( corespondent1 ).doThen( corespondent2 ).got( corespondent3 );
 
@@ -2486,7 +2495,7 @@ function correspondentsLateGet()
    console.log( 'corespondent1 value: ' + val );
  };
 
- var con = wConsequence();
+ var con = _.Consequence();
 
  con.got( corespondent1 ).got( corespondent2 );
  con.correspondentsCancel();
@@ -2553,7 +2562,7 @@ function _correspondentNextGet()
 /**
  * Returns messages queue.
  * @example
- * var con = wConsequence();
+ * var con = _.Consequence();
 
    con.give( 'foo' );
    con.give( 'bar ');
@@ -2592,7 +2601,7 @@ function messagesGet( index )
  * correspondents queue.
  * If as argument passed value, method messagesCancel() removes it from messages queue if messages queue contains it.
  * @example
- * var con = wConsequence();
+ * var con = _.Consequence();
 
    con.give( 'foo' );
    con.give( 'bar ');
@@ -2630,7 +2639,7 @@ function messagesCancel( data )
 /**
  * Returns number of messages in current messages queue.
  * @example
- * var con = wConsequence();
+ * var con = _.Consequence();
 
    var conLen = con.messageHas();
    console.log( conLen );
@@ -2704,7 +2713,7 @@ function cancel()
      console.log( 'corespondent1 value: ' + val );
    };
 
-   var con = wConsequence();
+   var con = _.Consequence();
    con.got( corespondent1 );
 
    var conStr = con.toStr();
@@ -2851,7 +2860,7 @@ function from_static( src,timeOut )
      }
    };
 
-   var con = new  wConsequence();
+   var con = new  _.Consequence();
 
    con.got( showResult );
 
@@ -2990,7 +2999,7 @@ function _give_static( o )
        }
      };
 
-     var con = new  wConsequence();
+     var con = new  _.Consequence();
 
      con.got( showResult );
 
@@ -3477,7 +3486,7 @@ _.classMake
   usingOriginalPrototype : 1,
 });
 
-wCopyable.mixin( wConsequence );
+_.Copyable.mixin( wConsequence );
 
 //
 
@@ -3512,46 +3521,17 @@ _.accessor
 
 _.accessorForbid( Self.prototype,Forbids );
 
-//
+_global_[ Self.name ] = _[ Self.nameShort ] = Self;
+
+// --
+// export
+// --
 
 if( typeof module !== 'undefined' )
+if( _global_._UsingWtoolsPrivately_ )
+delete require.cache[ module.id ];
+
+if( typeof module !== 'undefined' && module !== null )
 module[ 'exports' ] = Self;
-_global_[ Self.name ] = wTools[ Self.nameShort ] = Self;
-
-//
-
-// debugger;
-// var conA = new wConsequence();
-// debugger;
-// var conB = new Self();
-// debugger;
-// var conC = Self();
-// debugger;
-// var con1 = new Self().give();
-// debugger;
-// var con2 = Self().give();
-// debugger;
-// var con3 = con1.clone();
-// debugger;
-// console.log( con1.messagesGet().length );
-// console.log( con2.messagesGet().length );
-// console.log( con3.messagesGet().length );
-// debugger;
-// var consequenceIs1 = _.consequenceIs( con1 );
-// var consequenceIs2 = con1 instanceof Self;
-// var consequenceIs3 = con1 instanceof wConsequence;
-// debugger;
-// var consequenceIs1 = _.consequenceIs( con2 );
-// var consequenceIs2 = con2 instanceof Self;
-// var consequenceIs3 = con2 instanceof wConsequence;
-// debugger;
-// var consequenceIs1 = _.consequenceIs( con3 );
-// var consequenceIs2 = con3 instanceof Self;
-// var consequenceIs3 = con3 instanceof wConsequence;
-// debugger;
-// con1.give( 1 );
-// debugger;
-// con1( 2 );
-// debugger;
 
 })();
