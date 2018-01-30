@@ -59,7 +59,7 @@ if( typeof module !== 'undefined' )
 
 }
 
-var _ = _global_.wTools;
+var _ = _global_.wTools; debugger;
 
 if( _global_.wConsequence )
 {
