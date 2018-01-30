@@ -37,7 +37,7 @@ if( typeof module !== 'undefined' )
 
   if( typeof _global_ === 'undefined' || !_global_.wBase )
   {
-    let toolsPath = '../../../../dwtools/Base.s';
+    let toolsPath = '../../../dwtools/Base.s';
     let toolsExternal = 0;
     try
     {
@@ -62,13 +62,17 @@ if( typeof module !== 'undefined' )
 var _ = _global_.wTools;
 
 if( _global_.wConsequence )
-debugger;
+{
+  debugger;
+  var Self = _global_.wConsequence;
+  _[ Self.nameShort ] = Self;
+  if( typeof module !== 'undefined' && module !== null )
+  module[ 'exports' ] = Self;
+  return;
+}
 
 if( _global_.wConsequence )
-return;
-
-if( _global_.wConsequence )
-throw _.err( 'consequence included several times' );
+throw _.err( 'Consequence included several times' );
 
 //
 
@@ -3530,9 +3534,9 @@ _global_[ Self.name ] = _[ Self.nameShort ] = Self;
 // export
 // --
 
-// if( typeof module !== 'undefined' )
-// if( _global_._UsingWtoolsPrivately_ )
-// delete require.cache[ module.id ];
+if( typeof module !== 'undefined' )
+if( _global_._UsingWtoolsPrivately_ )
+delete require.cache[ module.id ];
 
 if( typeof module !== 'undefined' && module !== null )
 module[ 'exports' ] = Self;
