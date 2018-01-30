@@ -61,10 +61,10 @@ if( typeof module !== 'undefined' )
 
 var _ = _global_.wTools; debugger;
 
-if( _global_.wConsequence )
+if( _globalReal_.wConsequence )
 {
   debugger;
-  var Self = _global_.wConsequence;
+  var Self = _globalReal_.wConsequence;
   _[ Self.nameShort ] = Self;
   if( typeof module !== 'undefined' && module !== null )
   module[ 'exports' ] = Self;
@@ -2871,7 +2871,7 @@ function from_static( src,timeOut )
 
    con.got( showResult );
 
-   wConsequence.give( con, 'hello world' );
+   _.Consequence.give( con, 'hello world' );
    // prints: handleGot1 value: hello world
  * @param {Function|wConsequence} consequence
  * @param {*} arg argument value
@@ -3038,8 +3038,8 @@ function error_static( consequence,error )
 //
 
   /**
-   * Works like [give]{@link wConsequence.give} but accepts also context, that will be sealed to correspondent.
-   * @see wConsequence.give
+   * Works like [give]{@link _.Consequence.give} but accepts also context, that will be sealed to correspondent.
+   * @see _.Consequence.give
    * @param {Function|wConsequence} consequence wConsequence or routine.
    * @param {Object} context sealed context
    * @param {*} err error reason
@@ -3528,7 +3528,7 @@ _.accessor
 
 _.accessorForbid( Self.prototype,Forbids );
 
-_global_[ Self.name ] = _[ Self.nameShort ] = Self;
+_globalReal_[ Self.name ] = _global_[ Self.name ] = _[ Self.nameShort ] = Self;
 
 // --
 // export
