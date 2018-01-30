@@ -59,11 +59,10 @@ if( typeof module !== 'undefined' )
 
 }
 
-var _ = _global_.wTools; debugger;
+var _ = _global_.wTools;
 
 if( _globalReal_.wConsequence )
 {
-  debugger;
   var Self = _globalReal_.wConsequence;
   _[ Self.nameShort ] = Self;
   if( typeof module !== 'undefined' && module !== null )
