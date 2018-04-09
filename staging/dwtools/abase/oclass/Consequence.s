@@ -3360,6 +3360,11 @@ var Forbids =
   _correspondentPersistent : '_correspondentPersistent',
 }
 
+var Accessors =
+{
+  correspondentNext : 'correspondentNext',
+}
+
 // --
 // proto
 // --
@@ -3519,15 +3524,19 @@ _.assert( wConsequenceProxy.nameShort === 'Consequence' );
 _.accessor
 ({
   object : Self.prototype,
-  names :
-  {
-    correspondentNext : 'correspondentNext',
-  }
+  names : Accessors
 });
 
 _.accessorForbid( Self.prototype,Forbids );
 
+_.assert( Self._allFieldsGet );
+_.assert( Self.prototype._allFieldsGet );
+_.assert( Self.allFields );
+_.assert( Self.prototype.allFields );
+_.assert( _.mapKeys( Self.allFields ).length );
+
 _globalReal_[ Self.name ] = _global_[ Self.name ] = _[ Self.nameShort ] = Self;
+
 
 // --
 // export

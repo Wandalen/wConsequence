@@ -22,9 +22,10 @@ if( typeof module !== 'undefined' )
     require( toolsPath )/*hhh*/;
   }
 
-var _ = _global_.wTools;
+  var _ = _global_.wTools;
 
   require( '../oclass/Consequence.s' );
+
   _.include( 'wTesting' );
 
 }
