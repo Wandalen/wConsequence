@@ -41,7 +41,7 @@ if( typeof module !== 'undefined' )
     let toolsExternal = 0;
     try
     {
-      require.resolve( toolsPath )/*hhh*/;
+      require.resolve( toolsPath );
     }
     catch( err )
     {
@@ -49,7 +49,7 @@ if( typeof module !== 'undefined' )
       require( 'wTools' );
     }
     if( !toolsExternal )
-    require( toolsPath )/*hhh*/;
+    require( toolsPath );
   }
 
   var _ = _global_.wTools;
