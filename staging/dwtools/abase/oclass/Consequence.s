@@ -1284,6 +1284,7 @@ function andGot( srcs )
 andGot.having =
 {
   consequizing : 1,
+  andLike : 1,
 }
 
 //
@@ -1307,6 +1308,7 @@ function andThen( srcs )
 andThen.having =
 {
   consequizing : 1,
+  andLike : 1,
 }
 
 //
@@ -1314,7 +1316,9 @@ andThen.having =
 function _and( srcs,thenning )
 {
   var self = this;
-  var returned = [];
+  // var returned = [];
+  var errs = [];
+  var args = [];
   var anyErr;
 
   if( !_.arrayIs( srcs ) )
@@ -1332,19 +1336,21 @@ function _and( srcs,thenning )
     if( thenning )
     for( var i = 0 ; i < srcs.length-1 ; i++ )
     if( srcs[ i ] )
-    srcs[ i ].give( returned[ i ][ 0 ],returned[ i ][ 1 ] );
+    srcs[ i ].give( errs[ i ],args[ i ] );
 
     if( anyErr )
     self.error( anyErr );
     else
-    self.give( returned[ srcs.length-1 ][ 1 ] );
+    self.give( args );
+
+    // self.give( returned[ srcs.length-1 ][ 1 ] );
 
   }
 
   /* */
 
   var count = srcs.length;
-  function __got( index,err,data )
+  function __got( index,err,arg )
   {
 
     count -= 1;
@@ -1352,15 +1358,15 @@ function _and( srcs,thenning )
     if( err && !anyErr )
     anyErr = err;
 
-    returned[ index ] = [ err,data ];
+    // returned[ index ] = [ err,data ];
+    errs[ index ] = err;
+    args[ index ] = arg;
 
     if( Config.debug )
     if( self.diagnostics )
     if( index < srcs.length-1 )
     if( _.consequenceIs( srcs[ index ] ) )
     {
-      // if( _.workerIs() )
-      // debugger;
       _.arrayRemoveOnceStrictly( self.dependsOf , srcs[ index ] );
     }
 
@@ -1385,22 +1391,13 @@ function _and( srcs,thenning )
       _.assert( _.consequenceIs( src ) || _.routineIs( src ) || src === null,'and expects consequence, routine or null' );
       if( !_.consequenceIs( src ) )
       continue;
-      // if( !src || !src.doesDependOf )
-      // debugger;
-      // _.assert( !src.doesDependOf( self ),'dead lock!' );
-      // _.assert( !src.correspondentHas( self ),'dead lock!' );
       src.assertNoDeadLockWith( self );
       self.dependsOf.push( src );
-      // if( _.workerIs() )
-      // debugger;
     }
 
   }
 
   /* */
-
-  // if( _.workerIs() )
-  // debugger;
 
   self.got( function _andGot( err,data )
   {
@@ -1417,12 +1414,10 @@ function _and( srcs,thenning )
         self.dependsOf.push( src );
       }
 
-      // debugger;
       if( Config.debug )
       if( self.diagnostics )
       if( _.consequenceIs( srcs[ s ] ) )
       src.assertNoDeadLockWith( self );
-      // _.assert( !src.correspondentHas( self ),'dead lock!' );
 
       _.assert( _.consequenceIs( src ) || src === null,'expects consequence or null, got',_.strTypeOf( src ) );
       if( src === null )
@@ -1432,9 +1427,7 @@ function _and( srcs,thenning )
       }
 
       var r = _.routineJoin( undefined,__got,[ s ] );
-      r.tag = _.numberRandomInt( 100 );
-      // if( _.workerIs() )
-      // debugger;
+      r.tag = _.numberRandomInt( 100 ); // qqq
       src.got( r );
     }
 
@@ -1471,6 +1464,7 @@ function eitherThen( srcs )
 eitherThen.having =
 {
   consequizing : 1,
+  andLike : 1,
 }
 
 //
@@ -1494,6 +1488,7 @@ function eitherThenSplit( srcs )
 eitherThenSplit.having =
 {
   consequizing : 1,
+  andLike : 1,
 }
 
 //
@@ -1651,52 +1646,145 @@ function _first( src,stack )
 
 //
 
-function seal( context,method )
+var ConsequenceJoined = Object.create( null );
+ConsequenceJoined.routineJoin = _.routineSeal;
+ConsequenceJoined.context = null;
+ConsequenceJoined.method = null;
+ConsequenceJoined.consequence = null;
+ConsequenceJoined.constructor = function ConsequenceJoined()
+{
+  debugger;
+};
+
+//
+
+function _prepareConsequenceJoined()
+{
+
+  // debugger;
+  for( var r in Self.prototype ) ( function( r )
+  {
+    if( Self.prototype._Accessors[ r ] )
+    return;
+    var routine = Self.prototype[ r ];
+    if( !routine.having || !routine.having.consequizing )
+    return;
+
+    if( routine.having.andLike )
+    ConsequenceJoined[ r ] = function()
+    {
+      var args = arguments;
+      var method = [];
+      _.assert( arguments.length === 1 );
+      _.assert( _.arrayLike( args[ 0 ] ) );
+      for( var i = 0 ; i < args[ 0 ].length ; i++ )
+      {
+        method.push( this.routineJoin( this.context,this.method,[ args[ 0 ][ i ] ] ) );
+      }
+      this.consequence[ r ]( method );
+      return this;
+    }
+    else
+    ConsequenceJoined[ r ] = function()
+    {
+      var args = arguments;
+      var method = this.routineJoin( this.context,this.method,args );
+      this.consequence[ r ]( method );
+      return this;
+    }
+
+  })( r );
+  // debugger;
+
+}
+
+//
+
+function _join( routineJoin,args )
 {
   var self = this;
-  var result = Object.create( null );
+  var result = Object.create( ConsequenceJoined );
 
-  /**/
+  _.assert( arguments.length === 2 );
+  _.assert( args.length === 1 || args.length === 2 );
+  _.assert( _.consequenceIs( this ) );
 
-  _.assert( arguments.length === 1 || arguments.length === 2 );
-  _.assert( _.consequenceIs( this ) )
-
+  result.routineJoin = routineJoin;
   result.consequence = self;
 
-  result.ifNoErrorThen = function ifNoErrorThen( _method )
+  if( args[ 1 ] !== undefined )
   {
-    var args = method ? arguments : arguments[ 1 ];
-    var c = _.routineSeal( context,method || _method,args );
-    self.ifNoErrorThen( c );
-    return this;
+    result.context = args[ 0 ];
+    result.method = args[ 1 ];
   }
-
-  result.ifErrorThen = function ifErrorThen( _method )
+  else
   {
-    var args = method ? arguments : arguments[ 1 ];
-    var c = _.routineSeal( context,method || _method,args );
-    self.ifErrorThen( c );
-    return this;
-  }
-
-  result.doThen = function doThen( _method )
-  {
-    var args = method ? arguments : arguments[ 1 ];
-    var c = _.routineSeal( context,method || _method,args );
-    self.doThen( c );
-    return this;
-  }
-
-  result.got = function got( _method )
-  {
-    var args = method ? arguments : arguments[ 2 ];
-    var c = _.routineSeal( context,method || _method,args );
-    self.got( c );
-    return this;
+    result.method = args[ 0 ];
   }
 
   return result;
 }
+
+//
+
+function join( context,method )
+{
+  var self = this;
+  return self._join( _.routineJoin,arguments );
+}
+
+//
+
+function seal( context,method )
+{
+  var self = this;
+  return self._join( _.routineSeal,arguments );
+}
+
+// function seal( context,method )
+// {
+//   var self = this;
+//   var result = Object.create( null );
+//
+//   _.assert( arguments.length === 1 || arguments.length === 2 );
+//   _.assert( _.consequenceIs( this ) );
+//
+//   result.consequence = self;
+//
+//   result.ifNoErrorThen = function ifNoErrorThen( _method )
+//   {
+//     var args = method ? arguments : arguments[ 1 ];
+//     var c = _.routineSeal( context,method || _method,args );
+//     self.ifNoErrorThen( c );
+//     return this;
+//   }
+//
+//   result.ifErrorThen = function ifErrorThen( _method )
+//   {
+//     var args = method ? arguments : arguments[ 1 ];
+//     var c = _.routineSeal( context,method || _method,args );
+//     self.ifErrorThen( c );
+//     return this;
+//   }
+//
+//   result.doThen = function doThen( _method )
+//   {
+//     var args = method ? arguments : arguments[ 1 ];
+//     var c = _.routineSeal( context,method || _method,args );
+//     self.doThen( c );
+//     return this;
+//   }
+//
+//   result.got = function got( _method )
+//   {
+//     var args = method ? arguments : arguments[ 2 ];
+//     var c = _.routineSeal( context,method || _method,args );
+//     self.got( c );
+//     return this;
+//   }
+//
+//   return result;
+// }
 
 // --
 // messanger
@@ -1777,7 +1865,7 @@ give.having =
    con.got( showResult );
    divade( 3, 0 );
 
-   // prints: handleGot1 error: divide by zero
+   // prints : handleGot1 error: divide by zero
  * @param {*|Error} error error, or value that represent error reason
  * @throws {Error} if passed extra parameters.
  * @method error
@@ -3036,17 +3124,17 @@ function error_static( consequence,error )
 
 //
 
-  /**
-   * Works like [give]{@link _.Consequence.give} but accepts also context, that will be sealed to correspondent.
-   * @see _.Consequence.give
-   * @param {Function|wConsequence} consequence wConsequence or routine.
-   * @param {Object} context sealed context
-   * @param {*} err error reason
-   * @param {*} got arguments
-   * @returns {*}
-   * @method giveWithContextAndError
-   * @memberof wConsequence
-   */
+/**
+ * Works like [give]{@link _.Consequence.give} but accepts also context, that will be sealed to correspondent.
+ * @see _.Consequence.give
+ * @param {Function|wConsequence} consequence wConsequence or routine.
+ * @param {Object} context sealed context
+ * @param {*} err error reason
+ * @param {*} got arguments
+ * @returns {*}
+ * @method giveWithContextAndError
+ * @memberof wConsequence
+ */
 
 function giveWithContextAndError_static( consequence,context,err,got )
 {
@@ -3116,17 +3204,17 @@ function ifErrorThen_static()
 
 //
 
-  /**
-   * Method accepts correspondent callback. Returns special correspondent that wrap passed one. Passed corespondent will
-   * be invoked only if handling message does not contain error value. Else given message with error will be delegate to
-   * the next handler in wConsequence, to the which result correspondent was added.
-   * @param {correspondent} vallueHandler resolved message handler
-   * @returns {corespondent}
-   * @static
-   * @throws {Error} If missed arguments or passed extra one;
-   * @method ifNoErrorThen
-   * @memberof wConsequence
-   */
+/**
+ * Method accepts correspondent callback. Returns special correspondent that wrap passed one. Passed corespondent will
+ * be invoked only if handling message does not contain error value. Else given message with error will be delegate to
+ * the next handler in wConsequence, to the which result correspondent was added.
+ * @param {correspondent} vallueHandler resolved message handler
+ * @returns {corespondent}
+ * @static
+ * @throws {Error} If missed arguments or passed extra one;
+ * @method ifNoErrorThen
+ * @memberof wConsequence
+ */
 
 function ifNoErrorThen_static()
 {
@@ -3423,7 +3511,9 @@ var Extend =
   first : first,
   _first : _first,
 
-  seal : seal, /* experimental */
+  _join : _join,
+  join : join,
+  seal : seal,
 
 
   // messanger
@@ -3524,10 +3614,11 @@ _.assert( wConsequenceProxy.nameShort === 'Consequence' );
 _.accessor
 ({
   object : Self.prototype,
-  names : Accessors
+  names : Accessors,
 });
 
 _.accessorForbid( Self.prototype,Forbids );
+_prepareConsequenceJoined();
 
 _.assert( Self._allFieldsGet );
 _.assert( Self.prototype._allFieldsGet );
@@ -3535,8 +3626,9 @@ _.assert( Self.allFields );
 _.assert( Self.prototype.allFields );
 _.assert( _.mapKeys( Self.allFields ).length );
 
-_globalReal_[ Self.name ] = _global_[ Self.name ] = _[ Self.nameShort ] = Self;
+//
 
+_globalReal_[ Self.name ] = _global_[ Self.name ] = _[ Self.nameShort ] = Self;
 
 // --
 // export
