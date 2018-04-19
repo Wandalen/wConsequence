@@ -5082,7 +5082,7 @@ function _and( test )
       test.identical( con1.correspondentsEarlyGet().length, 0 );
       test.identical( con2.messagesGet().length, 0 );
       test.identical( con2.correspondentsEarlyGet().length, 0 );
-      test.identical( got, testMsg );
+      test.identical( got, [ delay, delay * 2, testMsg ] );
     });
 
     _.timeOut( delay, () => { con1.give( delay ) } );
@@ -5116,7 +5116,7 @@ function _and( test )
       test.identical( con1.correspondentsEarlyGet().length, 1 );
       test.identical( con2.messagesGet().length, 0 );
       test.identical( con2.correspondentsEarlyGet().length, 1 );
-      test.identical( got, testMsg );
+      test.identical( got, [ delay, delay * 2, testMsg ] );
     });
 
     _.timeOut( delay, () => { con1.give( delay ) } );
