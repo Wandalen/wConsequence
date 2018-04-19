@@ -522,8 +522,9 @@ function andGot( test )
 
     mainCon.andGot( con );
 
-    mainCon.doThen( function()
+    mainCon.doThen( function( err, got )
     {
+      test.identical( got, [ delay, testMsg ] )
       test.identical( mainCon.messagesGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
       test.identical( con.correspondentsEarlyGet().length, 0 );
@@ -552,8 +553,9 @@ function andGot( test )
 
     mainCon.andGot( () => con );
 
-    mainCon.doThen( function()
+    mainCon.doThen( function( err, got )
     {
+      test.identical( got, [ delay, testMsg ] );
       test.identical( mainCon.messagesGet().length, 0 );
       test.identical( con.messagesGet().length, 0 );
       test.identical( con.correspondentsEarlyGet().length, 0 );
@@ -581,8 +583,10 @@ function andGot( test )
 
     mainCon.andGot( srcs );
 
-    mainCon.doThen( function()
+    mainCon.doThen( function( err, got )
     {
+      test.identical( got, [ delay, delay * 2, testMsg + testMsg, testMsg ] );
+
       test.identical( mainCon.messagesGet().length, 0 );
 
       test.identical( con1.messagesGet(), []);
@@ -597,9 +601,147 @@ function andGot( test )
 
     _.timeOut( delay, () => { con1.give( delay ) });
     _.timeOut( delay * 2, () => { con2.give( delay * 2 ) });
-    con3.give( testMsg );
+    con3.give( testMsg + testMsg );
 
     return mainCon;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'each con gives several messages, order of provided consequence is important';
+    var delay = 100;
+    var mainCon = new _.Consequence();
+    var con1 = new _.Consequence();
+    var con2 = new _.Consequence();
+    var con3 = new _.Consequence();
+
+    var srcs = [ con3, con1, con2  ];
+
+    mainCon.give( testMsg );
+
+    mainCon.andGot( srcs );
+
+    mainCon.doThen( function( err, got )
+    {
+      test.identical( got, [ 'con3', 'con1', 'con2', testMsg ] );
+
+      test.identical( mainCon.messagesGet().length, 0 );
+
+      test.identical( con1.messagesGet().length, 2 );
+      test.identical( con1.correspondentsEarlyGet().length, 0 );
+
+      test.identical( con2.messagesGet().length, 2 );
+      test.identical( con2.correspondentsEarlyGet().length, 0 );
+
+      test.identical( con3.messagesGet().length, 2 );
+      test.identical( con3.correspondentsEarlyGet().length, 0 );
+    });
+
+    _.timeOut( delay, () =>
+    {
+      con1.give( 'con1' );
+      con1.give( 'con1' );
+      con1.give( 'con1' );
+    });
+
+    _.timeOut( delay * 2, () =>
+    {
+      con2.give( 'con2' );
+      con2.give( 'con2' );
+      con2.give( 'con2' );
+    });
+
+    _.timeOut( delay / 2, () =>
+    {
+      con3.give( 'con3' );
+      con3.give( 'con3' );
+      con3.give( 'con3' );
+    });
+
+    return mainCon;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'one of provided cons waits for another one to resolve';
+    var delay = 100;
+    var mainCon = new _.Consequence();
+    var con1 = new _.Consequence();
+    var con2 = new _.Consequence();
+
+    var srcs = [ con1, con2  ];
+
+    con1.give();
+    con1.doThen( () => con2 );
+    con1.doThen( () => 'con1' );
+
+    mainCon.give( testMsg );
+
+    mainCon.andGot( srcs );
+
+    mainCon.doThen( function( err, got )
+    {
+      test.identical( got, [ 'con1', 'con2', testMsg ] );
+
+      test.identical( mainCon.messagesGet().length, 0 );
+
+      test.identical( con1.messagesGet().length, 0 );
+      test.identical( con1.correspondentsEarlyGet().length, 0 );
+
+      test.identical( con2.messagesGet().length, 0 );
+      test.identical( con2.correspondentsEarlyGet().length, 0 );
+
+    });
+
+    _.timeOut( delay * 2, () => { con2.give( 'con2' )  } )
+
+    return mainCon;
+  })
+
+  .doThen( function()
+  {
+    test.description = 'consequence gives an error, only first error is taken into account';
+
+    var delay = 100;
+    var mainCon = new _.Consequence();
+    var con1 = new _.Consequence();
+    var con2 = new _.Consequence();
+
+    var srcs = [ con1, con2  ];
+
+    mainCon.give( testMsg );
+
+    mainCon.andGot( srcs );
+
+    mainCon.doThen( function( err, got )
+    {
+      test.identical( err, 'con1' );
+      test.identical( got, undefined );
+
+      test.identical( mainCon.messagesGet().length, 0 );
+
+      test.identical( con1.messagesGet().length, 0 );
+      test.identical( con1.correspondentsEarlyGet().length, 0 );
+
+      test.identical( con2.messagesGet().length, 0 );
+      test.identical( con2.correspondentsEarlyGet().length, 0 );
+    });
+
+    _.timeOut( delay, () => { con1.error( 'con1' )  } )
+    var t = _.timeOut( delay * 2, () => { con2.give( 'con2' )  } )
+
+    t.doThen( () =>
+    {
+      test.identical( con2.messagesGet().length, 0 );
+      test.identical( con2.correspondentsEarlyGet().length, 0 );
+      return mainCon;
+    })
+
+    return t;
   })
 
   /* */
@@ -689,8 +831,9 @@ function andThen( test )
 
     mainCon.andThen( con );
 
-    mainCon.doThen( function()
+    mainCon.doThen( function( err, got )
     {
+      test.identical( got, [ delay, testMsg ] );
       test.identical( mainCon.messagesGet().length, 0 );
       test.identical( con.messagesGet(), [{ error : null, argument : delay }] );
       test.identical( con.correspondentsEarlyGet().length, 0 );
@@ -719,8 +862,9 @@ function andThen( test )
 
     mainCon.andThen( () => con );
 
-    mainCon.doThen( function()
+    mainCon.doThen( function( err, got )
     {
+      test.identical( got, [ delay, testMsg ] );
       test.identical( mainCon.messagesGet().length, 0 );
       test.identical( con.messagesGet().length, 1 );
       test.identical( con.messagesGet()[ 0 ], { error : null, argument : delay } );
@@ -754,8 +898,9 @@ function andThen( test )
 
     mainCon.andThen( srcs );
 
-    mainCon.doThen( function()
+    mainCon.doThen( function( err, got )
     {
+      test.identical( got, [ delay, delay * 2, testMsg + testMsg, testMsg ] )
       test.identical( mainCon.messagesGet().length, 0 );
 
       test.identical( con1.messagesGet(), [ { error : null, argument : delay } ]);
@@ -764,15 +909,154 @@ function andThen( test )
       test.identical( con2.messagesGet(), [ { error : null, argument : delay * 2 } ]);
       test.identical( con2.correspondentsEarlyGet().length, 0 );
 
-      test.identical( con3.messagesGet(), [ { error : null, argument : testMsg } ]);
+      test.identical( con3.messagesGet(), [ { error : null, argument : testMsg + testMsg } ]);
       test.identical( con3.correspondentsEarlyGet().length, 0 );
     });
 
     _.timeOut( delay, () => { con1.give( delay ) });
     _.timeOut( delay * 2, () => { con2.give( delay * 2 ) });
-    con3.give( testMsg );
+    con3.give( testMsg + testMsg );
 
     return mainCon;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'each con gives several messages, order of provided consequence is important';
+    var delay = 100;
+    var mainCon = new _.Consequence();
+    var con1 = new _.Consequence();
+    var con2 = new _.Consequence();
+    var con3 = new _.Consequence();
+
+    var srcs = [ con3, con1, con2  ];
+
+    mainCon.give( testMsg );
+
+    mainCon.andThen( srcs );
+
+    mainCon.doThen( function( err, got )
+    {
+      test.identical( got, [ 'con3', 'con1', 'con2', testMsg ] );
+      test.identical( mainCon.messagesGet().length, 0 );
+
+      test.identical( con1.messagesGet().length, 3 );
+      test.identical( con1.correspondentsEarlyGet().length, 0 );
+
+      test.identical( con2.messagesGet().length, 3 );
+      test.identical( con2.correspondentsEarlyGet().length, 0 );
+
+      test.identical( con3.messagesGet().length, 3 );
+      test.identical( con3.correspondentsEarlyGet().length, 0 );
+    });
+
+    _.timeOut( delay, () =>
+    {
+      con1.give( 'con1' );
+      con1.give( 'con1' );
+      con1.give( 'con1' );
+    });
+
+    _.timeOut( delay * 2, () =>
+    {
+      con2.give( 'con2' );
+      con2.give( 'con2' );
+      con2.give( 'con2' );
+    });
+
+    _.timeOut( delay / 2, () =>
+    {
+      con3.give( 'con3' );
+      con3.give( 'con3' );
+      con3.give( 'con3' );
+    });
+
+    return mainCon;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.description = 'one of provided cons waits for another one to resolve';
+    var delay = 100;
+    var mainCon = new _.Consequence();
+    var con1 = new _.Consequence();
+    var con2 = new _.Consequence();
+
+    var srcs = [ con1, con2  ];
+
+    con1.give();
+    con1.doThen( () => con2 );
+    con1.doThen( () => 'con1' );
+
+    mainCon.give( testMsg );
+
+    mainCon.andGot( srcs );
+
+    mainCon.doThen( function( err, got )
+    {
+      test.identical( got, [ 'con1', 'con2', testMsg ] );
+
+      test.identical( mainCon.messagesGet().length, 0 );
+
+      test.identical( con1.messagesGet().length, 0 );
+      test.identical( con1.correspondentsEarlyGet().length, 0 );
+
+      test.identical( con2.messagesGet().length, 0 );
+      test.identical( con2.correspondentsEarlyGet().length, 0 );
+
+    });
+
+    _.timeOut( delay * 2, () => { con2.give( 'con2' )  } )
+
+    return mainCon;
+  })
+
+  .doThen( function()
+  {
+    test.description =
+    `consequence gives an error, only first error is taken into account
+     other consequences are receiving their messages back`;
+
+    var delay = 100;
+    var mainCon = new _.Consequence();
+    var con1 = new _.Consequence();
+    var con2 = new _.Consequence();
+
+    var srcs = [ con1, con2  ];
+
+    mainCon.give( testMsg );
+
+    mainCon.andThen( srcs );
+
+    mainCon.doThen( function( err, got )
+    {
+      test.identical( err, 'con1' );
+      test.identical( got, undefined );
+
+      test.identical( mainCon.messagesGet().length, 0 );
+
+      test.identical( con1.messagesGet().length, 1 );
+      test.identical( con1.correspondentsEarlyGet().length, 0 );
+
+      test.identical( con2.messagesGet().length, 1 );
+      test.identical( con2.correspondentsEarlyGet().length, 0 );
+    });
+
+    _.timeOut( delay, () => { con1.error( 'con1' )  } )
+    var t = _.timeOut( delay * 2, () => { con2.give( 'con2' )  } )
+
+    t.doThen( () =>
+    {
+      test.identical( con2.messagesGet().length, 0 );
+      test.identical( con2.correspondentsEarlyGet().length, 0 );
+      return mainCon;
+    })
+
+    return t;
   })
 
   /* */
