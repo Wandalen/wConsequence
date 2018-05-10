@@ -1,6 +1,6 @@
 ( function _Consequence_s_() {
 
-'use strict';
+'use strict'; /* aaa */
 
   /**
    * @file Consequence.s - Advanced synchronization mechanism. wConsequence is able to solve any asynchronous problem
@@ -137,7 +137,7 @@ wConsequence.nameShort = 'Consequence';
  * Initialises instance of wConsequence
  * @param {Object|Function|wConsequence} [o] initialization options
  * @private
- * @method pathCurrent
+ * @method init
  * @memberof wConsequence#
  */
 
