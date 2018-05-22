@@ -519,7 +519,7 @@ choke.having =
 
 //
 
-function chokeThen()
+function chokeThen( times )
 {
   var self = this;
 
