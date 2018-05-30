@@ -313,6 +313,8 @@ function timeOut( test )
   return testCon;
 }
 
+timeOut.timeOut = 30000;
+
 //
 
 function timeOutAsync( test )
@@ -1105,13 +1107,13 @@ function timeOutAsync( test )
   return testCon;
 }
 
-timeOutAsync.timeOut = 20000;
+timeOutAsync.timeOut = 30000;
 
 //
 
 function timeOutError( test )
 {
-  var delay = 300;
+  var delay = 100;
   var testCon = new _.Consequence().give()
 
   /* */
@@ -1218,10 +1220,12 @@ function timeOutError( test )
     return _.timeOutError( delay, _.timeOut( delay * 2 ) )
     .doThen( function( err, got )
     {
+      console.log( 'xxx' );
       test.shouldBe( _.timeNow() - timeBefore >= delay * 2 );
       test.identical( got, undefined );
       test.shouldBe( _.errIs( err ) );
     });
+
   })
 
   /* */
@@ -1236,10 +1240,10 @@ function timeOutError( test )
     {
       test.shouldBe( _.timeNow() - timeBefore >= delay / 2 );
       test.identical( got, undefined );
-      test.identical( err, null );
+      test.shouldBe( !!err );
       test.identical( t.messagesGet().length, 0 );
     })
-    _.timeOut( delay/ 2, () => t.error( 'stop' ) );
+    _.timeOut( delay / 2, () => t.error( 'stop' ) );
 
     return t;
   })
@@ -1258,7 +1262,7 @@ function timeOutError( test )
       test.shouldBe( _.timeNow() - timeBefore >= delay / 2 );
       test.identical( got, undefined );
       test.identical( called, false );
-      test.identical( err, null )
+      test.shouldBe( !!err );
       test.identical( t.messagesGet().length, 0 );
     })
     _.timeOut( delay/ 2, () => t.error( 'stop' ) );
@@ -1266,8 +1270,15 @@ function timeOutError( test )
     return t;
   })
 
+  .doThen( function( err,arg )
+  {
+    return;
+  });
+
   return testCon;
 }
+
+timeOutError.timeOut = 30000;
 
 //
 
