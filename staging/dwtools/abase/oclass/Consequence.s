@@ -1,26 +1,12 @@
 ( function _Consequence_s_() {
 
-'use strict'; /* aaa */
+'use strict'; /*bbb*/
 
-  /**
-   * @file Consequence.s - Advanced synchronization mechanism. wConsequence is able to solve any asynchronous problem
-     replacing and including functionality of many other mechanisms, such as: Callback, Event, Signal, Mutex, Semaphore,
-     Async, Promise.
-   */
-
-/*
-
- !!! move promise / event property from object to correspondent
-
- !!! test difference :
-
-    if( err )
-    return new _.Consequence().error( err );
-
-    if( err )
-    throw _.err( err );
-
-*/
+/**
+ * @file Consequence.s - Advanced synchronization mechanism. wConsequence is able to solve any asynchronous problem
+   replacing and including functionality of many other mechanisms, such as: Callback, Event, Signal, Mutex, Semaphore,
+   Async, Promise.
+ */
 
 /*
 
