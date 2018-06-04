@@ -35,7 +35,7 @@ var _ = _global_.wTools;
 
 function timeOut( test )
 {
-  var delay = 300;
+  var delay = 350;
   var testCon = new _.Consequence().give()
 
   /* */
@@ -300,7 +300,10 @@ function timeOut( test )
     var t = _.timeOut( delay, () => { called = true } );
     t.doThen( function( err, got )
     {
-      test.shouldBe( _.timeNow() - timeBefore >= delay / 2 );
+      var time = _.timeNow() - timeBefore;
+      // test.description = 'stop timer with error + arg, routine passed, time:' + time;
+      console.log( 'time', time );
+      test.shouldBe( time >= delay / 2 );
       test.identical( got, [ stop, arg ] );
       test.identical( called, false );
       test.identical( err, null )
@@ -1285,7 +1288,7 @@ timeOutError.timeOut = 30000;
 var Self =
 {
 
-  name : 'Time',
+  name : 'Time' + Math.random(),
   silencing : 1,
 
   tests :
