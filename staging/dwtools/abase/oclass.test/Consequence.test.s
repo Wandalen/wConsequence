@@ -7,7 +7,7 @@ if( typeof module !== 'undefined' )
 
   if( typeof _global_ === 'undefined' || !_global_.wBase )
   {
-    let toolsPath = '../../../../dwtools/Base.s';
+    let toolsPath = '../../../dwtools/Base.s';
     let toolsExternal = 0;
     try
     {
@@ -6160,7 +6160,10 @@ function first( test )
     con.first( () => _.timeOut( 1000, () => {} ));
     con.doThen( function( err, got )
     {
-      test.shouldBe( _.timeNow() - timeBefore >= 1000 );
+      var delay = _.timeNow() - timeBefore;
+      var description = test.description = 'delay ' + delay;
+      test.shouldBe( delay >= 1000 );
+      test.description = description;
       test.identical( err, null );
       test.identical( got, undefined );
       test.identical( con.messagesGet(),[] );
@@ -6197,7 +6200,10 @@ function first( test )
     con.first( con2 );
     con.doThen( function( err, got )
     {
-      test.shouldBe( _.timeNow() - timeBefore >= 1000 );
+      var delay = _.timeNow() - timeBefore;
+      var description = test.description = 'delay ' + delay;
+      test.shouldBe( delay >= 1000 );
+      test.description = description;
       test.identical( err, null );
       test.identical( got, testMsg );
       test.identical( con.messagesGet(),[] );
@@ -6320,7 +6326,10 @@ function first( test )
     con.first( () => _.timeOut( 1000, () => {} ));
     con.got( function( err, got )
     {
-      test.shouldBe( _.timeNow() - timeBefore >= 1000 );
+      var delay = _.timeNow() - timeBefore;
+      var description = test.description = 'delay ' + delay;
+      test.shouldBe( delay >= 1000 );
+      test.description = description;
       test.identical( err, null );
       test.identical( got, undefined );
       test.identical( con.messagesGet(),[] );
@@ -6365,7 +6374,10 @@ function first( test )
     con.first( con2 );
     con.got( function( err, got )
     {
-      test.shouldBe( _.timeNow() - timeBefore >= 1000 );
+      var delay = _.timeNow() - timeBefore;
+      var description = test.description = 'delay ' + delay;
+      test.shouldBe( delay >= 1000 );
+      test.description = description;
       test.identical( err, null );
       test.identical( got, testMsg );
       test.identical( con.messagesGet(),[] );
@@ -6525,7 +6537,10 @@ function first( test )
 
       con.got( function( err, got )
       {
-        test.shouldBe( _.timeNow() - timeBefore >= 1000 );
+        var delay = _.timeNow() - timeBefore;
+        var description = test.description = 'delay ' + delay;
+        test.shouldBe( delay >= 1000 );
+        test.description = description;
         test.identical( err, null );
         test.identical( got, undefined );
       })
@@ -6580,7 +6595,10 @@ function first( test )
 
       con.got( function( err, got )
       {
-        test.shouldBe( _.timeNow() - timeBefore >= 1000 );
+        var delay = _.timeNow() - timeBefore;
+        var description = test.description = 'delay ' + delay;
+        test.shouldBe( delay >= 1000 );
+        test.description = description;
         test.identical( err, null );
         test.identical( got, testMsg );
       })
@@ -6716,7 +6734,10 @@ function first( test )
     con.first( () => _.timeOut( 1000, () => {} ));
     con.got( function( err, got )
     {
-      test.shouldBe( _.timeNow() - timeBefore >= 1000 );
+      var delay = _.timeNow() - timeBefore;
+      var description = test.description = 'delay ' + delay;
+      test.shouldBe( delay >= 1000 );
+      test.description = description;
       test.identical( err, null );
       test.identical( got, undefined );
     })
@@ -6761,7 +6782,10 @@ function first( test )
     con.first( con2 );
     con.got( function( err, got )
     {
-      test.shouldBe( _.timeNow() - timeBefore >= 1000 );
+      var delay = _.timeNow() - timeBefore;
+      var description = test.description = 'delay ' + delay;
+      test.shouldBe( delay >= 1000 );
+      test.description = description;
       test.identical( err, null );
       test.identical( got, testMsg );
     })

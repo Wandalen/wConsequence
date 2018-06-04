@@ -1,6 +1,6 @@
 ( function _Consequence_s_() {
 
-'use strict'; /*bbb*/
+'use strict'; 
 
 /**
  * @file Consequence.s - Advanced synchronization mechanism. wConsequence is able to solve any asynchronous problem
