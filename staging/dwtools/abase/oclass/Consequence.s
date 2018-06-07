@@ -1,6 +1,6 @@
 ( function _Consequence_s_() {
 
-'use strict'; 
+'use strict';
 
 /**
  * @file Consequence.s - Advanced synchronization mechanism. wConsequence is able to solve any asynchronous problem
@@ -27,7 +27,7 @@ if( typeof module !== 'undefined' )
     let toolsExternal = 0;
     try
     {
-      require.resolve( toolsPath );
+      toolsPath = require.resolve( toolsPath );/*hhh*/
     }
     catch( err )
     {
@@ -45,19 +45,21 @@ if( typeof module !== 'undefined' )
 
 }
 
+var _global = _global_;
 var _ = _global_.wTools;
 
-if( _globalReal_.wConsequence )
+if( _global_ !== _globalReal_ )
+if( _globalReal_.wTools && _globalReal_.wTools.Consequence )
 {
-  var Self = _globalReal_.wConsequence;
+  var Self = _globalReal_.wTools.Consequence;
   _[ Self.nameShort ] = Self;
   if( typeof module !== 'undefined' && module !== null )
   module[ 'exports' ] = Self;
   return;
 }
 
-if( _global_.wConsequence )
-throw _.err( 'Consequence included several times' );
+_.assert( !_global_.wConsequence, 'Consequence included several times' );
+_.assert( !_.Consequence, 'Consequence included several times' );
 
 //
 
@@ -3612,16 +3614,16 @@ _.assert( Self.allFields );
 _.assert( Self.prototype.allFields );
 _.assert( _.mapKeys( Self.allFields ).length );
 
-//
-
-_globalReal_[ Self.name ] = _global_[ Self.name ] = _[ Self.nameShort ] = Self;
+_global_[ Self.name ] = _[ Self.nameShort ] = Self;
+if( !_global_.WTOOLS_PRIVATE_CONSEQUENCE )
+_globalReal_[ Self.name ] = Self;
 
 // --
 // export
 // --
 
 if( typeof module !== 'undefined' )
-if( _global_._UsingWtoolsPrivately_ )
+if( _global_.WTOOLS_PRIVATE )
 delete require.cache[ module.id ];
 
 if( typeof module !== 'undefined' && module !== null )
