@@ -48,16 +48,19 @@ if( typeof module !== 'undefined' )
 var _global = _global_;
 var _ = _global_.wTools;
 
-if( _global_ !== _globalReal_ )
-if( _globalReal_.wTools && _globalReal_.wTools.Consequence )
+debugger;
+
+// if( _global_ !== _globalReal_ )
+if( _globalReal_.wTools && _globalReal_.wConsequence )
 {
-  var Self = _globalReal_.wTools.Consequence;
+  var Self = _globalReal_.wConsequence;
   _[ Self.nameShort ] = Self;
   if( typeof module !== 'undefined' && module !== null )
   module[ 'exports' ] = Self;
   return;
 }
 
+debugger;
 _.assert( !_global_.wConsequence, 'Consequence included several times' );
 _.assert( !_.Consequence, 'Consequence included several times' );
 
