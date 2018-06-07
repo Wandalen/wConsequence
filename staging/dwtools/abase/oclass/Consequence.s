@@ -27,7 +27,7 @@ if( typeof module !== 'undefined' )
     let toolsExternal = 0;
     try
     {
-      toolsPath = require.resolve( toolsPath );/*hhh*/
+      toolsPath = require.resolve( toolsPath );
     }
     catch( err )
     {
@@ -48,9 +48,6 @@ if( typeof module !== 'undefined' )
 var _global = _global_;
 var _ = _global_.wTools;
 
-debugger;
-
-// if( _global_ !== _globalReal_ )
 if( _globalReal_.wTools && _globalReal_.wConsequence )
 {
   var Self = _globalReal_.wConsequence;
@@ -60,7 +57,6 @@ if( _globalReal_.wTools && _globalReal_.wConsequence )
   return;
 }
 
-debugger;
 _.assert( !_global_.wConsequence, 'Consequence included several times' );
 _.assert( !_.Consequence, 'Consequence included several times' );
 
