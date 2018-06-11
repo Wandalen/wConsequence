@@ -2013,14 +2013,14 @@ function __handleError( err,correspondent )
     debugger;
 
     if( Config.debug )
-    logger.error( 'Consequence caught error, details come later' );
+    _global.logger.error( 'Consequence caught error, details come later' );
 
     _.timeOut( 100, function _unhandledError()
     {
       debugger;
       if( !_.errIsAttended( err ) )
       {
-        logger.error( 'Unhandled error caught by Consequence :' );
+        _global.logger.error( 'Unhandled error caught by Consequence :' );
         _.errLog( err );
       }
     });
@@ -3020,7 +3020,7 @@ function _give_static( o )
 
     for( var i = 0 ; i < o.consequence.length ; i++ )
     {
-      var optionsGive = _.mapExtend( Object.create( null ),o );
+      var optionsGive = _.mapExtend( null,o );
       optionsGive.consequence = o.consequence[ i ];
       _give_static( optionsGive );
     }
