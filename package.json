@@ -1,6 +1,6 @@
 {
   "name": "wConsequence",
-  "version": "0.4.28",
+  "version": "0.4.29",
   "engine": "node >= 6.0.0",
   "description": "Advanced synchronization mechanism. wConsequence is able to solve any asynchronous problem replacing and including functionality of many other mechanisms, such as: Callback, Event, Signal, Mutex, Semaphore, Async, Promise.",
   "license": "MIT",
