@@ -3441,7 +3441,7 @@ var Accessors =
 }
 
 // --
-// proto
+// define class
 // --
 
 var Extend =
