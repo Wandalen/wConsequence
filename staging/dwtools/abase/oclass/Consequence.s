@@ -48,9 +48,9 @@ if( typeof module !== 'undefined' )
 var _global = _global_;
 var _ = _global_.wTools;
 
-if( _globalReal_.wTools && _globalReal_.wConsequence )
+if( _realGlobal_.wTools && _realGlobal_.wConsequence )
 {
-  var Self = _globalReal_.wConsequence;
+  var Self = _realGlobal_.wConsequence;
   _[ Self.nameShort ] = Self;
   if( typeof module !== 'undefined' && module !== null )
   module[ 'exports' ] = Self;
@@ -3615,7 +3615,7 @@ _.assert( _.mapKeys( Self.allFields ).length );
 
 _global_[ Self.name ] = _[ Self.nameShort ] = Self;
 if( !_global_.WTOOLS_PRIVATE_CONSEQUENCE )
-_globalReal_[ Self.name ] = Self;
+_realGlobal_[ Self.name ] = Self;
 
 // --
 // export
