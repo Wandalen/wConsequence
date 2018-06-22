@@ -604,20 +604,14 @@ function _onceGot( correspondent )
   _.assert( _.strIsNotEmpty( key ) );
   _.assert( arguments.length === 1 );
 
-  var i = _.arrayLeftIndexOf( self._correspondentEarly,key,function( a )
-  {
-    return a.id || correspondent.name;
-    // return a.id || a.onGot.name;
-  });
+  // xxx
+  var i = _.arrayRightIndex( self._correspondentEarly, key, ( e ) => e.id || correspondent.name, ( e ) => e );
 
   if( i >= 0 )
   return self;
 
-  var i = _.arrayLeftIndexOf( self._correspondentLate,key,function( a )
-  {
-    return a.id || correspondent.name;
-    // return a.id || a.onGot.name;
-  });
+  // xxx
+  var i = _.arrayRightIndex( self._correspondentLate, key, ( e ) => e.id || correspondent.name, ( e ) => e );
 
   if( i >= 0 )
   return self;
@@ -684,11 +678,8 @@ function _onceThen( correspondent )
   _.assert( _.strIsNotEmpty( key ) );
   _.assert( arguments.length === 1 );
 
-  var i = _.arrayLeftIndexOf( self._correspondentEarly,key,function( a )
-  {
-    return a.id;
-    // return a.id || a.onGot.name;
-  });
+  // xxx
+  var i = _.arrayRightIndex( self._correspondentEarly, key, ( e ) => e.id, ( e ) => e );
 
   if( i >= 0 )
   {
@@ -696,11 +687,8 @@ function _onceThen( correspondent )
     return self;
   }
 
-  var i = _.arrayLeftIndexOf( self._correspondentLate,key,function( a )
-  {
-    return a.id;
-    // return a.id || a.onGot.name;
-  });
+  // xxx
+  var i = _.arrayRightIndex( self._correspondentLate, key, ( e ) => e.id || correspondent.name, ( e ) => e );
 
   if( i >= 0 )
   {
