@@ -340,7 +340,7 @@ function doThen( correspondent )
 {
   var self = this;
 
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1, 'expects single argument' );
 
   return self.__correspondentAppend
   ({
@@ -363,7 +363,7 @@ function _doThen( correspondent )
 {
   var self = this;
 
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1, 'expects single argument' );
 
   return self.__correspondentAppend
   ({
@@ -381,7 +381,7 @@ function lateThen( correspondent )
 {
   var self = this;
 
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1, 'expects single argument' );
 
   return self.__correspondentAppend
   ({
@@ -602,7 +602,7 @@ function _onceGot( correspondent )
   var key = correspondent.name ? correspondent.name : correspondent;
 
   _.assert( _.strIsNotEmpty( key ) );
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1, 'expects single argument' );
 
   // xxx
   var i = _.arrayRightIndex( self._correspondentEarly, key, ( e ) => e.id || correspondent.name, ( e ) => e );
@@ -676,7 +676,7 @@ function _onceThen( correspondent )
   var key = correspondent.name ? correspondent.name : correspondent;
 
   _.assert( _.strIsNotEmpty( key ) );
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1, 'expects single argument' );
 
   // xxx
   var i = _.arrayRightIndex( self._correspondentEarly, key, ( e ) => e.id, ( e ) => e );
@@ -817,7 +817,7 @@ function tap( correspondent )
 {
   var self = this;
 
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1, 'expects single argument' );
 
   return self.__correspondentAppend
   ({
@@ -841,7 +841,7 @@ function ifNoErrorGot()
 {
   var self = this;
 
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1, 'expects single argument' );
 
   return self.__correspondentAppend
   ({
@@ -876,7 +876,7 @@ function ifNoErrorThen()
 {
   var self = this;
 
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1, 'expects single argument' );
 
   return self.__correspondentAppend
   ({
@@ -899,7 +899,7 @@ function ifErrorGot()
 {
   var self = this;
 
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1, 'expects single argument' );
 
   return self.__correspondentAppend
   ({
@@ -959,7 +959,7 @@ function ifErrorThen()
 {
   var self = this;
 
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1, 'expects single argument' );
 
   return self.__correspondentAppend
   ({
@@ -1180,7 +1180,7 @@ timeOutThen.having =
 // {
 //   var self = this;
 //
-//   _.assert( arguments.length === 1 );
+//   _.assert( arguments.length === 1, 'expects single argument' );
 //
 //   return self.__correspondentAppend
 //   ({
@@ -1252,7 +1252,7 @@ timeOutThen.having =
 function andGot( srcs )
 {
   var self = this;
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1, 'expects single argument' );
   return self._and( srcs,false );
 }
 
@@ -1276,7 +1276,7 @@ andGot.having =
 function andThen( srcs )
 {
   var self = this;
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1, 'expects single argument' );
   return self._and( srcs,true );
 }
 
@@ -1418,7 +1418,7 @@ function _and( srcs,thenning )
 function eitherGot( srcs )
 {
   var self = this;
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1, 'expects single argument' );
   return self._either( srcs,false );
 }
 
@@ -1432,7 +1432,7 @@ eitherGot.having =
 function eitherThen( srcs )
 {
   var self = this;
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1, 'expects single argument' );
   return self._either( srcs,true );
 }
 
@@ -1447,7 +1447,7 @@ eitherThen.having =
 function eitherThenSplit( srcs )
 {
   var self = this;
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1, 'expects single argument' );
 
   if( !_.arrayIs( srcs ) )
   srcs = [ srcs ];
@@ -1587,7 +1587,7 @@ function _first( src,stack )
 {
   var self = this;
 
-  _.assert( arguments.length === 2 );
+  _.assert( arguments.length === 2, 'expects exactly two argument' );
 
   if( _.consequenceIs( src ) )
   {
@@ -1650,7 +1650,7 @@ function _prepareConsequenceJoined()
     {
       var args = arguments;
       var method = [];
-      _.assert( arguments.length === 1 );
+      _.assert( arguments.length === 1, 'expects single argument' );
       _.assert( _.arrayLike( args[ 0 ] ) );
       for( var i = 0 ; i < args[ 0 ].length ; i++ )
       {
@@ -1680,7 +1680,7 @@ function _join( routineJoin,args )
   var self = this;
   var result = Object.create( ConsequenceJoined );
 
-  _.assert( arguments.length === 2 );
+  _.assert( arguments.length === 2, 'expects exactly two argument' );
   _.assert( args.length === 1 || args.length === 2 );
   _.assert( _.consequenceIs( this ) );
 
@@ -1793,9 +1793,9 @@ function give( message )
   var self = this;
   _.assert( arguments.length === 2 || arguments.length === 1 || arguments.length === 0, 'expects 0, 1 or 2 arguments, got ' + arguments.length );
   if( arguments.length === 2 )
-  return self.__giveAct( arguments[ 0 ],arguments[ 1 ] );
+  return self.__giveAct( arguments[ 0 ], arguments[ 1 ] );
   else
-  return self.__giveAct( null,message );
+  return self.__giveAct( undefined, message );
 }
 
 give.having =
@@ -1879,21 +1879,16 @@ function _giveWithError( error,argument )
 {
   var self = this;
 
-  _.assert( arguments.length === 2 );
+  _.assert( arguments.length === 2, 'expects exactly two argument' );
 
   return self.__giveAct( error,argument );
 }
 
 //
 
-function __giveAct( error,argument )
+function __giveAct( error, argument )
 {
   var self = this;
-
-  // if( error )
-  // debugger;
-  // if( error )
-  // error = _.err( error );
 
   var message =
   {
@@ -1901,15 +1896,15 @@ function __giveAct( error,argument )
     argument : argument,
   }
 
-  if( _.consequenceIs( argument ) )
-  _.assert( 0,'not tested' );
 
   if( self.diagnostics )
   if( Config.debug )
   if( self.debug )
   debugger;
 
+  _.assert( !_.consequenceIs( argument ),'not tested' );
   _.assert( !self.limitNumberOfMessages || self._message.length < self.limitNumberOfMessages );
+  _.assert( error === undefined || argument === undefined );
 
   self.messageCounter += 1;
   self._message.push( message );
@@ -1950,7 +1945,7 @@ function _ping( error,argument )
 
   throw _.err( 'deprecated' );
 
-  _.assert( arguments.length === 2 );
+  _.assert( arguments.length === 2, 'expects exactly two argument' );
 
   var message =
   {
@@ -2259,7 +2254,7 @@ function __correspondentAppend( o )
   var self = this;
   var correspondent = o.correspondent;
 
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1, 'expects single argument' );
   _.assert( _.consequenceIs( self ) );
   _.assert( _.routineIs( correspondent ) || _.consequenceIs( correspondent ) );
   _.assert( o.kindOfArguments >= 1 );
@@ -2822,9 +2817,13 @@ function toStr()
 
   var names = _.entitySelect( self.correspondentsEarlyGet(),'*.tag' );
 
+  if( self.tag )
+  result += '\n  tag : ' + self.tag;
   result += '\n  messages : ' + self.messagesGet().length;
   result += '\n  correspondents : ' + self.correspondentsEarlyGet().length;
-  result += '\n  tag : ' + self.tag;
+  result += '\n  asyncTaking : ' + self.asyncTaking;
+  result += '\n  asyncGiving : ' + self.asyncGiving;
+
   // result += '\n  correspondent names : ' + names.join( ' ' );
 
   return result;
@@ -2864,6 +2863,8 @@ function __call__()
 {
   var self = this;
 
+  debugger;
+
   _.assert( arguments.length === 0 || arguments.length === 1 || arguments.length === 2 );
   if( arguments.length === 2 )
   self.give( arguments[ 0 ],arguments[ 1 ] );
@@ -2872,15 +2873,30 @@ function __call__()
 
 }
 
+//
+
+function asyncModeSet( mode )
+{
+  var constr = this.Self;
+  _.assert( constr.asyncTaking !== undefined );
+  _.assert( mode.length === 2 );
+  _.assert( arguments.length === 1, 'expects single argument' );
+  constr.asyncTaking = !!mode[ 0 ];
+  constr.asyncGiving = !!mode[ 1 ];
+}
+
+//
+
+function asyncModeGet( mode )
+{
+  var constr = this.Self;
+  _.assert( constr.asyncTaking !== undefined );
+  return [ constr.asyncTaking, constr.asyncGiving ];
+}
+
 // --
 // static
 // --
-
-/*
-
-var onReady = caching.fileWatcher.onReady.eitherThenSplit( _.timeOutError( timeOut ) );
-
-*/
 
 function from_static( src,timeOut )
 {
@@ -2901,7 +2917,6 @@ function from_static( src,timeOut )
   {
     if( timeOut !== undefined )
     return con.eitherThenSplit( _.timeOutError( timeOut ) );
-
     return con;
   }
 
@@ -2997,7 +3012,7 @@ function _give_static( o )
   if( !( _.arrayIs( o.args ) && o.args.length <= 1 ) )
   debugger;
 
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1, 'expects single argument' );
   _.assert( _.objectIs( o ) );
   _.assert( _.arrayIs( o.args ) && o.args.length <= 1, 'not tested' );
 
@@ -3085,7 +3100,7 @@ function _give_static( o )
 function error_static( consequence,error )
 {
 
-  _.assert( arguments.length === 2 );
+  _.assert( arguments.length === 2, 'expects exactly two argument' );
 
   return _give_static
   ({
@@ -3152,17 +3167,17 @@ function giveWithContextAndError_static( consequence,context,err,got )
 function ifErrorThen_static()
 {
 
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1, 'expects single argument' );
   _.assert( this === Self );
 
   var onEnd = arguments[ 0 ];
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1, 'expects single argument' );
   _.assert( _.routineIs( onEnd ) );
 
   return function ifErrorThen( err,data )
   {
 
-    _.assert( arguments.length === 2 );
+    _.assert( arguments.length === 2, 'expects exactly two argument' );
 
     if( err )
     {
@@ -3194,17 +3209,17 @@ function ifErrorThen_static()
 function ifNoErrorThen_static()
 {
 
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1, 'expects single argument' );
   _.assert( this === Self );
 
   var onEnd = arguments[ 0 ];
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1, 'expects single argument' );
   _.assert( _.routineIs( onEnd ) );
 
   return function ifNoErrorThen( err,data )
   {
 
-    _.assert( arguments.length === 2 );
+    _.assert( arguments.length === 2, 'expects exactly two argument' );
 
     if( !err )
     {
@@ -3248,7 +3263,7 @@ function FunctionWithin( consequence )
   var args;
   var context;
 
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1, 'expects single argument' );
   _.assert( _.consequenceIs( consequence ) );
 
   consequence.doThen( function( err,data )
@@ -3404,6 +3419,9 @@ var Statics =
 
   passThru : passThru_static,
 
+  asyncModeSet : asyncModeSet,
+  asyncModeGet : asyncModeGet,
+
   KindOfArguments : KindOfArguments,
   diagnostics : 1,
   usingStack : 0,
@@ -3532,6 +3550,9 @@ var Extend =
   toStr : toStr,
   toString : toString,
   __call__ : __call__,
+
+  asyncModeSet : asyncModeSet,
+  asyncModeGet : asyncModeGet,
 
 
   // relationships
