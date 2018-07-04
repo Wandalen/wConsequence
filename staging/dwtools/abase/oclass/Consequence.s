@@ -442,7 +442,7 @@ promiseThen.having =
 // {
 //   var self = this;
 //
-//   _.assert( arguments.length === 2 || arguments.length === 3 );
+//   _.assert( arguments.length === 2 || arguments.length === 3, 'expects two or three arguments' );
 //
 //   if( arguments.length === 2 )
 //   if( _.arrayLike( arguments[ 1 ] ) )
@@ -2962,7 +2962,7 @@ function from_static( src,timeOut )
 function give_static( consequence )
 {
 
-  _.assert( arguments.length === 2 || arguments.length === 3 );
+  _.assert( arguments.length === 2 || arguments.length === 3, 'expects two or three arguments' );
 
   var err,got;
   if( arguments.length === 2 )

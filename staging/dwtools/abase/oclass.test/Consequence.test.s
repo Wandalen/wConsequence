@@ -41,7 +41,7 @@ function simple( test )
 {
   var self = this;
 
-  test.description = 'class checks'; //
+  test.description = 'class checks'; /* */
 
   test.is( _.routineIs( wConsequence.prototype.passThru ) );
   test.is( _.routineIs( wConsequence.passThru ) );
@@ -50,7 +50,7 @@ function simple( test )
   test.is( wConsequence.name === 'wConsequence' );
   test.is( wConsequence.nameShort === 'Consequence' );
 
-  test.description = 'construction'; //
+  test.description = 'construction'; /* */
 
   debugger;
   var con1 = new _.Consequence().give( 1 );
@@ -61,7 +61,7 @@ function simple( test )
   test.identical( con2.messagesGet().length,1 );
   test.identical( con3.messagesGet().length,1 );
 
-  test.description = 'class test'; //
+  test.description = 'class test'; /* */
 
   test.is( _.consequenceIs( con1 ) );
   test.is( con1 instanceof wConsequence );
