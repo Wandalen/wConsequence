@@ -1591,9 +1591,7 @@ function _first( src,stack )
 
   if( _.consequenceIs( src ) )
   {
-    // throw _.err( 'not tested' );
     src.doThen( self );
-    // src.give(); // xxx
   }
   else if( _.routineIs( src ) )
   {
@@ -1605,6 +1603,7 @@ function _first( src,stack )
     }
     catch( err )
     {
+      debugger;
       result = self.__handleError( err );
     }
 
@@ -1902,9 +1901,18 @@ function __giveAct( error, argument )
   if( self.debug )
   debugger;
 
-  _.assert( !_.consequenceIs( argument ),'not tested' );
-  _.assert( !self.limitNumberOfMessages || self._message.length < self.limitNumberOfMessages );
-  _.assert( error === undefined || argument === undefined );
+  if( Config.debug )
+  {
+
+    _.assert( !_.consequenceIs( argument ),'not tested' );
+    _.assert( !self.limitNumberOfMessages || self._message.length < self.limitNumberOfMessages );
+    var msg = '{-error-} and {-argument-} channels should not be in use simultaneously\n' +
+      '{-error-} or {-argument-} should be undefined, but currently ' +
+      '{-error-} is ' + _.strTypeOf( error ) +
+      '{-argument-} is ' + _.strTypeOf( argument );
+    _.assert( error === undefined || argument === undefined, msg );
+
+  }
 
   self.messageCounter += 1;
   self._message.push( message );
@@ -2000,10 +2008,10 @@ function __handleError( err,correspondent )
 
     _.timeOut( 100, function _unhandledError()
     {
-      debugger;
       if( !_.errIsAttended( err ) )
       {
-        _global.logger.error( 'Unhandled error caught by Consequence :' );
+        debugger;
+        _global.logger.error( 'Unhandled error caught by Consequence' );
         _.errLog( err );
       }
     });
@@ -2863,8 +2871,6 @@ function __call__()
 {
   var self = this;
 
-  debugger;
-
   _.assert( arguments.length === 0 || arguments.length === 1 || arguments.length === 2 );
   if( arguments.length === 2 )
   self.give( arguments[ 0 ],arguments[ 1 ] );
@@ -3616,11 +3622,11 @@ _.accessor
 _.accessorForbid( Self.prototype,Forbids );
 _prepareConsequenceJoined();
 
-_.assert( Self._allFieldsGet );
-_.assert( Self.prototype._allFieldsGet );
-_.assert( Self.allFields );
-_.assert( Self.prototype.allFields );
-_.assert( _.mapKeys( Self.allFields ).length );
+_.assert( Self._fieldsOfRelationshipsGroupsGet );
+_.assert( Self.prototype._fieldsOfRelationshipsGroupsGet );
+_.assert( Self.fieldsOfRelationshipsGroups );
+_.assert( Self.prototype.fieldsOfRelationshipsGroups );
+_.assert( _.mapKeys( Self.fieldsOfRelationshipsGroups ).length );
 
 _global_[ Self.name ] = _[ Self.nameShort ] = Self;
 if( !_global_.WTOOLS_PRIVATE_CONSEQUENCE )
