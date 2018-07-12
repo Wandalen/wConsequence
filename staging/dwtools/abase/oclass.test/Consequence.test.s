@@ -41,7 +41,7 @@ function simple( test )
 {
   var self = this;
 
-  test.description = 'class checks'; /* */
+  test.case = 'class checks'; /* */
 
   test.is( _.routineIs( wConsequence.prototype.passThru ) );
   test.is( _.routineIs( wConsequence.passThru ) );
@@ -50,7 +50,7 @@ function simple( test )
   test.is( wConsequence.name === 'wConsequence' );
   test.is( wConsequence.nameShort === 'Consequence' );
 
-  test.description = 'construction'; /* */
+  test.case = 'construction'; /* */
 
   var con1 = new _.Consequence().give( 1 );
   var con2 = _.Consequence().give( 2 );
@@ -60,7 +60,7 @@ function simple( test )
   test.identical( con2.messagesGet().length,1 );
   test.identical( con3.messagesGet().length,1 );
 
-  test.description = 'class test'; /* */
+  test.case = 'class test'; /* */
 
   test.is( _.consequenceIs( con1 ) );
   test.is( con1 instanceof wConsequence );
@@ -92,7 +92,7 @@ function andGot( test )
 
   .doThen( function()
   {
-    test.description = 'andGot waits only for first message, dont return the message';
+    test.case = 'andGot waits only for first message, dont return the message';
     var delay = 100;
     var mainCon = new _.Consequence();
     var con = new _.Consequence();
@@ -123,7 +123,7 @@ function andGot( test )
 
   .doThen( function()
   {
-    test.description = 'dont give message back to single consequence returned from passed routine';
+    test.case = 'dont give message back to single consequence returned from passed routine';
     var delay = 100;
     var mainCon = new _.Consequence();
     var con = new _.Consequence();
@@ -149,7 +149,7 @@ function andGot( test )
 
   .doThen( function()
   {
-    test.description = 'dont give messages back to several consequences with different delays';
+    test.case = 'dont give messages back to several consequences with different delays';
     var delay = 100;
     var mainCon = new _.Consequence();
     var con1 = new _.Consequence();
@@ -189,7 +189,7 @@ function andGot( test )
 
   .doThen( function()
   {
-    test.description = 'each con gives several messages, order of provided consequence is important';
+    test.case = 'each con gives several messages, order of provided consequence is important';
     var delay = 100;
     var mainCon = new _.Consequence();
     var con1 = new _.Consequence();
@@ -246,7 +246,7 @@ function andGot( test )
 
   .doThen( function()
   {
-    test.description = 'one of provided cons waits for another one to resolve';
+    test.case = 'one of provided cons waits for another one to resolve';
     var delay = 100;
     var mainCon = new _.Consequence();
     var con1 = new _.Consequence();
@@ -283,7 +283,7 @@ function andGot( test )
 
   .doThen( function()
   {
-    test.description = 'consequence gives an error, only first error is taken into account';
+    test.case = 'consequence gives an error, only first error is taken into account';
 
     var delay = 100;
     var mainCon = new _.Consequence();
@@ -327,7 +327,7 @@ function andGot( test )
 
   .doThen( function()
   {
-    test.description = 'passed consequence dont give any message';
+    test.case = 'passed consequence dont give any message';
     var mainCon = new _.Consequence();
     var con = new _.Consequence();
     mainCon.give();
@@ -342,7 +342,7 @@ function andGot( test )
 
   .doThen( function()
   {
-    test.description = 'returned consequence dont give any message';
+    test.case = 'returned consequence dont give any message';
     var mainCon = new _.Consequence();
     var con = new _.Consequence();
     mainCon.give();
@@ -357,7 +357,7 @@ function andGot( test )
 
   .doThen( function()
   {
-    test.description = 'one of srcs dont give any message';
+    test.case = 'one of srcs dont give any message';
     var delay = 100;
     var mainCon = new _.Consequence();
     var con1 = new _.Consequence();
@@ -401,7 +401,7 @@ function andThen( test )
 
   .doThen( function()
   {
-    test.description = 'andThen waits only for first message and return it back';
+    test.case = 'andThen waits only for first message and return it back';
     var delay = 100;
     var mainCon = new _.Consequence();
     var con = new _.Consequence();
@@ -432,7 +432,7 @@ function andThen( test )
 
   .doThen( function()
   {
-    test.description = 'andThen waits for first message from consequence returned by routine call and returns message back';
+    test.case = 'andThen waits for first message from consequence returned by routine call and returns message back';
     var delay = 100;
     var mainCon = new _.Consequence();
     var con = new _.Consequence();
@@ -464,7 +464,7 @@ function andThen( test )
 
   .doThen( function()
   {
-    test.description = 'give back messages to several consequences, different delays';
+    test.case = 'give back messages to several consequences, different delays';
     var delay = 100;
     var mainCon = new _.Consequence();
     var con1 = new _.Consequence();
@@ -503,7 +503,7 @@ function andThen( test )
 
   .doThen( function()
   {
-    test.description = 'each con gives several messages, order of provided consequence is important';
+    test.case = 'each con gives several messages, order of provided consequence is important';
     var delay = 100;
     var mainCon = new _.Consequence();
     var con1 = new _.Consequence();
@@ -559,7 +559,7 @@ function andThen( test )
 
   .doThen( function()
   {
-    test.description = 'one of provided cons waits for another one to resolve';
+    test.case = 'one of provided cons waits for another one to resolve';
     var delay = 100;
     var mainCon = new _.Consequence();
     var con1 = new _.Consequence();
@@ -596,7 +596,7 @@ function andThen( test )
 
   .doThen( function()
   {
-    test.description =
+    test.case =
     `consequence gives an error, only first error is taken into account
      other consequences are receiving their messages back`;
 
@@ -642,7 +642,7 @@ function andThen( test )
 
   .doThen( function()
   {
-    test.description = 'passed consequence dont give any message';
+    test.case = 'passed consequence dont give any message';
     var mainCon = new _.Consequence();
     var con = new _.Consequence();
     mainCon.give();
@@ -657,7 +657,7 @@ function andThen( test )
 
   .doThen( function()
   {
-    test.description = 'returned consequence dont give any message';
+    test.case = 'returned consequence dont give any message';
     var mainCon = new _.Consequence();
     var con = new _.Consequence();
     mainCon.give();
@@ -672,7 +672,7 @@ function andThen( test )
 
   .doThen( function()
   {
-    test.description = 'one of srcs dont give any message';
+    test.case = 'one of srcs dont give any message';
     var delay = 100;
     var mainCon = new _.Consequence();
     var con1 = new _.Consequence();
@@ -712,7 +712,7 @@ function ordinarMessage( test )
   var c = this;
   var amode = _.Consequence.asyncModeGet();
 
-  test.description = 'give single message';
+  test.case = 'give single message';
 
   var testCon = new _.Consequence().give()
 
@@ -802,7 +802,7 @@ function ordinarMessage( test )
     })
   });
 
-  test.description = 'give several messages';
+  test.case = 'give several messages';
 
   /* asyncTaking : 0, asyncGiving : 0 */
 
@@ -881,7 +881,7 @@ function ordinarMessage( test )
     })
   });
 
-  test.description = 'give single error';
+  test.case = 'give single error';
 
   /* asyncTaking : 0, asyncGiving : 0 */
 
@@ -969,7 +969,7 @@ function ordinarMessage( test )
     })
   });
 
-  test.description = 'give several error messages';
+  test.case = 'give several error messages';
 
   /* asyncTaking : 0, asyncGiving : 0 */
 
@@ -1065,7 +1065,7 @@ function promiseGot( test )
 
   .doThen( function()
   {
-    test.description = 'no message';
+    test.case = 'no message';
     var con = new _.Consequence();
     var promise = con.promiseGot();
     test.identical( con.messagesGet().length, 0 );
@@ -1080,7 +1080,7 @@ function promiseGot( test )
 
   .doThen( function()
   {
-    test.description = 'single message';
+    test.case = 'single message';
     var con = new _.Consequence();
     con.give( testMsg );
     test.identical( con.messagesGet().length, 1 );
@@ -1099,7 +1099,7 @@ function promiseGot( test )
 
   .doThen( function()
   {
-    test.description = 'single error';
+    test.case = 'single error';
     var con = new _.Consequence();
     con.error( testMsg );
     test.identical( con.messagesGet().length, 1 );
@@ -1118,7 +1118,7 @@ function promiseGot( test )
 
   .doThen( function()
   {
-    test.description = 'several messages';
+    test.case = 'several messages';
     var con = new _.Consequence();
     con.give( testMsg  + 1 );
     con.give( testMsg  + 2 );
@@ -1147,7 +1147,7 @@ function promiseGot( test )
 
   .doThen( function()
   {
-    test.description = 'async giving, single message';
+    test.case = 'async giving, single message';
     var con = new _.Consequence();
     var promise = con.promiseGot();
     con.give( testMsg );
@@ -1170,7 +1170,7 @@ function promiseGot( test )
 
   .doThen( function()
   {
-    test.description = 'async giving, single error';
+    test.case = 'async giving, single error';
     var con = new _.Consequence();
     var promise = con.promiseGot();
     con.error( testMsg );
@@ -1194,7 +1194,7 @@ function promiseGot( test )
 
   .doThen( function()
   {
-    test.description = 'async giving, several messages';
+    test.case = 'async giving, several messages';
     var con = new _.Consequence();
     var promise = con.promiseGot();
     con.give( testMsg  + 1 );
@@ -1228,7 +1228,7 @@ function promiseGot( test )
 
   .doThen( function()
   {
-    test.description = 'async taking, single message';
+    test.case = 'async taking, single message';
     var con = new _.Consequence();
     con.give( testMsg );
     var promise = con.promiseGot();
@@ -1251,7 +1251,7 @@ function promiseGot( test )
 
   .doThen( function()
   {
-    test.description = 'async taking, error message';
+    test.case = 'async taking, error message';
     var con = new _.Consequence();
     con.error( testMsg );
     var promise = con.promiseGot();
@@ -1274,7 +1274,7 @@ function promiseGot( test )
 
   .doThen( function()
   {
-    test.description = 'async taking, several messages';
+    test.case = 'async taking, several messages';
     var con = new _.Consequence();
     con.give( testMsg  + 1 );
     con.give( testMsg  + 2 );
@@ -1308,7 +1308,7 @@ function promiseGot( test )
 
   .doThen( function()
   {
-    test.description = 'async taking+giving signle message';
+    test.case = 'async taking+giving signle message';
     var con = new _.Consequence();
     con.give( testMsg );
     var promise = con.promiseGot();
@@ -1331,7 +1331,7 @@ function promiseGot( test )
 
   .doThen( function()
   {
-    test.description = 'async taking+giving error message';
+    test.case = 'async taking+giving error message';
     var con = new _.Consequence();
     con.error( testMsg );
     var promise = con.promiseGot();
@@ -1354,7 +1354,7 @@ function promiseGot( test )
 
   .doThen( function()
   {
-    test.description = 'async taking+giving several messages';
+    test.case = 'async taking+giving several messages';
     var con = new _.Consequence();
     con.give( testMsg  + 1 );
     con.give( testMsg  + 2 );
@@ -1396,7 +1396,7 @@ function doThen( test )
   .doThen( function()
   {
     _.Consequence.asyncModeSet([ 0, 0 ]);
-    test.description += ', no message'
+    test.case += ', no message'
   })
   .doThen( function()
   {
@@ -1409,7 +1409,7 @@ function doThen( test )
   .doThen( function()
   {
     _.Consequence.asyncModeSet([ 1, 0 ]);
-    test.description += ', no message'
+    test.case += ', no message'
   })
   .doThen( function()
   {
@@ -1422,7 +1422,7 @@ function doThen( test )
   .doThen( function()
   {
     _.Consequence.asyncModeSet([ 0, 1 ]);
-    test.description += ', no message'
+    test.case += ', no message'
   })
   .doThen( function()
   {
@@ -1435,7 +1435,7 @@ function doThen( test )
   .doThen( function()
   {
     _.Consequence.asyncModeSet([ 1, 1 ]);
-    test.description += ', no message'
+    test.case += ', no message'
   })
   .doThen( function()
   {
@@ -1450,7 +1450,7 @@ function doThen( test )
   .doThen( function()
   {
     _.Consequence.asyncModeSet([ 0, 0 ]);
-    test.description += ', single message, correspondent is a routine'
+    test.case += ', single message, correspondent is a routine'
   })
   .doThen( function()
   {
@@ -1476,7 +1476,7 @@ function doThen( test )
   .doThen( function()
   {
     _.Consequence.asyncModeSet([ 1, 0 ]);
-    test.description += ', single message, correspondent is a routine'
+    test.case += ', single message, correspondent is a routine'
   })
   .doThen( function()
   {
@@ -1505,7 +1505,7 @@ function doThen( test )
   .doThen( function()
   {
     _.Consequence.asyncModeSet([ 0, 1 ]);
-    test.description += ', single message, correspondent is a routine'
+    test.case += ', single message, correspondent is a routine'
   })
   .doThen( function()
   {
@@ -1538,7 +1538,7 @@ function doThen( test )
    .doThen( function()
   {
     _.Consequence.asyncModeSet([ 1, 1 ]);
-    test.description += ', single message, correspondent is a routine'
+    test.case += ', single message, correspondent is a routine'
   })
   .doThen( function()
   {
@@ -1567,7 +1567,7 @@ function doThen( test )
    .doThen( function()
   {
     _.Consequence.asyncModeSet([ 0, 0 ]);
-    test.description += ', several doThen, correspondent is a routine';
+    test.case += ', several doThen, correspondent is a routine';
   })
   .doThen( function()
   {
@@ -1602,7 +1602,7 @@ function doThen( test )
    .doThen( function()
   {
     _.Consequence.asyncModeSet([ 1, 0 ]);
-    test.description += ', several doThen, correspondent is a routine';
+    test.case += ', several doThen, correspondent is a routine';
   })
   .doThen( function()
   {
@@ -1644,7 +1644,7 @@ function doThen( test )
    .doThen( function()
   {
     _.Consequence.asyncModeSet([ 0, 1 ]);
-    test.description += ', several doThen, correspondent is a routine';
+    test.case += ', several doThen, correspondent is a routine';
   })
   .doThen( function()
   {
@@ -1692,7 +1692,7 @@ function doThen( test )
    .doThen( function()
   {
     _.Consequence.asyncModeSet([ 1, 1 ]);
-    test.description += ', several doThen, correspondent is a routine';
+    test.case += ', several doThen, correspondent is a routine';
   })
   .doThen( function()
   {
@@ -1736,7 +1736,7 @@ function doThen( test )
    .doThen( function()
   {
     _.Consequence.asyncModeSet([ 0, 0 ]);
-    test.description += ', single message, consequence as a correspondent';
+    test.case += ', single message, consequence as a correspondent';
   })
   .doThen( function()
   {
@@ -1776,7 +1776,7 @@ function doThen( test )
    .doThen( function()
   {
     _.Consequence.asyncModeSet([ 1, 0 ]);
-    test.description += ', single message, consequence as a correspondent';
+    test.case += ', single message, consequence as a correspondent';
   })
   .doThen( function()
   {
@@ -1819,7 +1819,7 @@ function doThen( test )
    .doThen( function()
   {
     _.Consequence.asyncModeSet([ 0, 1 ]);
-    test.description += ', single message, consequence as a correspondent';
+    test.case += ', single message, consequence as a correspondent';
   })
   .doThen( function()
   {
@@ -1866,7 +1866,7 @@ function doThen( test )
    .doThen( function()
   {
     _.Consequence.asyncModeSet([ 1, 1 ]);
-    test.description += ', single message, consequence as a correspondent';
+    test.case += ', single message, consequence as a correspondent';
   })
   .doThen( function()
   {
@@ -1909,7 +1909,7 @@ function doThen( test )
    .doThen( function()
   {
     _.Consequence.asyncModeSet([ 0, 0 ]);
-    test.description += 'correspondent returns consequence with msg';
+    test.case += 'correspondent returns consequence with msg';
   })
   .doThen( function()
   {
@@ -1935,7 +1935,7 @@ function doThen( test )
    .doThen( function()
   {
     _.Consequence.asyncModeSet([ 1, 0 ]);
-    test.description += 'correspondent returns consequence with msg';
+    test.case += 'correspondent returns consequence with msg';
   })
   .doThen( function()
   {
@@ -1965,7 +1965,7 @@ function doThen( test )
    .doThen( function()
   {
     _.Consequence.asyncModeSet([ 0, 1 ]);
-    test.description += 'correspondent returns consequence with msg';
+    test.case += 'correspondent returns consequence with msg';
   })
   .doThen( function()
   {
@@ -2000,7 +2000,7 @@ function doThen( test )
    .doThen( function()
   {
     _.Consequence.asyncModeSet([ 1, 1 ]);
-    test.description += 'correspondent returns consequence with msg';
+    test.case += 'correspondent returns consequence with msg';
   })
   .doThen( function()
   {
@@ -2043,7 +2043,7 @@ function promiseThen( test )
 
   .doThen( function()
   {
-    test.description = 'no message';
+    test.case = 'no message';
     var con = new _.Consequence();
     var promise = con.promiseThen();
     test.identical( con.messagesGet().length, 0 );
@@ -2058,7 +2058,7 @@ function promiseThen( test )
 
   .doThen( function()
   {
-    test.description = 'single message';
+    test.case = 'single message';
     var con = new _.Consequence();
     con.give( testMsg );
     test.identical( con.messagesGet().length, 1 );
@@ -2078,7 +2078,7 @@ function promiseThen( test )
 
   .doThen( function()
   {
-    test.description = 'error message';
+    test.case = 'error message';
     var con = new _.Consequence();
     con.error( testMsg );
     test.identical( con.messagesGet().length, 1 );
@@ -2097,7 +2097,7 @@ function promiseThen( test )
 
   .doThen( function()
   {
-    test.description = 'several messages';
+    test.case = 'several messages';
     var con = new _.Consequence();
     con.give( testMsg  + 1 );
     con.give( testMsg  + 2 );
@@ -2126,7 +2126,7 @@ function promiseThen( test )
 
   .doThen( function()
   {
-    test.description = 'async giving, single message';
+    test.case = 'async giving, single message';
     var con = new _.Consequence();
     var promise = con.promiseThen();
     con.give( testMsg );
@@ -2149,7 +2149,7 @@ function promiseThen( test )
 
   .doThen( function()
   {
-    test.description = 'async giving, error message';
+    test.case = 'async giving, error message';
     var con = new _.Consequence();
     var promise = con.promiseThen();
     promise.catch( function( err )
@@ -2172,7 +2172,7 @@ function promiseThen( test )
 
   .doThen( function()
   {
-    test.description = 'async giving, several messages';
+    test.case = 'async giving, several messages';
     var con = new _.Consequence();
     var promise = con.promiseThen();
     con.give( testMsg  + 1 );
@@ -2206,7 +2206,7 @@ function promiseThen( test )
 
   .doThen( function()
   {
-    test.description = 'async taking, single message';
+    test.case = 'async taking, single message';
     var con = new _.Consequence();
     con.give( testMsg );
     var promise = con.promiseThen();
@@ -2229,7 +2229,7 @@ function promiseThen( test )
 
   .doThen( function()
   {
-    test.description = 'async taking, error message';
+    test.case = 'async taking, error message';
     var con = new _.Consequence();
     con.error( testMsg );
     var promise = con.promiseThen();
@@ -2252,7 +2252,7 @@ function promiseThen( test )
 
   .doThen( function()
   {
-    test.description = 'async taking, several messages';
+    test.case = 'async taking, several messages';
     var con = new _.Consequence();
     con.give( testMsg  + 1 );
     con.give( testMsg  + 2 );
@@ -2286,7 +2286,7 @@ function promiseThen( test )
 
   .doThen( function()
   {
-    test.description = 'async taking+giving, single message';
+    test.case = 'async taking+giving, single message';
     var con = new _.Consequence();
     con.give( testMsg );
     var promise = con.promiseThen();
@@ -2309,7 +2309,7 @@ function promiseThen( test )
 
   .doThen( function()
   {
-    test.description = 'async taking+giving, error message';
+    test.case = 'async taking+giving, error message';
     var con = new _.Consequence();
     con.error( testMsg );
     var promise = con.promiseThen();
@@ -2332,7 +2332,7 @@ function promiseThen( test )
 
   .doThen( function()
   {
-    test.description = 'async taking+giving, several messages';
+    test.case = 'async taking+giving, several messages';
     var con = new _.Consequence();
     con.give( testMsg  + 1 );
     con.give( testMsg  + 2 );
@@ -2451,7 +2451,7 @@ function promiseThen( test )
 //
 //   /* common wConsequence corespondent tests. */
 //
-//   test.description = 'single value in give sequence, and single taker : attached taker after value resolved';
+//   test.case = 'single value in give sequence, and single taker : attached taker after value resolved';
 //   ( function( { givSequence, got, expected }  )
 //   {
 //     function testTaker1( err, value )
@@ -2475,7 +2475,7 @@ function promiseThen( test )
 //
 //   /**/
 //
-//   test.description = 'single err in give sequence, and single taker : attached taker after value resolved';
+//   test.case = 'single err in give sequence, and single taker : attached taker after value resolved';
 //   ( function( { givSequence, got, expected }  )
 //   {
 //     function testTaker1( err, value )
@@ -2499,7 +2499,7 @@ function promiseThen( test )
 //
 //   /**/
 //
-//   test.description = 'test thenSealed in chain';
+//   test.case = 'test thenSealed in chain';
 //
 //   ( function( { givSequence, got, expected }  )
 //   {
@@ -2535,7 +2535,7 @@ function promiseThen( test )
 //
 //   /* test particular _onceGot features test. */
 //
-//   test.description = 'thenSealed with sealed context and argument';
+//   test.case = 'thenSealed with sealed context and argument';
 //   ( function( { givSequence, got, expected }  )
 //   {
 //     function testTaker1( sealed, err, value )
@@ -2577,7 +2577,7 @@ function promiseThen( test )
 //   {
 //     var conDeb1 = _.Consequence();
 //
-//     test.description = 'missed context arguments';
+//     test.case = 'missed context arguments';
 //     test.shouldThrowError( function()
 //     {
 //       conDeb1.thenSealed( function( err, val) { logger.log( 'foo' ); } );
@@ -2647,7 +2647,7 @@ function promiseThen( test )
 //
 //   /* common wConsequence corespondent tests. */
 //
-//   test.description = 'then clone : run after resolve value';
+//   test.case = 'then clone : run after resolve value';
 //   ( function( { givSequence, got, expected }  )
 //   {
 //     function testTaker1( err, value )
@@ -2673,7 +2673,7 @@ function promiseThen( test )
 //
 //   /**/
 //
-//   test.description = 'then clone : run before resolve value';
+//   test.case = 'then clone : run before resolve value';
 //   ( function( { givSequence, got, expected }  )
 //   {
 //     function testTaker1( err, value )
@@ -2699,7 +2699,7 @@ function promiseThen( test )
 //
 //   /**/
 //
-//   test.description = 'test thenSealed in chain';
+//   test.case = 'test thenSealed in chain';
 //
 //   ( function( { givSequence, got, expected }  )
 //   {
@@ -2744,7 +2744,7 @@ function split( test )
 
   .doThen( function()
   {
-    test.description = 'split : run after resolve value';
+    test.case = 'split : run after resolve value';
     var con = new _.Consequence().give( 5 );
     var con2 = con.split();
     test.identical( con2.messagesGet().length, 1 );
@@ -2760,7 +2760,7 @@ function split( test )
 
   .doThen( function()
   {
-    test.description = 'split : run before resolve value';
+    test.case = 'split : run before resolve value';
     var con = new _.Consequence();
     var con2 = con.split();
     con2.got( function( err, got )
@@ -2775,7 +2775,7 @@ function split( test )
 
   .doThen( function()
   {
-    test.description = 'test split in chain';
+    test.case = 'test split in chain';
     var _got = [];
     var _err = [];
     function correspondent( err, got )
@@ -2802,7 +2802,7 @@ function split( test )
 
   .doThen( function()
   {
-    test.description = 'passing correspondent as argument';
+    test.case = 'passing correspondent as argument';
     var _got = [];
     var _err = [];
     function correspondent( err, got )
@@ -2906,7 +2906,7 @@ function split( test )
 //
 //   /* common wConsequence corespondent tests. */
 //
-//   test.description = 'single value in give sequence';
+//   test.case = 'single value in give sequence';
 //   ( function( { givSequence, got, expected }  )
 //   {
 //     var con = _.Consequence();
@@ -2924,7 +2924,7 @@ function split( test )
 //
 //   /**/
 //
-//   test.description = 'single err in give sequence';
+//   test.case = 'single err in give sequence';
 //   ( function( { givSequence, got, expected }  )
 //   {
 //     function testTaker1( err, value )
@@ -2948,7 +2948,7 @@ function split( test )
 //
 //   /**/
 //
-//   test.description = 'test thenSealed in chain';
+//   test.case = 'test thenSealed in chain';
 //
 //   ( function( { givSequence, got, expected }  )
 //   {
@@ -2985,7 +2985,7 @@ function split( test )
 //   //
 //   /* test particular _onceGot features test. */
 //
-//   test.description = 'test thenSealed in chain #2';
+//   test.case = 'test thenSealed in chain #2';
 //   ( function( { givSequence, got, expected }  )
 //   {
 //     function testTaker1( err, value )
@@ -3025,7 +3025,7 @@ function split( test )
 //   {
 //     var conDeb1 = _.Consequence();
 //
-//     test.description = 'called thenReportError with any argument';
+//     test.case = 'called thenReportError with any argument';
 //     test.shouldThrowError( function()
 //     {
 //       conDeb1.thenReportError( function( err, val) { logger.log( 'foo' ); } );
@@ -3100,7 +3100,7 @@ function split( test )
 
 //   /* common wConsequence corespondent tests. */
 
-//   test.description = 'single value in give sequence, and single taker : attached taker after value resolved';
+//   test.case = 'single value in give sequence, and single taker : attached taker after value resolved';
 //   ( function( { givSequence, got, expected }  )
 //   {
 //     function testTaker1( err, value )
@@ -3124,7 +3124,7 @@ function split( test )
 
 //   /**/
 
-//   test.description = 'single err in give sequence, and single taker : attached taker after value resolved';
+//   test.case = 'single err in give sequence, and single taker : attached taker after value resolved';
 //   ( function( { givSequence, got, expected }  )
 //   {
 //     function testTaker1( err, value )
@@ -3148,7 +3148,7 @@ function split( test )
 
 //   /**/
 
-//   test.description = 'test tap in chain';
+//   test.case = 'test tap in chain';
 
 //   ( function( { givSequence, got, expected }  )
 //   {
@@ -3194,7 +3194,7 @@ function split( test )
 //   {
 //     var conDeb1 = _.Consequence();
 
-//     test.description = 'missed arguments';
+//     test.case = 'missed arguments';
 //     test.shouldThrowError( function()
 //     {
 //       conDeb1.tap();
@@ -3214,7 +3214,7 @@ function tap( test )
 
   .doThen( function()
   {
-    test.description = 'single value in give sequence, and single taker : attached taker after value resolved';
+    test.case = 'single value in give sequence, and single taker : attached taker after value resolved';
 
     var con = new _.Consequence();
     con.give( testMsg );
@@ -3228,7 +3228,7 @@ function tap( test )
 
   .doThen( function()
   {
-    test.description = 'single error and single taker : attached taker after value resolved';
+    test.case = 'single error and single taker : attached taker after value resolved';
 
     var con = new _.Consequence();
     con.error( testMsg );
@@ -3242,7 +3242,7 @@ function tap( test )
 
   .doThen( function()
   {
-    test.description = 'test tap in chain';
+    test.case = 'test tap in chain';
 
     var con = new _.Consequence();
     con.give( testMsg );
@@ -3260,7 +3260,7 @@ function tap( test )
     if( !Config.debug )
     return;
 
-    test.description = 'missed arguments';
+    test.case = 'missed arguments';
 
     var con = _.Consequence();
 
@@ -3334,7 +3334,7 @@ function tap( test )
 
 //   /* common wConsequence corespondent tests. */
 
-//   test.description = 'single value in give sequence, and single taker : attached taker after value resolved';
+//   test.case = 'single value in give sequence, and single taker : attached taker after value resolved';
 //   ( function( { givSequence, got, expected }  )
 //   {
 //     function testTaker1( err )
@@ -3358,7 +3358,7 @@ function tap( test )
 
 //   /**/
 
-//   test.description = 'single err in give sequence, and single taker : attached taker after value resolved';
+//   test.case = 'single err in give sequence, and single taker : attached taker after value resolved';
 //   ( function( { givSequence, got, expected }  )
 //   {
 //     function testTaker1( err )
@@ -3382,7 +3382,7 @@ function tap( test )
 
 //   /**/
 
-//   test.description = 'test tap in chain';
+//   test.case = 'test tap in chain';
 
 //   ( function( { givSequence, got, expected }  )
 //   {
@@ -3430,7 +3430,7 @@ function tap( test )
 //   {
 //     var conDeb1 = _.Consequence();
 
-//     test.description = 'missed arguments';
+//     test.case = 'missed arguments';
 //     test.shouldThrowError( function()
 //     {
 //       conDeb1.ifErrorThen();
@@ -3450,7 +3450,7 @@ function ifErrorThen( test )
 
   .doThen( function()
   {
-    test.description = 'single value in give sequence, and single taker : attached taker after value resolved';
+    test.case = 'single value in give sequence, and single taker : attached taker after value resolved';
 
     var con = new _.Consequence();
     con.give( testMsg );
@@ -3465,7 +3465,7 @@ function ifErrorThen( test )
 
   .doThen( function()
   {
-    test.description = 'single err in give sequence, and single taker : attached taker after value resolved';
+    test.case = 'single err in give sequence, and single taker : attached taker after value resolved';
 
     var con = new _.Consequence();
     con.error( testMsg );
@@ -3480,7 +3480,7 @@ function ifErrorThen( test )
 
   .doThen( function()
   {
-    test.description = 'test ifErrorThen in chain, regular message is given before error';
+    test.case = 'test ifErrorThen in chain, regular message is given before error';
 
     var con = new _.Consequence();
     con.give( testMsg );
@@ -3501,7 +3501,7 @@ function ifErrorThen( test )
 
   .doThen( function()
   {
-    test.description = 'test ifErrorThen in chain, regular message is given after error';
+    test.case = 'test ifErrorThen in chain, regular message is given after error';
 
     var con = new _.Consequence();
     con.error( testMsg + 1 );
@@ -3525,7 +3525,7 @@ function ifErrorThen( test )
     if( !Config.debug )
     return;
 
-    test.description = 'missed arguments';
+    test.case = 'missed arguments';
 
     var con = _.Consequence();
 
@@ -3601,7 +3601,7 @@ function ifErrorThen( test )
 
 //   /* common wConsequence corespondent tests. */
 
-//   test.description = 'single value in give sequence, and single taker : attached taker after value resolved';
+//   test.case = 'single value in give sequence, and single taker : attached taker after value resolved';
 //   ( function( { givSequence, got, expected }  )
 //   {
 //     function testTaker1( value )
@@ -3625,7 +3625,7 @@ function ifErrorThen( test )
 
 //   /**/
 
-//   test.description = 'single err in give sequence, and single taker : attached taker after value resolved';
+//   test.case = 'single err in give sequence, and single taker : attached taker after value resolved';
 //   ( function( { givSequence, got, expected }  )
 //   {
 //     function testTaker1( value )
@@ -3649,7 +3649,7 @@ function ifErrorThen( test )
 
 //   /**/
 
-//   test.description = 'test ifNoErrorThen in chain';
+//   test.case = 'test ifNoErrorThen in chain';
 
 //   ( function( { givSequence, got, expected }  )
 //   {
@@ -3697,7 +3697,7 @@ function ifErrorThen( test )
 //   {
 //     var conDeb1 = _.Consequence();
 
-//     test.description = 'missed arguments';
+//     test.case = 'missed arguments';
 //     test.shouldThrowError( function()
 //     {
 //       conDeb1.ifNoErrorThen();
@@ -3717,7 +3717,7 @@ function ifNoErrorThen( test )
 
   .doThen( function()
   {
-    test.description = 'single value in give sequence, and single taker : attached taker after value resolved';
+    test.case = 'single value in give sequence, and single taker : attached taker after value resolved';
 
     var con = new _.Consequence();
     con.give( testMsg );
@@ -3732,7 +3732,7 @@ function ifNoErrorThen( test )
 
   .doThen( function()
   {
-    test.description = 'single err in give sequence, and single taker : attached taker after value resolved';
+    test.case = 'single err in give sequence, and single taker : attached taker after value resolved';
 
     var con = new _.Consequence();
     con.error( testMsg );
@@ -3747,7 +3747,7 @@ function ifNoErrorThen( test )
 
   .doThen( function()
   {
-    test.description = 'test ifNoErrorThen in chain, regular message is given before error';
+    test.case = 'test ifNoErrorThen in chain, regular message is given before error';
 
     var con = new _.Consequence();
     con.give( testMsg );
@@ -3768,7 +3768,7 @@ function ifNoErrorThen( test )
 
   .doThen( function()
   {
-    test.description = 'test ifNoErrorThen in chain, regular message is given after error';
+    test.case = 'test ifNoErrorThen in chain, regular message is given after error';
 
     var con = new _.Consequence();
     con.error( testMsg );
@@ -3789,7 +3789,7 @@ function ifNoErrorThen( test )
 
   .doThen( function()
   {
-    test.description = 'test ifNoErrorThen in chain serveral messages';
+    test.case = 'test ifNoErrorThen in chain serveral messages';
 
     var con = new _.Consequence();
     con.give( testMsg );
@@ -3811,7 +3811,7 @@ function ifNoErrorThen( test )
     if( !Config.debug )
     return;
 
-    test.description = 'missed arguments';
+    test.case = 'missed arguments';
 
     var con = _.Consequence();
 
@@ -3890,7 +3890,7 @@ function ifNoErrorThen( test )
 
 //   /* common wConsequence corespondent tests. */
 
-//   test.description = 'single value in give sequence, and single taker : attached taker after value resolved';
+//   test.case = 'single value in give sequence, and single taker : attached taker after value resolved';
 //   ( function( { givSequence, got, expected }  )
 //   {
 //     function testTaker1( err, value )
@@ -3914,7 +3914,7 @@ function ifNoErrorThen( test )
 
 //   /**/
 
-//   test.description = 'single err in give sequence, and single taker : attached taker after value resolved';
+//   test.case = 'single err in give sequence, and single taker : attached taker after value resolved';
 //   ( function( { givSequence, got, expected }  )
 //   {
 //     function testTaker1( err, value )
@@ -3938,7 +3938,7 @@ function ifNoErrorThen( test )
 
 //   /**/
 
-//   test.description = 'test timeOutThen in chain';
+//   test.case = 'test timeOutThen in chain';
 
 //   ( function( { givSequence, got, expected }  )
 //   {
@@ -3982,7 +3982,7 @@ function ifNoErrorThen( test )
 //   {
 //     var conDeb1 = _.Consequence();
 
-//     test.description = 'missed arguments';
+//     test.case = 'missed arguments';
 //     test.shouldThrowError( function()
 //     {
 //       conDeb1.timeOutThen();
@@ -4002,7 +4002,7 @@ function timeOutThen( test )
 
   .doThen( function()
   {
-    test.description = 'single value in give sequence, and single taker : attached taker after value resolved';
+    test.case = 'single value in give sequence, and single taker : attached taker after value resolved';
 
     var con = new _.Consequence();
     con.give( testMsg );
@@ -4020,7 +4020,7 @@ function timeOutThen( test )
 
   .doThen( function()
   {
-    test.description = 'single err in give sequence, and single taker : attached taker after value resolved';
+    test.case = 'single err in give sequence, and single taker : attached taker after value resolved';
 
     var con = new _.Consequence();
     con.error( testMsg );
@@ -4038,7 +4038,7 @@ function timeOutThen( test )
 
   .doThen( function()
   {
-    test.description = 'test timeOutThen in chain';
+    test.case = 'test timeOutThen in chain';
     var delay = 0;
     var con = new _.Consequence();
     con.give( testMsg );
@@ -4066,7 +4066,7 @@ function timeOutThen( test )
 
     var con = _.Consequence();
 
-    test.description = 'missed arguments';
+    test.case = 'missed arguments';
     test.shouldThrowError( function()
     {
       con.timeOutThen();
@@ -4088,7 +4088,7 @@ function _and( test )
 
   .doThen( function()
   {
-    test.description = 'give back messages to src consequences';
+    test.case = 'give back messages to src consequences';
 
     var mainCon = new _.Consequence();
     var con1 = new _.Consequence();
@@ -4121,7 +4121,7 @@ function _and( test )
 
    .doThen( function()
   {
-    test.description = 'dont give back messages to src consequences';
+    test.case = 'dont give back messages to src consequences';
 
     var mainCon = new _.Consequence();
     var con1 = new _.Consequence();
@@ -4214,7 +4214,7 @@ function _and( test )
 
 //   /* common wConsequence goter tests. */
 
-//   test.description = 'single value in give sequence, and single taker: attached taker after value resolved';
+//   test.case = 'single value in give sequence, and single taker: attached taker after value resolved';
 //   ( function( { givSequence, gotSequence, expectedSequence }  )
 //   {
 //     function testTaker1( err, value )
@@ -4231,7 +4231,7 @@ function _and( test )
 
 //   /**/
 
-//   test.description = 'single err in give sequence, and single taker: attached taker after value resolved';
+//   test.case = 'single err in give sequence, and single taker: attached taker after value resolved';
 //   ( function( { givSequence, gotSequence, expectedSequence }  )
 //   {
 //     function testTaker1( err, value )
@@ -4248,7 +4248,7 @@ function _and( test )
 
 //   /**/
 
-//   test.description = 'test _onceGot in chain';
+//   test.case = 'test _onceGot in chain';
 
 //   ( function( { givSequence, gotSequence, expectedSequence }  )
 //   {
@@ -4277,7 +4277,7 @@ function _and( test )
 
 //   /* test particular _onceGot features test. */
 
-//   test.description = 'several takers with same name: appending after given values are resolved';
+//   test.case = 'several takers with same name: appending after given values are resolved';
 //   ( function( { givSequence, gotSequence, expectedSequence }  )
 //   {
 //     function testTaker1( err, value )
@@ -4307,7 +4307,7 @@ function _and( test )
 
 //   /**/
 
-//   test.description = 'several takers with same name: appending before given values are resolved';
+//   test.case = 'several takers with same name: appending before given values are resolved';
 //   ( function( { givSequence, gotSequence, expectedSequence }  )
 //   {
 //     function testTaker1( err, value )
@@ -4343,7 +4343,7 @@ function _and( test )
 //   {
 //     var conDeb1 = _.Consequence();
 
-//     test.description = 'try to pass as parameter anonymous function';
+//     test.case = 'try to pass as parameter anonymous function';
 //     test.shouldThrowError( function()
 //     {
 //       conDeb1._onceGot( function( err, val) { logger.log( 'i am anonymous' ); } );
@@ -4351,7 +4351,7 @@ function _and( test )
 
 //     var conDeb2 = _.Consequence();
 
-//     test.description = 'try to pass as parameter anonymous function(defined in expression)';
+//     test.case = 'try to pass as parameter anonymous function(defined in expression)';
 
 //     function testHandler( err, val) { logger.log( 'i am anonymous' ); }
 //     test.shouldThrowError( function()
@@ -4375,7 +4375,7 @@ function _onceGot( test )
 
   .doThen( function()
   {
-    test.description = 'single value in give sequence, and single taker: attached taker after value resolved';
+    test.case = 'single value in give sequence, and single taker: attached taker after value resolved';
     function correspondent( err, got )
     {
       test.identical( got, testMsg );
@@ -4390,7 +4390,7 @@ function _onceGot( test )
 
   .doThen( function()
   {
-    test.description = 'single err in give sequence, and single taker: attached taker after value resolved';
+    test.case = 'single err in give sequence, and single taker: attached taker after value resolved';
 
     function correspondent( err, got )
     {
@@ -4406,7 +4406,7 @@ function _onceGot( test )
 
   .doThen( function()
   {
-    test.description = 'test _onceGot in chain';
+    test.case = 'test _onceGot in chain';
 
     function correspondent1( err, got )
     {
@@ -4428,7 +4428,7 @@ function _onceGot( test )
 
   .doThen( function()
   {
-    test.description = 'several takers with same name: appending after given values are resolved';
+    test.case = 'several takers with same name: appending after given values are resolved';
     var correspondent1Count = 0;
     var correspondent2Count = 0;
     function correspondent1( err, got )
@@ -4458,7 +4458,7 @@ function _onceGot( test )
 
   .doThen( function()
   {
-    test.description = 'several takers with same name: appending before given values are resolved';
+    test.case = 'several takers with same name: appending before given values are resolved';
     var correspondent1Count = 0;
     var correspondent2Count = 0;
     function correspondent1( err, got )
@@ -4494,7 +4494,7 @@ function _onceGot( test )
 
     var con = new _.Consequence();
 
-    test.description = 'try to pass as parameter anonymous function';
+    test.case = 'try to pass as parameter anonymous function';
     test.shouldThrowError( function()
     {
       con._onceGot( function( err, val) { logger.log( 'i am anonymous' ); } );
@@ -4502,7 +4502,7 @@ function _onceGot( test )
 
     /* */
 
-    test.description = 'try to pass as parameter anonymous function(defined in expression)';
+    test.case = 'try to pass as parameter anonymous function(defined in expression)';
     function testHandler( err, val ) { logger.log( 'i am anonymous' ); }
     test.shouldThrowError( function()
     {
@@ -4524,7 +4524,7 @@ function _onceThen( test )
 
   .doThen( function()
   {
-    test.description = 'single value in give sequence, and single taker: attached taker after value resolved';
+    test.case = 'single value in give sequence, and single taker: attached taker after value resolved';
     function correspondent( err, got )
     {
       test.identical( got, testMsg );
@@ -4541,7 +4541,7 @@ function _onceThen( test )
 
   .doThen( function()
   {
-    test.description = 'single err in give sequence, and single taker: attached taker after value resolved';
+    test.case = 'single err in give sequence, and single taker: attached taker after value resolved';
 
     function correspondent( err, got )
     {
@@ -4559,7 +4559,7 @@ function _onceThen( test )
 
   .doThen( function()
   {
-    test.description = 'test _onceThen in chain';
+    test.case = 'test _onceThen in chain';
 
     function correspondent1( err, got )
     {
@@ -4584,7 +4584,7 @@ function _onceThen( test )
 
   .doThen( function()
   {
-    test.description = 'added several corespondents with same name';
+    test.case = 'added several corespondents with same name';
     var correspondent1Count = 0;
     var correspondent2Count = 0;
     function correspondent1( err, got )
@@ -4627,7 +4627,7 @@ function _onceThen( test )
 
     var con = new _.Consequence();
 
-    test.description = 'try to pass as parameter anonymous function';
+    test.case = 'try to pass as parameter anonymous function';
     test.shouldThrowError( function()
     {
       con._onceThen( function( err, val) { logger.log( 'i am anonymous' ); } );
@@ -4635,7 +4635,7 @@ function _onceThen( test )
 
     /* */
 
-    test.description = 'try to pass as parameter anonymous function(defined in expression)';
+    test.case = 'try to pass as parameter anonymous function(defined in expression)';
     function testHandler( err, val) { logger.log( 'i am anonymous' ); }
     test.shouldThrowError( function()
     {
@@ -4659,7 +4659,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'simplest, empty routine';
+    test.case = 'simplest, empty routine';
     var con = new _.Consequence();
     con.first( () => {} );
     con.give( testMsg );
@@ -4675,7 +4675,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'routine returns something';
+    test.case = 'routine returns something';
     var con = new _.Consequence();
     con.first( () => testMsg );
     con.give( testMsg + 2 );
@@ -4691,7 +4691,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'routine throws error';
+    test.case = 'routine throws error';
     var con = new _.Consequence();
     con.first( () => { throw testMsg });
     con.doThen( function( err, got )
@@ -4707,7 +4707,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'routine returns consequence with message';
+    test.case = 'routine returns consequence with message';
     var con = new _.Consequence();
     con.first( () => new _.Consequence().give( testMsg ));
     con.doThen( function( err, got )
@@ -4723,7 +4723,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'routine returns consequence with err message';
+    test.case = 'routine returns consequence with err message';
     var con = new _.Consequence();
     con.first( () => new _.Consequence().error( testMsg ));
     con.doThen( function( err, got )
@@ -4739,16 +4739,16 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'routine returns consequence that gives message with timeout';
+    test.case = 'routine returns consequence that gives message with timeout';
     var con = new _.Consequence();
     var timeBefore = _.timeNow();
     con.first( () => _.timeOut( 250, () => {} ));
     con.doThen( function( err, got )
     {
       var delay = _.timeNow() - timeBefore;
-      var description = test.description = 'delay ' + delay;
+      var description = test.case = 'delay ' + delay;
       test.ge( delay, 250 - c.timeAccuracy );
-      test.description = description;
+      test.case = description;
       test.identical( err, undefined );
       test.identical( got, undefined );
       test.identical( con.messagesGet(),[] );
@@ -4760,7 +4760,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'passed consequence shares own message';
+    test.case = 'passed consequence shares own message';
     var con = new _.Consequence();
     var con2 = new _.Consequence().give( testMsg );
     con.first( con2 );
@@ -4778,7 +4778,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'passed consequence shares own message with timeout';
+    test.case = 'passed consequence shares own message with timeout';
     var con = new _.Consequence();
     var con2 = _.timeOut( 250, () => testMsg );
     var timeBefore = _.timeNow();
@@ -4786,9 +4786,9 @@ function first( test )
     con.doThen( function( err, got )
     {
       var delay = _.timeNow() - timeBefore;
-      var description = test.description = 'delay ' + delay;
+      var description = test.case = 'delay ' + delay;
       test.ge( delay, 250 - c.timeAccuracy );
-      test.description = description;
+      test.case = description;
       test.identical( err, undefined );
       test.identical( got, testMsg );
       test.identical( con.messagesGet(),[] );
@@ -4803,7 +4803,7 @@ function first( test )
 
    .doThen( function()
   {
-    test.description = 'simplest, empty routine';
+    test.case = 'simplest, empty routine';
     var con = new _.Consequence();
     con.first( () => {} );
     con.give( testMsg );
@@ -4824,7 +4824,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'routine returns something';
+    test.case = 'routine returns something';
     var con = new _.Consequence();
     con.first( () => testMsg );
     con.give( testMsg + 2 );
@@ -4844,7 +4844,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'routine throws error';
+    test.case = 'routine throws error';
     var con = new _.Consequence();
     con.first( () => { throw testMsg });
     con.got( function( err, got )
@@ -4865,7 +4865,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'routine returns consequence with message';
+    test.case = 'routine returns consequence with message';
     var con = new _.Consequence();
     con.first( () => new _.Consequence().give( testMsg ));
     con.got( function( err, got )
@@ -4885,7 +4885,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'routine returns consequence with err message';
+    test.case = 'routine returns consequence with err message';
     var con = new _.Consequence();
     con.first( () => new _.Consequence().error( testMsg ));
     con.got( function( err, got )
@@ -4905,16 +4905,16 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'routine returns consequence that gives message with timeout';
+    test.case = 'routine returns consequence that gives message with timeout';
     var con = new _.Consequence();
     var timeBefore = _.timeNow();
     con.first( () => _.timeOut( 250, () => {} ));
     con.got( function( err, got )
     {
       var delay = _.timeNow() - timeBefore;
-      var description = test.description = 'delay ' + delay;
+      var description = test.case = 'delay ' + delay;
       test.ge( delay, 250 - c.timeAccuracy );
-      test.description = description;
+      test.case = description;
       test.identical( err, undefined );
       test.identical( got, undefined );
       test.identical( con.messagesGet(),[] );
@@ -4930,7 +4930,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'passed consequence shares own message';
+    test.case = 'passed consequence shares own message';
     var con = new _.Consequence();
     var con2 = new _.Consequence().give( testMsg );
     con.first( con2 );
@@ -4952,7 +4952,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'passed consequence shares own message with timeout';
+    test.case = 'passed consequence shares own message with timeout';
     var con = new _.Consequence();
     var con2 = _.timeOut( 250, () => testMsg );
     var timeBefore = _.timeNow();
@@ -4960,9 +4960,9 @@ function first( test )
     con.got( function( err, got )
     {
       var delay = _.timeNow() - timeBefore;
-      var description = test.description = 'delay ' + delay;
+      var description = test.case = 'delay ' + delay;
       test.ge( delay, 250 - c.timeAccuracy );
-      test.description = description;
+      test.case = description;
       test.identical( err, undefined );
       test.identical( got, testMsg );
       test.identical( con.messagesGet(),[] );
@@ -4981,7 +4981,7 @@ function first( test )
 
    .doThen( function()
   {
-    test.description = 'simplest, empty routine';
+    test.case = 'simplest, empty routine';
     var con = new _.Consequence();
     con.got( function( err, got )
     {
@@ -5005,7 +5005,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'routine returns something';
+    test.case = 'routine returns something';
     var con = new _.Consequence();
     con.got( function( err, got )
     {
@@ -5029,7 +5029,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'routine throws error';
+    test.case = 'routine throws error';
     var con = new _.Consequence();
     con.first( () => { throw testMsg });
 
@@ -5055,7 +5055,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'routine returns consequence with message';
+    test.case = 'routine returns consequence with message';
     var con = new _.Consequence();
     con.first( () => new _.Consequence().give( testMsg ));
 
@@ -5082,7 +5082,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'routine returns consequence with err message';
+    test.case = 'routine returns consequence with err message';
     var con = new _.Consequence();
     con.first( () => new _.Consequence().error( testMsg ));
 
@@ -5109,7 +5109,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'routine returns consequence that gives message with timeout';
+    test.case = 'routine returns consequence that gives message with timeout';
     var con = new _.Consequence();
     var timeBefore = _.timeNow();
     con.first( () => _.timeOut( 250, () => {} ));
@@ -5123,9 +5123,9 @@ function first( test )
       con.got( function( err, got )
       {
         var delay = _.timeNow() - timeBefore;
-        var description = test.description = 'delay ' + delay;
+        var description = test.case = 'delay ' + delay;
         test.ge( delay, 250 - c.timeAccuracy );
-        test.description = description;
+        test.case = description;
         test.identical( err, undefined );
         test.identical( got, undefined );
       })
@@ -5141,7 +5141,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'passed consequence shares own message';
+    test.case = 'passed consequence shares own message';
     var con = new _.Consequence();
     var con2 = new _.Consequence().give( testMsg );
     con.first( con2 );
@@ -5168,7 +5168,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'passed consequence shares own message with timeout';
+    test.case = 'passed consequence shares own message with timeout';
     var con = new _.Consequence();
     var con2 = _.timeOut( 250, () => testMsg );
     var timeBefore = _.timeNow();
@@ -5181,9 +5181,9 @@ function first( test )
       con.got( function( err, got )
       {
         var delay = _.timeNow() - timeBefore;
-        var description = test.description = 'delay ' + delay;
+        var description = test.case = 'delay ' + delay;
         test.ge( delay, 250 - c.timeAccuracy );
-        test.description = description;
+        test.case = description;
         test.identical( err, undefined );
         test.identical( got, testMsg );
       })
@@ -5202,7 +5202,7 @@ function first( test )
 
    .doThen( function()
   {
-    test.description = 'simplest, empty routine';
+    test.case = 'simplest, empty routine';
     var con = new _.Consequence();
     con.got( function( err, got )
     {
@@ -5225,7 +5225,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'routine returns something';
+    test.case = 'routine returns something';
     var con = new _.Consequence();
     con.got( function( err, got )
     {
@@ -5249,7 +5249,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'routine throws error';
+    test.case = 'routine throws error';
     var con = new _.Consequence();
     con.first( () => { throw testMsg });
     con.got( function( err, got )
@@ -5271,7 +5271,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'routine returns consequence with message';
+    test.case = 'routine returns consequence with message';
     var con = new _.Consequence();
     con.first( () => new _.Consequence().give( testMsg ));
     con.got( function( err, got )
@@ -5292,7 +5292,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'routine returns consequence with err message';
+    test.case = 'routine returns consequence with err message';
     var con = new _.Consequence();
     con.first( () => new _.Consequence().error( testMsg ));
     con.got( function( err, got )
@@ -5313,16 +5313,16 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'routine returns consequence that gives message with timeout';
+    test.case = 'routine returns consequence that gives message with timeout';
     var con = new _.Consequence();
     var timeBefore = _.timeNow();
     con.first( () => _.timeOut( 250, () => {} ));
     con.got( function( err, got )
     {
       var delay = _.timeNow() - timeBefore;
-      var description = test.description = 'delay ' + delay;
+      var description = test.case = 'delay ' + delay;
       test.ge( delay, 250 - c.timeAccuracy );
-      test.description = description;
+      test.case = description;
       test.identical( err, undefined );
       test.identical( got, undefined );
     })
@@ -5339,7 +5339,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'passed consequence shares own message';
+    test.case = 'passed consequence shares own message';
     var con = new _.Consequence();
     var con2 = new _.Consequence().give( testMsg );
     con.first( con2 );
@@ -5360,7 +5360,7 @@ function first( test )
 
   .doThen( function()
   {
-    test.description = 'passed consequence shares own message with timeout';
+    test.case = 'passed consequence shares own message with timeout';
     var con = new _.Consequence();
     var con2 = _.timeOut( 250, () => testMsg );
     var timeBefore = _.timeNow();
@@ -5368,9 +5368,9 @@ function first( test )
     con.got( function( err, got )
     {
       var delay = _.timeNow() - timeBefore;
-      var description = test.description = 'delay ' + delay;
+      var description = test.case = 'delay ' + delay;
       test.ge( delay, 250 - c.timeAccuracy );
-      test.description = description;
+      test.case = description;
       test.identical( err, undefined );
       test.identical( got, testMsg );
     })
@@ -5402,7 +5402,7 @@ function from( test )
 
   .doThen( function()
   {
-    test.description = 'passing value';
+    test.case = 'passing value';
     var con = wConsequence.from( testMsg );
     test.identical( con.messagesGet(), [ { error : undefined, argument : testMsg } ] );
     test.identical( con.correspondentsEarlyGet(), [] );
@@ -5413,7 +5413,7 @@ function from( test )
 
   .doThen( function()
   {
-    test.description = 'passing an error';
+    test.case = 'passing an error';
     var err = _.err( testMsg );
     var con = wConsequence.from( err );
     test.identical( con.messagesGet(), [ { error : err, argument : undefined } ] );
@@ -5425,7 +5425,7 @@ function from( test )
 
   .doThen( function()
   {
-    test.description = 'passing consequence';
+    test.case = 'passing consequence';
     var src = new _.Consequence().give( testMsg );
     var con = wConsequence.from( src );
     test.identical( con, src );
@@ -5438,7 +5438,7 @@ function from( test )
 
   .doThen( function()
   {
-    test.description = 'passing resolved promise';
+    test.case = 'passing resolved promise';
     var src = Promise.resolve( testMsg );
     var con = wConsequence.from( src );
     return _.timeOut( 1, function()
@@ -5452,7 +5452,7 @@ function from( test )
 
   .doThen( function()
   {
-    test.description = 'passing rejected promise';
+    test.case = 'passing rejected promise';
     var src = Promise.reject( testMsg );
     var con = wConsequence.from( src );
     return _.timeOut( 1, function()
@@ -5474,7 +5474,7 @@ function from( test )
 
   .doThen( function()
   {
-    test.description = 'async giving passing value';
+    test.case = 'async giving passing value';
     var con = wConsequence.from( testMsg );
     con.got( ( err, got ) => test.identical( got, testMsg ) )
     test.identical( con.messagesGet(), [ { error : undefined, argument : testMsg } ] );
@@ -5491,7 +5491,7 @@ function from( test )
 
   .doThen( function()
   {
-    test.description = 'passing an error';
+    test.case = 'passing an error';
     var src = _.err( testMsg );
     var con = wConsequence.from( src );
     con.got( ( err, got ) => test.identical( err, src ) )
@@ -5509,7 +5509,7 @@ function from( test )
 
   .doThen( function()
   {
-    test.description = 'passing consequence';
+    test.case = 'passing consequence';
     var src = new _.Consequence().give( testMsg );
     var con = wConsequence.from( src );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
@@ -5528,7 +5528,7 @@ function from( test )
 
   .doThen( function()
   {
-    test.description = 'passing resolved promise';
+    test.case = 'passing resolved promise';
     var src = Promise.resolve( testMsg );
     var con = wConsequence.from( src );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
@@ -5544,7 +5544,7 @@ function from( test )
 
   .doThen( function()
   {
-    test.description = 'passing rejected promise';
+    test.case = 'passing rejected promise';
     var src = Promise.reject( testMsg );
     var con = wConsequence.from( src );
     con.got( ( err, got ) => test.identical( err, testMsg ) );
@@ -5568,7 +5568,7 @@ function from( test )
 
   .doThen( function()
   {
-    test.description = 'async taking, passing value';
+    test.case = 'async taking, passing value';
     var con = wConsequence.from( testMsg );
     con.got( ( err, got ) => test.identical( got, testMsg ) )
     test.identical( con.messagesGet(), [ { error : undefined, argument : testMsg } ] );
@@ -5586,7 +5586,7 @@ function from( test )
 
   .doThen( function()
   {
-    test.description = 'async taking,passing an error';
+    test.case = 'async taking,passing an error';
     var src = _.err( testMsg );
     var con = wConsequence.from( src );
     con.got( ( err, got ) => test.identical( err, src ) )
@@ -5605,7 +5605,7 @@ function from( test )
 
   .doThen( function()
   {
-    test.description = 'async taking,passing consequence';
+    test.case = 'async taking,passing consequence';
     var src = new _.Consequence().give( testMsg );
     var con = wConsequence.from( src );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
@@ -5625,7 +5625,7 @@ function from( test )
 
   .doThen( function()
   {
-    test.description = 'async taking,passing resolved promise';
+    test.case = 'async taking,passing resolved promise';
     var src = Promise.resolve( testMsg );
     var con = wConsequence.from( src );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
@@ -5642,7 +5642,7 @@ function from( test )
 
   .doThen( function()
   {
-    test.description = 'async taking,passing rejected promise';
+    test.case = 'async taking,passing rejected promise';
     var src = Promise.reject( testMsg );
     var con = wConsequence.from( src );
     con.got( ( err, got ) => test.identical( err, testMsg ) );
@@ -5667,7 +5667,7 @@ function from( test )
 
   .doThen( function()
   {
-    test.description = 'async, passing value';
+    test.case = 'async, passing value';
     var con = wConsequence.from( testMsg );
     con.got( ( err, got ) => test.identical( got, testMsg ) )
     test.identical( con.messagesGet(), [ { error : undefined, argument : testMsg } ] );
@@ -5685,7 +5685,7 @@ function from( test )
 
   .doThen( function()
   {
-    test.description = 'async,passing an error';
+    test.case = 'async,passing an error';
     var src = _.err( testMsg );
     var con = wConsequence.from( src );
     con.got( ( err, got ) => test.identical( err, src ) )
@@ -5704,7 +5704,7 @@ function from( test )
 
   .doThen( function()
   {
-    test.description = 'async,passing consequence';
+    test.case = 'async,passing consequence';
     var src = new _.Consequence().give( testMsg );
     var con = wConsequence.from( src );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
@@ -5724,7 +5724,7 @@ function from( test )
 
   .doThen( function()
   {
-    test.description = 'async,passing resolved promise';
+    test.case = 'async,passing resolved promise';
     var src = Promise.resolve( testMsg );
     var con = wConsequence.from( src );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
@@ -5741,7 +5741,7 @@ function from( test )
 
   .doThen( function()
   {
-    test.description = 'async,passing rejected promise';
+    test.case = 'async,passing rejected promise';
     var src = Promise.reject( testMsg );
     var con = wConsequence.from( src );
     con.got( ( err, got ) => test.identical( err, testMsg ) );
@@ -5763,7 +5763,7 @@ function from( test )
   })
   .doThen( function()
   {
-    test.description = 'sync, resolved promise, timeout';
+    test.case = 'sync, resolved promise, timeout';
     var src = Promise.resolve( testMsg );
     var con = wConsequence.from( src, 500 );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
@@ -5780,7 +5780,7 @@ function from( test )
 
   .doThen( function()
   {
-    test.description = 'sync, promise resolved with timeout';
+    test.case = 'sync, promise resolved with timeout';
     var src = new Promise( ( resolve ) =>
     {
       setTimeout( () => resolve( testMsg ), 600 );
@@ -5800,7 +5800,7 @@ function from( test )
 
   .doThen( function()
   {
-    test.description = 'sync, timeout, src is a consequence';
+    test.case = 'sync, timeout, src is a consequence';
     var con = new _.Consequence().give( testMsg );
     con = wConsequence.from( con , 500 );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
@@ -5812,7 +5812,7 @@ function from( test )
 
   .doThen( function()
   {
-    test.description = 'sync, timeout, src is a consequence';
+    test.case = 'sync, timeout, src is a consequence';
     var con = _.timeOut( 600, () => testMsg );
     con = wConsequence.from( con , 500 );
     con.got( ( err, got ) => test.is( _.errIs( err ) ) );
