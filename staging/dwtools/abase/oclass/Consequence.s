@@ -445,7 +445,7 @@ promiseThen.having =
 //   _.assert( arguments.length === 2 || arguments.length === 3, 'expects two or three arguments' );
 //
 //   if( arguments.length === 2 )
-//   if( _.arrayLike( arguments[ 1 ] ) )
+//   if( _.longIs( arguments[ 1 ] ) )
 //   {
 //     args = arguments[ 1 ];
 //     correspondent = arguments[ 0 ];
@@ -1650,7 +1650,7 @@ function _prepareConsequenceJoined()
       var args = arguments;
       var method = [];
       _.assert( arguments.length === 1, 'expects single argument' );
-      _.assert( _.arrayLike( args[ 0 ] ) );
+      _.assert( _.longIs( args[ 0 ] ) );
       for( var i = 0 ; i < args[ 0 ].length ; i++ )
       {
         method.push( this.routineJoin( this.context,this.method,[ args[ 0 ][ i ] ] ) );
@@ -3143,7 +3143,7 @@ function giveWithContextAndError_static( consequence,context,err,got )
 
   var args = [ got ];
   if( arguments.length > 4 )
-  args = _.arraySlice( arguments,3 );
+  args = _.longSlice( arguments,3 );
 
   return _give_static
   ({
