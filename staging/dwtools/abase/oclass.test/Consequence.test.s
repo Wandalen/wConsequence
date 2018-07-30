@@ -48,7 +48,7 @@ function simple( test )
   test.is( _.objectIs( wConsequence.prototype.KindOfArguments ) );
   test.is( _.objectIs( wConsequence.KindOfArguments ) );
   test.is( wConsequence.name === 'wConsequence' );
-  test.is( wConsequence.nameShort === 'Consequence' );
+  test.is( wConsequence.shortName === 'Consequence' );
 
   test.case = 'construction'; /* */
 

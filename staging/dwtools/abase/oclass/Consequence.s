@@ -51,7 +51,7 @@ var _ = _global_.wTools;
 if( _realGlobal_.wTools && _realGlobal_.wConsequence )
 {
   var Self = _realGlobal_.wConsequence;
-  _[ Self.nameShort ] = Self;
+  _[ Self.shortName ] = Self;
   if( typeof module !== 'undefined' && module !== null )
   module[ 'exports' ] = Self;
   return;
@@ -116,7 +116,7 @@ var wConsequenceProxy = new Proxy( wConsequence,
 var Parent = null;
 var Self = wConsequenceProxy;
 
-wConsequence.nameShort = 'Consequence';
+wConsequence.shortName = 'Consequence';
 
 //
 
@@ -3382,7 +3382,7 @@ var KindOfArguments =
 }
 
 // --
-// relationships
+// relations
 // --
 
 var Composes =
@@ -3434,7 +3434,7 @@ var Statics =
   asyncTaking : 0,
   asyncGiving : 0,
 
-  nameShort : 'Consequence',
+  shortName : 'Consequence',
 
 }
 
@@ -3561,7 +3561,7 @@ var Extend =
   asyncModeGet : asyncModeGet,
 
 
-  // relationships
+  // relations
 
   constructor : wConsequence,
   Composes : Composes,
@@ -3598,7 +3598,7 @@ _.assert( _.routineIs( wConsequence.passThru ) );
 _.assert( _.objectIs( wConsequence.prototype.KindOfArguments ) );
 _.assert( _.objectIs( wConsequence.KindOfArguments ) );
 _.assert( _.strIsNotEmpty( wConsequence.name ) );
-_.assert( _.strIsNotEmpty( wConsequence.nameShort ) );
+_.assert( _.strIsNotEmpty( wConsequence.shortName ) );
 _.assert( _.routineIs( wConsequence.prototype.give ) );
 
 _.assert( _.routineIs( wConsequenceProxy.prototype.passThru ) );
@@ -3606,10 +3606,10 @@ _.assert( _.routineIs( wConsequenceProxy.passThru ) );
 _.assert( _.objectIs( wConsequenceProxy.prototype.KindOfArguments ) );
 _.assert( _.objectIs( wConsequenceProxy.KindOfArguments ) );
 _.assert( _.strIsNotEmpty( wConsequenceProxy.name ) );
-_.assert( _.strIsNotEmpty( wConsequenceProxy.nameShort ) );
+_.assert( _.strIsNotEmpty( wConsequenceProxy.shortName ) );
 _.assert( _.routineIs( wConsequenceProxy.prototype.give ) );
 
-_.assert( wConsequenceProxy.nameShort === 'Consequence' );
+_.assert( wConsequenceProxy.shortName === 'Consequence' );
 
 //
 
@@ -3628,7 +3628,7 @@ _.assert( Self.fieldsOfRelationshipsGroups );
 _.assert( Self.prototype.fieldsOfRelationshipsGroups );
 _.assert( _.mapKeys( Self.fieldsOfRelationshipsGroups ).length );
 
-_global_[ Self.name ] = _[ Self.nameShort ] = Self;
+_global_[ Self.name ] = _[ Self.shortName ] = Self;
 if( !_global_.WTOOLS_PRIVATE_CONSEQUENCE )
 _realGlobal_[ Self.name ] = Self;
 
