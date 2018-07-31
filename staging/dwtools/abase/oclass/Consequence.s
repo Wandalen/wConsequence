@@ -3563,7 +3563,7 @@ var Extend =
 
   // relations
 
-  constructor : wConsequence,
+  // constructor : wConsequence,
   Composes : Composes,
   Restricts : Restricts,
 
@@ -3622,10 +3622,10 @@ _.accessor
 _.accessorForbid( Self.prototype,Forbids );
 _prepareConsequenceJoined();
 
-_.assert( Self._fieldsOfRelationshipsGroupsGet );
-_.assert( Self.prototype._fieldsOfRelationshipsGroupsGet );
-_.assert( Self.fieldsOfRelationshipsGroups );
-_.assert( Self.prototype.fieldsOfRelationshipsGroups );
+_.assert( !!Self._fieldsOfRelationshipsGroupsGet );
+_.assert( !!Self.prototype._fieldsOfRelationshipsGroupsGet );
+_.assert( !!Self.fieldsOfRelationshipsGroups );
+_.assert( !!Self.prototype.fieldsOfRelationshipsGroups );
 _.assert( _.mapKeys( Self.fieldsOfRelationshipsGroups ).length );
 
 _global_[ Self.name ] = _[ Self.shortName ] = Self;
