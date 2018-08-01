@@ -160,6 +160,26 @@ function init( o )
 
 }
 
+//
+
+function is( src )
+{
+  _.assert( arguments.length === 1 );
+  return _.consequenceIs( src );
+}
+
+//
+
+function isJoinedWithConsequence( src )
+{
+  _.assert( arguments.length === 1 );
+  debugger;
+  var result = _.subOf( src, JoinedWithConsequence );
+  if( result )
+  debugger;
+  return result;
+}
+
 // --
 // chainer
 // --
@@ -1620,19 +1640,19 @@ function _first( src,stack )
 
 //
 
-var ConsequenceJoined = Object.create( null );
-ConsequenceJoined.routineJoin = _.routineSeal;
-ConsequenceJoined.context = null;
-ConsequenceJoined.method = null;
-ConsequenceJoined.consequence = null;
-ConsequenceJoined.constructor = function ConsequenceJoined()
+var JoinedWithConsequence = Object.create( null );
+JoinedWithConsequence.routineJoin = _.routineSeal;
+JoinedWithConsequence.context = null;
+JoinedWithConsequence.method = null;
+JoinedWithConsequence.consequence = null;
+JoinedWithConsequence.constructor = function JoinedWithConsequence()
 {
   debugger;
 };
 
 //
 
-function _prepareConsequenceJoined()
+function _prepareJoinedWithConsequence()
 {
 
   // debugger;
@@ -1645,7 +1665,7 @@ function _prepareConsequenceJoined()
     return;
 
     if( routine.having.andLike )
-    ConsequenceJoined[ r ] = function()
+    JoinedWithConsequence[ r ] = function()
     {
       var args = arguments;
       var method = [];
@@ -1659,7 +1679,7 @@ function _prepareConsequenceJoined()
       return this;
     }
     else
-    ConsequenceJoined[ r ] = function()
+    JoinedWithConsequence[ r ] = function()
     {
       var args = arguments;
       var method = this.routineJoin( this.context,this.method,args );
@@ -1674,10 +1694,10 @@ function _prepareConsequenceJoined()
 
 //
 
-function _join( routineJoin,args )
+function _join( routineJoin, args )
 {
   var self = this;
-  var result = Object.create( ConsequenceJoined );
+  var result = Object.create( JoinedWithConsequence );
 
   _.assert( arguments.length === 2, 'expects exactly two arguments' );
   _.assert( args.length === 1 || args.length === 2 );
@@ -1704,15 +1724,15 @@ function _join( routineJoin,args )
 function join( context,method )
 {
   var self = this;
-  return self._join( _.routineJoin,arguments );
+  return self._join( _.routineJoin, arguments );
 }
 
 //
 
-function seal( context,method )
+function seal( context, method )
 {
   var self = this;
-  return self._join( _.routineSeal,arguments );
+  return self._join( _.routineSeal, arguments );
 }
 
 // function seal( context,method )
@@ -3460,7 +3480,8 @@ var Extend =
 {
 
   init : init,
-
+  is : is,
+  isJoinedWithConsequence : isJoinedWithConsequence,
 
   // chainer
 
@@ -3620,7 +3641,7 @@ _.accessor
 });
 
 _.accessorForbid( Self.prototype,Forbids );
-_prepareConsequenceJoined();
+_prepareJoinedWithConsequence();
 
 _.assert( !!Self._fieldsOfRelationshipsGroupsGet );
 _.assert( !!Self.prototype._fieldsOfRelationshipsGroupsGet );
