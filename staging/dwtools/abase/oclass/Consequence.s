@@ -3644,11 +3644,11 @@ _.accessor
 _.accessorForbid( Self.prototype,Forbids );
 _prepareJoinedWithConsequence();
 
-_.assert( !!Self._fieldsOfRelationshipsGroupsGet );
-_.assert( !!Self.prototype._fieldsOfRelationshipsGroupsGet );
-_.assert( !!Self.fieldsOfRelationshipsGroups );
-_.assert( !!Self.prototype.fieldsOfRelationshipsGroups );
-_.assert( _.mapKeys( Self.fieldsOfRelationshipsGroups ).length );
+_.assert( !!Self._fieldsOfRelationsGroupsGet );
+_.assert( !!Self.prototype._fieldsOfRelationsGroupsGet );
+_.assert( !!Self.fieldsOfRelationsGroups );
+_.assert( !!Self.prototype.fieldsOfRelationsGroups );
+_.assert( _.mapKeys( Self.fieldsOfRelationsGroups ).length );
 
 _global_[ Self.name ] = _[ Self.shortName ] = Self;
 if( !_global_.WTOOLS_PRIVATE_CONSEQUENCE )
