@@ -1,8 +1,6 @@
 
 if( typeof module !== 'undefined' )
 require( 'wConsequence' );
-
-
 var _ = wTools;
 var con = new wConsequence();
 
