@@ -7,3 +7,4 @@ Advanced synchronization mechanism. Asynchronous routines may use Consequence to
 npm install
 node sample/Sample.s
 ```
+
