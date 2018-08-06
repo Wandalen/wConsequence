@@ -3603,7 +3603,7 @@ var Supplement =
 
 //
 
-_.classMake
+_.classDeclare
 ({
   cls : wConsequence,
   parent : null,
