@@ -5837,7 +5837,7 @@ function from( test )
 }
 
 // --
-// define class
+// declare
 // --
 
 var Self =
