@@ -623,7 +623,7 @@ function _onceGot( competitor )
   var self = this;
   var key = competitor.name ? competitor.name : competitor;
 
-  _.assert( _.strIsNotEmpty( key ) );
+  _.assert( _.strDefined( key ) );
   _.assert( arguments.length === 1, 'expects single argument' );
 
   // xxx
@@ -697,7 +697,7 @@ function _onceThen( competitor )
   var self = this;
   var key = competitor.name ? competitor.name : competitor;
 
-  _.assert( _.strIsNotEmpty( key ) );
+  _.assert( _.strDefined( key ) );
   _.assert( arguments.length === 1, 'expects single argument' );
 
   // xxx
@@ -3620,29 +3620,29 @@ _.assert( _.routineIs( wConsequence.prototype.passThru ) );
 _.assert( _.routineIs( wConsequence.passThru ) );
 _.assert( _.objectIs( wConsequence.prototype.KindOfArguments ) );
 _.assert( _.objectIs( wConsequence.KindOfArguments ) );
-_.assert( _.strIsNotEmpty( wConsequence.name ) );
-_.assert( _.strIsNotEmpty( wConsequence.shortName ) );
+_.assert( _.strDefined( wConsequence.name ) );
+_.assert( _.strDefined( wConsequence.shortName ) );
 _.assert( _.routineIs( wConsequence.prototype.give ) );
 
 _.assert( _.routineIs( wConsequenceProxy.prototype.passThru ) );
 _.assert( _.routineIs( wConsequenceProxy.passThru ) );
 _.assert( _.objectIs( wConsequenceProxy.prototype.KindOfArguments ) );
 _.assert( _.objectIs( wConsequenceProxy.KindOfArguments ) );
-_.assert( _.strIsNotEmpty( wConsequenceProxy.name ) );
-_.assert( _.strIsNotEmpty( wConsequenceProxy.shortName ) );
+_.assert( _.strDefined( wConsequenceProxy.name ) );
+_.assert( _.strDefined( wConsequenceProxy.shortName ) );
 _.assert( _.routineIs( wConsequenceProxy.prototype.give ) );
 
 _.assert( wConsequenceProxy.shortName === 'Consequence' );
 
 //
 
-_.accessor
+_.accessor.declare
 ({
   object : Self.prototype,
   names : Accessors,
 });
 
-_.accessorForbid( Self.prototype,Forbids );
+_.accessor.forbid( Self.prototype,Forbids );
 _prepareJoinedWithConsequence();
 
 _.assert( !!Self._fieldsOfRelationsGroupsGet );
