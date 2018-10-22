@@ -730,8 +730,8 @@ function _onceThen( competitor )
 //
 
 /**
- * Returns new wConsequence instance. If on cloning moment current wConsequence has unhandled resolved values in queue
-   the first of them would be handled by new wConsequence. Else pass accepted
+ * Returns new _.Consequence instance. If on cloning moment current wConsequence has unhandled resolved values in queue
+   the first of them would be handled by new _.Consequence. Else pass accepted
  * @example
    function gotHandler1( error, value )
    {
@@ -1996,7 +1996,7 @@ function _ping( error,argument )
 
 /**
  * Creates and handles error object based on `err` parameter.
- * Returns new wConsequence instance with error in resources queue.
+ * Returns new _.Consequence instance with error in resources queue.
  * @param {*} err error value.
  * @returns {wConsequence}
  * @private
