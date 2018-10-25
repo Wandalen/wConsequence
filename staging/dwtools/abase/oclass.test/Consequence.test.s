@@ -1092,7 +1092,7 @@ function promiseGot( test )
       test.identical( con.resourcesGet().length, 0 );
       test.identical( con.competitorsEarlyGet().length, 0 );
     })
-    return wConsequence.from( promise );
+    return _.Consequence.From( promise );
   })
 
   /* */
@@ -1111,7 +1111,7 @@ function promiseGot( test )
       test.identical( con.resourcesGet().length, 0 );
       test.identical( con.competitorsEarlyGet().length, 0 );
     })
-    return wConsequence.from( promise );
+    return _.Consequence.From( promise );
   })
 
   /* */
@@ -1132,7 +1132,7 @@ function promiseGot( test )
       test.identical( con.resourcesGet().length, 2 );
       test.identical( con.competitorsEarlyGet().length, 0 );
     })
-    return wConsequence.from( promise );
+    return _.Consequence.From( promise );
   })
 
   /* */
@@ -1162,7 +1162,7 @@ function promiseGot( test )
         test.identical( con.resourcesGet().length, 0 );
         test.identical( con.competitorsEarlyGet().length, 0 );
       });
-      return wConsequence.from( promise );
+      return _.Consequence.From( promise );
     })
   })
 
@@ -1185,7 +1185,7 @@ function promiseGot( test )
     {
       test.identical( con.resourcesGet().length, 0 );
       test.identical( con.competitorsEarlyGet().length, 0 );
-      return wConsequence.from( promise );
+      return _.Consequence.From( promise );
     });
   })
 
@@ -1212,7 +1212,7 @@ function promiseGot( test )
         test.identical( con.resourcesGet().length, 2 );
         test.identical( con.competitorsEarlyGet().length, 0 );
       })
-      return wConsequence.from( promise );
+      return _.Consequence.From( promise );
     })
   })
 
@@ -1243,7 +1243,7 @@ function promiseGot( test )
         test.identical( con.resourcesGet().length, 0 );
         test.identical( con.competitorsEarlyGet().length, 0 );
       });
-      return wConsequence.from( promise );
+      return _.Consequence.From( promise );
     })
   })
 
@@ -1266,7 +1266,7 @@ function promiseGot( test )
     {
       test.identical( con.resourcesGet().length, 0 );
       test.identical( con.competitorsEarlyGet().length, 0 );
-      return wConsequence.from( promise );
+      return _.Consequence.From( promise );
     });
   })
 
@@ -1292,7 +1292,7 @@ function promiseGot( test )
         test.identical( con.resourcesGet().length, 2 );
         test.identical( con.competitorsEarlyGet().length, 0 );
       })
-      return wConsequence.from( promise );
+      return _.Consequence.From( promise );
     })
   })
 
@@ -1323,7 +1323,7 @@ function promiseGot( test )
         test.identical( con.resourcesGet().length, 0 );
         test.identical( con.competitorsEarlyGet().length, 0 );
       });
-      return wConsequence.from( promise );
+      return _.Consequence.From( promise );
     })
   })
 
@@ -1346,7 +1346,7 @@ function promiseGot( test )
     {
       test.identical( con.resourcesGet().length, 0 );
       test.identical( con.competitorsEarlyGet().length, 0 );
-      return wConsequence.from( promise );
+      return _.Consequence.From( promise );
     });
   })
 
@@ -1372,7 +1372,7 @@ function promiseGot( test )
         test.identical( con.resourcesGet().length, 2 );
         test.identical( con.competitorsEarlyGet().length, 0 );
       })
-      return wConsequence.from( promise );
+      return _.Consequence.From( promise );
     })
   })
   .doThen( function()
@@ -2071,7 +2071,7 @@ function promiseThen( test )
       test.identical( con.competitorsEarlyGet().length, 0 );
     })
 
-    return wConsequence.from( promise );
+    return _.Consequence.From( promise );
   })
 
   /* */
@@ -2090,7 +2090,7 @@ function promiseThen( test )
       test.identical( con.resourcesGet(), [{ error : testMsg, argument : undefined }] );
       test.identical( con.competitorsEarlyGet().length, 0 );
     })
-    return wConsequence.from( promise );
+    return _.Consequence.From( promise );
   })
 
   /* */
@@ -2111,7 +2111,7 @@ function promiseThen( test )
       test.identical( con.resourcesGet().length, 3 );
       test.identical( con.competitorsEarlyGet().length, 0 );
     })
-    return wConsequence.from( promise );
+    return _.Consequence.From( promise );
   })
 
   /* */
@@ -2141,7 +2141,7 @@ function promiseThen( test )
         test.identical( con.resourcesGet(), [{ error : undefined, argument : testMsg }] );
         test.identical( con.competitorsEarlyGet().length, 0 );
       });
-      return wConsequence.from( promise );
+      return _.Consequence.From( promise );
     })
   })
 
@@ -2164,7 +2164,7 @@ function promiseThen( test )
     {
       test.identical( con.resourcesGet(), [{ error : testMsg, argument : undefined }] );
       test.identical( con.competitorsEarlyGet().length, 0 );
-      return wConsequence.from( promise );
+      return _.Consequence.From( promise );
     });
   })
 
@@ -2190,7 +2190,7 @@ function promiseThen( test )
         test.identical( con.resourcesGet().length, 3 );
         test.identical( con.competitorsEarlyGet().length, 0 );
       })
-      return wConsequence.from( promise );
+      return _.Consequence.From( promise );
     })
   })
 
@@ -2221,7 +2221,7 @@ function promiseThen( test )
         test.identical( con.resourcesGet(), [{ error : undefined, argument : testMsg }] );
         test.identical( con.competitorsEarlyGet().length, 0 );
       });
-      return wConsequence.from( promise );
+      return _.Consequence.From( promise );
     })
   })
 
@@ -2244,7 +2244,7 @@ function promiseThen( test )
     {
       test.identical( con.resourcesGet(), [{ error : testMsg, argument : undefined }] );
       test.identical( con.competitorsEarlyGet().length, 0 );
-      return wConsequence.from( promise );
+      return _.Consequence.From( promise );
     });
   })
 
@@ -2270,7 +2270,7 @@ function promiseThen( test )
         test.identical( con.resourcesGet().length, 3 );
         test.identical( con.competitorsEarlyGet().length, 0 );
       })
-      return wConsequence.from( promise );
+      return _.Consequence.From( promise );
     })
   })
 
@@ -2301,7 +2301,7 @@ function promiseThen( test )
         test.identical( con.resourcesGet(), [{ error : undefined, argument : testMsg }] );
         test.identical( con.competitorsEarlyGet().length, 0 );
       });
-      return wConsequence.from( promise );
+      return _.Consequence.From( promise );
     })
   })
 
@@ -2324,7 +2324,7 @@ function promiseThen( test )
     {
       test.identical( con.resourcesGet(), [{ error : testMsg, argument : undefined }] );
       test.identical( con.competitorsEarlyGet().length, 0 );
-      return wConsequence.from( promise );
+      return _.Consequence.From( promise );
     });
   })
 
@@ -2350,7 +2350,7 @@ function promiseThen( test )
         test.identical( con.resourcesGet().length, 3 );
         test.identical( con.competitorsEarlyGet().length, 0 );
       })
-      return wConsequence.from( promise );
+      return _.Consequence.From( promise );
     })
   })
   .doThen( function()
@@ -5403,7 +5403,7 @@ function from( test )
   .doThen( function()
   {
     test.case = 'passing value';
-    var con = wConsequence.from( testMsg );
+    var con = _.Consequence.From( testMsg );
     test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
     test.identical( con.competitorsEarlyGet(), [] );
     return con;
@@ -5415,7 +5415,7 @@ function from( test )
   {
     test.case = 'passing an error';
     var err = _.err( testMsg );
-    var con = wConsequence.from( err );
+    var con = _.Consequence.From( err );
     test.identical( con.resourcesGet(), [ { error : err, argument : undefined } ] );
     test.identical( con.competitorsEarlyGet(), [] );
     return con;
@@ -5427,7 +5427,7 @@ function from( test )
   {
     test.case = 'passing consequence';
     var src = new _.Consequence().give( testMsg );
-    var con = wConsequence.from( src );
+    var con = _.Consequence.From( src );
     test.identical( con, src );
     test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
     test.identical( con.competitorsEarlyGet(), [] );
@@ -5440,7 +5440,7 @@ function from( test )
   {
     test.case = 'passing resolved promise';
     var src = Promise.resolve( testMsg );
-    var con = wConsequence.from( src );
+    var con = _.Consequence.From( src );
     return _.timeOut( 1, function()
     {
       test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
@@ -5454,7 +5454,7 @@ function from( test )
   {
     test.case = 'passing rejected promise';
     var src = Promise.reject( testMsg );
-    var con = wConsequence.from( src );
+    var con = _.Consequence.From( src );
     return _.timeOut( 1, function()
     {
       test.identical( con.resourcesGet(), [ { error : testMsg, argument : undefined } ] );
@@ -5475,7 +5475,7 @@ function from( test )
   .doThen( function()
   {
     test.case = 'async giving passing value';
-    var con = wConsequence.from( testMsg );
+    var con = _.Consequence.From( testMsg );
     con.got( ( err, got ) => test.identical( got, testMsg ) )
     test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
     return _.timeOut( 1, function()
@@ -5493,7 +5493,7 @@ function from( test )
   {
     test.case = 'passing an error';
     var src = _.err( testMsg );
-    var con = wConsequence.from( src );
+    var con = _.Consequence.From( src );
     con.got( ( err, got ) => test.identical( err, src ) )
     test.identical( con.resourcesGet(), [ { error : src, argument : undefined } ] );
     return _.timeOut( 1, function()
@@ -5511,7 +5511,7 @@ function from( test )
   {
     test.case = 'passing consequence';
     var src = new _.Consequence().give( testMsg );
-    var con = wConsequence.from( src );
+    var con = _.Consequence.From( src );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
     test.identical( src.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
     test.identical( con, src );
@@ -5530,7 +5530,7 @@ function from( test )
   {
     test.case = 'passing resolved promise';
     var src = Promise.resolve( testMsg );
-    var con = wConsequence.from( src );
+    var con = _.Consequence.From( src );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
     test.identical( con.resourcesGet().length, 0 )
     return _.timeOut( 1, function()
@@ -5546,7 +5546,7 @@ function from( test )
   {
     test.case = 'passing rejected promise';
     var src = Promise.reject( testMsg );
-    var con = wConsequence.from( src );
+    var con = _.Consequence.From( src );
     con.got( ( err, got ) => test.identical( err, testMsg ) );
     test.identical( con.resourcesGet().length, 0 )
     return _.timeOut( 1, function()
@@ -5569,7 +5569,7 @@ function from( test )
   .doThen( function()
   {
     test.case = 'async taking, passing value';
-    var con = wConsequence.from( testMsg );
+    var con = _.Consequence.From( testMsg );
     con.got( ( err, got ) => test.identical( got, testMsg ) )
     test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
     test.identical( con.competitorsEarlyGet().length, 1 );
@@ -5588,7 +5588,7 @@ function from( test )
   {
     test.case = 'async taking,passing an error';
     var src = _.err( testMsg );
-    var con = wConsequence.from( src );
+    var con = _.Consequence.From( src );
     con.got( ( err, got ) => test.identical( err, src ) )
     test.identical( con.resourcesGet(), [ { error : src, argument : undefined } ] );
     test.identical( con.competitorsEarlyGet().length, 1 );
@@ -5607,7 +5607,7 @@ function from( test )
   {
     test.case = 'async taking,passing consequence';
     var src = new _.Consequence().give( testMsg );
-    var con = wConsequence.from( src );
+    var con = _.Consequence.From( src );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
     test.identical( src.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
     test.identical( con.competitorsEarlyGet().length, 1 );
@@ -5627,7 +5627,7 @@ function from( test )
   {
     test.case = 'async taking,passing resolved promise';
     var src = Promise.resolve( testMsg );
-    var con = wConsequence.from( src );
+    var con = _.Consequence.From( src );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
     test.identical( con.competitorsEarlyGet().length, 1 );
     test.identical( con.resourcesGet().length, 0 )
@@ -5644,7 +5644,7 @@ function from( test )
   {
     test.case = 'async taking,passing rejected promise';
     var src = Promise.reject( testMsg );
-    var con = wConsequence.from( src );
+    var con = _.Consequence.From( src );
     con.got( ( err, got ) => test.identical( err, testMsg ) );
     test.identical( con.competitorsEarlyGet().length, 1 );
     test.identical( con.resourcesGet().length, 0 )
@@ -5668,7 +5668,7 @@ function from( test )
   .doThen( function()
   {
     test.case = 'async, passing value';
-    var con = wConsequence.from( testMsg );
+    var con = _.Consequence.From( testMsg );
     con.got( ( err, got ) => test.identical( got, testMsg ) )
     test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
     test.identical( con.competitorsEarlyGet().length, 1 );
@@ -5687,7 +5687,7 @@ function from( test )
   {
     test.case = 'async,passing an error';
     var src = _.err( testMsg );
-    var con = wConsequence.from( src );
+    var con = _.Consequence.From( src );
     con.got( ( err, got ) => test.identical( err, src ) )
     test.identical( con.resourcesGet(), [ { error : src, argument : undefined } ] );
     test.identical( con.competitorsEarlyGet().length, 1 );
@@ -5706,7 +5706,7 @@ function from( test )
   {
     test.case = 'async,passing consequence';
     var src = new _.Consequence().give( testMsg );
-    var con = wConsequence.from( src );
+    var con = _.Consequence.From( src );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
     test.identical( src.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
     test.identical( con.competitorsEarlyGet().length, 1 );
@@ -5726,7 +5726,7 @@ function from( test )
   {
     test.case = 'async,passing resolved promise';
     var src = Promise.resolve( testMsg );
-    var con = wConsequence.from( src );
+    var con = _.Consequence.From( src );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
     test.identical( con.competitorsEarlyGet().length, 1 );
     test.identical( con.resourcesGet().length, 0 )
@@ -5743,7 +5743,7 @@ function from( test )
   {
     test.case = 'async,passing rejected promise';
     var src = Promise.reject( testMsg );
-    var con = wConsequence.from( src );
+    var con = _.Consequence.From( src );
     con.got( ( err, got ) => test.identical( err, testMsg ) );
     test.identical( con.competitorsEarlyGet().length, 1 );
     test.identical( con.resourcesGet().length, 0 )
@@ -5765,7 +5765,7 @@ function from( test )
   {
     test.case = 'sync, resolved promise, timeout';
     var src = Promise.resolve( testMsg );
-    var con = wConsequence.from( src, 500 );
+    var con = _.Consequence.From( src, 500 );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
     test.identical( con.competitorsEarlyGet().length, 1 );
     test.identical( con.resourcesGet().length, 0 )
@@ -5785,7 +5785,7 @@ function from( test )
     {
       setTimeout( () => resolve( testMsg ), 600 );
     })
-    var con = wConsequence.from( src, 500 );
+    var con = _.Consequence.From( src, 500 );
     con.got( ( err, got ) => test.is( _.errIs( err ) ) );
     test.identical( con.competitorsEarlyGet().length, 1 );
     test.identical( con.resourcesGet().length, 0 )
@@ -5802,7 +5802,7 @@ function from( test )
   {
     test.case = 'sync, timeout, src is a consequence';
     var con = new _.Consequence().give( testMsg );
-    con = wConsequence.from( con , 500 );
+    con = _.Consequence.From( con , 500 );
     con.got( ( err, got ) => test.identical( got, testMsg ) );
     test.identical( con.competitorsEarlyGet().length, 0 );
     test.identical( con.resourcesGet().length, 0 );
@@ -5814,7 +5814,7 @@ function from( test )
   {
     test.case = 'sync, timeout, src is a consequence';
     var con = _.timeOut( 600, () => testMsg );
-    con = wConsequence.from( con , 500 );
+    con = _.Consequence.From( con , 500 );
     con.got( ( err, got ) => test.is( _.errIs( err ) ) );
     test.identical( con.competitorsEarlyGet().length, 1 );
     test.identical( con.resourcesGet().length, 0 );

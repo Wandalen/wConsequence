@@ -40,19 +40,19 @@ if( typeof module !== 'undefined' )
     require( toolsPath );
   }
 
-  var _ = _global_.wTools;
+  let _ = _global_.wTools;
 
   _.include( 'wProto' );
   _.include( 'wCopyable' );
 
 }
 
-var _global = _global_;
-var _ = _global_.wTools;
+let _global = _global_;
+let _ = _global_.wTools;
 
 if( _realGlobal_.wTools && _realGlobal_.wConsequence )
 {
-  var Self = _realGlobal_.wConsequence;
+  let Self = _realGlobal_.wConsequence;
   _[ Self.shortName ] = Self;
   if( typeof module !== 'undefined' && module !== null )
   module[ 'exports' ] = Self;
@@ -82,10 +82,10 @@ _.assert( !_.Consequence, 'Consequence included several times' );
 /**
  * Creates instance of wConsequence
  * @example
-   var con = new _.Consequence();
+   let con = new _.Consequence();
    con.give( 'hello' ).got( function( err, value) { console.log( value ); } ); // hello
 
-   var con = _.Consequence();
+   let con = _.Consequence();
    con.got( function( err, value) { console.log( value ); } ).give('world'); // world
  * @param {Object|Function|wConsequence} [o] initialization options
  * @returns {wConsequence}
@@ -93,21 +93,19 @@ _.assert( !_.Consequence, 'Consequence included several times' );
  * @see {@link wConsequence}
  */
 
-var Parent = null;
-
 /* heavy optimization */
 
 class wConsequence extends _.CallableObject
 {
   constructor()
   {
-    var self = super();
+    let self = super();
     Self.prototype.init.apply( self,arguments );
     return self;
   }
 }
 
-var wConsequenceProxy = new Proxy( wConsequence,
+let wConsequenceProxy = new Proxy( wConsequence,
 {
   apply( original, context, args )
   {
@@ -115,8 +113,8 @@ var wConsequenceProxy = new Proxy( wConsequence,
   }
 });
 
-var Parent = null;
-var Self = wConsequenceProxy;
+let Parent = null;
+let Self = wConsequenceProxy;
 
 wConsequence.shortName = 'Consequence';
 
@@ -132,7 +130,7 @@ wConsequence.shortName = 'Consequence';
 
 function init( o )
 {
-  var self = this;
+  let self = this;
 
   self.resourceCounter = 0;
   self._competitorEarly = [];
@@ -176,7 +174,7 @@ function isJoinedWithConsequence( src )
 {
   _.assert( arguments.length === 1 );
   debugger;
-  var result = _.subOf( src, JoinedWithConsequence );
+  let result = _.subOf( src, JoinedWithConsequence );
   if( result )
   debugger;
   return result;
@@ -185,6 +183,25 @@ function isJoinedWithConsequence( src )
 // --
 // chainer
 // --
+
+// function sleep()
+// {
+//   let self = this;
+//
+//   debugger;
+//   _.timeSleepUntil( resourceHas );
+//   debugger;
+//
+//   function resourceHas()
+//   {
+//     if( self.resourceHas() )
+//     return true;
+//     return false;
+//   }
+//
+// }
+
+//
 
 /**
  * Method appends resolved value and error handler to wConsequence competitors sequence. That handler accept only one
@@ -203,21 +220,21 @@ function isJoinedWithConsequence( src )
        console.log( 'handler 2: ' + value );
      };
 
-     var con1 = new _.Consequence();
+     let con1 = new _.Consequence();
 
      con1.got( gotHandler1 );
      con1.give( 'hello' ).give( 'world' );
 
      // prints only " handler 1: hello ",
 
-     var con2 = new _.Consequence();
+     let con2 = new _.Consequence();
 
      con2.got( gotHandler1 ).got( gotHandler2 );
      con2.give( 'foo' );
 
      // prints only " handler 1: foo "
 
-     var con3 = new _.Consequence();
+     let con3 = new _.Consequence();
 
      con3.got( gotHandler1 ).got( gotHandler2 );
      con3.give( 'bar' ).give( 'baz' );
@@ -236,8 +253,8 @@ function isJoinedWithConsequence( src )
 
 function got( competitor )
 {
-  var self = this;
-  var times = 1;
+  let self = this;
+  let times = 1;
 
   _.assert( arguments.length === 1,'got : expects none or single argument, got',arguments.length );
 
@@ -267,8 +284,8 @@ got.having =
 
 function lateGot( competitor )
 {
-  var self = this;
-  var times = 1;
+  let self = this;
+  let times = 1;
 
   _.assert( arguments.length === 1,'lateGot : expects none or single argument, lateGot',arguments.length );
 
@@ -298,7 +315,7 @@ lateGot.having =
 
 function promiseGot()
 {
-  var self = this;
+  let self = this;
 
   return new Promise( function( resolve, reject )
   {
@@ -338,7 +355,7 @@ promiseGot.having =
      console.log( 'handler 3: ' + value );
    };
 
-   var con1 = new _.Consequence();
+   let con1 = new _.Consequence();
 
    con1.doThen( gotHandler1 ).doThen( gotHandler1 ).got(gotHandler3);
    con1.give( 4 ).give( 10 );
@@ -360,7 +377,7 @@ promiseGot.having =
 
 function doThen( competitor )
 {
-  var self = this;
+  let self = this;
 
   _.assert( arguments.length === 1, 'expects single argument' );
 
@@ -383,7 +400,7 @@ doThen.having =
 
 function _doThen( competitor )
 {
-  var self = this;
+  let self = this;
 
   _.assert( arguments.length === 1, 'expects single argument' );
 
@@ -401,7 +418,7 @@ function _doThen( competitor )
 
 function lateThen( competitor )
 {
-  var self = this;
+  let self = this;
 
   _.assert( arguments.length === 1, 'expects single argument' );
 
@@ -424,7 +441,7 @@ lateThen.having =
 
 function promiseThen()
 {
-  var self = this;
+  let self = this;
 
   return new Promise( function( resolve, reject )
   {
@@ -462,7 +479,7 @@ promiseThen.having =
 
 // function thenSealed( context,competitor,args )
 // {
-//   var self = this;
+//   let self = this;
 //
 //   _.assert( arguments.length === 2 || arguments.length === 3, 'expects two or three arguments' );
 //
@@ -474,7 +491,7 @@ promiseThen.having =
 //     context = undefined;
 //   }
 //
-//   var competitorJoined = _.routineSeal( context,competitor,args );
+//   let competitorJoined = _.routineSeal( context,competitor,args );
 //
 //   debugger;
 //   return self.__competitorAppend
@@ -491,14 +508,14 @@ promiseThen.having =
 
 function choke( times )
 {
-  var self = this;
+  let self = this;
 
   _.assert( arguments.length === 0 || arguments.length === 1 );
 
   if( times !== undefined )
   {
     _.assert( _.numberIsFinite( times ) );
-    for( var t = 0 ; t < times ; t++ )
+    for( let t = 0 ; t < times ; t++ )
     self.__competitorAppend
     ({
       competitor : function(){},
@@ -530,14 +547,14 @@ choke.having =
 
 function chokeThen( times )
 {
-  var self = this;
+  let self = this;
 
   _.assert( arguments.length === 0 || arguments.length === 1 );
 
   if( times !== undefined )
   {
     _.assert( _.numberIsFinite( times ) );
-    for( var t = 0 ; t < times ; t++ )
+    for( let t = 0 ; t < times ; t++ )
     self.__competitorAppend
     ({
       competitor : function(){},
@@ -583,7 +600,7 @@ chokeThen.having =
      console.log( 'handler 2: ' + value );
    };
 
-   var con1 = new _.Consequence();
+   let con1 = new _.Consequence();
 
    con1._onceGot( gotHandler1 )._onceGot( gotHandler1 )._onceGot( gotHandler2 );
    con1.give( 'foo' ).give( 'bar' );
@@ -595,7 +612,7 @@ chokeThen.having =
 
    // but:
 
-   var con2 = new _.Consequence();
+   let con2 = new _.Consequence();
 
    con2.give( 'foo' ).give( 'bar' ).give('baz');
    con2._onceGot( gotHandler1 )._onceGot( gotHandler1 )._onceGot( gotHandler2 );
@@ -620,20 +637,20 @@ chokeThen.having =
 
 function _onceGot( competitor )
 {
-  var self = this;
-  var key = competitor.name ? competitor.name : competitor;
+  let self = this;
+  let key = competitor.name ? competitor.name : competitor;
 
   _.assert( _.strDefined( key ) );
   _.assert( arguments.length === 1, 'expects single argument' );
 
   // xxx
-  var i = _.arrayRightIndex( self._competitorEarly, key, ( e ) => e.id || competitor.name, ( e ) => e );
+  let i = _.arrayRightIndex( self._competitorEarly, key, ( e ) => e.id || competitor.name, ( e ) => e );
 
   if( i >= 0 )
   return self;
 
   // xxx
-  var i = _.arrayRightIndex( self._competitorLate, key, ( e ) => e.id || competitor.name, ( e ) => e );
+  let i = _.arrayRightIndex( self._competitorLate, key, ( e ) => e.id || competitor.name, ( e ) => e );
 
   if( i >= 0 )
   return self;
@@ -671,7 +688,7 @@ function _onceGot( competitor )
      console.log( 'handler 3: ' + value );
    };
 
-   var con1 = new _.Consequence();
+   let con1 = new _.Consequence();
 
    con1._onceThen( gotHandler1 )._onceThen( gotHandler1 ).got(gotHandler3);
    con1.give( 4 ).give( 10 );
@@ -694,14 +711,14 @@ function _onceGot( competitor )
 
 function _onceThen( competitor )
 {
-  var self = this;
-  var key = competitor.name ? competitor.name : competitor;
+  let self = this;
+  let key = competitor.name ? competitor.name : competitor;
 
   _.assert( _.strDefined( key ) );
   _.assert( arguments.length === 1, 'expects single argument' );
 
   // xxx
-  var i = _.arrayRightIndex( self._competitorEarly, key, ( e ) => e.id, ( e ) => e );
+  let i = _.arrayRightIndex( self._competitorEarly, key, ( e ) => e.id, ( e ) => e );
 
   if( i >= 0 )
   {
@@ -710,7 +727,7 @@ function _onceThen( competitor )
   }
 
   // xxx
-  var i = _.arrayRightIndex( self._competitorLate, key, ( e ) => e.id || competitor.name, ( e ) => e );
+  let i = _.arrayRightIndex( self._competitorLate, key, ( e ) => e.id || competitor.name, ( e ) => e );
 
   if( i >= 0 )
   {
@@ -745,9 +762,9 @@ function _onceThen( competitor )
      console.log( 'handler 2: ' + value );
    };
 
-   var con1 = new _.Consequence();
+   let con1 = new _.Consequence();
    con1.give(1).give(2).give(3);
-   var con2 = con1.split();
+   let con2 = con1.split();
    con2.got( gotHandler2 );
    con2.got( gotHandler2 );
    con1.got( gotHandler1 );
@@ -766,11 +783,11 @@ function _onceThen( competitor )
 
 function split( first )
 {
-  var self = this;
+  let self = this;
 
   _.assert( arguments.length === 0 || arguments.length === 1 );
 
-  var result = new Self();
+  let result = new Self();
 
   if( first )
   {
@@ -818,7 +835,7 @@ split.having =
      console.log( 'handler 3: ' + value );
    }
 
-   var con1 = new _.Consequence();
+   let con1 = new _.Consequence();
    con1.give(1).give(4);
 
    // prints:
@@ -837,7 +854,7 @@ split.having =
 
 function tap( competitor )
 {
-  var self = this;
+  let self = this;
 
   _.assert( arguments.length === 1, 'expects single argument' );
 
@@ -861,7 +878,7 @@ tap.having =
 
 function ifNoErrorGot()
 {
-  var self = this;
+  let self = this;
 
   _.assert( arguments.length === 1, 'expects single argument' );
 
@@ -896,7 +913,7 @@ ifNoErrorGot.having =
 
 function ifNoErrorThen()
 {
-  var self = this;
+  let self = this;
 
   _.assert( arguments.length === 1, 'expects single argument' );
 
@@ -919,7 +936,7 @@ ifNoErrorThen.having =
 
 function ifErrorGot()
 {
-  var self = this;
+  let self = this;
 
   _.assert( arguments.length === 1, 'expects single argument' );
 
@@ -959,7 +976,7 @@ ifErrorGot.having =
      console.log( 'handler 3 val: ' + value );
    }
 
-   var con2 = new _.Consequence();
+   let con2 = new _.Consequence();
 
    con2._giveWithError( 'error msg', 8 ).give( 14 );
    con2.ifErrorThen( gotHandler3 ).got( gotHandler1 );
@@ -979,7 +996,7 @@ ifErrorGot.having =
 
 function ifErrorThen()
 {
-  var self = this;
+  let self = this;
 
   _.assert( arguments.length === 1, 'expects single argument' );
 
@@ -1010,7 +1027,7 @@ ifErrorThen.having =
 
 function ifErrorThenLogThen()
 {
-  var self = this;
+  let self = this;
 
   _.assert( arguments.length === 0 );
 
@@ -1047,7 +1064,7 @@ ifErrorThenLogThen.having =
 
 // function debugThen()
 // {
-//   var self = this;
+//   let self = this;
 //
 //   _.assert( arguments.length === 0 );
 //
@@ -1081,7 +1098,7 @@ ifErrorThenLogThen.having =
      console.log( 'handler 2: ' + value );
    }
 
-   var con = new _.Consequence();
+   let con = new _.Consequence();
 
    con.timeOutThen(500, gotHandler1).got( gotHandler2 );
    con.give(90);
@@ -1101,7 +1118,7 @@ ifErrorThenLogThen.having =
 
 function timeOutThen( time,competitor )
 {
-  var self = this;
+  let self = this;
 
   _.assert( arguments.length === 1 || arguments.length === 2 );
 
@@ -1112,7 +1129,7 @@ function timeOutThen( time,competitor )
 
   /* */
 
-  var cor;
+  let cor;
   if( _.consequenceIs( competitor ) )
   cor = function __timeOutThen( err,data )
   {
@@ -1167,9 +1184,9 @@ timeOutThen.having =
 //      console.log( 'resource handler 2: ' + value );
 //    }
 //
-//    var con = new _.Consequence();
+//    let con = new _.Consequence();
 //
-//    var resources = [ 'hello', 'world', 'foo', 'bar', 'baz' ],
+//    let resources = [ 'hello', 'world', 'foo', 'bar', 'baz' ],
 //    len = resources.length,
 //    i = 0;
 //
@@ -1200,7 +1217,7 @@ timeOutThen.having =
 //
 // function persist( competitor )
 // {
-//   var self = this;
+//   let self = this;
 //
 //   _.assert( arguments.length === 1, 'expects single argument' );
 //
@@ -1236,8 +1253,8 @@ timeOutThen.having =
      }
    };
 
-   var con1 = new _.Consequence();
-   var con2 = new _.Consequence();
+   let con1 = new _.Consequence();
+   let con2 = new _.Consequence();
 
    con1.got( function( err, value )
    {
@@ -1249,7 +1266,7 @@ timeOutThen.having =
      console.log( 'con2 handler executed with value: ' + value + 'and error: ' + err );
    } );
 
-   var conOwner = new  _.Consequence();
+   let conOwner = new  _.Consequence();
 
    conOwner.andThen( [ con1, con2 ] );
 
@@ -1273,7 +1290,7 @@ timeOutThen.having =
 
 function andGot( srcs )
 {
-  var self = this;
+  let self = this;
   _.assert( arguments.length === 1, 'expects single argument' );
   return self._and( srcs,false );
 }
@@ -1297,7 +1314,7 @@ andGot.having =
 
 function andThen( srcs )
 {
-  var self = this;
+  let self = this;
   _.assert( arguments.length === 1, 'expects single argument' );
   return self._and( srcs,true );
 }
@@ -1312,11 +1329,11 @@ andThen.having =
 
 function _and( srcs,thenning )
 {
-  var self = this;
-  // var returned = [];
-  var errs = [];
-  var args = [];
-  var anyErr;
+  let self = this;
+  // let returned = [];
+  let errs = [];
+  let args = [];
+  let anyErr;
 
   if( !_.arrayIs( srcs ) )
   srcs = [ srcs ];
@@ -1331,7 +1348,7 @@ function _and( srcs,thenning )
   {
 
     if( thenning )
-    for( var i = 0 ; i < srcs.length-1 ; i++ )
+    for( let i = 0 ; i < srcs.length-1 ; i++ )
     if( srcs[ i ] )
     srcs[ i ].give( errs[ i ],args[ i ] );
 
@@ -1346,7 +1363,7 @@ function _and( srcs,thenning )
 
   /* */
 
-  var count = srcs.length;
+  let count = srcs.length;
   function __got( index,err,arg )
   {
 
@@ -1382,9 +1399,9 @@ function _and( srcs,thenning )
   if( self.diagnostics )
   {
 
-    for( var s = 0 ; s < srcs.length-1 ; s++ )
+    for( let s = 0 ; s < srcs.length-1 ; s++ )
     {
-      var src = srcs[ s ];
+      let src = srcs[ s ];
       _.assert( _.consequenceIs( src ) || _.routineIs( src ) || src === null,'and expects consequence, routine or null' );
       if( !_.consequenceIs( src ) )
       continue;
@@ -1399,9 +1416,9 @@ function _and( srcs,thenning )
   self.got( function _andGot( err,data )
   {
 
-    for( var s = 0 ; s < srcs.length-1 ; s++ )
+    for( let s = 0 ; s < srcs.length-1 ; s++ )
     {
-      var src = srcs[ s ];
+      let src = srcs[ s ];
 
       if( !_.consequenceIs( src ) && _.routineIs( src ) )
       {
@@ -1423,7 +1440,7 @@ function _and( srcs,thenning )
         continue;
       }
 
-      var r = _.routineJoin( undefined,__got,[ s ] );
+      let r = _.routineJoin( undefined,__got,[ s ] );
       r.tag = _.numberRandomInt( 100 ); // qqq
       src.got( r );
     }
@@ -1439,7 +1456,7 @@ function _and( srcs,thenning )
 
 function eitherGot( srcs )
 {
-  var self = this;
+  let self = this;
   _.assert( arguments.length === 1, 'expects single argument' );
   return self._either( srcs,false );
 }
@@ -1453,7 +1470,7 @@ eitherGot.having =
 
 function eitherThen( srcs )
 {
-  var self = this;
+  let self = this;
   _.assert( arguments.length === 1, 'expects single argument' );
   return self._either( srcs,true );
 }
@@ -1468,7 +1485,7 @@ eitherThen.having =
 
 function eitherThenSplit( srcs )
 {
-  var self = this;
+  let self = this;
   _.assert( arguments.length === 1, 'expects single argument' );
 
   if( !_.arrayIs( srcs ) )
@@ -1477,7 +1494,7 @@ function eitherThenSplit( srcs )
   srcs = srcs.slice();
   srcs.unshift( self );
 
-  var con = new Self().give();
+  let con = new Self().give();
   con.eitherThen( srcs );
   return con;
 }
@@ -1492,14 +1509,14 @@ eitherThenSplit.having =
 
 function _either( srcs,thenning )
 {
-  var self = this;
+  let self = this;
 
   if( !_.arrayIs( srcs ) )
   srcs = [ srcs ];
 
   /* */
 
-  var count = 0;
+  let count = 0;
   function got( index,err,data )
   {
 
@@ -1518,9 +1535,9 @@ function _either( srcs,thenning )
   self.got( function( err,data )
   {
 
-    for( var a = 0 ; a < srcs.length ; a++ )
+    for( let a = 0 ; a < srcs.length ; a++ )
     {
-      var src = srcs[ a ];
+      let src = srcs[ a ];
       _.assert( _.consequenceIs( src ) || src === null );
       if( src === null )
       continue;
@@ -1553,7 +1570,7 @@ function _either( srcs,thenning )
      }
    };
 
-   var con = new  _.Consequence();
+   let con = new  _.Consequence();
 
    con.first( function()
    {
@@ -1576,7 +1593,7 @@ function _either( srcs,thenning )
     }
   };
 
-  var con = new  _.Consequence();
+  let con = new  _.Consequence();
 
   con.first( function()
   {
@@ -1594,7 +1611,7 @@ function _either( srcs,thenning )
 
 function first( src )
 {
-  var self = this;
+  let self = this;
   return self._first( src,null );
 }
 
@@ -1607,7 +1624,7 @@ first.having =
 
 function _first( src,stack )
 {
-  var self = this;
+  let self = this;
 
   _.assert( arguments.length === 2, 'expects exactly two arguments' );
 
@@ -1617,7 +1634,7 @@ function _first( src,stack )
   }
   else if( _.routineIs( src ) )
   {
-    var result;
+    let result;
 
     try
     {
@@ -1642,7 +1659,7 @@ function _first( src,stack )
 
 //
 
-var JoinedWithConsequence = Object.create( null );
+let JoinedWithConsequence = Object.create( null );
 JoinedWithConsequence.routineJoin = _.routineSeal;
 JoinedWithConsequence.context = null;
 JoinedWithConsequence.method = null;
@@ -1658,22 +1675,22 @@ function _prepareJoinedWithConsequence()
 {
 
   // debugger;
-  for( var r in Self.prototype ) ( function( r )
+  for( let r in Self.prototype ) ( function( r )
   {
     if( Self.prototype._Accessors[ r ] )
     return;
-    var routine = Self.prototype[ r ];
+    let routine = Self.prototype[ r ];
     if( !routine.having || !routine.having.consequizing )
     return;
 
     if( routine.having.andLike )
     JoinedWithConsequence[ r ] = function()
     {
-      var args = arguments;
-      var method = [];
+      let args = arguments;
+      let method = [];
       _.assert( arguments.length === 1, 'expects single argument' );
       _.assert( _.longIs( args[ 0 ] ) );
-      for( var i = 0 ; i < args[ 0 ].length ; i++ )
+      for( let i = 0 ; i < args[ 0 ].length ; i++ )
       {
         method.push( this.routineJoin( this.context,this.method,[ args[ 0 ][ i ] ] ) );
       }
@@ -1683,8 +1700,8 @@ function _prepareJoinedWithConsequence()
     else
     JoinedWithConsequence[ r ] = function()
     {
-      var args = arguments;
-      var method = this.routineJoin( this.context,this.method,args );
+      let args = arguments;
+      let method = this.routineJoin( this.context,this.method,args );
       this.consequence[ r ]( method );
       return this;
     }
@@ -1699,8 +1716,8 @@ function _prepareJoinedWithConsequence()
 
 function _join( routineJoin, args )
 {
-  var self = this;
-  var result = Object.create( JoinedWithConsequence );
+  let self = this;
+  let result = Object.create( JoinedWithConsequence );
 
   _.assert( arguments.length === 2, 'expects exactly two arguments' );
   _.assert( args.length === 1 || args.length === 2 );
@@ -1726,7 +1743,7 @@ function _join( routineJoin, args )
 
 function join( context,method )
 {
-  var self = this;
+  let self = this;
   return self._join( _.routineJoin, arguments );
 }
 
@@ -1734,14 +1751,14 @@ function join( context,method )
 
 function seal( context, method )
 {
-  var self = this;
+  let self = this;
   return self._join( _.routineSeal, arguments );
 }
 
 // function seal( context,method )
 // {
-//   var self = this;
-//   var result = Object.create( null );
+//   let self = this;
+//   let result = Object.create( null );
 //
 //   _.assert( arguments.length === 1 || arguments.length === 2 );
 //   _.assert( _.consequenceIs( this ) );
@@ -1750,32 +1767,32 @@ function seal( context, method )
 //
 //   result.ifNoErrorThen = function ifNoErrorThen( _method )
 //   {
-//     var args = method ? arguments : arguments[ 1 ];
-//     var c = _.routineSeal( context,method || _method,args );
+//     let args = method ? arguments : arguments[ 1 ];
+//     let c = _.routineSeal( context,method || _method,args );
 //     self.ifNoErrorThen( c );
 //     return this;
 //   }
 //
 //   result.ifErrorThen = function ifErrorThen( _method )
 //   {
-//     var args = method ? arguments : arguments[ 1 ];
-//     var c = _.routineSeal( context,method || _method,args );
+//     let args = method ? arguments : arguments[ 1 ];
+//     let c = _.routineSeal( context,method || _method,args );
 //     self.ifErrorThen( c );
 //     return this;
 //   }
 //
 //   result.doThen = function doThen( _method )
 //   {
-//     var args = method ? arguments : arguments[ 1 ];
-//     var c = _.routineSeal( context,method || _method,args );
+//     let args = method ? arguments : arguments[ 1 ];
+//     let c = _.routineSeal( context,method || _method,args );
 //     self.doThen( c );
 //     return this;
 //   }
 //
 //   result.got = function got( _method )
 //   {
-//     var args = method ? arguments : arguments[ 2 ];
-//     var c = _.routineSeal( context,method || _method,args );
+//     let args = method ? arguments : arguments[ 2 ];
+//     let c = _.routineSeal( context,method || _method,args );
 //     self.got( c );
 //     return this;
 //   }
@@ -1797,7 +1814,7 @@ function seal( context, method )
      console.log( 'handler 1: ' + value );
    };
 
-   var con1 = new _.Consequence();
+   let con1 = new _.Consequence();
 
    con1.got( gotHandler1 );
    con1.give( 'hello' );
@@ -1812,7 +1829,7 @@ function seal( context, method )
 
 function give( resource )
 {
-  var self = this;
+  let self = this;
   _.assert( arguments.length === 2 || arguments.length === 1 || arguments.length === 0, 'expects 0, 1 or 2 arguments, got ' + arguments.length );
   if( arguments.length === 2 )
   return self.__giveAct( arguments[ 0 ], arguments[ 1 ] );
@@ -1843,11 +1860,11 @@ give.having =
      }
    };
 
-   var con = new  _.Consequence();
+   let con = new  _.Consequence();
 
    function divade( x, y )
    {
-     var result;
+     let result;
      if( y!== 0 )
      {
        result = x / y;
@@ -1871,7 +1888,7 @@ give.having =
 
 function error( error )
 {
-  var self = this;
+  let self = this;
   _.assert( arguments.length === 1 || arguments.length === 0 );
   if( arguments.length === 0  )
   error = _.err();
@@ -1899,7 +1916,7 @@ error.having =
 
 function _giveWithError( error,argument )
 {
-  var self = this;
+  let self = this;
 
   _.assert( arguments.length === 2, 'expects exactly two arguments' );
 
@@ -1910,9 +1927,9 @@ function _giveWithError( error,argument )
 
 function __giveAct( error, argument )
 {
-  var self = this;
+  let self = this;
 
-  var resource =
+  let resource =
   {
     error : error,
     argument : argument,
@@ -1929,7 +1946,7 @@ function __giveAct( error, argument )
 
     _.assert( !_.consequenceIs( argument ),'not tested' );
     _.assert( !self.limitNumberOfMessages || self._resource.length < self.limitNumberOfMessages );
-    var msg = '{-error-} and {-argument-} channels should not be in use simultaneously\n' +
+    let msg = '{-error-} and {-argument-} channels should not be in use simultaneously\n' +
       '{-error-} or {-argument-} should be undefined, but currently ' +
       '{-error-} is ' + _.strTypeOf( error ) +
       '{-argument-} is ' + _.strTypeOf( argument );
@@ -1950,7 +1967,7 @@ function __giveAct( error, argument )
  * Creates and pushes resource object into wConsequence resources sequence, and trying to get and return result of
     handling this resource by appropriate competitor.
  * @example
-   var con = new  _.Consequence();
+   let con = new  _.Consequence();
 
    function increment( err, value )
    {
@@ -1959,7 +1976,7 @@ function __giveAct( error, argument )
 
 
    con.got( increment );
-   var result = con.ping( undefined, 4 );
+   let result = con.ping( undefined, 4 );
    console.log( result );
    // prints 5;
  * @param {*} error
@@ -1972,20 +1989,20 @@ function __giveAct( error, argument )
 
 function _ping( error,argument )
 {
-  var self = this;
+  let self = this;
 
   throw _.err( 'deprecated' );
 
   _.assert( arguments.length === 2, 'expects exactly two arguments' );
 
-  var resource =
+  let resource =
   {
     error : error,
     argument : argument,
   }
 
   self._resource.push( resource );
-  var result = self.__handleGot();
+  let result = self.__handleGot();
 
   return result;
 }
@@ -2004,10 +2021,10 @@ function _ping( error,argument )
  * @memberof wConsequence#
  */
 
-function __handleError( err,competitor )
+function __handleError( err, competitor )
 {
-  var self = this;
-  var err = _._err
+  let self = this;
+  err = _._err
   ({
     args : [ err ],
     level : 2,
@@ -2020,7 +2037,7 @@ function __handleError( err,competitor )
   if( !_.errIsAttended( err ) )
   _.errAttentionRequest( err );
 
-  var result = new Self().error( err );
+  let result = new Self().error( err );
 
   if( err.attentionRequested )
   {
@@ -2082,7 +2099,7 @@ function __handleError( err,competitor )
 
 function __handleGot()
 {
-  var self = this;
+  let self = this;
 
   _.assert( self._resource.length,'__handleGot : none resource left' );
 
@@ -2103,9 +2120,9 @@ function __handleGot()
 
 function __handleGotAct()
 {
-  var self = this;
-  var result;
-  var spliced = 0;
+  let self = this;
+  let result;
+  let spliced = 0;
 
   if( !self._competitorEarly.length && !self._competitorLate.length )
   return;
@@ -2113,7 +2130,7 @@ function __handleGotAct()
   if( !self._resource.length )
   return;
 
-  var resource = self._resource[ 0 ];
+  let resource = self._resource[ 0 ];
 
   /* give resource to competitor consequence */
 
@@ -2144,21 +2161,21 @@ function __handleGotAct()
   function __giveToRoutine( competitor,ordinary )
   {
 
-    var errThrowen = 0;
-    var early = competitor.early;
-    var ifError = competitor.kindOfArguments === Self.KindOfArguments.IfError;
-    var ifNoError = competitor.kindOfArguments === Self.KindOfArguments.IfNoError;
+    let errThrowen = 0;
+    let early = competitor.early;
+    let ifError = competitor.kindOfArguments === Self.KindOfArguments.IfError;
+    let ifNoError = competitor.kindOfArguments === Self.KindOfArguments.IfNoError;
 
-    var execute = true;
-    var execute = execute && ( !ifError || ( ifError && !!resource.error ) );
-    var execute = execute && ( !ifNoError || ( ifNoError && !resource.error ) );
+    let execute = true;
+    execute = execute && ( !ifError || ( ifError && !!resource.error ) );
+    execute = execute && ( !ifNoError || ( ifNoError && !resource.error ) );
 
     if( !execute )
     return;
 
     /* reuse */
 
-    var resue = false;
+    let resue = false;
     resue = resue || competitor.tapping || !ordinary;
     resue = resue || !execute;
 
@@ -2226,12 +2243,12 @@ function __handleGotAct()
 
   if( self._competitorEarly.length > 0 )
   {
-    var competitor = self._competitorEarly.shift();
+    let competitor = self._competitorEarly.shift();
     __giveTo( competitor,1 );
   }
   else if( self._competitorLate.length > 0 )
   {
-    var competitor = self._competitorLate.shift();
+    let competitor = self._competitorLate.shift();
     __giveTo( competitor,1 );
   }
 
@@ -2241,9 +2258,9 @@ function __handleGotAct()
   // if( !competitor || ( competitor && !competitor.tapping ) )
   // {
   //
-  //   for( var i = 0 ; i < self._competitorPersistent.length ; i++ )
+  //   for( let i = 0 ; i < self._competitorPersistent.length ; i++ )
   //   {
-  //     var pTaker = self._competitorPersistent[ i ];
+  //     let pTaker = self._competitorPersistent[ i ];
   //     __giveTo( pTaker,0 );
   //   }
   //
@@ -2282,8 +2299,8 @@ function __handleGotAct()
 
 function __competitorAppend( o )
 {
-  var self = this;
-  var competitor = o.competitor;
+  let self = this;
+  let competitor = o.competitor;
 
   _.assert( arguments.length === 1, 'expects single argument' );
   _.assert( _.consequenceIs( self ) );
@@ -2302,9 +2319,9 @@ function __competitorAppend( o )
 
   if( o.times !== 1 )
   {
-    var optionsForAppend = _.mapExtend( null,o );
+    let optionsForAppend = _.mapExtend( null,o );
     optionsForAppend.times = 1;
-    for( var t = 0 ; t < o.times ; t++ )
+    for( let t = 0 ; t < o.times ; t++ )
     self.__competitorAppend( optionsForAppend );
     return self;
   }
@@ -2347,7 +2364,7 @@ function __competitorAppend( o )
       debugger;
     }
 
-    var competitorDescriptor =
+    let competitorDescriptor =
     {
       consequence : self,
       onGot : competitor,
@@ -2410,13 +2427,13 @@ __competitorAppend.defaults =
 
 function competitorHas( competitor )
 {
-  var self = this;
+  let self = this;
 
   _.assert( _.consequenceIs( competitor ) );
 
-  for( var c = 0 ; c < self._competitorEarly.length ; c++ )
+  for( let c = 0 ; c < self._competitorEarly.length ; c++ )
   {
-    var cor = self._competitorEarly[ c ].onGot;
+    let cor = self._competitorEarly[ c ].onGot;
     if( cor === competitor )
     return true;
     if( _.consequenceIs( cor ) )
@@ -2424,9 +2441,9 @@ function competitorHas( competitor )
     return true;
   }
 
-  for( var c = 0 ; c < self._competitorLate.length ; c++ )
+  for( let c = 0 ; c < self._competitorLate.length ; c++ )
   {
-    var cor = self._competitorLate[ c ].onGot;
+    let cor = self._competitorLate[ c ].onGot;
     if( cor === competitor )
     return true;
     if( _.consequenceIs( cor ) )
@@ -2441,16 +2458,16 @@ function competitorHas( competitor )
 
 function doesDependOf( competitor )
 {
-  var self = this;
+  let self = this;
 
   _.assert( _.consequenceIs( competitor ) );
 
   if( !self.dependsOf )
   return false;
 
-  for( var c = 0 ; c < self.dependsOf.length ; c++ )
+  for( let c = 0 ; c < self.dependsOf.length ; c++ )
   {
-    var cor = self.dependsOf[ c ];
+    let cor = self.dependsOf[ c ];
     if( cor === competitor )
     return true;
     if( _.consequenceIs( cor ) )
@@ -2465,13 +2482,13 @@ function doesDependOf( competitor )
 
 function assertNoDeadLockWith( competitor )
 {
-  var self = this;
+  let self = this;
 
   _.assert( _.consequenceIs( competitor ) );
   // _.assert( !competitor.competitorHas( self ),'dead lock!' );
 
-  var result = self.doesDependOf( competitor );
-  var msg = '';
+  let result = self.doesDependOf( competitor );
+  let msg = '';
 
   if( result )
   {
@@ -2517,11 +2534,11 @@ function assertNoDeadLockWith( competitor )
      console.log( 'corespondent1 value: ' + val );
    };
 
-   var con = _.Consequence();
+   let con = _.Consequence();
 
    con.tap( corespondent1 ).doThen( corespondent2 ).got( corespondent3 );
 
-   var corespondents = con.competitorsEarlyGet();
+   let corespondents = con.competitorsEarlyGet();
 
    console.log( corespondents );
 
@@ -2556,7 +2573,7 @@ function assertNoDeadLockWith( competitor )
 
 function competitorsEarlyGet()
 {
-  var self = this;
+  let self = this;
   return self._competitorEarly;
 }
 
@@ -2564,7 +2581,7 @@ function competitorsEarlyGet()
 
 function competitorsLateGet()
 {
-  var self = this;
+  let self = this;
   return self._competitorLate;
 }
 
@@ -2590,7 +2607,7 @@ function competitorsLateGet()
    console.log( 'corespondent1 value: ' + val );
  };
 
- var con = _.Consequence();
+ let con = _.Consequence();
 
  con.got( corespondent1 ).got( corespondent2 );
  con.competitorsCancel();
@@ -2607,7 +2624,7 @@ function competitorsLateGet()
 
 function competitorsCancel( competitor )
 {
-  var self = this;
+  let self = this;
 
   _.assert( arguments.length === 0 || _.routineIs( competitor ) );
 
@@ -2629,7 +2646,7 @@ function competitorsCancel( competitor )
 
 function _competitorNextGet()
 {
-  var self = this;
+  let self = this;
 
   if( !self._competitorEarly[ 0 ] )
   {
@@ -2657,14 +2674,14 @@ function _competitorNextGet()
 /**
  * Returns resources queue.
  * @example
- * var con = _.Consequence();
+ * let con = _.Consequence();
 
    con.give( 'foo' );
    con.give( 'bar ');
    con.error( 'baz' );
 
 
-   var resources = con.resourcesGet();
+   let resources = con.resourcesGet();
 
    console.log( resources );
 
@@ -2680,7 +2697,7 @@ function _competitorNextGet()
 
 function resourcesGet( index )
 {
-  var self = this;
+  let self = this;
   _.assert( arguments.length === 0 || arguments.length === 1 )
   _.assert( index === undefined || _.numberIs( index ) );
   if( index !== undefined )
@@ -2696,14 +2713,14 @@ function resourcesGet( index )
  * competitors queue.
  * If as argument passed value, method resourcesCancel() removes it from resources queue if resources queue contains it.
  * @example
- * var con = _.Consequence();
+ * let con = _.Consequence();
 
    con.give( 'foo' );
    con.give( 'bar ');
    con.error( 'baz' );
 
    con.resourcesCancel();
-   var resources = con.resourcesGet();
+   let resources = con.resourcesGet();
 
    console.log( resources );
    // prints: []
@@ -2715,7 +2732,7 @@ function resourcesGet( index )
 
 function resourcesCancel( data )
 {
-  var self = this;
+  let self = this;
 
   _.assert( arguments.length === 0 || arguments.length === 1 );
 
@@ -2734,9 +2751,9 @@ function resourcesCancel( data )
 /**
  * Returns number of resources in current resources queue.
  * @example
- * var con = _.Consequence();
+ * let con = _.Consequence();
 
-   var conLen = con.resourceHas();
+   let conLen = con.resourceHas();
    console.log( conLen );
 
    con.give( 'foo' );
@@ -2758,7 +2775,7 @@ function resourcesCancel( data )
 
 function resourceHas()
 {
-  var self = this;
+  let self = this;
   // debugger;
   return self.resourceCounter > 0;
   // if( self._resource.length <= self._competitorEarly.length )
@@ -2776,7 +2793,7 @@ function resourceHas()
 
 function clear( data )
 {
-  var self = this;
+  let self = this;
   _.assert( arguments.length === 0 );
 
   self.competitorsCancel();
@@ -2788,7 +2805,7 @@ function clear( data )
 
 function cancel()
 {
-  var self = this;
+  let self = this;
   _.assert( arguments.length === 0 );
 
   self.clear();
@@ -2808,10 +2825,10 @@ function cancel()
      console.log( 'corespondent1 value: ' + val );
    };
 
-   var con = _.Consequence();
+   let con = _.Consequence();
    con.got( corespondent1 );
 
-   var conStr = con.toStr();
+   let conStr = con.toStr();
 
    console.log( conStr );
 
@@ -2843,10 +2860,10 @@ function cancel()
 
 function toStr()
 {
-  var self = this;
-  var result = self.nickName;
+  let self = this;
+  let result = self.nickName;
 
-  var names = _.entitySelect( self.competitorsEarlyGet(),'*.tag' );
+  let names = _.entitySelect( self.competitorsEarlyGet(),'*.tag' );
 
   if( self.tag )
   result += '\n  tag : ' + self.tag;
@@ -2864,7 +2881,7 @@ function toStr()
 
 function toString()
 {
-  var self = this;
+  let self = this;
   return self.toStr();
 }
 
@@ -2892,7 +2909,7 @@ function toString()
 
 function __call__()
 {
-  var self = this;
+  let self = this;
 
   _.assert( arguments.length === 0 || arguments.length === 1 || arguments.length === 2 );
   if( arguments.length === 2 )
@@ -2906,7 +2923,7 @@ function __call__()
 
 function asyncModeSet( mode )
 {
-  var constr = this.Self;
+  let constr = this.Self;
   _.assert( constr.asyncTaking !== undefined );
   _.assert( mode.length === 2 );
   _.assert( arguments.length === 1, 'expects single argument' );
@@ -2918,7 +2935,7 @@ function asyncModeSet( mode )
 
 function asyncModeGet( mode )
 {
-  var constr = this.Self;
+  let constr = this.Self;
   _.assert( constr.asyncTaking !== undefined );
   return [ constr.asyncTaking, constr.asyncGiving ];
 }
@@ -2927,18 +2944,18 @@ function asyncModeGet( mode )
 // static
 // --
 
-function from_static( src,timeOut )
+function From( src,timeOut )
 {
   _.assert( arguments.length === 1 || arguments.length === 2 );
   _.assert( timeOut === undefined || _.numberIs( timeOut ) );
 
-  var con = src;
+  let con = src;
 
-  if( _.promiseIs( src ) )
+  if( _.promiseLike( src ) )
   {
     con = new Self();
-    var onFulfilled = ( got ) => { con.give( got ); }
-    var onRejected = ( err ) => { con.error( err ); }
+    let onFulfilled = ( got ) => { con.give( got ); }
+    let onRejected = ( err ) => { con.error( err ); }
     src.then( onFulfilled, onRejected );
   }
 
@@ -2973,7 +2990,7 @@ function from_static( src,timeOut )
      }
    };
 
-   var con = new  _.Consequence();
+   let con = new  _.Consequence();
 
    con.got( showResult );
 
@@ -2993,7 +3010,7 @@ function give_static( consequence )
 
   _.assert( arguments.length === 2 || arguments.length === 3, 'expects two or three arguments' );
 
-  var err,got;
+  let err,got;
   if( arguments.length === 2 )
   {
     got = arguments[ 1 ];
@@ -3004,7 +3021,7 @@ function give_static( consequence )
     got = arguments[ 2 ];
   }
 
-  var args = [ got ];
+  let args = [ got ];
 
   return _give_static
   ({
@@ -3036,7 +3053,7 @@ function give_static( consequence )
 
 function _give_static( o )
 {
-  var context;
+  let context;
 
   if( !( _.arrayIs( o.args ) && o.args.length <= 1 ) )
   debugger;
@@ -3050,9 +3067,9 @@ function _give_static( o )
   if( _.arrayIs( o.consequence ) )
   {
 
-    for( var i = 0 ; i < o.consequence.length ; i++ )
+    for( let i = 0 ; i < o.consequence.length ; i++ )
     {
-      var optionsGive = _.mapExtend( null,o );
+      let optionsGive = _.mapExtend( null,o );
       optionsGive.consequence = o.consequence[ i ];
       _give_static( optionsGive );
     }
@@ -3112,7 +3129,7 @@ function _give_static( o )
        }
      };
 
-     var con = new  _.Consequence();
+     let con = new  _.Consequence();
 
      con.got( showResult );
 
@@ -3164,7 +3181,7 @@ function giveWithContextAndError_static( consequence,context,err,got )
   console.warn( 'deprecated' );
   //debugger;
 
-  var args = [ got ];
+  let args = [ got ];
   if( arguments.length > 4 )
   args = _.longSlice( arguments,3 );
 
@@ -3199,7 +3216,7 @@ function ifErrorThen_static()
   _.assert( arguments.length === 1, 'expects single argument' );
   _.assert( this === Self );
 
-  var onEnd = arguments[ 0 ];
+  let onEnd = arguments[ 0 ];
   _.assert( arguments.length === 1, 'expects single argument' );
   _.assert( _.routineIs( onEnd ) );
 
@@ -3241,7 +3258,7 @@ function ifNoErrorThen_static()
   _.assert( arguments.length === 1, 'expects single argument' );
   _.assert( this === Self );
 
-  var onEnd = arguments[ 0 ];
+  let onEnd = arguments[ 0 ];
   _.assert( arguments.length === 1, 'expects single argument' );
   _.assert( _.routineIs( onEnd ) );
 
@@ -3275,7 +3292,7 @@ function ifNoErrorThen_static()
  * @memberof wConsequence
  */
 
-var passThru_static = function passThru( err,data )
+let passThru_static = function passThru( err,data )
 {
   if( err )
   throw _.err( err );
@@ -3288,9 +3305,9 @@ var passThru_static = function passThru( err,data )
 
 function FunctionWithin( consequence )
 {
-  var routine = this;
-  var args;
-  var context;
+  let routine = this;
+  let args;
+  let context;
 
   _.assert( arguments.length === 1, 'expects single argument' );
   _.assert( _.consequenceIs( consequence ) );
@@ -3315,9 +3332,9 @@ function FunctionWithin( consequence )
 
 function FunctionThereafter()
 {
-  var con = new Self();
-  var routine = this;
-  var args = arguments
+  let con = new Self();
+  let routine = this;
+  let args = arguments
 
   con.doThen( function( err,data )
   {
@@ -3362,7 +3379,7 @@ function experimentWithin()
 {
 
   debugger;
-  var con = _.timeOut( 30000 );
+  let con = _.timeOut( 30000 );
   console.log.within( con ).call( console,'done' );
   con.doThen( function()
   {
@@ -3379,7 +3396,7 @@ function experimentWithin()
 function experimentCall()
 {
 
-  var con = new Self();
+  let con = new Self();
   con( 123 );
   con.doThen( function( err,data )
   {
@@ -3396,7 +3413,7 @@ function experimentCall()
 // type
 // --
 
-var KindOfArguments =
+let KindOfArguments =
 {
   IfError : 1,
   IfNoError : 2,
@@ -3408,7 +3425,7 @@ var KindOfArguments =
 // relations
 // --
 
-var Composes =
+let Composes =
 {
   _competitorEarly : [],
   _competitorLate : [],
@@ -3416,7 +3433,7 @@ var Composes =
   resourceCounter : 0,
 }
 
-var ComposesDebug =
+let ComposesDebug =
 {
   tag : '',
   dependsOf : [],
@@ -3427,14 +3444,14 @@ var ComposesDebug =
 if( Config.debug )
 _.mapExtend( Composes,ComposesDebug );
 
-var Restricts =
+let Restricts =
 {
 }
 
-var Statics =
+let Statics =
 {
 
-  from : from_static,
+  From : From,
 
   _give : _give_static,
   give : give_static,
@@ -3461,7 +3478,7 @@ var Statics =
 
 }
 
-var Forbids =
+let Forbids =
 {
   every : 'every',
   mutex : 'mutex',
@@ -3470,7 +3487,7 @@ var Forbids =
   _competitorPersistent : '_competitorPersistent',
 }
 
-var Accessors =
+let Accessors =
 {
   competitorNext : 'competitorNext',
 }
@@ -3479,7 +3496,7 @@ var Accessors =
 // declare
 // --
 
-var Extend =
+let Extend =
 {
 
   init : init,
@@ -3488,6 +3505,7 @@ var Extend =
 
   // chainer
 
+  // sleep : sleep,
   got : got,
   lateGot : lateGot,
   promiseGot : promiseGot,
@@ -3537,7 +3555,6 @@ var Extend =
   join : join,
   seal : seal,
 
-
   // messanger
 
   give : give,
@@ -3546,14 +3563,12 @@ var Extend =
   __giveAct : __giveAct,
   _ping : _ping, /* experimental */
 
-
   // handling mechanism
 
   __handleError : __handleError,
   __handleGot : __handleGot,
   __handleGotAct : __handleGotAct,
   __competitorAppend : __competitorAppend,
-
 
   // accounting
 
@@ -3573,7 +3588,6 @@ var Extend =
   clear : clear, /* experimental */
   cancel : cancel, /* experimental */
 
-
   // etc
 
   toStr : toStr,
@@ -3583,10 +3597,8 @@ var Extend =
   asyncModeSet : asyncModeSet,
   asyncModeGet : asyncModeGet,
 
-
   // relations
 
-  // constructor : wConsequence,
   Composes : Composes,
   Restricts : Restricts,
 
@@ -3596,7 +3608,7 @@ var Extend =
 
 /* statics should be supplemental not extending */
 
-var Supplement =
+let Supplement =
 {
   Statics : Statics,
 }
