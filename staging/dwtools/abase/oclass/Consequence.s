@@ -189,12 +189,12 @@ function isJoinedWithConsequence( src )
 //   let self = this;
 //
 //   debugger;
-//   _.timeSleepUntil( resourceHas );
+//   _.timeSleepUntil( resourcesHas );
 //   debugger;
 //
-//   function resourceHas()
+//   function resourcesHas()
 //   {
-//     if( self.resourceHas() )
+//     if( self.resourcesHas() )
 //     return true;
 //     return false;
 //   }
@@ -1692,7 +1692,7 @@ function _prepareJoinedWithConsequence()
       _.assert( _.longIs( args[ 0 ] ) );
       for( let i = 0 ; i < args[ 0 ].length ; i++ )
       {
-        method.push( this.routineJoin( this.context,this.method,[ args[ 0 ][ i ] ] ) );
+        method.push( this.routineJoin( this.context, this.method, [ args[ 0 ][ i ] ] ) );
       }
       this.consequence[ r ]( method );
       return this;
@@ -1701,7 +1701,7 @@ function _prepareJoinedWithConsequence()
     JoinedWithConsequence[ r ] = function()
     {
       let args = arguments;
-      let method = this.routineJoin( this.context,this.method,args );
+      let method = this.routineJoin( this.context,this.method, args );
       this.consequence[ r ]( method );
       return this;
     }
@@ -1753,6 +1753,22 @@ function seal( context, method )
 {
   let self = this;
   return self._join( _.routineSeal, arguments );
+}
+
+//
+
+function safeCallback()
+{
+  let self = this;
+  _.assert( arguments.length === 0 );
+  return function safeCallback( err, arg )
+  {
+    if( !err )
+    err = undefined;
+    if( arg === null || err )
+    arg = undefined;
+    return self( err, arg );
+  }
 }
 
 // function seal( context,method )
@@ -2753,27 +2769,27 @@ function resourcesCancel( data )
  * @example
  * let con = _.Consequence();
 
-   let conLen = con.resourceHas();
+   let conLen = con.resourcesHas();
    console.log( conLen );
 
    con.give( 'foo' );
    con.give( 'bar' );
    con.error( 'baz' );
-   conLen = con.resourceHas();
+   conLen = con.resourcesHas();
    console.log( conLen );
 
    con.resourcesCancel();
 
-   conLen = con.resourceHas();
+   conLen = con.resourcesHas();
    console.log( conLen );
    // prints: 0, 3, 0;
 
  * @returns {number}
- * @method resourceHas
+ * @method resourcesHas
  * @memberof wConsequence
  */
 
-function resourceHas()
+function resourcesHas()
 {
   let self = this;
   // debugger;
@@ -3505,7 +3521,6 @@ let Extend =
 
   // chainer
 
-  // sleep : sleep,
   got : got,
   lateGot : lateGot,
   promiseGot : promiseGot,
@@ -3554,6 +3569,7 @@ let Extend =
   _join : _join,
   join : join,
   seal : seal,
+  safeCallback : safeCallback,
 
   // messanger
 
@@ -3583,7 +3599,7 @@ let Extend =
 
   resourcesGet : resourcesGet,
   resourcesCancel : resourcesCancel,
-  resourceHas : resourceHas,
+  resourcesHas : resourcesHas,
 
   clear : clear, /* experimental */
   cancel : cancel, /* experimental */
