@@ -1626,7 +1626,7 @@ function _first( src,stack )
 {
   let self = this;
 
-  _.assert( arguments.length === 2, 'expects exactly two arguments' );
+  _.assert( arguments.length === 2, 'Expects exactly two arguments' );
 
   if( _.consequenceIs( src ) )
   {
@@ -1719,7 +1719,7 @@ function _join( routineJoin, args )
   let self = this;
   let result = Object.create( JoinedWithConsequence );
 
-  _.assert( arguments.length === 2, 'expects exactly two arguments' );
+  _.assert( arguments.length === 2, 'Expects exactly two arguments' );
   _.assert( args.length === 1 || args.length === 2 );
   _.assert( _.consequenceIs( this ) );
 
@@ -1934,7 +1934,7 @@ function _giveWithError( error,argument )
 {
   let self = this;
 
-  _.assert( arguments.length === 2, 'expects exactly two arguments' );
+  _.assert( arguments.length === 2, 'Expects exactly two arguments' );
 
   return self.__giveAct( error,argument );
 }
@@ -2009,7 +2009,7 @@ function _ping( error,argument )
 
   throw _.err( 'deprecated' );
 
-  _.assert( arguments.length === 2, 'expects exactly two arguments' );
+  _.assert( arguments.length === 2, 'Expects exactly two arguments' );
 
   let resource =
   {
@@ -3162,7 +3162,7 @@ function _give_static( o )
 function error_static( consequence,error )
 {
 
-  _.assert( arguments.length === 2, 'expects exactly two arguments' );
+  _.assert( arguments.length === 2, 'Expects exactly two arguments' );
 
   return _give_static
   ({
@@ -3239,7 +3239,7 @@ function ifErrorThen_static()
   return function ifErrorThen( err,data )
   {
 
-    _.assert( arguments.length === 2, 'expects exactly two arguments' );
+    _.assert( arguments.length === 2, 'Expects exactly two arguments' );
 
     if( err )
     {
@@ -3281,7 +3281,7 @@ function ifNoErrorThen_static()
   return function ifNoErrorThen( err,data )
   {
 
-    _.assert( arguments.length === 2, 'expects exactly two arguments' );
+    _.assert( arguments.length === 2, 'Expects exactly two arguments' );
 
     if( !err )
     {
