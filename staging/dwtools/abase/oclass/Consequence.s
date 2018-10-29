@@ -379,7 +379,7 @@ function doThen( competitor )
 {
   let self = this;
 
-  _.assert( arguments.length === 1, 'expects single argument' );
+  _.assert( arguments.length === 1, 'Expects single argument' );
 
   return self.__competitorAppend
   ({
@@ -402,7 +402,7 @@ function _doThen( competitor )
 {
   let self = this;
 
-  _.assert( arguments.length === 1, 'expects single argument' );
+  _.assert( arguments.length === 1, 'Expects single argument' );
 
   return self.__competitorAppend
   ({
@@ -420,7 +420,7 @@ function lateThen( competitor )
 {
   let self = this;
 
-  _.assert( arguments.length === 1, 'expects single argument' );
+  _.assert( arguments.length === 1, 'Expects single argument' );
 
   return self.__competitorAppend
   ({
@@ -481,7 +481,7 @@ promiseThen.having =
 // {
 //   let self = this;
 //
-//   _.assert( arguments.length === 2 || arguments.length === 3, 'expects two or three arguments' );
+//   _.assert( arguments.length === 2 || arguments.length === 3, 'Expects two or three arguments' );
 //
 //   if( arguments.length === 2 )
 //   if( _.longIs( arguments[ 1 ] ) )
@@ -641,7 +641,7 @@ function _onceGot( competitor )
   let key = competitor.name ? competitor.name : competitor;
 
   _.assert( _.strDefined( key ) );
-  _.assert( arguments.length === 1, 'expects single argument' );
+  _.assert( arguments.length === 1, 'Expects single argument' );
 
   // xxx
   let i = _.arrayRightIndex( self._competitorEarly, key, ( e ) => e.id || competitor.name, ( e ) => e );
@@ -715,7 +715,7 @@ function _onceThen( competitor )
   let key = competitor.name ? competitor.name : competitor;
 
   _.assert( _.strDefined( key ) );
-  _.assert( arguments.length === 1, 'expects single argument' );
+  _.assert( arguments.length === 1, 'Expects single argument' );
 
   // xxx
   let i = _.arrayRightIndex( self._competitorEarly, key, ( e ) => e.id, ( e ) => e );
@@ -856,7 +856,7 @@ function tap( competitor )
 {
   let self = this;
 
-  _.assert( arguments.length === 1, 'expects single argument' );
+  _.assert( arguments.length === 1, 'Expects single argument' );
 
   return self.__competitorAppend
   ({
@@ -880,7 +880,7 @@ function ifNoErrorGot()
 {
   let self = this;
 
-  _.assert( arguments.length === 1, 'expects single argument' );
+  _.assert( arguments.length === 1, 'Expects single argument' );
 
   return self.__competitorAppend
   ({
@@ -915,7 +915,7 @@ function ifNoErrorThen()
 {
   let self = this;
 
-  _.assert( arguments.length === 1, 'expects single argument' );
+  _.assert( arguments.length === 1, 'Expects single argument' );
 
   return self.__competitorAppend
   ({
@@ -938,7 +938,7 @@ function ifErrorGot()
 {
   let self = this;
 
-  _.assert( arguments.length === 1, 'expects single argument' );
+  _.assert( arguments.length === 1, 'Expects single argument' );
 
   return self.__competitorAppend
   ({
@@ -998,7 +998,7 @@ function ifErrorThen()
 {
   let self = this;
 
-  _.assert( arguments.length === 1, 'expects single argument' );
+  _.assert( arguments.length === 1, 'Expects single argument' );
 
   return self.__competitorAppend
   ({
@@ -1219,7 +1219,7 @@ timeOutThen.having =
 // {
 //   let self = this;
 //
-//   _.assert( arguments.length === 1, 'expects single argument' );
+//   _.assert( arguments.length === 1, 'Expects single argument' );
 //
 //   return self.__competitorAppend
 //   ({
@@ -1291,7 +1291,7 @@ timeOutThen.having =
 function andGot( srcs )
 {
   let self = this;
-  _.assert( arguments.length === 1, 'expects single argument' );
+  _.assert( arguments.length === 1, 'Expects single argument' );
   return self._and( srcs,false );
 }
 
@@ -1315,7 +1315,7 @@ andGot.having =
 function andThen( srcs )
 {
   let self = this;
-  _.assert( arguments.length === 1, 'expects single argument' );
+  _.assert( arguments.length === 1, 'Expects single argument' );
   return self._and( srcs,true );
 }
 
@@ -1433,7 +1433,7 @@ function _and( srcs,thenning )
       if( _.consequenceIs( srcs[ s ] ) )
       src.assertNoDeadLockWith( self );
 
-      _.assert( _.consequenceIs( src ) || src === null,'expects consequence or null, got',_.strTypeOf( src ) );
+      _.assert( _.consequenceIs( src ) || src === null,'Expects consequence or null, got',_.strTypeOf( src ) );
       if( src === null )
       {
         __got( s,null,null );
@@ -1457,7 +1457,7 @@ function _and( srcs,thenning )
 function eitherGot( srcs )
 {
   let self = this;
-  _.assert( arguments.length === 1, 'expects single argument' );
+  _.assert( arguments.length === 1, 'Expects single argument' );
   return self._either( srcs,false );
 }
 
@@ -1471,7 +1471,7 @@ eitherGot.having =
 function eitherThen( srcs )
 {
   let self = this;
-  _.assert( arguments.length === 1, 'expects single argument' );
+  _.assert( arguments.length === 1, 'Expects single argument' );
   return self._either( srcs,true );
 }
 
@@ -1486,7 +1486,7 @@ eitherThen.having =
 function eitherThenSplit( srcs )
 {
   let self = this;
-  _.assert( arguments.length === 1, 'expects single argument' );
+  _.assert( arguments.length === 1, 'Expects single argument' );
 
   if( !_.arrayIs( srcs ) )
   srcs = [ srcs ];
@@ -1688,7 +1688,7 @@ function _prepareJoinedWithConsequence()
     {
       let args = arguments;
       let method = [];
-      _.assert( arguments.length === 1, 'expects single argument' );
+      _.assert( arguments.length === 1, 'Expects single argument' );
       _.assert( _.longIs( args[ 0 ] ) );
       for( let i = 0 ; i < args[ 0 ].length ; i++ )
       {
@@ -1846,7 +1846,7 @@ function safeCallback()
 function give( resource )
 {
   let self = this;
-  _.assert( arguments.length === 2 || arguments.length === 1 || arguments.length === 0, 'expects 0, 1 or 2 arguments, got ' + arguments.length );
+  _.assert( arguments.length === 2 || arguments.length === 1 || arguments.length === 0, 'Expects 0, 1 or 2 arguments, got ' + arguments.length );
   if( arguments.length === 2 )
   return self.__giveAct( arguments[ 0 ], arguments[ 1 ] );
   else
@@ -2318,12 +2318,12 @@ function __competitorAppend( o )
   let self = this;
   let competitor = o.competitor;
 
-  _.assert( arguments.length === 1, 'expects single argument' );
+  _.assert( arguments.length === 1, 'Expects single argument' );
   _.assert( _.consequenceIs( self ) );
   _.assert( _.routineIs( competitor ) || _.consequenceIs( competitor ) );
   _.assert( o.kindOfArguments >= 1 );
   _.assert( competitor !== self,'consquence cant depend of itself' );
-  _.assert( o.early !== undefined,'expects { o.early }' );
+  _.assert( o.early !== undefined,'Expects { o.early }' );
   _.routineOptions( __competitorAppend,o );
 
   if( Config.debug )
@@ -2942,7 +2942,7 @@ function asyncModeSet( mode )
   let constr = this.Self;
   _.assert( constr.asyncTaking !== undefined );
   _.assert( mode.length === 2 );
-  _.assert( arguments.length === 1, 'expects single argument' );
+  _.assert( arguments.length === 1, 'Expects single argument' );
   constr.asyncTaking = !!mode[ 0 ];
   constr.asyncGiving = !!mode[ 1 ];
 }
@@ -3024,7 +3024,7 @@ function From( src,timeOut )
 function give_static( consequence )
 {
 
-  _.assert( arguments.length === 2 || arguments.length === 3, 'expects two or three arguments' );
+  _.assert( arguments.length === 2 || arguments.length === 3, 'Expects two or three arguments' );
 
   let err,got;
   if( arguments.length === 2 )
@@ -3074,7 +3074,7 @@ function _give_static( o )
   if( !( _.arrayIs( o.args ) && o.args.length <= 1 ) )
   debugger;
 
-  _.assert( arguments.length === 1, 'expects single argument' );
+  _.assert( arguments.length === 1, 'Expects single argument' );
   _.assert( _.objectIs( o ) );
   _.assert( _.arrayIs( o.args ) && o.args.length <= 1, 'not tested' );
 
@@ -3229,11 +3229,11 @@ function giveWithContextAndError_static( consequence,context,err,got )
 function ifErrorThen_static()
 {
 
-  _.assert( arguments.length === 1, 'expects single argument' );
+  _.assert( arguments.length === 1, 'Expects single argument' );
   _.assert( this === Self );
 
   let onEnd = arguments[ 0 ];
-  _.assert( arguments.length === 1, 'expects single argument' );
+  _.assert( arguments.length === 1, 'Expects single argument' );
   _.assert( _.routineIs( onEnd ) );
 
   return function ifErrorThen( err,data )
@@ -3271,11 +3271,11 @@ function ifErrorThen_static()
 function ifNoErrorThen_static()
 {
 
-  _.assert( arguments.length === 1, 'expects single argument' );
+  _.assert( arguments.length === 1, 'Expects single argument' );
   _.assert( this === Self );
 
   let onEnd = arguments[ 0 ];
-  _.assert( arguments.length === 1, 'expects single argument' );
+  _.assert( arguments.length === 1, 'Expects single argument' );
   _.assert( _.routineIs( onEnd ) );
 
   return function ifNoErrorThen( err,data )
@@ -3325,7 +3325,7 @@ function FunctionWithin( consequence )
   let args;
   let context;
 
-  _.assert( arguments.length === 1, 'expects single argument' );
+  _.assert( arguments.length === 1, 'Expects single argument' );
   _.assert( _.consequenceIs( consequence ) );
 
   consequence.doThen( function( err,data )
