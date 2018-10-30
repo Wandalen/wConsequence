@@ -5836,6 +5836,30 @@ function from( test )
   return testCon;
 }
 
+//
+
+function consequenceLike( test )
+{
+  test.case = 'check if entity is a consequenceLike';
+
+  if( !_.consequenceLike )
+  return test.identical( true,true );
+
+  test.is( !_.consequenceLike() );
+  test.is( !_.consequenceLike( {} ) );
+  if( _.Consequence )
+  {
+    test.is( _.consequenceLike( new _.Consequence() ) );
+    test.is( _.consequenceLike( _.Consequence() ) );
+  }
+  test.is( _.consequenceLike( Promise.resolve( 0 ) ) );
+
+  var promise = new Promise( ( resolve, reject ) => { resolve( 0 ) } )
+  test.is( _.consequenceLike( promise ) );
+  test.is( _.consequenceLike( _.Consequence.From( promise ) ) );
+
+}
+
 // --
 // declare
 // --
@@ -5880,6 +5904,8 @@ var Self =
     first : first,
 
     from : from,
+
+    consequenceLike : consequenceLike
 
   },
 
