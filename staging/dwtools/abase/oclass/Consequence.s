@@ -1381,7 +1381,7 @@ function _and( srcs,thenning )
     if( index < srcs.length-1 )
     if( _.consequenceIs( srcs[ index ] ) )
     {
-      _.arrayRemoveOnceStrictly( self.dependsOf , srcs[ index ] );
+      _.arrayRemoveElementOnceStrictly( self.dependsOf , srcs[ index ] );
     }
 
     if( count === 0 )
@@ -2156,7 +2156,7 @@ function __handleGotAct()
     if( Config.debug )
     if( self.diagnostics )
     {
-      _.arrayRemoveOnceStrictly( competitor.onGot.dependsOf , self );
+      _.arrayRemoveElementOnceStrictly( competitor.onGot.dependsOf , self );
       if( self.debug || competitor.onGot.debug )
       debugger;
     }
@@ -2652,8 +2652,8 @@ function competitorsCancel( competitor )
   else
   {
     throw _.err( 'not tested' );
-    _.arrayRemoveOnce( self._competitorEarly,competitor );
-    _.arrayRemoveOnce( self._competitorLate,competitor );
+    _.arrayRemoveElementOnce( self._competitorEarly,competitor );
+    _.arrayRemoveElementOnce( self._competitorLate,competitor );
   }
 
 }
@@ -2757,7 +2757,7 @@ function resourcesCancel( data )
   else
   {
     throw _.err( 'not tested' );
-    _.arrayRemoveOnce( self._resource,data );
+    _.arrayRemoveElementOnce( self._resource,data );
   }
 
 }
