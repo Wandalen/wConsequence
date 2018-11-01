@@ -1,0 +1,52 @@
+
+about :
+
+  name : wConsequence
+  description : Advanced synchronization mechanism. Asynchronous routines may use Consequence to wrap postponed result, what allows classify callback for such routines as output, not input, what improves analyzability of a program. Consequence may be used to make a queue for mutually exclusive access to a resource. Algorithmically speaking Consequence is 2 queues ( FIFO ) and a customizable arbitrating algorithm. The first queue contains available resources, the second queue includes competitors for this resources. At any specific moment, one or another queue may be empty or full. Arbitrating algorithm makes resource available for a competitor as soon as possible. There are 2 kinds of resource: regular and erroneous. Unlike Promise, Consequence is much more customizable and can solve engineering problem which Promise cant. But have in mind with great power great responsibility comes. Consequence can coexist and interact with a Promise, getting fulfillment/rejection of a Promise or fulfilling it. Use Consequence to get more flexibility and improve readability of asynchronous aspect of your application.
+  version : 0.4.64
+  enabled : 1
+  interpreters :
+  - nodejs >= 6.0.0
+  - chrome >= 60.0.0
+  - firefox >= 60.0.0
+  keywords :
+  - wTools
+
+execution :
+
+  scripts :
+    test : wtest staging
+    docgen : wdocgen staging
+
+path :
+
+  repository : git+https://github.com/Wandalen/wConsequence.git
+  bugs : https://github.com/Wandalen/wConsequence/issues
+  entry.debug : {path::out.debug}/dwtools/abase/____
+  entry.release : {path::out.release}/dwtools/abase/____
+
+build :
+
+  .debug.raw.export :
+    default : 1
+    setting :
+      debug : 1
+      raw : 1
+      export : 1
+      filesPath : path::out.debug
+      entryPath : path::entry.debug
+    steps :
+      - build::.debug
+      - step::export
+
+  .release.compiled.export :
+    setting :
+      debug : 0
+      raw : 0
+      export : 1
+      filesPath : path::out.release
+      entryPath : path::entry.release
+    steps :
+      - build::.release.compiled
+      - step::export
+
