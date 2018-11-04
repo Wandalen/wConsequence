@@ -24,9 +24,7 @@ if( typeof module !== 'undefined' )
 
   var _ = _global_.wTools;
 
-  require( '../oclass/Consequence.s' );
-
-  _.include( 'wTesting' );
+  require( '../../l9/consequence/Consequence.s' );
 
 }
 
