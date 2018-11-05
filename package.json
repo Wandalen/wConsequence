@@ -22,7 +22,7 @@
   "main": "proto/dwtools/abase/l9/consequence/Consequence.s",
   "files": [
     "proto/dwtools/abase/l9",
-    "production"
+    "proto/dwtools/Tools.s", "production"
   ],
   "scripts": {
     "test": "wtest staging",
