@@ -6,7 +6,7 @@ if( typeof module !== 'undefined' )
 {
   var _ = require( 'wTools' );
   /* require( 'wConsequence' ); */
-  require( '../../staging/dwtools/abase/oclass/Consequence.s' );
+  require( '../../proto/dwtools/abase/oclass/Consequence.s' );
 }
 
 var clientsList =  // list of clients

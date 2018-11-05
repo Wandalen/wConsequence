@@ -19,14 +19,14 @@
       "email": "iostashvxi@gmail.com"
     }
   ],
-  "main": "staging/dwtools/abase/oclass/Consequence.s",
+  "main": "proto/dwtools/abase/oclass/Consequence.s",
   "files": [
-    "staging/dwtools/abase/oclass",
+    "proto/dwtools/abase/oclass",
     "production"
   ],
   "scripts": {
     "test": "wtest staging",
-    "make_doc": "./doc.sh"
+    "docgen": "wdocgen proto"
   },
   "repository": {
     "type": "git",
