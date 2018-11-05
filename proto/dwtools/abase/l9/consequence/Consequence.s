@@ -23,24 +23,7 @@ chainer :
 if( typeof module !== 'undefined' )
 {
 
-  if( typeof _global_ === 'undefined' || !_global_.wBase )
-  {
-    let toolsPath = '../../../dwtools/Base.s';
-    let toolsExternal = 0;
-    try
-    {
-      toolsPath = require.resolve( toolsPath );
-    }
-    catch( err )
-    {
-      toolsExternal = 1;
-      require( 'wTools' );
-    }
-    if( !toolsExternal )
-    require( toolsPath );
-  }
-
-  let _ = _global_.wTools;
+  let _ = require( '../../../Tools.s' );
 
   _.include( 'wProto' );
   _.include( 'wCopyable' );
@@ -650,7 +633,7 @@ function _onceGot( competitor )
   return self;
 
   // xxx
-  let i = _.arrayRightIndex( self._competitorLate, key, ( e ) => e.id || competitor.name, ( e ) => e );
+  i = _.arrayRightIndex( self._competitorLate, key, ( e ) => e.id || competitor.name, ( e ) => e );
 
   if( i >= 0 )
   return self;
@@ -727,7 +710,7 @@ function _onceThen( competitor )
   }
 
   // xxx
-  let i = _.arrayRightIndex( self._competitorLate, key, ( e ) => e.id || competitor.name, ( e ) => e );
+  i = _.arrayRightIndex( self._competitorLate, key, ( e ) => e.id || competitor.name, ( e ) => e );
 
   if( i >= 0 )
   {

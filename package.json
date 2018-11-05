@@ -19,9 +19,9 @@
       "email": "iostashvxi@gmail.com"
     }
   ],
-  "main": "proto/dwtools/abase/oclass/Consequence.s",
+  "main": "proto/dwtools/abase/l9/consequence/Consequence.s",
   "files": [
-    "proto/dwtools/abase/oclass",
+    "proto/dwtools/abase/l9",
     "production"
   ],
   "scripts": {
