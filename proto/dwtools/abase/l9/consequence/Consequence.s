@@ -23,9 +23,7 @@ chainer :
 if( typeof module !== 'undefined' )
 {
 
-  debugger;
   let _ = require( '../../../Tools.s' );
-  debugger;
 
   _.include( 'wProto' );
   _.include( 'wCopyable' );
