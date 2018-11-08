@@ -2862,7 +2862,7 @@ function toStr()
   let self = this;
   let result = self.nickName;
 
-  let names = _.entitySelect( self.competitorsEarlyGet(),'*/tag' );
+  let names = _.select( self.competitorsEarlyGet(),'*/tag' );
 
   if( self.tag )
   result += '\n  tag : ' + self.tag;
