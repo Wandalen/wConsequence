@@ -2784,6 +2784,20 @@ function resourcesHas()
 
 //
 
+function isEmpty()
+{
+  let self = this;
+  if( self.resourcesGet().length )
+  return false;
+  if( self.competitorsEarlyGet().length )
+  return false;
+  if( self.competitorsLateGet().length )
+  return false;
+  return true;
+}
+
+//
+
 /**
  * Clears all resources and corespondents of wConsequence.
  * @method clear
@@ -3584,6 +3598,7 @@ let Extend =
   resourcesCancel : resourcesCancel,
   resourcesHas : resourcesHas,
 
+  isEmpty : isEmpty,
   clear : clear, /* experimental */
   cancel : cancel, /* experimental */
 
