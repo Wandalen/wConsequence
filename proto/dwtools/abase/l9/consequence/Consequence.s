@@ -1800,7 +1800,7 @@ function safeCallback()
 // }
 
 // --
-// messanger
+// resource
 // --
 
 /**
@@ -3568,7 +3568,7 @@ let Extend =
   seal : seal,
   safeCallback : safeCallback,
 
-  // messanger
+  // resource
 
   give : give,
   error : error,
