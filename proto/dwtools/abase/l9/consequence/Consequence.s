@@ -778,10 +778,10 @@ function split( first )
   if( first )
   {
     result.doThen( first );
-    self.got( function( err,data )
+    self.got( function( err, arg )
     {
-      result.give( err,data );
-      this.give( err,data );
+      result.give( err, arg );
+      this.give( err, arg );
     });
   }
   else
@@ -1117,22 +1117,22 @@ function timeOutThen( time, competitor )
 
   let cor;
   if( _.consequenceIs( competitor ) )
-  cor = function __timeOutThen( err,data )
+  cor = function __timeOutThen( err, arg )
   {
     debugger;
     return _.timeOut( time,function()
     {
       debugger;
-      competitor.__giveAct( err,data );
+      competitor.__giveAct( err, arg );
       if( err )
       throw _.err( err );
-      return data;
+      return arg;
     });
   }
   else
-  cor = function __timeOutThen( err,data )
+  cor = function __timeOutThen( err, arg )
   {
-    return _.timeOut( time,self,competitor,[ err,data ] );
+    return _.timeOut( time,self,competitor,[ err, arg ] );
   }
 
   /* */
@@ -1350,7 +1350,7 @@ function _and( srcs,thenning )
   /* */
 
   let count = srcs.length;
-  function __got( index,err,arg )
+  function __got( index,err, arg )
   {
 
     count -= 1;
@@ -1358,7 +1358,7 @@ function _and( srcs,thenning )
     if( err && !anyErr )
     anyErr = err;
 
-    // returned[ index ] = [ err,data ];
+    // returned[ index ] = [ err, arg ];
     errs[ index ] = err;
     args[ index ] = arg;
 
@@ -1399,7 +1399,7 @@ function _and( srcs,thenning )
 
   /* */
 
-  self.got( function _andGot( err,data )
+  self.got( function _andGot( err, arg )
   {
 
     for( let s = 0 ; s < srcs.length-1 ; s++ )
@@ -1431,7 +1431,7 @@ function _and( srcs,thenning )
       src.got( r );
     }
 
-    __got( srcs.length-1,err,data );
+    __got( srcs.length-1,err, arg );
 
   });
 
@@ -1503,22 +1503,22 @@ function _either( srcs,thenning )
   /* */
 
   let count = 0;
-  function got( index,err,data )
+  function got( index,err, arg )
   {
 
     count += 1;
 
     if( count === 1 )
-    self.give( err,data );
+    self.give( err, arg );
 
     if( thenning )
-    srcs[ index ].give( err,data );
+    srcs[ index ].give( err, arg );
 
   }
 
   /* */
 
-  self.got( function( err,data )
+  self.got( function( err, arg )
   {
 
     for( let a = 0 ; a < srcs.length ; a++ )
@@ -2738,13 +2738,13 @@ function resourcesGet( index )
 
    console.log( resources );
    // prints: []
- * @param {_resourceObject} data resource object for removing.
+ * @param {_resourceObject} arg resource object for removing.
  * @throws {Error} If passed extra arguments.
  * @method competitorsCancel
  * @memberof wConsequence
  */
 
-function resourcesCancel( data )
+function resourcesCancel( arg )
 {
   let self = this;
 
@@ -2755,7 +2755,7 @@ function resourcesCancel( data )
   else
   {
     throw _.err( 'not tested' );
-    _.arrayRemoveElementOnce( self._resource,data );
+    _.arrayRemoveElementOnce( self._resource,arg );
   }
 
 }
@@ -2819,7 +2819,7 @@ function isEmpty()
  * @memberof wConsequence
  */
 
-function clear( data )
+function clear( arg )
 {
   let self = this;
   _.assert( arguments.length === 0 );
@@ -2916,21 +2916,21 @@ function toString()
 //
 
 // /**
-//  * Can use as competitor. If `err` is not null, throws exception based on `err`. Returns `data`.
+//  * Can use as competitor. If `err` is not null, throws exception based on `err`. Returns `arg`.
 //  * @callback wConsequence._onDebug
 //  * @param {*} err Error object, or any other type, that represent or describe an error reason. If during resolving
 //  value no exception occurred, it will be set to null;
-//  * @param {*} data resolved by wConsequence value;
+//  * @param {*} arg resolved by wConsequence value;
 //  * @returns {*}
 //  * @memberof wConsequence
 //  */
 //
-// function _onDebug( err,data )
+// function _onDebug( err, arg )
 // {
 //   debugger;
 //   if( err )
 //   throw _.err( err );
-//   return data;
+//   return arg;
 // }
 
 //
@@ -3258,18 +3258,18 @@ function ifErrorThen_static()
   _.assert( arguments.length === 1, 'Expects single argument' );
   _.assert( _.routineIs( onEnd ) );
 
-  return function ifErrorThen( err,data )
+  return function ifErrorThen( err, arg )
   {
 
     _.assert( arguments.length === 2, 'Expects exactly two arguments' );
 
     if( err )
     {
-      return onEnd( err,data );
+      return onEnd( err, arg );
     }
     else
     {
-      return new Self().give( data );
+      return new Self().give( arg );
     }
 
   }
@@ -3300,14 +3300,14 @@ function ifNoErrorThen_static()
   _.assert( arguments.length === 1, 'Expects single argument' );
   _.assert( _.routineIs( onEnd ) );
 
-  return function ifNoErrorThen( err,data )
+  return function ifNoErrorThen( err, arg )
   {
 
     _.assert( arguments.length === 2, 'Expects exactly two arguments' );
 
     if( !err )
     {
-      return onEnd( err,data );
+      return onEnd( err, arg );
     }
     else
     {
@@ -3321,20 +3321,20 @@ function ifNoErrorThen_static()
 //
 
 /**
- * Can use as competitor. If `err` is not null, throws exception based on `err`. Returns `data`.
+ * Can use as competitor. If `err` is not null, throws exception based on `err`. Returns `arg`.
  * @callback wConsequence.passThru
  * @param {*} err Error object, or any other type, that represent or describe an error reason. If during resolving
  value no exception occurred, it will be set to null;
- * @param {*} data resolved by wConsequence value;
+ * @param {*} arg resolved by wConsequence value;
  * @returns {*}
  * @memberof wConsequence
  */
 
-let passThru_static = function passThru( err,data )
+let passThru_static = function passThru( err, arg )
 {
   if( err )
   throw _.err( err );
-  return data;
+  return arg;
 }
 
 // --
@@ -3350,7 +3350,7 @@ function FunctionWithin( consequence )
   _.assert( arguments.length === 1, 'Expects single argument' );
   _.assert( _.consequenceIs( consequence ) );
 
-  consequence.doThen( function( err,data )
+  consequence.doThen( function( err, arg )
   {
 
     return routine.apply( context,args );
@@ -3374,7 +3374,7 @@ function FunctionThereafter()
   let routine = this;
   let args = arguments
 
-  con.doThen( function( err,data )
+  con.doThen( function( err, arg )
   {
 
     return routine.apply( null,args );
@@ -3436,10 +3436,10 @@ function experimentCall()
 
   let con = new Self();
   con( 123 );
-  con.doThen( function( err,data )
+  con.doThen( function( err, arg )
   {
 
-    console.log( 'got :',data );
+    console.log( 'got :',arg );
 
   });
 
