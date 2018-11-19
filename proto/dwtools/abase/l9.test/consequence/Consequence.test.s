@@ -88,6 +88,7 @@ function andGot( test )
       test.identical( mainCon.resourcesGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
       test.identical( con.competitorsEarlyGet().length, 0 );
+      return null;
     });
 
     _.timeOut( delay, () => { con.give( delay ) });
@@ -97,6 +98,7 @@ function andGot( test )
     {
       test.identical( con.resourcesGet().length, 1 );
       test.identical( con.resourcesGet()[ 0 ].argument, delay * 2 );
+      return null;
     })
   })
 
@@ -119,9 +121,10 @@ function andGot( test )
       test.identical( mainCon.resourcesGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
       test.identical( con.competitorsEarlyGet().length, 0 );
+      return null;
     });
 
-    _.timeOut( delay, () => { con.give( delay ) });
+    _.timeOut( delay, () => { con.give( delay ); return null; });
 
     return mainCon;
   })
@@ -157,10 +160,12 @@ function andGot( test )
 
       test.identical( con3.resourcesGet(), []);
       test.identical( con3.competitorsEarlyGet().length, 0 );
+
+      return null;
     });
 
-    _.timeOut( delay, () => { con1.give( delay ) });
-    _.timeOut( delay * 2, () => { con2.give( delay * 2 ) });
+    _.timeOut( delay, () => { con1.give( delay ); return null; });
+    _.timeOut( delay * 2, () => { con2.give( delay * 2 ); return null; });
     con3.give( testMsg + testMsg );
 
     return mainCon;
@@ -197,6 +202,8 @@ function andGot( test )
 
       test.identical( con3.resourcesGet().length, 2 );
       test.identical( con3.competitorsEarlyGet().length, 0 );
+
+      return null;
     });
 
     _.timeOut( delay, () =>
@@ -204,6 +211,7 @@ function andGot( test )
       con1.give( 'con1' );
       con1.give( 'con1' );
       con1.give( 'con1' );
+      return null;
     });
 
     _.timeOut( delay * 2, () =>
@@ -211,6 +219,7 @@ function andGot( test )
       con2.give( 'con2' );
       con2.give( 'con2' );
       con2.give( 'con2' );
+      return null;
     });
 
     _.timeOut( delay / 2, () =>
@@ -218,6 +227,7 @@ function andGot( test )
       con3.give( 'con3' );
       con3.give( 'con3' );
       con3.give( 'con3' );
+      return null;
     });
 
     return mainCon;
@@ -255,9 +265,10 @@ function andGot( test )
       test.identical( con2.resourcesGet().length, 0 );
       test.identical( con2.competitorsEarlyGet().length, 0 );
 
+      return null;
     });
 
-    _.timeOut( delay * 2, () => { con2.give( 'con2' )  } )
+    _.timeOut( delay * 2, () => { con2.give( 'con2' ); return null; } )
 
     return mainCon;
   })
@@ -289,10 +300,12 @@ function andGot( test )
 
       test.identical( con2.resourcesGet().length, 0 );
       test.identical( con2.competitorsEarlyGet().length, 0 );
+
+      return null;
     });
 
-    _.timeOut( delay, () => { con1.error( 'con1' )  } )
-    var t = _.timeOut( delay * 2, () => { con2.give( 'con2' )  } )
+    _.timeOut( delay, () => { con1.error( 'con1' );return null;  } )
+    var t = _.timeOut( delay * 2, () => { con2.give( 'con2' );return null;  } )
 
     t.doThen( () =>
     {
@@ -317,6 +330,7 @@ function andGot( test )
     test.identical( mainCon.resourcesGet().length, 0 );
     test.identical( mainCon.competitorsEarlyGet().length, 1 );
     test.identical( con.resourcesGet().length, 0 );
+    return null;
   })
 
   /* */
@@ -332,6 +346,7 @@ function andGot( test )
     test.identical( mainCon.resourcesGet().length, 0 );
     test.identical( mainCon.competitorsEarlyGet().length, 1 );
     test.identical( con.resourcesGet().length, 0 );
+    return null;
   })
 
   /* */
@@ -351,10 +366,10 @@ function andGot( test )
 
     mainCon.andGot( srcs );
 
-    mainCon.doThen( () => test.identical( 0, 1) );
+    mainCon.doThen( () => { test.identical( 0, 1);return null; });
 
-    _.timeOut( delay, () => { con1.give( delay ) });
-    _.timeOut( delay * 2, () => { con2.give( delay * 2 ) });
+    _.timeOut( delay, () => { con1.give( delay ); return null; });
+    _.timeOut( delay * 2, () => { con2.give( delay * 2 ); return null; });
 
     return _.timeOut( delay * 2, function()
     {
@@ -364,6 +379,7 @@ function andGot( test )
       test.identical( con1.resourcesGet().length, 0);
       test.identical( con2.resourcesGet().length, 0);
       test.identical( con3.resourcesGet().length, 0);
+      return null;
     });
 
   })
@@ -397,15 +413,17 @@ function andThen( test )
       test.identical( mainCon.resourcesGet().length, 0 );
       test.identical( con.resourcesGet(), [{ error : undefined, argument : delay }] );
       test.identical( con.competitorsEarlyGet().length, 0 );
+      return null;
     });
 
-    _.timeOut( delay, () => { con.give( delay ) });
-    _.timeOut( delay * 2, () => { con.give( delay * 2 ) });
+    _.timeOut( delay, () => { con.give( delay );return null; });
+    _.timeOut( delay * 2, () => { con.give( delay * 2 );return null; });
 
     return _.timeOut( delay * 2, function()
     {
       test.identical( con.resourcesGet().length, 2 );
       test.identical( con.resourcesGet()[ 1 ].argument, delay * 2 );
+      return null;
     })
   })
 
@@ -429,15 +447,17 @@ function andThen( test )
       test.identical( con.resourcesGet().length, 1 );
       test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : delay } );
       test.identical( con.competitorsEarlyGet().length, 0 );
+      return null;
     });
 
-    _.timeOut( delay, () => { con.give( delay ) });
-    _.timeOut( delay * 2, () => { con.give( delay * 2 ) });
+    _.timeOut( delay, () => { con.give( delay );return null; });
+    _.timeOut( delay * 2, () => { con.give( delay * 2 );return null; });
 
     return _.timeOut( delay * 2, function()
     {
       test.identical( con.resourcesGet().length, 2 );
       test.identical( con.resourcesGet()[ 1 ], { error : undefined, argument : delay * 2 } );
+      return null;
     })
   })
 
@@ -471,10 +491,12 @@ function andThen( test )
 
       test.identical( con3.resourcesGet(), [ { error : undefined, argument : testMsg + testMsg } ]);
       test.identical( con3.competitorsEarlyGet().length, 0 );
+
+      return null;
     });
 
-    _.timeOut( delay, () => { con1.give( delay ) });
-    _.timeOut( delay * 2, () => { con2.give( delay * 2 ) });
+    _.timeOut( delay, () => { con1.give( delay );return null; });
+    _.timeOut( delay * 2, () => { con2.give( delay * 2 );return null; });
     con3.give( testMsg + testMsg );
 
     return mainCon;
@@ -510,6 +532,8 @@ function andThen( test )
 
       test.identical( con3.resourcesGet().length, 3 );
       test.identical( con3.competitorsEarlyGet().length, 0 );
+
+      return null;
     });
 
     _.timeOut( delay, () =>
@@ -517,6 +541,7 @@ function andThen( test )
       con1.give( 'con1' );
       con1.give( 'con1' );
       con1.give( 'con1' );
+      return null;
     });
 
     _.timeOut( delay * 2, () =>
@@ -524,6 +549,7 @@ function andThen( test )
       con2.give( 'con2' );
       con2.give( 'con2' );
       con2.give( 'con2' );
+      return null;
     });
 
     _.timeOut( delay / 2, () =>
@@ -531,6 +557,7 @@ function andThen( test )
       con3.give( 'con3' );
       con3.give( 'con3' );
       con3.give( 'con3' );
+      return null;
     });
 
     return mainCon;
@@ -567,10 +594,10 @@ function andThen( test )
 
       test.identical( con2.resourcesGet().length, 0 );
       test.identical( con2.competitorsEarlyGet().length, 0 );
-
+      return null;
     });
 
-    _.timeOut( delay * 2, () => { con2.give( 'con2' )  } )
+    _.timeOut( delay * 2, () => { con2.give( 'con2' ); return null;  } )
 
     return mainCon;
   })
@@ -604,10 +631,11 @@ function andThen( test )
 
       test.identical( con2.resourcesGet().length, 1 );
       test.identical( con2.competitorsEarlyGet().length, 0 );
+      return null;
     });
 
-    _.timeOut( delay, () => { con1.error( 'con1' )  } )
-    var t = _.timeOut( delay * 2, () => { con2.give( 'con2' )  } )
+    _.timeOut( delay, () => { con1.error( 'con1' );return null;  } )
+    var t = _.timeOut( delay * 2, () => { con2.give( 'con2' );return null;  } )
 
     t.doThen( () =>
     {
@@ -628,10 +656,11 @@ function andThen( test )
     var con = new _.Consequence();
     mainCon.give( null );
     mainCon.andThen( con );
-    mainCon.doThen( () => test.identical( 0, 1 ) );
+    mainCon.doThen( () => { test.identical( 0, 1); return null; });
     test.identical( mainCon.resourcesGet().length, 0 );
     test.identical( mainCon.competitorsEarlyGet().length, 1 );
     test.identical( con.resourcesGet().length, 0 );
+    return null;
   })
 
   /* */
@@ -643,10 +672,11 @@ function andThen( test )
     var con = new _.Consequence();
     mainCon.give( null );
     mainCon.andThen( () => con );
-    mainCon.doThen( () => test.identical( 0, 1 ) );
+    mainCon.doThen( () => { test.identical( 0, 1); return null; });
     test.identical( mainCon.resourcesGet().length, 0 );
     test.identical( mainCon.competitorsEarlyGet().length, 1 );
     test.identical( con.resourcesGet().length, 0 );
+    return null;
   })
 
   /* */
@@ -666,10 +696,10 @@ function andThen( test )
 
     mainCon.andThen( srcs );
 
-    mainCon.doThen( () => test.identical( 0, 1) );
+    mainCon.doThen( () => { test.identical( 0, 1); return null; });
 
-    _.timeOut( delay, () => { con1.give( delay ) });
-    _.timeOut( delay * 2, () => { con2.give( delay * 2 ) });
+    _.timeOut( delay, () => { con1.give( delay );return null; });
+    _.timeOut( delay * 2, () => { con2.give( delay * 2 );return null; });
 
     return _.timeOut( delay * 2, function()
     {
@@ -679,6 +709,7 @@ function andThen( test )
       test.identical( con1.resourcesGet().length, 0);
       test.identical( con2.resourcesGet().length, 0);
       test.identical( con3.resourcesGet().length, 0);
+      return null;
     });
 
   })
@@ -712,6 +743,7 @@ function ordinarMessage( test )
     })
     test.identical( con.resourcesGet().length, 0 );
     test.identical( con.competitorsEarlyGet().length, 0 );
+    return null;
   })
 
   /* asyncTaking : 1, asyncGiving : 0 */
@@ -733,6 +765,7 @@ function ordinarMessage( test )
     {
       test.identical( con.resourcesGet().length, 0 );
       test.identical( con.competitorsEarlyGet().length, 0 );
+      return null;
     })
   })
 
@@ -754,11 +787,13 @@ function ordinarMessage( test )
         test.identical( err, undefined )
         test.identical( got, 1 );
       })
+      return null;
     })
     .doThen( function()
     {
       test.identical( con.resourcesGet().length, 0 );
       test.identical( con.competitorsEarlyGet().length, 0 );
+      return null;
     })
   })
 
@@ -780,6 +815,7 @@ function ordinarMessage( test )
     {
       test.identical( con.resourcesGet().length, 0 );
       test.identical( con.competitorsEarlyGet().length, 0 );
+      return null;
     })
   });
 
@@ -798,6 +834,7 @@ function ordinarMessage( test )
     con.got( ( err, got ) => test.identical( got, 3 ) );
     test.identical( con.competitorsEarlyGet().length, 0 );
     test.identical( con.resourcesGet().length, 0 );
+    return null;
   })
 
   /* asyncTaking : 1, asyncGiving : 0 */
@@ -816,6 +853,7 @@ function ordinarMessage( test )
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
+      return null;
     })
   })
 
@@ -835,12 +873,15 @@ function ordinarMessage( test )
       con.got( ( err, got ) => test.identical( got, 1 ) );
       con.got( ( err, got ) => test.identical( got, 2 ) );
       con.got( ( err, got ) => test.identical( got, 3 ) );
+      return null;
     })
     .doThen( function()
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
+      return null;
     })
+
   })
 
   /* asyncTaking : 1, asyncGiving : 1 */
@@ -859,6 +900,7 @@ function ordinarMessage( test )
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
+      return null;
     })
   });
 
@@ -879,6 +921,7 @@ function ordinarMessage( test )
     })
     test.identical( con.resourcesGet().length, 0 );
     test.identical( con.competitorsEarlyGet().length, 0 );
+    return null;
   })
 
   /* asyncTaking : 1, asyncGiving : 0 */
@@ -900,6 +943,7 @@ function ordinarMessage( test )
     {
       test.identical( con.resourcesGet().length, 0 );
       test.identical( con.competitorsEarlyGet().length, 0 );
+      return null;
     })
   })
 
@@ -921,11 +965,13 @@ function ordinarMessage( test )
         test.identical( err, 'err' )
         test.identical( got, undefined );
       })
+      return null;
     })
     .doThen( function()
     {
       test.identical( con.resourcesGet().length, 0 );
       test.identical( con.competitorsEarlyGet().length, 0 );
+      return null;
     })
   })
 
@@ -947,6 +993,7 @@ function ordinarMessage( test )
     {
       test.identical( con.resourcesGet().length, 0 );
       test.identical( con.competitorsEarlyGet().length, 0 );
+      return null;
     })
   });
 
@@ -965,6 +1012,7 @@ function ordinarMessage( test )
     con.got( ( err, got ) => test.identical( err, 'err3' ) );
     test.identical( con.competitorsEarlyGet().length, 0 );
     test.identical( con.resourcesGet().length, 0 );
+    return null;
   })
 
   /* asyncTaking : 1, asyncGiving : 0 */
@@ -983,6 +1031,7 @@ function ordinarMessage( test )
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
+      return null;
     })
   })
 
@@ -1002,11 +1051,13 @@ function ordinarMessage( test )
       con.got( ( err, got ) => test.identical( err, 'err1' ) );
       con.got( ( err, got ) => test.identical( err, 'err2' ) );
       con.got( ( err, got ) => test.identical( err, 'err3' ) );
+      return null;
     })
     .doThen( function()
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
+      return null;
     })
   })
 
@@ -1026,12 +1077,17 @@ function ordinarMessage( test )
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
+      return null;
     })
   });
 
   /* */
 
-  testCon.doThen( () => _.Consequence.asyncModeSet( amode ) );
+  testCon.doThen( () =>
+  {
+    _.Consequence.asyncModeSet( amode );
+    return null;
+  })
   return testCon;
 }
 
@@ -1055,6 +1111,7 @@ function promiseGot( test )
     {
       test.identical( 0, 1 );
     })
+    return null;
   })
 
   /* */
@@ -1122,6 +1179,7 @@ function promiseGot( test )
   {
     wConsequence.prototype.asyncGiving = 1;
     wConsequence.prototype.asyncTaking = 0;
+    return null;
   })
 
   /* */
@@ -1203,6 +1261,7 @@ function promiseGot( test )
   {
     wConsequence.prototype.asyncGiving = 0;
     wConsequence.prototype.asyncTaking = 1;
+    return null;
   })
 
   /* */
@@ -1283,6 +1342,7 @@ function promiseGot( test )
   {
     wConsequence.prototype.asyncGiving = 1;
     wConsequence.prototype.asyncTaking = 1;
+    return null;
   })
 
   /* */
@@ -1360,6 +1420,7 @@ function promiseGot( test )
   {
     wConsequence.prototype.asyncGiving = 0;
     wConsequence.prototype.asyncTaking = 0;
+    return null;
   })
 
   return testCon;
@@ -1378,6 +1439,7 @@ function doThen( test )
   {
     _.Consequence.asyncModeSet([ 0, 0 ]);
     test.case += ', no resource'
+    return null;
   })
   .doThen( function()
   {
@@ -1385,12 +1447,14 @@ function doThen( test )
     con.doThen( () => test.identical( 0, 1 ) );
     test.identical( con.competitorsEarlyGet().length, 1 );
     test.identical( con.resourcesGet().length, 0 );
+    return null;
   })
 
   .doThen( function()
   {
     _.Consequence.asyncModeSet([ 1, 0 ]);
     test.case += ', no resource'
+    return null;
   })
   .doThen( function()
   {
@@ -1398,12 +1462,14 @@ function doThen( test )
     con.doThen( () => test.identical( 0, 1 ) );
     test.identical( con.competitorsEarlyGet().length, 1 );
     test.identical( con.resourcesGet().length, 0 );
+    return null;
   })
 
   .doThen( function()
   {
     _.Consequence.asyncModeSet([ 0, 1 ]);
     test.case += ', no resource'
+    return null;
   })
   .doThen( function()
   {
@@ -1411,12 +1477,14 @@ function doThen( test )
     con.doThen( () => test.identical( 0, 1 ) );
     test.identical( con.competitorsEarlyGet().length, 1 );
     test.identical( con.resourcesGet().length, 0 );
+    return null;
   })
 
   .doThen( function()
   {
     _.Consequence.asyncModeSet([ 1, 1 ]);
     test.case += ', no resource'
+    return null;
   })
   .doThen( function()
   {
@@ -1424,6 +1492,7 @@ function doThen( test )
     con.doThen( () => test.identical( 0, 1 ) );
     test.identical( con.competitorsEarlyGet().length, 1 );
     test.identical( con.resourcesGet().length, 0 );
+    return null;
   })
 
    /* asyncTaking : 0, asyncGiving : 0 */
@@ -1432,6 +1501,7 @@ function doThen( test )
   {
     _.Consequence.asyncModeSet([ 0, 0 ]);
     test.case += ', single resource, competitor is a routine'
+    return null;
   })
   .doThen( function()
   {
@@ -1439,6 +1509,7 @@ function doThen( test )
     {
       test.identical( err , undefined )
       test.identical( got , testMsg );
+      return null;
     }
     var con = new _.Consequence();
     con.give( testMsg );
@@ -1447,7 +1518,7 @@ function doThen( test )
     con.doThen( competitor );
     test.identical( con.competitorsEarlyGet().length, 0 );
     test.identical( con.resourcesGet().length, 1 )
-    test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : undefined } );
+    test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : null } );
 
     return con;
   })
@@ -1458,6 +1529,7 @@ function doThen( test )
   {
     _.Consequence.asyncModeSet([ 1, 0 ]);
     test.case += ', single resource, competitor is a routine'
+    return null;
   })
   .doThen( function()
   {
@@ -1465,6 +1537,7 @@ function doThen( test )
     {
       test.identical( err , undefined )
       test.identical( got , testMsg );
+      return null;
     }
     var con = new _.Consequence();
     con.give( testMsg );
@@ -1477,7 +1550,7 @@ function doThen( test )
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 1 )
-      test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : undefined } )
+      test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : null } )
     })
   })
 
@@ -1487,6 +1560,7 @@ function doThen( test )
   {
     _.Consequence.asyncModeSet([ 0, 1 ]);
     test.case += ', single resource, competitor is a routine'
+    return null;
   })
   .doThen( function()
   {
@@ -1494,6 +1568,7 @@ function doThen( test )
     {
       test.identical( err , undefined )
       test.identical( got , testMsg );
+      return null;
     }
     var con = new _.Consequence();
     con.give( testMsg );
@@ -1505,12 +1580,14 @@ function doThen( test )
       test.identical( con.competitorsEarlyGet().length, 0 );
 
       con.doThen( competitor );
+      return null;
     })
     .doThen( function()
     {
       test.identical( con.competitorsEarlyGet().length, 0 )
       test.identical( con.resourcesGet().length, 1 )
-      test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : undefined } )
+      test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : null } )
+      return null;
     })
   })
 
@@ -1520,6 +1597,7 @@ function doThen( test )
   {
     _.Consequence.asyncModeSet([ 1, 1 ]);
     test.case += ', single resource, competitor is a routine'
+    return null;
   })
   .doThen( function()
   {
@@ -1527,6 +1605,7 @@ function doThen( test )
     {
       test.identical( err , undefined )
       test.identical( got , testMsg );
+      return null;
     }
     var con = new _.Consequence();
     con.give( testMsg );
@@ -1538,7 +1617,8 @@ function doThen( test )
     {
       test.identical( con.competitorsEarlyGet().length, 0 )
       test.identical( con.resourcesGet().length, 1 )
-      test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : undefined } )
+      test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : null } )
+      return null;
     })
 
   })
@@ -1549,6 +1629,7 @@ function doThen( test )
   {
     _.Consequence.asyncModeSet([ 0, 0 ]);
     test.case += ', several doThen, competitor is a routine';
+    return null;
   })
   .doThen( function()
   {
@@ -1584,6 +1665,7 @@ function doThen( test )
   {
     _.Consequence.asyncModeSet([ 1, 0 ]);
     test.case += ', several doThen, competitor is a routine';
+    return null;
   })
   .doThen( function()
   {
@@ -1616,6 +1698,7 @@ function doThen( test )
       test.identical( con.competitorsEarlyGet().length, 0 )
       test.identical( con.resourcesGet().length, 1 )
       test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : testMsg + 3 } );
+      return null;
     })
 
   })
@@ -1626,6 +1709,7 @@ function doThen( test )
   {
     _.Consequence.asyncModeSet([ 0, 1 ]);
     test.case += ', several doThen, competitor is a routine';
+    return null;
   })
   .doThen( function()
   {
@@ -1664,6 +1748,7 @@ function doThen( test )
       test.identical( con.competitorsEarlyGet().length, 0 )
       test.identical( con.resourcesGet().length, 1 )
       test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : testMsg + 3 } );
+      return null;
     })
 
   })
@@ -1674,6 +1759,7 @@ function doThen( test )
   {
     _.Consequence.asyncModeSet([ 1, 1 ]);
     test.case += ', several doThen, competitor is a routine';
+    return null;
   })
   .doThen( function()
   {
@@ -1708,6 +1794,7 @@ function doThen( test )
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 1 );
       test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : testMsg + 3} );
+      return null;
     })
 
   })
@@ -1718,6 +1805,7 @@ function doThen( test )
   {
     _.Consequence.asyncModeSet([ 0, 0 ]);
     test.case += ', single resource, consequence as a competitor';
+    return null;
   })
   .doThen( function()
   {
@@ -1738,6 +1826,7 @@ function doThen( test )
     {
       test.identical( got, testMsg )
       con2TakerFired = true;
+      return null;
     });
 
     con2.doThen( function()
@@ -1747,6 +1836,7 @@ function doThen( test )
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con2.resourcesGet().length, 0 );
       test.identical( con2.competitorsEarlyGet().length, 0 );
+      return null;
     });
 
     return con2;
@@ -1758,6 +1848,7 @@ function doThen( test )
   {
     _.Consequence.asyncModeSet([ 1, 0 ]);
     test.case += ', single resource, consequence as a competitor';
+    return null;
   })
   .doThen( function()
   {
@@ -1791,6 +1882,7 @@ function doThen( test )
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con2.resourcesGet().length, 0 );
       test.identical( con2.competitorsEarlyGet().length, 0 );
+      return null;
     })
 
   })
@@ -1801,6 +1893,7 @@ function doThen( test )
   {
     _.Consequence.asyncModeSet([ 0, 1 ]);
     test.case += ', single resource, consequence as a competitor';
+    return null;
   })
   .doThen( function()
   {
@@ -1839,6 +1932,7 @@ function doThen( test )
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con2.resourcesGet().length, 1 );
       test.identical( con2.competitorsEarlyGet().length, 0 );
+      return null;
     })
   })
 
@@ -1848,6 +1942,7 @@ function doThen( test )
   {
     _.Consequence.asyncModeSet([ 1, 1 ]);
     test.case += ', single resource, consequence as a competitor';
+    return null;
   })
   .doThen( function()
   {
@@ -1882,6 +1977,7 @@ function doThen( test )
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con2.resourcesGet().length, 0 );
       test.identical( con2.competitorsEarlyGet().length, 0 );
+      return null;
     })
   })
 
@@ -1891,6 +1987,7 @@ function doThen( test )
   {
     _.Consequence.asyncModeSet([ 0, 0 ]);
     test.case += 'competitor returns consequence with msg';
+    return null;
   })
   .doThen( function()
   {
@@ -1909,6 +2006,8 @@ function doThen( test )
     test.identical( con2.resourcesGet().length, 1 );
     test.identical( con2.resourcesGet()[ 0 ].argument, testMsg );
 
+    return null;
+
   })
 
   /* asyncTaking : 1, asyncGiving : 0 */
@@ -1917,6 +2016,7 @@ function doThen( test )
   {
     _.Consequence.asyncModeSet([ 1, 0 ]);
     test.case += 'competitor returns consequence with msg';
+    return null;
   })
   .doThen( function()
   {
@@ -1938,6 +2038,7 @@ function doThen( test )
 
       test.identical( con2.resourcesGet().length, 1 );
       test.identical( con2.resourcesGet()[ 0 ].argument, testMsg );
+      return null;
     })
   })
 
@@ -1947,6 +2048,7 @@ function doThen( test )
   {
     _.Consequence.asyncModeSet([ 0, 1 ]);
     test.case += 'competitor returns consequence with msg';
+    return null;
   })
   .doThen( function()
   {
@@ -1973,6 +2075,7 @@ function doThen( test )
 
       test.identical( con2.resourcesGet().length, 1 );
       test.identical( con2.resourcesGet()[ 0 ].argument, testMsg );
+      return null;
     })
   })
 
@@ -1982,6 +2085,7 @@ function doThen( test )
   {
     _.Consequence.asyncModeSet([ 1, 1 ]);
     test.case += 'competitor returns consequence with msg';
+    return null;
   })
   .doThen( function()
   {
@@ -2003,12 +2107,17 @@ function doThen( test )
 
       test.identical( con2.resourcesGet().length, 1 );
       test.identical( con2.resourcesGet()[ 0 ].argument, testMsg );
+      return null;
     })
   })
 
   /* */
 
-  testCon.doThen( () => _.Consequence.asyncModeSet( amode ) );
+  testCon.doThen( () =>
+  {
+    _.Consequence.asyncModeSet( amode );
+    return null;
+  });
 
   return testCon;
 }
@@ -2338,6 +2447,7 @@ function promiseThen( test )
   {
     wConsequence.prototype.asyncGiving = 0;
     wConsequence.prototype.asyncTaking = 0;
+    return null;
   })
 
   return testCon;
@@ -2737,6 +2847,7 @@ function split( test )
 
     test.identical( con.resourcesGet().length, 1 );
     test.identical( con2.resourcesGet().length, 0 );
+    return null;
   })
 
   .doThen( function()
@@ -2752,6 +2863,7 @@ function split( test )
     con.give( 5 );
     test.identical( con.resourcesGet().length, 1 );
     test.identical( con2.resourcesGet().length, 0 );
+    return null;
   })
 
   .doThen( function()
@@ -2779,6 +2891,7 @@ function split( test )
     test.identical( con.resourcesGet().length, 2 );
     test.identical( _got, [ 5 ] )
     test.identical( _err, [ undefined ] )
+    return null;
   })
 
   .doThen( function()
@@ -2790,6 +2903,7 @@ function split( test )
     {
       _got.push( got );
       _err.push( err );
+      return null;
     }
 
     var con = new _.Consequence();
@@ -2799,11 +2913,12 @@ function split( test )
     var con2 = con.split( competitor );
 
     test.identical( con2.resourcesGet().length, 1 );
-    test.identical( con2.resourcesGet()[ 0 ], { error : undefined, argument : undefined } );
+    test.identical( con2.resourcesGet()[ 0 ], { error : undefined, argument : null } );
     test.identical( con2.competitorsEarlyGet().length, 0 );
     test.identical( con.resourcesGet().length, 2 );
     test.identical( _got, [ 5 ] )
     test.identical( _err, [ undefined ] )
+    return null;
   })
 
   return testCon;
@@ -3203,6 +3318,7 @@ function tap( test )
     con.got( ( err, got ) => test.identical( got, testMsg ) );
     test.identical( con.competitorsEarlyGet().length, 0 );
     test.identical( con.resourcesGet().length, 0 );
+    return null;
   })
 
   /* */
@@ -3217,6 +3333,7 @@ function tap( test )
     con.got( ( err, got ) => test.identical( err, testMsg ) );
     test.identical( con.competitorsEarlyGet().length, 0 );
     test.identical( con.resourcesGet().length, 0 );
+    return null;
   })
 
   /* */
@@ -3232,6 +3349,7 @@ function tap( test )
     con.got( ( err, got ) => test.identical( got, testMsg ) );
     test.identical( con.competitorsEarlyGet().length, 0 );
     test.identical( con.resourcesGet().length, 0 );
+    return null;
   })
 
    /* */
@@ -3249,6 +3367,8 @@ function tap( test )
     {
       con.tap();
     });
+
+    return null;
   })
 
   return testCon;
@@ -3435,7 +3555,7 @@ function ifErrorThen( test )
 
     var con = new _.Consequence();
     con.give( testMsg );
-    con.ifErrorThen( ( err ) => test.identical( 0, 1 ) );
+    con.ifErrorThen( ( err ) => { test.identical( 0, 1 ); return null; } );
     con.got( ( err, got ) => test.identical( got, testMsg ));
 
     test.identical( con.competitorsEarlyGet().length, 0 );
@@ -3450,8 +3570,8 @@ function ifErrorThen( test )
 
     var con = new _.Consequence();
     con.error( testMsg );
-    con.ifErrorThen( ( err ) => { test.identical( err,testMsg ) });
-    con.got( ( err, got ) => test.identical( got, undefined ) );
+    con.ifErrorThen( ( err ) => { test.identical( err,testMsg ); return null; });
+    con.got( ( err, got ) => test.identical( got, null ) );
 
     test.identical( con.competitorsEarlyGet().length, 0 );
     test.identical( con.resourcesGet().length, 0 );
@@ -3468,8 +3588,8 @@ function ifErrorThen( test )
     con.error( testMsg + 1 );
     con.error( testMsg + 2 );
 
-    con.ifErrorThen( ( err ) => { test.identical( 0, 1 ) });
-    con.ifErrorThen( ( err ) => { test.identical( 0, 1 ) });
+    con.ifErrorThen( ( err ) => { test.identical( 0, 1 ); return null; });
+    con.ifErrorThen( ( err ) => { test.identical( 0, 1 ); return null; });
     con.got( ( err, got ) => test.identical( got, testMsg ) );
 
     test.identical( con.resourcesGet().length, 2 );
@@ -3489,13 +3609,13 @@ function ifErrorThen( test )
     con.error( testMsg + 2 );
     con.give( testMsg );
 
-    con.ifErrorThen( ( err ) => { test.identical( err, testMsg + 1 ) });
-    con.ifErrorThen( ( err ) => { test.identical( err, testMsg + 2 ) });
+    con.ifErrorThen( ( err ) => { test.identical( err, testMsg + 1 ); return null; });
+    con.ifErrorThen( ( err ) => { test.identical( err, testMsg + 2 ); return null; });
     con.got( ( err, got ) => test.identical( got, testMsg ) );
 
     test.identical( con.resourcesGet().length, 2 );
-    test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : undefined } );
-    test.identical( con.resourcesGet()[ 1 ], { error : undefined, argument : undefined } );
+    test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : null } );
+    test.identical( con.resourcesGet()[ 1 ], { error : undefined, argument : null } );
     test.identical( con.competitorsEarlyGet().length, 0 );
   })
 
@@ -3514,6 +3634,7 @@ function ifErrorThen( test )
     {
       con.ifErrorThen();
     });
+    return null;
   })
 
   return testCon;
@@ -3702,11 +3823,12 @@ function ifNoErrorThen( test )
 
     var con = new _.Consequence();
     con.give( testMsg );
-    con.ifNoErrorThen( ( got ) => { test.identical( got, testMsg ) } );
-    con.got( ( err, got ) => test.identical( got, undefined ) );
+    con.ifNoErrorThen( ( got ) => { test.identical( got, testMsg ); return null; } );
+    con.got( ( err, got ) => test.identical( got, null ) );
 
     test.identical( con.competitorsEarlyGet().length, 0 );
     test.identical( con.resourcesGet().length, 0 );
+    return null;
   })
 
   /* */
@@ -3717,11 +3839,12 @@ function ifNoErrorThen( test )
 
     var con = new _.Consequence();
     con.error( testMsg );
-    con.ifNoErrorThen( ( got ) => { test.identical( 0, 1 ) });
+    con.ifNoErrorThen( ( got ) => { test.identical( 0, 1 ); return null; });
     con.got( ( err, got ) => test.identical( err, testMsg ) );
 
     test.identical( con.competitorsEarlyGet().length, 0 );
     test.identical( con.resourcesGet().length, 0 );
+    return null;
   })
 
   /* */
@@ -3735,14 +3858,15 @@ function ifNoErrorThen( test )
     con.give( testMsg );
     con.error( testMsg );
 
-    con.ifNoErrorThen( ( got ) => { test.identical( got, testMsg ) });
-    con.ifNoErrorThen( ( got ) => { test.identical( got, testMsg ) });
+    con.ifNoErrorThen( ( got ) => { test.identical( got, testMsg ); return null; });
+    con.ifNoErrorThen( ( got ) => { test.identical( got, testMsg ); return null; });
 
     test.identical( con.resourcesGet().length, 3 );
     test.identical( con.resourcesGet()[ 0 ].error, testMsg );
-    test.identical( con.resourcesGet()[ 1 ], { error : undefined, argument : undefined } );
-    test.identical( con.resourcesGet()[ 2 ], { error : undefined, argument : undefined } );
+    test.identical( con.resourcesGet()[ 1 ], { error : undefined, argument : null } );
+    test.identical( con.resourcesGet()[ 2 ], { error : undefined, argument : null } );
     test.identical( con.competitorsEarlyGet().length, 0 );
+    return null;
   })
 
   /* */
@@ -3756,14 +3880,15 @@ function ifNoErrorThen( test )
     con.give( testMsg );
     con.give( testMsg );
 
-    con.ifNoErrorThen( ( got ) => { test.identical( 0, 1 ) });
-    con.ifNoErrorThen( ( got ) => { test.identical( 0, 1 ) });
+    con.ifNoErrorThen( ( got ) => { test.identical( 0, 1 ); return null; });
+    con.ifNoErrorThen( ( got ) => { test.identical( 0, 1 ); return null; });
 
     test.identical( con.resourcesGet().length, 3 );
     test.identical( con.resourcesGet()[ 0 ].error, testMsg );
     test.identical( con.resourcesGet()[ 1 ], { error : undefined, argument : testMsg } );
     test.identical( con.resourcesGet()[ 2 ], { error : undefined, argument : testMsg } );
     test.identical( con.competitorsEarlyGet().length, 0 );
+    return null;
   })
 
   /* */
@@ -3776,13 +3901,14 @@ function ifNoErrorThen( test )
     con.give( testMsg );
     con.give( testMsg );
 
-    con.ifNoErrorThen( ( got ) => { test.identical( got, testMsg ) });
-    con.ifNoErrorThen( ( got ) => { test.identical( got, testMsg ) });
+    con.ifNoErrorThen( ( got ) => { test.identical( got, testMsg ); return null; });
+    con.ifNoErrorThen( ( got ) => { test.identical( got, testMsg ); return null; });
 
     test.identical( con.resourcesGet().length, 2 );
-    test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : undefined } );
-    test.identical( con.resourcesGet()[ 1 ], { error : undefined, argument : undefined } );
+    test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : null } );
+    test.identical( con.resourcesGet()[ 1 ], { error : undefined, argument : null } );
     test.identical( con.competitorsEarlyGet().length, 0 );
+    return null;
   })
 
    /* */
@@ -3800,6 +3926,7 @@ function ifNoErrorThen( test )
     {
       con.ifNoErrorThen();
     });
+    return null;
   })
 
   return testCon;
@@ -3987,8 +4114,8 @@ function timeOutThen( test )
 
     var con = new _.Consequence();
     con.give( testMsg );
-    con.timeOutThen( 0, ( err, got ) => { test.identical( got, testMsg ) } );
-    con.got( ( err, got ) => test.identical( got, undefined ) );
+    con.timeOutThen( 0, ( err, got ) => { test.identical( got, testMsg ); return null; } );
+    con.got( ( err, got ) => test.identical( got, null ) );
 
     return _.timeOut( 0, function()
     {
@@ -4005,8 +4132,8 @@ function timeOutThen( test )
 
     var con = new _.Consequence();
     con.error( testMsg );
-    con.timeOutThen( 0, ( err, got ) => { test.identical( err, testMsg ) } );
-    con.got( ( err, got ) => test.identical( got, undefined ) );
+    con.timeOutThen( 0, ( err, got ) => { test.identical( err, testMsg ); return null; } );
+    con.got( ( err, got ) => test.identical( got, null ) );
 
     return _.timeOut( 0, function()
     {
@@ -4025,16 +4152,17 @@ function timeOutThen( test )
     con.give( testMsg );
     con.give( testMsg + 1 );
     con.give( testMsg + 2 );
-    con.timeOutThen( delay, ( err, got ) => { test.identical( got, testMsg ) } );
-    con.timeOutThen( ++delay, ( err, got ) => { test.identical( got, testMsg + 1 ) } );
-    con.timeOutThen( ++delay, ( err, got ) => { test.identical( got, testMsg + 2 ) } );
+    con.timeOutThen( delay, ( err, got ) => { test.identical( got, testMsg ); return null; } );
+    con.timeOutThen( ++delay, ( err, got ) => { test.identical( got, testMsg + 1 ); return null; } );
+    con.timeOutThen( ++delay, ( err, got ) => { test.identical( got, testMsg + 2 ); return null; } );
 
     return _.timeOut( delay, function()
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 3 );
       con.resourcesGet()
-      .every( ( msg ) => test.identical( msg, { error : undefined, argument : undefined } ) )
+      .every( ( msg ) => test.identical( msg, { error : undefined, argument : null } ) )
+      return null;
     })
   })
 
@@ -4052,6 +4180,7 @@ function timeOutThen( test )
     {
       con.timeOutThen();
     });
+    return null;
   })
 
   return testCon;
@@ -4079,8 +4208,8 @@ function _and( test )
 
     mainCon._and( [ con1, con2 ], true );
 
-    con1.got( ( err, got ) => test.identical( got, delay ) );
-    con2.got( ( err, got ) => test.identical( got, delay * 2 ) );
+    con1.got( ( err, got ) => { test.identical( got, delay ); return null; });
+    con2.got( ( err, got ) => { test.identical( got, delay * 2 ); return null; });
 
     mainCon.doThen( function( err, got )
     {
@@ -4090,10 +4219,11 @@ function _and( test )
       test.identical( con2.resourcesGet().length, 0 );
       test.identical( con2.competitorsEarlyGet().length, 0 );
       test.identical( got, [ delay, delay * 2, testMsg ] );
+      return null;
     });
 
-    _.timeOut( delay, () => { con1.give( delay ) } );
-    _.timeOut( delay * 2, () => { con2.give( delay * 2 ) } );
+    _.timeOut( delay, () => { con1.give( delay );return null; } );
+    _.timeOut( delay * 2, () => { con2.give( delay * 2 );return null; } );
 
     return mainCon;
   })
@@ -4112,8 +4242,8 @@ function _and( test )
 
     mainCon._and( [ con1, con2 ], false );
 
-    con1.got( ( err, got ) => test.identical( 0, 1 ) );
-    con2.got( ( err, got ) => test.identical( 0, 1 ) );
+    con1.got( ( err, got ) => { test.identical( 0, 1 ); return null; });
+    con2.got( ( err, got ) => { test.identical( 0, 1 ); return null; });
 
     mainCon.doThen( function( err, got )
     {
@@ -4123,10 +4253,11 @@ function _and( test )
       test.identical( con2.resourcesGet().length, 0 );
       test.identical( con2.competitorsEarlyGet().length, 1 );
       test.identical( got, [ delay, delay * 2, testMsg ] );
+      return null;
     });
 
-    _.timeOut( delay, () => { con1.give( delay ) } );
-    _.timeOut( delay * 2, () => { con2.give( delay * 2 ) } );
+    _.timeOut( delay, () => { con1.give( delay ); return null; });
+    _.timeOut( delay * 2, () => { con2.give( delay * 2 ); return null; });
 
     return mainCon;
   })
@@ -4642,12 +4773,13 @@ function first( test )
   {
     test.case = 'simplest, empty routine';
     var con = new _.Consequence();
-    con.first( () => {} );
+    con.first( () => null );
     con.give( testMsg );
     con.doThen( function( err, got )
     {
-      test.identical( got, undefined );
+      test.identical( got, null );
       test.identical( con.resourcesGet(), [{ error : undefined, argument : testMsg }] );
+      return null;
     })
     return con;
   })
@@ -4664,6 +4796,7 @@ function first( test )
     {
       test.identical( got, testMsg );
       test.identical( con.resourcesGet(), [{ error : undefined, argument : testMsg + 2 }] );
+      return null;
     })
     return con;
   })
@@ -4680,6 +4813,7 @@ function first( test )
       test.is( _.errIs( err ) );
       test.identical( got, undefined );
       test.identical( con.resourcesGet(),[] );
+      return null;
     })
     return con;
   })
@@ -4696,6 +4830,7 @@ function first( test )
       test.identical( err, undefined );
       test.identical( got, testMsg );
       test.identical( con.resourcesGet(),[] );
+      return null;
     })
     return con;
   })
@@ -4712,6 +4847,7 @@ function first( test )
       test.identical( err, testMsg );
       test.identical( got, undefined );
       test.identical( con.resourcesGet(),[] );
+      return null;
     })
     return con;
   })
@@ -4723,7 +4859,7 @@ function first( test )
     test.case = 'routine returns consequence that gives resource with timeout';
     var con = new _.Consequence();
     var timeBefore = _.timeNow();
-    con.first( () => _.timeOut( 250, () => {} ));
+    con.first( () => _.timeOut( 250, () => null ));
     con.doThen( function( err, got )
     {
       var delay = _.timeNow() - timeBefore;
@@ -4731,8 +4867,9 @@ function first( test )
       test.ge( delay, 250 - c.timeAccuracy );
       test.case = description;
       test.identical( err, undefined );
-      test.identical( got, undefined );
+      test.identical( got, null );
       test.identical( con.resourcesGet(),[] );
+      return null;
     })
     return con;
   })
@@ -4751,6 +4888,7 @@ function first( test )
       test.identical( got, testMsg );
       test.identical( con.resourcesGet(),[] );
       test.identical( con2.resourcesGet(), [{ error : undefined, argument : testMsg }] );
+      return null;
     })
     return con;
   })
@@ -4774,6 +4912,7 @@ function first( test )
       test.identical( got, testMsg );
       test.identical( con.resourcesGet(),[] );
       test.identical( con2.resourcesGet(),[{ error : undefined, argument : testMsg }] );
+      return null;
     })
     return con;
   })
@@ -4786,18 +4925,20 @@ function first( test )
   {
     test.case = 'simplest, empty routine';
     var con = new _.Consequence();
-    con.first( () => {} );
+    con.first( () => null );
     con.give( testMsg );
     con.got( function( err, got )
     {
-      test.identical( got, undefined );
+      test.identical( got, null );
       test.identical( con.resourcesGet(), [{ error : undefined, argument : testMsg }] );
+      return null;
     })
 
     return _.timeOut( 1, function()
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 1 );
+      return null;
     })
   })
 
@@ -4818,6 +4959,7 @@ function first( test )
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet(), [{ error : undefined, argument : testMsg + 2 }] );
+      return null;
     })
   })
 
@@ -4839,6 +4981,7 @@ function first( test )
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
+      return null;
     })
   })
 
@@ -4859,6 +5002,7 @@ function first( test )
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
+      return null;
     })
   })
 
@@ -4879,6 +5023,7 @@ function first( test )
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
+      return null;
     })
   })
 
@@ -4889,7 +5034,7 @@ function first( test )
     test.case = 'routine returns consequence that gives resource with timeout';
     var con = new _.Consequence();
     var timeBefore = _.timeNow();
-    con.first( () => _.timeOut( 250, () => {} ));
+    con.first( () => _.timeOut( 250, () => null ));
     con.got( function( err, got )
     {
       var delay = _.timeNow() - timeBefore;
@@ -4897,13 +5042,14 @@ function first( test )
       test.ge( delay, 250 - c.timeAccuracy );
       test.case = description;
       test.identical( err, undefined );
-      test.identical( got, undefined );
+      test.identical( got, null );
       test.identical( con.resourcesGet(),[] );
     })
     return _.timeOut( 251, function()
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
+      return null;
     })
   })
 
@@ -4926,6 +5072,7 @@ function first( test )
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
+      return null;
     })
   })
 
@@ -4953,6 +5100,7 @@ function first( test )
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
+      return null;
     })
   })
 
@@ -4966,9 +5114,9 @@ function first( test )
     var con = new _.Consequence();
     con.got( function( err, got )
     {
-      test.identical( got, undefined );
+      test.identical( got, null );
     });
-    con.first( () => {} );
+    con.first( () => null );
 
     con.give( testMsg );
 
@@ -4979,6 +5127,7 @@ function first( test )
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet(), [{ error : undefined, argument : testMsg }] );
+      return null;
     })
   })
 
@@ -5003,6 +5152,7 @@ function first( test )
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet(), [{ error : undefined, argument : testMsg + 2 }] );
+      return null;
     })
   })
 
@@ -5029,6 +5179,7 @@ function first( test )
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
+      return null;
     })
   })
 
@@ -5051,11 +5202,13 @@ function first( test )
         test.identical( err, undefined );
         test.identical( got, testMsg );
       })
+      return null;
     })
     .doThen( function()
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
+      return null;
     })
   })
 
@@ -5078,11 +5231,13 @@ function first( test )
         test.identical( err, testMsg );
         test.identical( got, undefined );
       })
+      return null;
     })
     .doThen( function()
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
+      return null;
     })
   })
 
@@ -5093,7 +5248,7 @@ function first( test )
     test.case = 'routine returns consequence that gives resource with timeout';
     var con = new _.Consequence();
     var timeBefore = _.timeNow();
-    con.first( () => _.timeOut( 250, () => {} ));
+    con.first( () => _.timeOut( 250, () => null ));
 
     test.identical( con.resourcesGet().length, 0 );
 
@@ -5108,13 +5263,15 @@ function first( test )
         test.ge( delay, 250 - c.timeAccuracy );
         test.case = description;
         test.identical( err, undefined );
-        test.identical( got, undefined );
+        test.identical( got, null );
       })
+      return null;
     })
     .doThen( function()
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
+      return null;
     })
   })
 
@@ -5136,12 +5293,14 @@ function first( test )
         test.identical( err, undefined );
         test.identical( got, testMsg );
       })
+      return null;
     })
     .doThen( function()
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
       test.identical( con2.resourcesGet().length, 1 );
+      return null;
     })
   })
 
@@ -5168,18 +5327,24 @@ function first( test )
         test.identical( err, undefined );
         test.identical( got, testMsg );
       })
+      return null;
     })
     .doThen( function()
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
       test.identical( con2.resourcesGet().length, 1 );
+      return null;
     })
   })
 
   /* Async taking, Async giving */
 
-  testCon.doThen( () => _.Consequence.asyncModeSet([ 1, 1 ]) )
+  testCon.doThen( () =>
+  {
+    _.Consequence.asyncModeSet([ 1, 1 ]);
+    return null;
+  })
 
    .doThen( function()
   {
@@ -5187,9 +5352,9 @@ function first( test )
     var con = new _.Consequence();
     con.got( function( err, got )
     {
-      test.identical( got, undefined );
+      test.identical( got, null );
     });
-    con.first( () => {} );
+    con.first( () => null );
     con.give( testMsg );
 
     test.identical( con.resourcesGet().length, 2 );
@@ -5199,6 +5364,7 @@ function first( test )
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet(), [{ error : undefined, argument : testMsg }] );
+      return null;
     })
   })
 
@@ -5223,6 +5389,7 @@ function first( test )
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet(), [{ error : undefined, argument : testMsg + 2 }] );
+      return null;
     })
   })
 
@@ -5245,6 +5412,7 @@ function first( test )
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
+      return null;
     })
   })
 
@@ -5266,6 +5434,7 @@ function first( test )
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
+      return null;
     })
   })
 
@@ -5287,6 +5456,7 @@ function first( test )
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
+      return null;
     })
   })
 
@@ -5297,7 +5467,7 @@ function first( test )
     test.case = 'routine returns consequence that gives resource with timeout';
     var con = new _.Consequence();
     var timeBefore = _.timeNow();
-    con.first( () => _.timeOut( 250, () => {} ));
+    con.first( () => _.timeOut( 250, () => null ));
     con.got( function( err, got )
     {
       var delay = _.timeNow() - timeBefore;
@@ -5305,7 +5475,7 @@ function first( test )
       test.ge( delay, 250 - c.timeAccuracy );
       test.case = description;
       test.identical( err, undefined );
-      test.identical( got, undefined );
+      test.identical( got, null );
     })
     test.identical( con.resourcesGet().length, 0 );
 
@@ -5313,6 +5483,7 @@ function first( test )
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
+      return null;
     })
   })
 
@@ -5334,6 +5505,7 @@ function first( test )
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
       test.identical( con2.resourcesGet().length, 1 );
+      return null;
     })
   })
 
@@ -5360,12 +5532,17 @@ function first( test )
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 0 );
       test.identical( con2.resourcesGet().length, 1 );
+      return null;
     })
   });
 
   /* */
 
-  testCon.doThen( () => _.Consequence.asyncModeSet( amode ) );
+  testCon.doThen( () =>
+  {
+    _.Consequence.asyncModeSet( amode );
+    return null;
+  });
 
   return testCon;
 }
@@ -5426,6 +5603,7 @@ function from( test )
     {
       test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
       test.identical( con.competitorsEarlyGet(), [] );
+      return null;
     })
   })
 
@@ -5440,6 +5618,7 @@ function from( test )
     {
       test.identical( con.resourcesGet(), [ { error : testMsg, argument : undefined } ] );
       test.identical( con.competitorsEarlyGet(), [] );
+      return null;
     })
   })
 
@@ -5449,6 +5628,7 @@ function from( test )
   {
     wConsequence.prototype.asyncTaking = 0;
     wConsequence.prototype.asyncGiving = 1;
+    return null;
   })
 
   /**/
@@ -5463,6 +5643,7 @@ function from( test )
     {
       test.identical( con.resourcesGet(), [] );
       test.identical( con.competitorsEarlyGet(), [] );
+      return null;
     })
 
     return con;
@@ -5481,6 +5662,7 @@ function from( test )
     {
       test.identical( con.resourcesGet(), [] );
       test.identical( con.competitorsEarlyGet(), [] );
+      return null;
     })
 
     return con;
@@ -5500,6 +5682,7 @@ function from( test )
     {
       test.identical( con.resourcesGet(), [] );
       test.identical( con.competitorsEarlyGet(), [] );
+      return null;
     })
 
     return con;
@@ -5518,6 +5701,7 @@ function from( test )
     {
       test.identical( con.resourcesGet().length, 0 )
       test.identical( con.competitorsEarlyGet().length, 0 )
+      return null;
     })
   })
 
@@ -5534,6 +5718,7 @@ function from( test )
     {
       test.identical( con.resourcesGet().length, 0 )
       test.identical( con.competitorsEarlyGet().length, 0 )
+      return null;
     })
   })
 
@@ -5543,6 +5728,7 @@ function from( test )
   {
     wConsequence.prototype.asyncTaking = 1;
     wConsequence.prototype.asyncGiving = 0;
+    return null;
   })
 
   /**/
@@ -5558,6 +5744,7 @@ function from( test )
     {
       test.identical( con.resourcesGet(), [] );
       test.identical( con.competitorsEarlyGet(), [] );
+      return null;
     })
 
     return con;
@@ -5577,6 +5764,7 @@ function from( test )
     {
       test.identical( con.resourcesGet(), [] );
       test.identical( con.competitorsEarlyGet(), [] );
+      return null;
     })
 
     return con;
@@ -5597,6 +5785,7 @@ function from( test )
     {
       test.identical( con.resourcesGet(), [] );
       test.identical( con.competitorsEarlyGet(), [] );
+      return null;
     })
 
     return con;
@@ -5616,6 +5805,7 @@ function from( test )
     {
       test.identical( con.resourcesGet().length, 0 )
       test.identical( con.competitorsEarlyGet().length, 0 )
+      return null;
     })
   })
 
@@ -5633,6 +5823,7 @@ function from( test )
     {
       test.identical( con.resourcesGet().length, 0 )
       test.identical( con.competitorsEarlyGet().length, 0 )
+      return null;
     })
   })
 
@@ -5642,6 +5833,7 @@ function from( test )
   {
     wConsequence.prototype.asyncTaking = 1;
     wConsequence.prototype.asyncGiving = 1;
+    return null;
   })
 
   /**/
@@ -5657,6 +5849,7 @@ function from( test )
     {
       test.identical( con.resourcesGet(), [] );
       test.identical( con.competitorsEarlyGet(), [] );
+      return null;
     })
 
     return con;
@@ -5676,6 +5869,7 @@ function from( test )
     {
       test.identical( con.resourcesGet(), [] );
       test.identical( con.competitorsEarlyGet(), [] );
+      return null;
     })
 
     return con;
@@ -5696,6 +5890,7 @@ function from( test )
     {
       test.identical( con.resourcesGet(), [] );
       test.identical( con.competitorsEarlyGet(), [] );
+      return null;
     })
 
     return con;
@@ -5715,6 +5910,7 @@ function from( test )
     {
       test.identical( con.resourcesGet().length, 0 )
       test.identical( con.competitorsEarlyGet().length, 0 )
+      return null;
     })
   })
 
@@ -5732,6 +5928,7 @@ function from( test )
     {
       test.identical( con.resourcesGet().length, 0 )
       test.identical( con.competitorsEarlyGet().length, 0 )
+      return null;
     })
   })
 
@@ -5741,6 +5938,7 @@ function from( test )
   {
     wConsequence.prototype.asyncTaking = 0;
     wConsequence.prototype.asyncGiving = 0;
+    return null;
   })
   .doThen( function()
   {
@@ -5754,6 +5952,7 @@ function from( test )
     {
       test.identical( con.resourcesGet().length, 0 )
       test.identical( con.competitorsEarlyGet().length, 0 )
+      return null;
     })
   })
 
@@ -5774,6 +5973,7 @@ function from( test )
     {
       test.identical( con.resourcesGet().length, 0 )
       test.identical( con.competitorsEarlyGet().length, 0 )
+      return null;
     })
   })
 
@@ -5787,6 +5987,7 @@ function from( test )
     con.got( ( err, got ) => test.identical( got, testMsg ) );
     test.identical( con.competitorsEarlyGet().length, 0 );
     test.identical( con.resourcesGet().length, 0 );
+    return null;
   })
 
   /**/
@@ -5803,6 +6004,7 @@ function from( test )
     {
       test.identical( con.resourcesGet().length, 0 )
       test.identical( con.competitorsEarlyGet().length, 0 )
+      return null;
     })
   })
 
@@ -5812,6 +6014,7 @@ function from( test )
   {
     wConsequence.prototype.asyncTaking = 0;
     wConsequence.prototype.asyncGiving = 0;
+    return null;
   })
 
   return testCon;
