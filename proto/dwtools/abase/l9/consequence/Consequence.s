@@ -1608,7 +1608,7 @@ first.having =
 
 //
 
-function _first( src,stack )
+function _first( src, stack )
 {
   let self = this;
 
@@ -1625,6 +1625,7 @@ function _first( src,stack )
     try
     {
       result = src();
+      _.assert( result !== undefined, 'Competitor for consequence.first should return something, not undefined' );
     }
     catch( err )
     {
@@ -2059,6 +2060,7 @@ function __handleError( err, competitor )
         _.errLog( err );
         debugger;
       }
+      return null;
     });
   }
 
