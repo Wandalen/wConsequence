@@ -124,7 +124,7 @@ function init( o )
   {
     self.tag = self.Composes.tag;
     self.debug = self.Composes.debug;
-    self.limitNumberOfMessages = self.Composes.limitNumberOfMessages;
+    self.resourceLimit = self.Composes.resourceLimit;
     self.dependsOf = [];
   }
 
@@ -136,7 +136,8 @@ function init( o )
     {
       delete o.tag;
       delete o.debug;
-      delete o.limitNumberOfMessages;
+      delete o.resourceLimit;
+      delete o.dependsOf;
     }
     self.copy( o );
   }
@@ -425,6 +426,8 @@ lateThen.having =
 function promiseThen()
 {
   let self = this;
+
+  _.assert( arguments.length === 0 );
 
   return new Promise( function( resolve, reject )
   {
@@ -1099,7 +1102,7 @@ ifErrorThenLogThen.having =
  * @memberof wConsequence#
  */
 
-function timeOutThen( time,competitor )
+function timeOutThen( time, competitor )
 {
   let self = this;
 
@@ -1385,7 +1388,7 @@ function _and( srcs,thenning )
     for( let s = 0 ; s < srcs.length-1 ; s++ )
     {
       let src = srcs[ s ];
-      _.assert( _.consequenceIs( src ) || _.routineIs( src ) || src === null,'and expects consequence, routine or null' );
+      _.assert( _.consequenceIs( src ) || _.routineIs( src ) || src === null, () => 'Consequence.and expects consequence, routine or null, but got ' + _.strTypeOf( src ) );
       if( !_.consequenceIs( src ) )
       continue;
       src.assertNoDeadLockWith( self );
@@ -1477,7 +1480,7 @@ function eitherThenSplit( srcs )
   srcs = srcs.slice();
   srcs.unshift( self );
 
-  let con = new Self().give();
+  let con = new Self().give( null );
   con.eitherThen( srcs );
   return con;
 }
@@ -1740,11 +1743,11 @@ function seal( context, method )
 
 //
 
-function safeCallback()
+function tolerantCallback()
 {
   let self = this;
   _.assert( arguments.length === 0 );
-  return function safeCallback( err, arg )
+  return function tolerantCallback( err, arg )
   {
     if( !err )
     err = undefined;
@@ -1934,17 +1937,20 @@ function __giveAct( error, argument )
     argument : argument,
   }
 
-
   if( self.diagnostics )
   if( Config.debug )
   if( self.debug )
   debugger;
 
+  _.assert( !!error || argument !== undefined, 'Argument of give should be something, not undefined' );
+
   if( Config.debug )
   {
+    // if( self.tag === 'willFilesOpenReady' )
+    // debugger;
 
     _.assert( !_.consequenceIs( argument ),'not tested' );
-    _.assert( !self.limitNumberOfMessages || self._resource.length < self.limitNumberOfMessages );
+    _.assert( !self.resourceLimit || self._resource.length < self.resourceLimit, () => 'Resource limit' + ( self.tag ? ' of ' + self.tag + ' ' : ' ' ) + 'set to ' + self.resourceLimit + ', but got more resources' );
     let msg = '{-error-} and {-argument-} channels should not be in use simultaneously\n' +
       '{-error-} or {-argument-} should be undefined, but currently ' +
       '{-error-} is ' + _.strTypeOf( error ) +
@@ -2040,18 +2046,18 @@ function __handleError( err, competitor )
 
   if( err.attentionRequested )
   {
-    debugger;
 
-    if( Config.debug )
-    _global.logger.error( 'Consequence caught error, details come later' );
+    // if( Config.debug )
+    // _global.logger.error( ' Consequence caught error, details come later' );
 
     _.timeOut( 100, function _unhandledError()
     {
       if( !_.errIsAttended( err ) )
       {
-        debugger;
         _global.logger.error( 'Unhandled error caught by Consequence' );
+        debugger;
         _.errLog( err );
+        debugger;
       }
     });
   }
@@ -2131,6 +2137,43 @@ function __handleGotAct()
 
   let resource = self._resource[ 0 ];
 
+  /* ordinary */
+
+  if( self._competitorEarly.length > 0 )
+  {
+    let competitor = self._competitorEarly.shift();
+    __giveTo( competitor,1 );
+  }
+  else if( self._competitorLate.length > 0 )
+  {
+    let competitor = self._competitorLate.shift();
+    __giveTo( competitor,1 );
+  }
+
+  /* persistent */
+
+  // if( 0 )
+  // if( !competitor || ( competitor && !competitor.tapping ) )
+  // {
+  //
+  //   for( let i = 0 ; i < self._competitorPersistent.length ; i++ )
+  //   {
+  //     let pTaker = self._competitorPersistent[ i ];
+  //     __giveTo( pTaker,0 );
+  //   }
+  //
+  //   if( !spliced && self._competitorPersistent.length )
+  //   self._resource.shift();
+  //
+  // }
+
+  /* next resource */
+
+  if( self._resource.length )
+  self.__handleGot();
+
+  return result;
+
   /* give resource to competitor consequence */
 
   function __giveToConsequence( competitor,ordinary )
@@ -2205,13 +2248,19 @@ function __handleGotAct()
     catch( err )
     {
       errThrowen = 1;
-      result = self.__handleError( err,competitor );
+      result = self.__handleError( err, competitor );
     }
 
     /* thenning */
 
     if( competitor.thenning || errThrowen )
     {
+
+      if( result === undefined )
+      {
+        debugger;
+        result = self.__handleError( _.err( 'Thening competitor of consequence should return something, not undefined' ), competitor )
+      }
 
       if( _.consequenceIs( result ) )
       result.doThen( self );
@@ -2238,42 +2287,6 @@ function __handleGotAct()
 
   }
 
-  /* ordinary */
-
-  if( self._competitorEarly.length > 0 )
-  {
-    let competitor = self._competitorEarly.shift();
-    __giveTo( competitor,1 );
-  }
-  else if( self._competitorLate.length > 0 )
-  {
-    let competitor = self._competitorLate.shift();
-    __giveTo( competitor,1 );
-  }
-
-  /* persistent */
-
-  // if( 0 )
-  // if( !competitor || ( competitor && !competitor.tapping ) )
-  // {
-  //
-  //   for( let i = 0 ; i < self._competitorPersistent.length ; i++ )
-  //   {
-  //     let pTaker = self._competitorPersistent[ i ];
-  //     __giveTo( pTaker,0 );
-  //   }
-  //
-  //   if( !spliced && self._competitorPersistent.length )
-  //   self._resource.shift();
-  //
-  // }
-
-  /* next resource */
-
-  if( self._resource.length )
-  self.__handleGot();
-
-  return result;
 }
 
 //
@@ -2953,6 +2966,16 @@ function asyncModeGet( mode )
   return [ constr.asyncTaking, constr.asyncGiving ];
 }
 
+//
+
+function nickNameGet()
+{
+  let result = this.shortName;
+  if( this.tag )
+  result = result + ' ' + this.tag;
+  return '{- ' + result + ' -}';
+}
+
 // --
 // static
 // --
@@ -3451,7 +3474,7 @@ let ComposesDebug =
   tag : '',
   dependsOf : [],
   debug : 0,
-  limitNumberOfMessages : 0,
+  resourceLimit : 0,
 }
 
 if( Config.debug )
@@ -3459,6 +3482,14 @@ _.mapExtend( Composes,ComposesDebug );
 
 let Restricts =
 {
+}
+
+let Medials =
+{
+  tag : '',
+  dependsOf : [],
+  debug : 0,
+  resourceLimit : 0,
 }
 
 let Statics =
@@ -3503,6 +3534,7 @@ let Forbids =
 let Accessors =
 {
   competitorNext : 'competitorNext',
+  // nickName : { readOnly : 1, combining : 'rewrite' },
 }
 
 // --
@@ -3523,6 +3555,7 @@ let Extend =
   promiseGot : promiseGot,
   done : got,
 
+  then : doThen,
   doThen : doThen,
   _doThen : _doThen,
   lateThen : lateThen,
@@ -3566,7 +3599,7 @@ let Extend =
   _join : _join,
   join : join,
   seal : seal,
-  safeCallback : safeCallback,
+  tolerantCallback : tolerantCallback,
 
   // resource
 
@@ -3610,11 +3643,13 @@ let Extend =
 
   asyncModeSet : asyncModeSet,
   asyncModeGet : asyncModeGet,
+  nickNameGet : nickNameGet,
 
   // relations
 
   Composes : Composes,
   Restricts : Restricts,
+  Medials : Medials,
 
 }
 
@@ -3685,9 +3720,9 @@ _realGlobal_[ Self.name ] = Self;
 // export
 // --
 
-if( typeof module !== 'undefined' )
-if( _global_.WTOOLS_PRIVATE )
-{ /* delete require.cache[ module.id ]; */ }
+// if( typeof module !== 'undefined' )
+// if( _global_.WTOOLS_PRIVATE )
+// { /* delete require.cache[ module.id ]; */ }
 
 if( typeof module !== 'undefined' && module !== null )
 module[ 'exports' ] = Self;

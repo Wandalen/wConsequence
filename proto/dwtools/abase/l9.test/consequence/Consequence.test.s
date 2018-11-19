@@ -67,7 +67,7 @@ function simple( test )
 function andGot( test )
 {
   var testMsg = 'msg';
-  var testCon = new _.Consequence().give()
+  var testCon = new _.Consequence().give( null )
 
    /* */
 
@@ -235,7 +235,7 @@ function andGot( test )
 
     var srcs = [ con1, con2  ];
 
-    con1.give();
+    con1.give( null );
     con1.doThen( () => con2 );
     con1.doThen( () => 'con1' );
 
@@ -311,7 +311,7 @@ function andGot( test )
     test.case = 'passed consequence dont give any resource';
     var mainCon = new _.Consequence();
     var con = new _.Consequence();
-    mainCon.give();
+    mainCon.give( null );
     mainCon.andGot( con );
     mainCon.doThen( () => test.identical( 0, 1 ) );
     test.identical( mainCon.resourcesGet().length, 0 );
@@ -326,7 +326,7 @@ function andGot( test )
     test.case = 'returned consequence dont give any resource';
     var mainCon = new _.Consequence();
     var con = new _.Consequence();
-    mainCon.give();
+    mainCon.give( null );
     mainCon.andGot( () => con );
     mainCon.doThen( () => test.identical( 0, 1 ) );
     test.identical( mainCon.resourcesGet().length, 0 );
@@ -376,7 +376,7 @@ function andGot( test )
 function andThen( test )
 {
   var testMsg = 'msg';
-  var testCon = new _.Consequence().give()
+  var testCon = new _.Consequence().give( null )
 
   /* */
 
@@ -548,7 +548,7 @@ function andThen( test )
 
     var srcs = [ con1, con2  ];
 
-    con1.give();
+    con1.give( null );
     con1.doThen( () => con2 );
     con1.doThen( () => 'con1' );
 
@@ -626,7 +626,7 @@ function andThen( test )
     test.case = 'passed consequence dont give any resource';
     var mainCon = new _.Consequence();
     var con = new _.Consequence();
-    mainCon.give();
+    mainCon.give( null );
     mainCon.andThen( con );
     mainCon.doThen( () => test.identical( 0, 1 ) );
     test.identical( mainCon.resourcesGet().length, 0 );
@@ -641,7 +641,7 @@ function andThen( test )
     test.case = 'returned consequence dont give any resource';
     var mainCon = new _.Consequence();
     var con = new _.Consequence();
-    mainCon.give();
+    mainCon.give( null );
     mainCon.andThen( () => con );
     mainCon.doThen( () => test.identical( 0, 1 ) );
     test.identical( mainCon.resourcesGet().length, 0 );
@@ -695,7 +695,7 @@ function ordinarMessage( test )
 
   test.case = 'give single resource';
 
-  var testCon = new _.Consequence().give()
+  var testCon = new _.Consequence().give( null )
 
    /* asyncTaking : 0, asyncGiving : 0 */
 
@@ -1040,7 +1040,7 @@ function ordinarMessage( test )
 function promiseGot( test )
 {
   var testMsg = 'testMsg';
-  var testCon = new _.Consequence().give()
+  var testCon = new _.Consequence().give( null )
 
   /* */
 
@@ -1372,7 +1372,7 @@ function doThen( test )
   var c = this;
   var amode = _.Consequence.asyncModeGet();
   var testMsg = 'msg';
-  var testCon = new _.Consequence().give()
+  var testCon = new _.Consequence().give( null )
 
   .doThen( function()
   {
@@ -1896,7 +1896,7 @@ function doThen( test )
   {
     var con = new _.Consequence();
     var con2 = new _.Consequence();
-    con.give();
+    con.give( null );
     con.doThen( function()
     {
       return con2.give( testMsg );
@@ -1922,7 +1922,7 @@ function doThen( test )
   {
     var con = new _.Consequence();
     var con2 = new _.Consequence();
-    con.give();
+    con.give( null );
     con.doThen( function()
     {
       return con2.give( testMsg );
@@ -1952,7 +1952,7 @@ function doThen( test )
   {
     var con = new _.Consequence();
     var con2 = new _.Consequence();
-    con.give();
+    con.give( null );
 
     test.identical( con.resourcesGet().length, 1 );
 
@@ -1987,7 +1987,7 @@ function doThen( test )
   {
     var con = new _.Consequence();
     var con2 = new _.Consequence();
-    con.give();
+    con.give( null );
     con.doThen( function()
     {
       return con2.give( testMsg );
@@ -2018,7 +2018,7 @@ function doThen( test )
 function promiseThen( test )
 {
   var testMsg = 'testMsg';
-  var testCon = new _.Consequence().give()
+  var testCon = new _.Consequence().give( null )
 
   /* */
 
@@ -2721,7 +2721,7 @@ function promiseThen( test )
 
 function split( test )
 {
-  var testCon = new _.Consequence().give()
+  var testCon = new _.Consequence().give( null )
 
   .doThen( function()
   {
@@ -3189,7 +3189,7 @@ function split( test )
 function tap( test )
 {
   var testMsg = 'msg';
-  var testCon = new _.Consequence().give()
+  var testCon = new _.Consequence().give( null )
 
   /* */
 
@@ -3425,7 +3425,7 @@ function tap( test )
 function ifErrorThen( test )
 {
   var testMsg = 'msg';
-  var testCon = new _.Consequence().give()
+  var testCon = new _.Consequence().give( null )
 
   /* common wConsequence corespondent tests. */
 
@@ -3692,7 +3692,7 @@ function ifErrorThen( test )
 function ifNoErrorThen( test )
 {
   var testMsg = 'msg';
-  var testCon = new _.Consequence().give()
+  var testCon = new _.Consequence().give( null )
 
   /* common wConsequence corespondent tests. */
 
@@ -3977,7 +3977,7 @@ function ifNoErrorThen( test )
 function timeOutThen( test )
 {
   var testMsg = 'msg';
-  var testCon = new _.Consequence().give()
+  var testCon = new _.Consequence().give( null )
 
   /* common wConsequence corespondent tests. */
 
@@ -4063,7 +4063,7 @@ function _and( test )
 {
   var testMsg = 'msg';
   var delay = 500;
-  var testCon = new _.Consequence().give()
+  var testCon = new _.Consequence().give( null )
 
   /* common wConsequence corespondent tests. */
 
@@ -4304,7 +4304,7 @@ function _and( test )
 //     }
 
 //     var con = new _.Consequence();
-//     var testCon = new _.Consequence().give();
+//     var testCon = new _.Consequence().give( null );
 
 //     con._onceGot( testTaker1 );
 //     con._onceGot( testTaker1 );
@@ -4341,7 +4341,7 @@ function _and( test )
 //     } );
 //   }
 
-//   conseqTester.give();
+//   conseqTester.give( null );
 //   return conseqTester;
 // }
 
@@ -4350,7 +4350,7 @@ function _and( test )
 function _onceGot( test )
 {
   var testMsg = 'msg';
-  var testCon = new _.Consequence().give()
+  var testCon = new _.Consequence().give( null )
 
   /* common wConsequence goter tests. */
 
@@ -4499,7 +4499,7 @@ function _onceGot( test )
 function _onceThen( test )
 {
   var testMsg = 'msg';
-  var testCon = new _.Consequence().give()
+  var testCon = new _.Consequence().give( null )
 
   /* common wConsequence corespondent tests. */
 
@@ -4634,7 +4634,7 @@ function first( test )
   var c = this;
   var amode = _.Consequence.asyncModeGet();
   var testMsg = 'msg';
-  var testCon = new _.Consequence().give()
+  var testCon = new _.Consequence().give( null )
 
   /**/
 
@@ -5377,7 +5377,7 @@ first.timeOut = 20000;
 function from( test )
 {
   var testMsg = 'value';
-  var testCon = new _.Consequence().give()
+  var testCon = new _.Consequence().give( null )
 
   /**/
 
