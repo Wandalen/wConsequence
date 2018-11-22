@@ -42,8 +42,9 @@
     "wCopyable": ""
   },
   "devDependencies": {
-    "wTesting": "",
-    "wConsequence": "."
+    "deasync": "",
+    "wConsequence": ".",
+    "wTesting": ""
   },
   "keywords": [
     "wTools",
