@@ -2051,17 +2051,17 @@ function __handleError( err, competitor )
     // if( Config.debug )
     // _global.logger.error( ' Consequence caught error, details come later' );
 
-    _.timeOut( 100, function _unhandledError()
+    _.timeOut( 50, function _unhandledError()
     {
       if( !_.errIsAttended( err ) )
       {
         _global.logger.error( 'Unhandled error caught by Consequence' );
-        debugger;
         _.errLog( err );
         debugger;
       }
       return null;
     });
+
   }
 
   return result;
@@ -2219,11 +2219,11 @@ function __handleGotAct()
 
     /* reuse */
 
-    let resue = false;
-    resue = resue || competitor.tapping || !ordinary;
-    resue = resue || !execute;
+    let reuse = false;
+    reuse = reuse || competitor.tapping || !ordinary;
+    reuse = reuse || !execute;
 
-    if( !resue )
+    if( !reuse )
     {
       spliced = 1;
       self._resource.shift();

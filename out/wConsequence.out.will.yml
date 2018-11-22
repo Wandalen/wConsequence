@@ -18,7 +18,7 @@ about:
     fulfillment/rejection of a Promise or fulfilling it. Use Consequence to get
     more flexibility and improve readability of asynchronous aspect of your
     application.
-  version: 0.4.87
+  version: 0.4.88
   enabled: 1
   interpreters:
     - nodejs >= 6.0.0
@@ -98,7 +98,7 @@ path:
 submodule: {}
 reflector:
   reflect.proto.0:
-    reflectMap:
+    filePath:
       ./proto: ./out.release
     srcFilter:
       maskAll:
@@ -122,7 +122,7 @@ reflector:
     inherit:
       - predefined.*
   reflect.proto.1:
-    reflectMap:
+    filePath:
       ./proto: ./out.debug
     srcFilter:
       maskAll:
@@ -168,15 +168,14 @@ reflector:
     inherit:
       - predefined.*
   exported.0:
-    reflectMap:
-      ./proto: true
+    filePath: ./proto
     srcFilter:
       prefixPath: .
     dstFilter:
       prefixPath: .
   exportedFiles.0:
     recursive: 0
-    reflectMap:
+    filePath:
       ./dwtools/Tools.s: true
       ./dwtools/abase/l9/consequence/Consequence.s: true
       ./dwtools/abase/l9.test/consequence/Consequence.test.s: true
@@ -288,7 +287,7 @@ build:
       - 'step::export.proto'
 exported:
   proto.export:
-    version: 0.4.87
+    version: 0.4.88
     criterion:
       default: 1
       debug: 1
