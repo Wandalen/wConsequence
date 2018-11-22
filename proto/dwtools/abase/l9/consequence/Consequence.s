@@ -2051,10 +2051,11 @@ function __handleError( err, competitor )
     // if( Config.debug )
     // _global.logger.error( ' Consequence caught error, details come later' );
 
-    _.timeOut( 50, function _unhandledError()
+    _.timeOut( 250, function _unhandledError()
     {
       if( !_.errIsAttended( err ) )
       {
+        debugger;
         _global.logger.error( 'Unhandled error caught by Consequence' );
         _.errLog( err );
         debugger;
