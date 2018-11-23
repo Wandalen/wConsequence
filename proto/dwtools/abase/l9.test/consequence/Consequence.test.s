@@ -9,6 +9,8 @@ if( typeof module !== 'undefined' )
 
   require( '../../l9/consequence/Consequence.s' );
 
+  _.include( 'wTesting' );
+
 }
 
 var _global = _global_;
@@ -4265,9 +4267,114 @@ function _and( test )
   return testCon;
 }
 
-// --
-// test part 3
-// --
+//
+
+function concurrentTakeExperiment( test )
+{
+  let tc = new _.Consequence().take( null );
+
+  debugger; return; xxx
+
+  /* */
+
+  function trivialSample()
+  {
+    let con = new _.Consequence();
+    let result = [];
+    let array =
+    [
+      () => { console.log( 'sync1' ); return 1; },
+      () => { console.log( 'sync2' ); return 2; },
+    ]
+
+    for( let a = 0 ; a < array.length ; a++ )
+    con.got( 1 ).take( array[ a ]() );
+    con.take( 0 );
+
+    return con.toResourceMaybe();
+  }
+
+  /* */
+
+  function putSample()
+  {
+    let result = [];
+    let con = new _.Consequence();
+    let array =
+    [
+      () => { console.log( 'sync1' ); return 1; },
+      () => { console.log( 'sync2' ); return 2; },
+    ]
+
+    for( let a = 0 ; a < array.length ; a++ )
+    con.take( array[ a ]() ).put( result );
+    con.take( result );
+
+    return con.toResourceMaybe();
+  }
+
+  /* */
+
+  function asyncSample()
+  {
+    let result = [];
+    let con = new _.Consequence();
+    let array =
+    [
+      () => { return 1; },
+      () => { return _.timeOut( 2250, 2 ); },
+      () => { return 3; },
+    ]
+
+    for( let a = 0 ; a < array.length ; a++ )
+    con.take( array[ a ]() ).wait().put( result, a );
+    // con.put( result, a ).wait().take( array[ a ]() );
+    con.wait().take( result );
+
+    return con.toResourceMaybe();
+  }
+
+  /* - */
+
+  tc
+  // .ifNoErrorThen( () =>
+  // {
+  //   debugger;
+  //   let r = trivialSample();
+  //   test.identical( r, 0 );
+  //   return r;
+  // })
+  // .ifNoErrorThen( () =>
+  // {
+  //   debugger;
+  //   let r = putSample();
+  //   test.identical( r, [ 1,2 ] );
+  //   return r;
+  // })
+  .ifNoErrorThen( () =>
+  {
+    debugger;
+    let c = asyncSample();
+    test.is( _.consequenceIs( c ) );
+    c.doThen( ( err, arg ) =>
+    {
+      debugger;
+      test.is( err === undefined );
+      test.identical( arg, [ 1,2,3 ] );
+      if( err )
+      throw err;
+      return arg;
+    });
+    debugger;
+    return c;
+  })
+
+  return tc;
+}
+
+concurrentTakeExperiment.experimental = 1;
+
+//
 
 // function _onceGot( test )
 // {
@@ -6084,6 +6191,8 @@ var Self =
     andGot : andGot,
     andThen : andThen,
     _and : _and,
+
+    concurrentTakeExperiment : concurrentTakeExperiment,
 
     first : first,
 

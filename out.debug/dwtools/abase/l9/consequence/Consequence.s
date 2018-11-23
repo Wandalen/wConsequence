@@ -115,7 +115,7 @@ function init( o )
 {
   let self = this;
 
-  self.resourceCounter = 0;
+  // self.resourceCounter = 0;
   self._competitorEarly = [];
   self._competitorLate = [];
   self._resource = [];
@@ -240,7 +240,7 @@ function got( competitor )
   let self = this;
   let times = 1;
 
-  _.assert( arguments.length === 1,'got : expects none or single argument, got',arguments.length );
+  _.assert( arguments.length === 1, 'Expects none or single argument, but got', arguments.length, 'arguments' );
 
   if( _.numberIs( competitor ) )
   {
@@ -451,6 +451,118 @@ promiseThen.having =
 
 //
 
+function _put( o )
+{
+  let self = this;
+  let key = o.key;
+  let container = o.container;
+  let thenning = o.thenning;
+
+  _.assert( !_.primitiveIs( o.container ), 'Expects one or two argument, container for resource or key and container' );
+  _.assert( o.key === null || _.numberIs( o.key ) || _.strIs( o.key ), () => 'Key should be number or string, but it is ' + _.strTypeOf( o.key ) );
+
+  if( o.key !== null )
+  {
+    debugger;
+    return self.__competitorAppend
+    ({
+      thenning : thenning,
+      kindOfArguments : Self.KindOfArguments.Both,
+      early : false,
+      competitor : __onPutWithKey,
+    });
+  }
+  else if( _.arrayIs( o.container ) )
+  {
+    debugger;
+    return self.__competitorAppend
+    ({
+      thenning : thenning,
+      kindOfArguments : Self.KindOfArguments.Both,
+      early : false,
+      competitor : __onPutToArray,
+    });
+  }
+  else
+  {
+    _.assert( 0, 'Expects key for to put to objects or fixed-size long' );
+  }
+
+  /* */
+
+  function __onPutWithKey( err, arg )
+  {
+    debugger;
+    if( err !== undefined )
+    container[ key ] = err;
+    else
+    container[ key ] = arg;
+    if( !thenning )
+    return;
+    if( err )
+    throw err;
+    return arg;
+  }
+
+  /* */
+
+  function __onPutToArray( err, arg )
+  {
+    debugger;
+    if( err !== undefined )
+    container.push( err );
+    else
+    container.push( arg );
+    if( !thenning )
+    return;
+    if( err )
+    throw err;
+    return arg;
+  }
+
+}
+
+_put.defaults =
+{
+  key : null,
+  container :  null,
+  thenning  : 0,
+}
+
+//
+
+function put_pre( routine, args )
+{
+  let self = this;
+  let o = Object.create( null );
+
+  if( args[ 1 ] === undefined )
+  {
+    o = { container : args[ 0 ] }
+  }
+  else
+  {
+    o = { container : args[ 0 ], key : args[ 1 ] }
+  }
+
+  _.assert( args.length === 1 || args.length === 2, 'Expects one or two argument, container for resource or key and container' );
+  _.routineOptions( routine, o );
+
+  return o;
+}
+
+//
+
+let put = _.routineFromPreAndBody( put_pre, _put, 'put' );
+
+put.defaults.thenning = false;
+
+let putThen = _.routineFromPreAndBody( put_pre, _put, 'putThen' );
+
+putThen.defaults.thenning = true;
+
+//
+
 // /**
 //  * Adds to the wConsequences corespondents queue `competitor` with sealed `context` and `args`. The result of
 //  * competitor will be added to wConsequence resource sequence after handling.
@@ -543,7 +655,7 @@ function chokeThen( times )
     for( let t = 0 ; t < times ; t++ )
     self.__competitorAppend
     ({
-      competitor : function(){},
+      competitor : onChokeThen,
       thenning : true,
       kindOfArguments : Self.KindOfArguments.Both,
       early : true,
@@ -553,7 +665,7 @@ function chokeThen( times )
   {
     self.__competitorAppend
     ({
-      competitor : function(){},
+      competitor : onChokeThen,
       thenning : true,
       kindOfArguments : Self.KindOfArguments.Both,
       early : true,
@@ -561,6 +673,17 @@ function chokeThen( times )
   }
 
   return self;
+
+  /* */
+
+  function onChokeThen( err, arg )
+  {
+    debugger;
+    if( err )
+    throw err;
+    return arg;
+  }
+
 }
 
 chokeThen.having =
@@ -1120,7 +1243,7 @@ function timeOutThen( time, competitor )
   cor = function __timeOutThen( err, arg )
   {
     debugger;
-    return _.timeOut( time,function()
+    return _.timeOut( time, function onTimeOut()
     {
       debugger;
       competitor.__giveAct( err, arg );
@@ -1221,6 +1344,26 @@ timeOutThen.having =
 // advanced
 // --
 
+//
+
+function wait()
+{
+  let self = this;
+  let result = new _.Consequence();
+
+  _.assert( arguments.length === 0 );
+
+  self.got( function __waitGot( err, arg )
+  {
+    if( err )
+    self.take( err );
+    else
+    self.take( result );
+  });
+
+  return result;
+}
+
 /**
  * Method accepts array of wConsequences object. If current wConsequence instance ready to resolve resource, it will be
    wait for all passed wConsequence instances will been resolved, then current wConsequence resolve own resource.
@@ -1313,7 +1456,7 @@ andThen.having =
 
 //
 
-function _and( srcs,thenning )
+function _and( srcs, thenning )
 {
   let self = this;
   // let returned = [];
@@ -1350,7 +1493,7 @@ function _and( srcs,thenning )
   /* */
 
   let count = srcs.length;
-  function __got( index,err, arg )
+  function __got( index, err, arg )
   {
 
     count -= 1;
@@ -1419,7 +1562,7 @@ function _and( srcs,thenning )
       if( _.consequenceIs( srcs[ s ] ) )
       src.assertNoDeadLockWith( self );
 
-      _.assert( _.consequenceIs( src ) || src === null,'Expects consequence or null, got',_.strTypeOf( src ) );
+      _.assert( _.consequenceIs( src ) || src === null, 'Expects consequence or null, but got', _.strTypeOf( src ) );
       if( src === null )
       {
         __got( s,null,null );
@@ -1427,7 +1570,7 @@ function _and( srcs,thenning )
       }
 
       let r = _.routineJoin( undefined,__got,[ s ] );
-      r.tag = _.numberRandomInt( 100 ); // qqq
+      // r.tag = _.numberRandomInt( 100 ); // qqq
       src.got( r );
     }
 
@@ -1923,7 +2066,7 @@ function _giveWithError( error,argument )
 
   _.assert( arguments.length === 2, 'Expects exactly two arguments' );
 
-  return self.__giveAct( error,argument );
+  return self.__giveAct( error, argument );
 }
 
 //
@@ -1943,14 +2086,20 @@ function __giveAct( error, argument )
   if( self.debug )
   debugger;
 
-  _.assert( !!error || argument !== undefined, 'Argument of give should be something, not undefined' );
+  _.assert( error !== undefined || argument !== undefined, 'Argument of give should be something, not undefined' );
+
+  if( _.consequenceIs( argument ) )
+  {
+    argument.got( self );
+    return self;
+  }
 
   if( Config.debug )
   {
     // if( self.tag === 'willFilesOpenReady' )
     // debugger;
 
-    _.assert( !_.consequenceIs( argument ),'not tested' );
+    // _.assert( !_.consequenceIs( argument ),'not tested' );
     _.assert( !self.resourceLimit || self._resource.length < self.resourceLimit, () => 'Resource limit' + ( self.tag ? ' of ' + self.tag + ' ' : ' ' ) + 'set to ' + self.resourceLimit + ', but got more resources' );
     let msg = '{-error-} and {-argument-} channels should not be in use simultaneously\n' +
       '{-error-} or {-argument-} should be undefined, but currently ' +
@@ -1960,7 +2109,7 @@ function __giveAct( error, argument )
 
   }
 
-  self.resourceCounter += 1;
+  // self.resourceCounter += 1;
   self._resource.push( resource );
   self.__handleGot();
 
@@ -2262,7 +2411,7 @@ function __handleGotAct()
       if( result === undefined )
       {
         debugger;
-        result = self.__handleError( _.err( 'Thening competitor of consequence should return something, not undefined' ), competitor )
+        result = self.__handleError( _.err( 'Thenning competitor of consequence should return something, not undefined' ), competitor )
       }
 
       if( _.consequenceIs( result ) )
@@ -2389,8 +2538,8 @@ function __competitorAppend( o )
       early : o.early,
     }
 
-    if( !o.tenning )
-    self.resourceCounter -= 1;
+    // if( !o.tenning )
+    // self.resourceCounter -= 1;
 
     if( Config.debug )
     if( self.diagnostics )
@@ -2791,11 +2940,35 @@ function resourcesCancel( arg )
 function resourcesHas()
 {
   let self = this;
-  // debugger;
-  return self.resourceCounter > 0;
-  // if( self._resource.length <= self._competitorEarly.length )
-  // return 0;
-  // return self._resource.length - self._competitorEarly.length;
+  return self._resource.length > 0;
+  // return self.resourceCounter > 0;
+}
+
+//
+
+function toResourceMaybe()
+{
+  let self = this;
+  _.assert( self._resource.length <= 1, 'Cant convert consequence back to resource if it has several of such!' );
+
+  if( self._resource.length === 1 )
+  {
+    debugger;
+    let resource = self._resource[ 0 ];
+    if( resource.error !== undefined )
+    {
+      debugger;
+      _.assert( resource.argument === undefined );
+      throw resource.error;
+    }
+    else
+    {
+      _.assert( resource.error === undefined );
+      return resource.argument;
+    }
+  }
+
+  return self;
 }
 
 //
@@ -3469,7 +3642,7 @@ let Composes =
   _competitorEarly : [],
   _competitorLate : [],
   _resource : [],
-  resourceCounter : 0,
+  // resourceCounter : 0,
 }
 
 let ComposesDebug =
@@ -3530,6 +3703,7 @@ let Forbids =
   every : 'every',
   mutex : 'mutex',
   mode : 'mode',
+  resourceCounter : 'resourceCounter',
   _competitor : '_competitor',
   _competitorPersistent : '_competitorPersistent',
 }
@@ -3564,6 +3738,10 @@ let Extend =
   lateThen : lateThen,
   promiseThen : promiseThen,
 
+  _put : _put,
+  put : put,
+  putThen : putThen,
+
   choke : choke,
   chokeThen : chokeThen,
 
@@ -3587,6 +3765,7 @@ let Extend =
 
   // advanced
 
+  wait : wait,
   andGot : andGot,
   andThen : andThen,
   _and : _and,
@@ -3607,6 +3786,7 @@ let Extend =
   // resource
 
   give : give,
+  take : give,
   error : error,
   _giveWithError : _giveWithError,
   __giveAct : __giveAct,
@@ -3633,6 +3813,7 @@ let Extend =
   resourcesGet : resourcesGet,
   resourcesCancel : resourcesCancel,
   resourcesHas : resourcesHas,
+  toResourceMaybe : toResourceMaybe,
 
   isEmpty : isEmpty,
   clear : clear, /* experimental */
