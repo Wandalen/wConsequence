@@ -459,7 +459,7 @@ function _put( o )
   let thenning = o.thenning;
 
   _.assert( !_.primitiveIs( o.container ), 'Expects one or two argument, container for resource or key and container' );
-  _.assert( o.key === null || _.numberIs( o.key ) || _.strIs( o.key ), () => 'Key should be number or string, but it is ' + _.strTypeOf( o.key ) );
+  _.assert( o.key === null || _.numberIs( o.key ) || _.strIs( o.key ), () => 'Key should be number or string, but it is ' + _.strType( o.key ) );
 
   if( o.key !== null )
   {
@@ -1531,7 +1531,7 @@ function _and( srcs, thenning )
     for( let s = 0 ; s < srcs.length-1 ; s++ )
     {
       let src = srcs[ s ];
-      _.assert( _.consequenceIs( src ) || _.routineIs( src ) || src === null, () => 'Consequence.and expects consequence, routine or null, but got ' + _.strTypeOf( src ) );
+      _.assert( _.consequenceIs( src ) || _.routineIs( src ) || src === null, () => 'Consequence.and expects consequence, routine or null, but got ' + _.strType( src ) );
       if( !_.consequenceIs( src ) )
       continue;
       src.assertNoDeadLockWith( self );
@@ -1562,7 +1562,7 @@ function _and( srcs, thenning )
       if( _.consequenceIs( srcs[ s ] ) )
       src.assertNoDeadLockWith( self );
 
-      _.assert( _.consequenceIs( src ) || src === null, 'Expects consequence or null, but got', _.strTypeOf( src ) );
+      _.assert( _.consequenceIs( src ) || src === null, 'Expects consequence or null, but got', _.strType( src ) );
       if( src === null )
       {
         __got( s,null,null );
@@ -1782,7 +1782,7 @@ function _first( src, stack )
     self.give( result );
 
   }
-  else _.assert( 0,'first expects consequence of routine, but got',_.strTypeOf( src ) );
+  else _.assert( 0,'first expects consequence of routine, but got',_.strType( src ) );
 
   return self;
 }
@@ -2103,8 +2103,8 @@ function __giveAct( error, argument )
     _.assert( !self.resourceLimit || self._resource.length < self.resourceLimit, () => 'Resource limit' + ( self.tag ? ' of ' + self.tag + ' ' : ' ' ) + 'set to ' + self.resourceLimit + ', but got more resources' );
     let msg = '{-error-} and {-argument-} channels should not be in use simultaneously\n' +
       '{-error-} or {-argument-} should be undefined, but currently ' +
-      '{-error-} is ' + _.strTypeOf( error ) +
-      '{-argument-} is ' + _.strTypeOf( argument );
+      '{-error-} is ' + _.strType( error ) +
+      '{-argument-} is ' + _.strType( argument );
     _.assert( error === undefined || argument === undefined, msg );
 
   }
@@ -3319,7 +3319,7 @@ function _give_static( o )
     }
 
   }
-  else throw _.err( 'Unknown type of consequence : ' + _.strTypeOf( o.consequence ) );
+  else throw _.err( 'Unknown type of consequence : ' + _.strType( o.consequence ) );
 
 }
 
