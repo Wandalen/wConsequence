@@ -181,8 +181,8 @@ reflector:
       ./dwtools/abase/l9.test/consequence/Consequence.test.s: true
       ./dwtools/abase/l9.test/consequence/Time.test.s: true
     srcFilter:
-      basePath: ./proto
-      prefixPath: .
+      basePath: .
+      prefixPath: proto
     dstFilter:
       basePath: .
       prefixPath: .
