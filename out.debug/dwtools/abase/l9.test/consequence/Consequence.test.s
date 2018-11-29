@@ -4273,7 +4273,7 @@ function concurrentTakeExperiment( test )
 {
   let tc = new _.Consequence().take( null );
 
-  debugger; return; xxx
+  // debugger; return; xxx
 
   /* */
 
@@ -4372,7 +4372,7 @@ function concurrentTakeExperiment( test )
   return tc;
 }
 
-concurrentTakeExperiment.experimental = 1;
+// concurrentTakeExperiment.experimental = 1;
 
 //
 
@@ -6170,35 +6170,33 @@ var Self =
   tests :
   {
 
-    simple : simple,
-    ordinarMessage : ordinarMessage,
-    promiseGot : promiseGot,
+    simple,
+    ordinarMessage,
+    promiseGot,
 
-    doThen : doThen,
-    promiseThen : promiseThen,
+    doThen,
+    promiseThen,
 
-    // _onceGot : _onceGot,
-    // _onceThen : _onceThen,
+    // _onceGot,
+    // _onceThen,
 
-    split : split,
-    tap : tap,
+    split,
+    tap,
 
-    ifNoErrorThen : ifNoErrorThen,
-    ifErrorThen : ifErrorThen,
+    ifNoErrorThen,
+    ifErrorThen,
 
-    timeOutThen : timeOutThen,
+    timeOutThen,
 
-    andGot : andGot,
-    andThen : andThen,
-    _and : _and,
+    andGot,
+    andThen,
+    _and,
 
-    concurrentTakeExperiment : concurrentTakeExperiment,
+    concurrentTakeExperiment,
 
-    first : first,
-
-    from : from,
-
-    consequenceLike : consequenceLike
+    first,
+    from,
+    consequenceLike
 
   },
 
