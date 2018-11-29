@@ -481,7 +481,7 @@ function _packetSendBegin( o )
   var com = self.communicator;
   _.routineOptions( _packetSendBegin,o );
   _.assert( arguments.length === 1, 'expects single argument' );
-  _.assert( _.strIsNotEmpty( o.channel ),'expects string { channel }, but got',_.strTypeOf( o.channel ) );
+  _.assert( _.strIsNotEmpty( o.channel ),'expects string { channel }, but got',_.strType( o.channel ) );
   return o;
 }
 
