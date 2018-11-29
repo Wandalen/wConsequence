@@ -6192,7 +6192,7 @@ var Self =
     andThen,
     _and,
 
-    concurrentTakeExperiment,
+    // concurrentTakeExperiment,
 
     first,
     from,
