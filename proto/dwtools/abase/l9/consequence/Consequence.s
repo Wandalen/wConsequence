@@ -1495,7 +1495,6 @@ andThen.having =
 function _and( srcs, thenning )
 {
   let self = this;
-  // let returned = [];
   let errs = [];
   let args = [];
   let anyErr;
@@ -1509,54 +1508,7 @@ function _and( srcs, thenning )
 
   /* */
 
-  function __give()
-  {
-
-    if( thenning )
-    for( let i = 0 ; i < srcs.length-1 ; i++ )
-    if( srcs[ i ] )
-    srcs[ i ].give( errs[ i ], args[ i ] );
-
-    if( anyErr )
-    self.error( anyErr );
-    else
-    self.give( args );
-
-    // self.give( returned[ srcs.length-1 ][ 1 ] );
-
-  }
-
-  /* */
-
   let count = srcs.length;
-  function __got( index, err, arg )
-  {
-
-    count -= 1;
-
-    if( err && !anyErr )
-    anyErr = err;
-
-    // returned[ index ] = [ err, arg ];
-    errs[ index ] = err;
-    args[ index ] = arg;
-
-    if( Config.debug )
-    if( self.diagnostics )
-    if( index < srcs.length-1 )
-    if( _.consequenceIs( srcs[ index ] ) )
-    {
-      _.arrayRemoveElementOnceStrictly( self.dependsOf , srcs[ index ] );
-    }
-
-    if( count === 0 )
-    _.timeSoon( __give );
-
-  }
-
-  /* */
-
-  // self.got( _.routineJoin( undefined, got, [ srcs.length ] ) );
 
   /* */
 
@@ -1578,7 +1530,13 @@ function _and( srcs, thenning )
 
   /* */
 
-  self.got( function _andGot( err, arg )
+  self.got( start );
+
+  return self;
+
+  /* - */
+
+  function start( err, arg )
   {
 
     for( let s = 0 ; s < srcs.length-1 ; s++ )
@@ -1598,23 +1556,69 @@ function _and( srcs, thenning )
       if( _.consequenceIs( srcs[ s ] ) )
       src.assertNoDeadLockWith( self );
 
-      _.assert( _.consequenceIs( src ) || src === null, 'Expects consequence or null, but got', _.strType( src ) );
+      _.assert( _.consequenceIs( src ) || src === null, () => 'Expects consequence or null, but got ' + _.strType( src ) );
+
       if( src === null )
       {
-        __got( s, null, null );
+        __got( s, undefined, null );
         continue;
       }
 
       let r = _.routineJoin( undefined, __got, [ s ] );
-      // r.tag = _.numberRandomInt( 100 ); // qqq
       src.got( r );
+
     }
 
     __got( srcs.length-1, err, arg );
 
-  });
+  }
 
-  return self;
+  /* */
+
+  function __got( index, err, arg )
+  {
+
+    // console.log( 'and', index, ':', count, -1, ' = ', count-1, '-', arg && arg.argsStr ? arg.argsStr : arg );
+    count -= 1;
+
+    if( err && !anyErr )
+    anyErr = err;
+
+    errs[ index ] = err;
+    args[ index ] = arg;
+
+    if( Config.debug )
+    if( self.diagnostics )
+    if( index < srcs.length-1 )
+    if( _.consequenceIs( srcs[ index ] ) )
+    {
+      _.arrayRemoveElementOnceStrictly( self.dependsOf , srcs[ index ] );
+    }
+
+    if( count === 0 )
+    _.timeSoon( __give );
+
+  }
+
+  /* */
+
+  function __give()
+  {
+
+    // console.log( 'and :', 'give' );
+
+    if( thenning )
+    for( let i = 0 ; i < srcs.length-1 ; i++ )
+    if( srcs[ i ] )
+    srcs[ i ].give( errs[ i ], args[ i ] );
+
+    if( anyErr )
+    self.error( anyErr );
+    else
+    self.give( args );
+
+  }
+
 }
 
 //

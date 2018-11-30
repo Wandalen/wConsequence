@@ -66,661 +66,6 @@ function simple( test )
 
 //
 
-function andGot( test )
-{
-  var testMsg = 'msg';
-  var testCon = new _.Consequence().give( null )
-
-   /* */
-
-  .doThen( function()
-  {
-    test.case = 'andGot waits only for first resource, dont return the resource';
-    var delay = 100;
-    var mainCon = new _.Consequence();
-    var con = new _.Consequence();
-
-    mainCon.give( testMsg );
-
-    mainCon.andGot( con );
-
-    mainCon.doThen( function( err, got )
-    {
-      test.identical( got, [ delay, testMsg ] )
-      test.identical( mainCon.resourcesGet().length, 0 );
-      test.identical( con.resourcesGet().length, 0 );
-      test.identical( con.competitorsEarlyGet().length, 0 );
-      return null;
-    });
-
-    _.timeOut( delay, () => { con.give( delay ) });
-    _.timeOut( delay * 2, () => { con.give( delay * 2 ) });
-
-    return _.timeOut( delay * 2, function()
-    {
-      test.identical( con.resourcesGet().length, 1 );
-      test.identical( con.resourcesGet()[ 0 ].argument, delay * 2 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .doThen( function()
-  {
-    test.case = 'dont give resource back to single consequence returned from passed routine';
-    var delay = 100;
-    var mainCon = new _.Consequence();
-    var con = new _.Consequence();
-
-    mainCon.give( testMsg );
-
-    mainCon.andGot( () => con );
-
-    mainCon.doThen( function( err, got )
-    {
-      test.identical( got, [ delay, testMsg ] );
-      test.identical( mainCon.resourcesGet().length, 0 );
-      test.identical( con.resourcesGet().length, 0 );
-      test.identical( con.competitorsEarlyGet().length, 0 );
-      return null;
-    });
-
-    _.timeOut( delay, () => { con.give( delay ); return null; });
-
-    return mainCon;
-  })
-
-  /* */
-
-  .doThen( function()
-  {
-    test.case = 'dont give resources back to several consequences with different delays';
-    var delay = 100;
-    var mainCon = new _.Consequence();
-    var con1 = new _.Consequence();
-    var con2 = new _.Consequence();
-    var con3 = new _.Consequence();
-
-    var srcs = [ con1, con2, con3 ];
-
-    mainCon.give( testMsg );
-
-    mainCon.andGot( srcs );
-
-    mainCon.doThen( function( err, got )
-    {
-      test.identical( got, [ delay, delay * 2, testMsg + testMsg, testMsg ] );
-
-      test.identical( mainCon.resourcesGet().length, 0 );
-
-      test.identical( con1.resourcesGet(), []);
-      test.identical( con1.competitorsEarlyGet().length, 0 );
-
-      test.identical( con2.resourcesGet(), []);
-      test.identical( con2.competitorsEarlyGet().length, 0 );
-
-      test.identical( con3.resourcesGet(), []);
-      test.identical( con3.competitorsEarlyGet().length, 0 );
-
-      return null;
-    });
-
-    _.timeOut( delay, () => { con1.give( delay ); return null; });
-    _.timeOut( delay * 2, () => { con2.give( delay * 2 ); return null; });
-    con3.give( testMsg + testMsg );
-
-    return mainCon;
-  })
-
-  /* */
-
-  .doThen( function()
-  {
-    test.case = 'each con gives several resources, order of provided consequence is important';
-    var delay = 100;
-    var mainCon = new _.Consequence();
-    var con1 = new _.Consequence();
-    var con2 = new _.Consequence();
-    var con3 = new _.Consequence();
-
-    var srcs = [ con3, con1, con2  ];
-
-    mainCon.give( testMsg );
-
-    mainCon.andGot( srcs );
-
-    mainCon.doThen( function( err, got )
-    {
-      test.identical( got, [ 'con3', 'con1', 'con2', testMsg ] );
-
-      test.identical( mainCon.resourcesGet().length, 0 );
-
-      test.identical( con1.resourcesGet().length, 2 );
-      test.identical( con1.competitorsEarlyGet().length, 0 );
-
-      test.identical( con2.resourcesGet().length, 2 );
-      test.identical( con2.competitorsEarlyGet().length, 0 );
-
-      test.identical( con3.resourcesGet().length, 2 );
-      test.identical( con3.competitorsEarlyGet().length, 0 );
-
-      return null;
-    });
-
-    _.timeOut( delay, () =>
-    {
-      con1.give( 'con1' );
-      con1.give( 'con1' );
-      con1.give( 'con1' );
-      return null;
-    });
-
-    _.timeOut( delay * 2, () =>
-    {
-      con2.give( 'con2' );
-      con2.give( 'con2' );
-      con2.give( 'con2' );
-      return null;
-    });
-
-    _.timeOut( delay / 2, () =>
-    {
-      con3.give( 'con3' );
-      con3.give( 'con3' );
-      con3.give( 'con3' );
-      return null;
-    });
-
-    return mainCon;
-  })
-
-  /* */
-
-  .doThen( function()
-  {
-    test.case = 'one of provided cons waits for another one to resolve';
-    var delay = 100;
-    var mainCon = new _.Consequence();
-    var con1 = new _.Consequence();
-    var con2 = new _.Consequence();
-
-    var srcs = [ con1, con2  ];
-
-    con1.give( null );
-    con1.doThen( () => con2 );
-    con1.doThen( () => 'con1' );
-
-    mainCon.give( testMsg );
-
-    mainCon.andGot( srcs );
-
-    mainCon.doThen( function( err, got )
-    {
-      test.identical( got, [ 'con1', 'con2', testMsg ] );
-
-      test.identical( mainCon.resourcesGet().length, 0 );
-
-      test.identical( con1.resourcesGet().length, 0 );
-      test.identical( con1.competitorsEarlyGet().length, 0 );
-
-      test.identical( con2.resourcesGet().length, 0 );
-      test.identical( con2.competitorsEarlyGet().length, 0 );
-
-      return null;
-    });
-
-    _.timeOut( delay * 2, () => { con2.give( 'con2' ); return null; } )
-
-    return mainCon;
-  })
-
-  .doThen( function()
-  {
-    test.case = 'consequence gives an error, only first error is taken into account';
-
-    var delay = 100;
-    var mainCon = new _.Consequence();
-    var con1 = new _.Consequence();
-    var con2 = new _.Consequence();
-
-    var srcs = [ con1, con2  ];
-
-    mainCon.give( testMsg );
-
-    mainCon.andGot( srcs );
-
-    mainCon.doThen( function( err, got )
-    {
-      test.identical( err, 'con1' );
-      test.identical( got, undefined );
-
-      test.identical( mainCon.resourcesGet().length, 0 );
-
-      test.identical( con1.resourcesGet().length, 0 );
-      test.identical( con1.competitorsEarlyGet().length, 0 );
-
-      test.identical( con2.resourcesGet().length, 0 );
-      test.identical( con2.competitorsEarlyGet().length, 0 );
-
-      return null;
-    });
-
-    _.timeOut( delay, () => { con1.error( 'con1' );return null;  } )
-    var t = _.timeOut( delay * 2, () => { con2.give( 'con2' );return null;  } )
-
-    t.doThen( () =>
-    {
-      test.identical( con2.resourcesGet().length, 0 );
-      test.identical( con2.competitorsEarlyGet().length, 0 );
-      return mainCon;
-    })
-
-    return t;
-  })
-
-  /* */
-
-  .doThen( function()
-  {
-    test.case = 'passed consequence dont give any resource';
-    var mainCon = new _.Consequence();
-    var con = new _.Consequence();
-    mainCon.give( null );
-    mainCon.andGot( con );
-    mainCon.doThen( () => test.identical( 0, 1 ) );
-    test.identical( mainCon.resourcesGet().length, 0 );
-    test.identical( mainCon.competitorsEarlyGet().length, 1 );
-    test.identical( con.resourcesGet().length, 0 );
-    return null;
-  })
-
-  /* */
-
-  .doThen( function()
-  {
-    test.case = 'returned consequence dont give any resource';
-    var mainCon = new _.Consequence();
-    var con = new _.Consequence();
-    mainCon.give( null );
-    mainCon.andGot( () => con );
-    mainCon.doThen( () => test.identical( 0, 1 ) );
-    test.identical( mainCon.resourcesGet().length, 0 );
-    test.identical( mainCon.competitorsEarlyGet().length, 1 );
-    test.identical( con.resourcesGet().length, 0 );
-    return null;
-  })
-
-  /* */
-
-  .doThen( function()
-  {
-    test.case = 'one of srcs dont give any resource';
-    var delay = 100;
-    var mainCon = new _.Consequence();
-    var con1 = new _.Consequence();
-    var con2 = new _.Consequence();
-    var con3 = new _.Consequence();
-
-    var srcs = [ con1, con2, con3 ];
-
-    mainCon.give( testMsg );
-
-    mainCon.andGot( srcs );
-
-    mainCon.doThen( () => { test.identical( 0, 1);return null; });
-
-    _.timeOut( delay, () => { con1.give( delay ); return null; });
-    _.timeOut( delay * 2, () => { con2.give( delay * 2 ); return null; });
-
-    return _.timeOut( delay * 2, function()
-    {
-      test.identical( mainCon.resourcesGet().length, 0 );
-      test.identical( mainCon.competitorsEarlyGet().length, 1 );
-
-      test.identical( con1.resourcesGet().length, 0);
-      test.identical( con2.resourcesGet().length, 0);
-      test.identical( con3.resourcesGet().length, 0);
-      return null;
-    });
-
-  })
-
-  return testCon;
-}
-
-//
-
-function andThen( test )
-{
-  var testMsg = 'msg';
-  var testCon = new _.Consequence().give( null )
-
-  /* */
-
-  .doThen( function()
-  {
-    test.case = 'andThen waits only for first resource and return it back';
-    var delay = 100;
-    var mainCon = new _.Consequence();
-    var con = new _.Consequence();
-
-    mainCon.give( testMsg );
-
-    mainCon.andThen( con );
-
-    mainCon.doThen( function( err, got )
-    {
-      test.identical( got, [ delay, testMsg ] );
-      test.identical( mainCon.resourcesGet().length, 0 );
-      test.identical( con.resourcesGet(), [{ error : undefined, argument : delay }] );
-      test.identical( con.competitorsEarlyGet().length, 0 );
-      return null;
-    });
-
-    _.timeOut( delay, () => { con.give( delay );return null; });
-    _.timeOut( delay * 2, () => { con.give( delay * 2 );return null; });
-
-    return _.timeOut( delay * 2, function()
-    {
-      test.identical( con.resourcesGet().length, 2 );
-      test.identical( con.resourcesGet()[ 1 ].argument, delay * 2 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .doThen( function()
-  {
-    test.case = 'andThen waits for first resource from consequence returned by routine call and returns resource back';
-    var delay = 100;
-    var mainCon = new _.Consequence();
-    var con = new _.Consequence();
-
-    mainCon.give( testMsg );
-
-    mainCon.andThen( () => con );
-
-    mainCon.doThen( function( err, got )
-    {
-      test.identical( got, [ delay, testMsg ] );
-      test.identical( mainCon.resourcesGet().length, 0 );
-      test.identical( con.resourcesGet().length, 1 );
-      test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : delay } );
-      test.identical( con.competitorsEarlyGet().length, 0 );
-      return null;
-    });
-
-    _.timeOut( delay, () => { con.give( delay );return null; });
-    _.timeOut( delay * 2, () => { con.give( delay * 2 );return null; });
-
-    return _.timeOut( delay * 2, function()
-    {
-      test.identical( con.resourcesGet().length, 2 );
-      test.identical( con.resourcesGet()[ 1 ], { error : undefined, argument : delay * 2 } );
-      return null;
-    })
-  })
-
-  /* */
-
-  .doThen( function()
-  {
-    test.case = 'give back resources to several consequences, different delays';
-    var delay = 100;
-    var mainCon = new _.Consequence();
-    var con1 = new _.Consequence();
-    var con2 = new _.Consequence();
-    var con3 = new _.Consequence();
-
-    var srcs = [ con1, con2, con3 ];
-
-    mainCon.give( testMsg );
-
-    mainCon.andThen( srcs );
-
-    mainCon.doThen( function( err, got )
-    {
-      test.identical( got, [ delay, delay * 2, testMsg + testMsg, testMsg ] )
-      test.identical( mainCon.resourcesGet().length, 0 );
-
-      test.identical( con1.resourcesGet(), [ { error : undefined, argument : delay } ]);
-      test.identical( con1.competitorsEarlyGet().length, 0 );
-
-      test.identical( con2.resourcesGet(), [ { error : undefined, argument : delay * 2 } ]);
-      test.identical( con2.competitorsEarlyGet().length, 0 );
-
-      test.identical( con3.resourcesGet(), [ { error : undefined, argument : testMsg + testMsg } ]);
-      test.identical( con3.competitorsEarlyGet().length, 0 );
-
-      return null;
-    });
-
-    _.timeOut( delay, () => { con1.give( delay );return null; });
-    _.timeOut( delay * 2, () => { con2.give( delay * 2 );return null; });
-    con3.give( testMsg + testMsg );
-
-    return mainCon;
-  })
-
-  /* */
-
-  .doThen( function()
-  {
-    test.case = 'each con gives several resources, order of provided consequence is important';
-    var delay = 100;
-    var mainCon = new _.Consequence();
-    var con1 = new _.Consequence();
-    var con2 = new _.Consequence();
-    var con3 = new _.Consequence();
-
-    var srcs = [ con3, con1, con2  ];
-
-    mainCon.give( testMsg );
-
-    mainCon.andThen( srcs );
-
-    mainCon.doThen( function( err, got )
-    {
-      test.identical( got, [ 'con3', 'con1', 'con2', testMsg ] );
-      test.identical( mainCon.resourcesGet().length, 0 );
-
-      test.identical( con1.resourcesGet().length, 3 );
-      test.identical( con1.competitorsEarlyGet().length, 0 );
-
-      test.identical( con2.resourcesGet().length, 3 );
-      test.identical( con2.competitorsEarlyGet().length, 0 );
-
-      test.identical( con3.resourcesGet().length, 3 );
-      test.identical( con3.competitorsEarlyGet().length, 0 );
-
-      return null;
-    });
-
-    _.timeOut( delay, () =>
-    {
-      con1.give( 'con1' );
-      con1.give( 'con1' );
-      con1.give( 'con1' );
-      return null;
-    });
-
-    _.timeOut( delay * 2, () =>
-    {
-      con2.give( 'con2' );
-      con2.give( 'con2' );
-      con2.give( 'con2' );
-      return null;
-    });
-
-    _.timeOut( delay / 2, () =>
-    {
-      con3.give( 'con3' );
-      con3.give( 'con3' );
-      con3.give( 'con3' );
-      return null;
-    });
-
-    return mainCon;
-  })
-
-  /* */
-
-  .doThen( function()
-  {
-    test.case = 'one of provided cons waits for another one to resolve';
-    var delay = 100;
-    var mainCon = new _.Consequence();
-    var con1 = new _.Consequence();
-    var con2 = new _.Consequence();
-
-    var srcs = [ con1, con2  ];
-
-    con1.give( null );
-    con1.doThen( () => con2 );
-    con1.doThen( () => 'con1' );
-
-    mainCon.give( testMsg );
-
-    mainCon.andGot( srcs );
-
-    mainCon.doThen( function( err, got )
-    {
-      test.identical( got, [ 'con1', 'con2', testMsg ] );
-
-      test.identical( mainCon.resourcesGet().length, 0 );
-
-      test.identical( con1.resourcesGet().length, 0 );
-      test.identical( con1.competitorsEarlyGet().length, 0 );
-
-      test.identical( con2.resourcesGet().length, 0 );
-      test.identical( con2.competitorsEarlyGet().length, 0 );
-      return null;
-    });
-
-    _.timeOut( delay * 2, () => { con2.give( 'con2' ); return null;  } )
-
-    return mainCon;
-  })
-
-  .doThen( function()
-  {
-    test.case =
-    `consequence gives an error, only first error is taken into account
-     other consequences are receiving their resources back`;
-
-    var delay = 100;
-    var mainCon = new _.Consequence();
-    var con1 = new _.Consequence();
-    var con2 = new _.Consequence();
-
-    var srcs = [ con1, con2  ];
-
-    mainCon.give( testMsg );
-
-    mainCon.andThen( srcs );
-
-    mainCon.doThen( function( err, got )
-    {
-      test.identical( err, 'con1' );
-      test.identical( got, undefined );
-
-      test.identical( mainCon.resourcesGet().length, 0 );
-
-      test.identical( con1.resourcesGet().length, 1 );
-      test.identical( con1.competitorsEarlyGet().length, 0 );
-
-      test.identical( con2.resourcesGet().length, 1 );
-      test.identical( con2.competitorsEarlyGet().length, 0 );
-      return null;
-    });
-
-    _.timeOut( delay, () => { con1.error( 'con1' );return null;  } )
-    var t = _.timeOut( delay * 2, () => { con2.give( 'con2' );return null;  } )
-
-    t.doThen( () =>
-    {
-      test.identical( con2.resourcesGet().length, 0 );
-      test.identical( con2.competitorsEarlyGet().length, 0 );
-      return mainCon;
-    })
-
-    return t;
-  })
-
-  /* */
-
-  .doThen( function()
-  {
-    test.case = 'passed consequence dont give any resource';
-    var mainCon = new _.Consequence();
-    var con = new _.Consequence();
-    mainCon.give( null );
-    mainCon.andThen( con );
-    mainCon.doThen( () => { test.identical( 0, 1); return null; });
-    test.identical( mainCon.resourcesGet().length, 0 );
-    test.identical( mainCon.competitorsEarlyGet().length, 1 );
-    test.identical( con.resourcesGet().length, 0 );
-    return null;
-  })
-
-  /* */
-
-  .doThen( function()
-  {
-    test.case = 'returned consequence dont give any resource';
-    var mainCon = new _.Consequence();
-    var con = new _.Consequence();
-    mainCon.give( null );
-    mainCon.andThen( () => con );
-    mainCon.doThen( () => { test.identical( 0, 1); return null; });
-    test.identical( mainCon.resourcesGet().length, 0 );
-    test.identical( mainCon.competitorsEarlyGet().length, 1 );
-    test.identical( con.resourcesGet().length, 0 );
-    return null;
-  })
-
-  /* */
-
-  .doThen( function()
-  {
-    test.case = 'one of srcs dont give any resource';
-    var delay = 100;
-    var mainCon = new _.Consequence();
-    var con1 = new _.Consequence();
-    var con2 = new _.Consequence();
-    var con3 = new _.Consequence();
-
-    var srcs = [ con1, con2, con3 ];
-
-    mainCon.give( testMsg );
-
-    mainCon.andThen( srcs );
-
-    mainCon.doThen( () => { test.identical( 0, 1); return null; });
-
-    _.timeOut( delay, () => { con1.give( delay );return null; });
-    _.timeOut( delay * 2, () => { con2.give( delay * 2 );return null; });
-
-    return _.timeOut( delay * 2, function()
-    {
-      test.identical( mainCon.resourcesGet().length, 0 );
-      test.identical( mainCon.competitorsEarlyGet().length, 1 );
-
-      test.identical( con1.resourcesGet().length, 0);
-      test.identical( con2.resourcesGet().length, 0);
-      test.identical( con3.resourcesGet().length, 0);
-      return null;
-    });
-
-  })
-
-  return testCon;
-}
-
-//
-
 function ordinarMessage( test )
 {
   var c = this;
@@ -4190,6 +3535,760 @@ function timeOutThen( test )
 
 //
 
+function andThenRoutinesTakeFirst( test )
+{
+  var con = _.Consequence();
+  var routines =
+  [
+    () => _.timeOut( 100, 0 ),
+    () => _.timeOut( 100, 1 ),
+    () => _.timeOut( 100, 2 ),
+    () => _.timeOut( 100, 3 ),
+    () => _.timeOut( 100, 4 ),
+    () => _.timeOut( 100, 5 ),
+    () => _.timeOut( 100, 6 ),
+  ]
+
+  con.take( null );
+  con.andThen( routines );
+
+  con.then( ( err, args ) =>
+  {
+    test.identical( err, undefined );
+    test.identical( args, [ 0,1,2,3,4,5,6,null ] );
+    if( err )
+    throw err;
+    return args;
+  })
+
+  return con;
+}
+
+//
+
+function andThenRoutinesTakeLast( test )
+{
+  var con = _.Consequence();
+  var routines =
+  [
+    () => _.timeOut( 100, 0 ),
+    () => _.timeOut( 100, 1 ),
+    () => _.timeOut( 100, 2 ),
+    () => _.timeOut( 100, 3 ),
+    () => _.timeOut( 100, 4 ),
+    () => _.timeOut( 100, 5 ),
+    () => _.timeOut( 100, 6 ),
+  ]
+
+  con.andThen( routines );
+
+  con.then( ( err, args ) =>
+  {
+    test.identical( err, undefined );
+    test.identical( args, [ 0,1,2,3,4,5,6,null ] );
+    if( err )
+    throw err;
+    return args;
+  })
+
+  con.take( null );
+
+  return con;
+}
+
+//
+
+function andThenRoutinesDelayed( test )
+{
+  var con = _.Consequence();
+  var routines =
+  [
+    () => _.timeOut( 100, 0 ),
+    () => _.timeOut( 100, 1 ),
+    () => _.timeOut( 100, 2 ),
+    () => _.timeOut( 100, 3 ),
+    () => _.timeOut( 100, 4 ),
+    () => _.timeOut( 100, 5 ),
+    () => _.timeOut( 100, 6 ),
+  ]
+
+  con.andThen( routines );
+
+  con.then( ( err, args ) =>
+  {
+    test.identical( err, undefined );
+    test.identical( args, [ 0,1,2,3,4,5,6,null ] );
+    if( err )
+    throw err;
+    return args;
+  })
+
+  _.timeOut( 250, () =>
+  {
+    con.take( null );
+    return true;
+  });
+
+  return con;
+}
+
+//
+
+function andThen( test )
+{
+  var testMsg = 'msg';
+  var testCon = new _.Consequence().give( null )
+
+  /* */
+
+  .doThen( function()
+  {
+    test.case = 'andThen waits only for first resource and return it back';
+    var delay = 100;
+    var mainCon = new _.Consequence();
+    var con = new _.Consequence();
+
+    mainCon.give( testMsg );
+
+    mainCon.andThen( con );
+
+    mainCon.doThen( function( err, got )
+    {
+      test.identical( got, [ delay, testMsg ] );
+      test.identical( mainCon.resourcesGet().length, 0 );
+      test.identical( con.resourcesGet(), [{ error : undefined, argument : delay }] );
+      test.identical( con.competitorsEarlyGet().length, 0 );
+      return null;
+    });
+
+    _.timeOut( delay, () => { con.give( delay );return null; });
+    _.timeOut( delay * 2, () => { con.give( delay * 2 );return null; });
+
+    return _.timeOut( delay * 2, function()
+    {
+      test.identical( con.resourcesGet().length, 2 );
+      test.identical( con.resourcesGet()[ 1 ].argument, delay * 2 );
+      return null;
+    })
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.case = 'andThen waits for first resource from consequence returned by routine call and returns resource back';
+    var delay = 100;
+    var mainCon = new _.Consequence();
+    var con = new _.Consequence();
+
+    mainCon.give( testMsg );
+
+    mainCon.andThen( () => con );
+
+    mainCon.doThen( function( err, got )
+    {
+      test.identical( got, [ delay, testMsg ] );
+      test.identical( mainCon.resourcesGet().length, 0 );
+      test.identical( con.resourcesGet().length, 1 );
+      test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : delay } );
+      test.identical( con.competitorsEarlyGet().length, 0 );
+      return null;
+    });
+
+    _.timeOut( delay, () => { con.give( delay );return null; });
+    _.timeOut( delay * 2, () => { con.give( delay * 2 );return null; });
+
+    return _.timeOut( delay * 2, function()
+    {
+      test.identical( con.resourcesGet().length, 2 );
+      test.identical( con.resourcesGet()[ 1 ], { error : undefined, argument : delay * 2 } );
+      return null;
+    })
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.case = 'give back resources to several consequences, different delays';
+    var delay = 100;
+    var mainCon = new _.Consequence();
+    var con1 = new _.Consequence();
+    var con2 = new _.Consequence();
+    var con3 = new _.Consequence();
+
+    var srcs = [ con1, con2, con3 ];
+
+    mainCon.give( testMsg );
+
+    mainCon.andThen( srcs );
+
+    mainCon.doThen( function( err, got )
+    {
+      test.identical( got, [ delay, delay * 2, testMsg + testMsg, testMsg ] )
+      test.identical( mainCon.resourcesGet().length, 0 );
+
+      test.identical( con1.resourcesGet(), [ { error : undefined, argument : delay } ]);
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+
+      test.identical( con2.resourcesGet(), [ { error : undefined, argument : delay * 2 } ]);
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+
+      test.identical( con3.resourcesGet(), [ { error : undefined, argument : testMsg + testMsg } ]);
+      test.identical( con3.competitorsEarlyGet().length, 0 );
+
+      return null;
+    });
+
+    _.timeOut( delay, () => { con1.give( delay );return null; });
+    _.timeOut( delay * 2, () => { con2.give( delay * 2 );return null; });
+    con3.give( testMsg + testMsg );
+
+    return mainCon;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.case = 'each con gives several resources, order of provided consequence is important';
+    var delay = 100;
+    var mainCon = new _.Consequence();
+    var con1 = new _.Consequence();
+    var con2 = new _.Consequence();
+    var con3 = new _.Consequence();
+
+    var srcs = [ con3, con1, con2  ];
+
+    mainCon.give( testMsg );
+
+    mainCon.andThen( srcs );
+
+    mainCon.doThen( function( err, got )
+    {
+      test.identical( got, [ 'con3', 'con1', 'con2', testMsg ] );
+      test.identical( mainCon.resourcesGet().length, 0 );
+
+      test.identical( con1.resourcesGet().length, 3 );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+
+      test.identical( con2.resourcesGet().length, 3 );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+
+      test.identical( con3.resourcesGet().length, 3 );
+      test.identical( con3.competitorsEarlyGet().length, 0 );
+
+      return null;
+    });
+
+    _.timeOut( delay, () =>
+    {
+      con1.give( 'con1' );
+      con1.give( 'con1' );
+      con1.give( 'con1' );
+      return null;
+    });
+
+    _.timeOut( delay * 2, () =>
+    {
+      con2.give( 'con2' );
+      con2.give( 'con2' );
+      con2.give( 'con2' );
+      return null;
+    });
+
+    _.timeOut( delay / 2, () =>
+    {
+      con3.give( 'con3' );
+      con3.give( 'con3' );
+      con3.give( 'con3' );
+      return null;
+    });
+
+    return mainCon;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.case = 'one of provided cons waits for another one to resolve';
+    var delay = 100;
+    var mainCon = new _.Consequence();
+    var con1 = new _.Consequence();
+    var con2 = new _.Consequence();
+
+    var srcs = [ con1, con2  ];
+
+    con1.give( null );
+    con1.doThen( () => con2 );
+    con1.doThen( () => 'con1' );
+
+    mainCon.give( testMsg );
+
+    mainCon.andGot( srcs );
+
+    mainCon.doThen( function( err, got )
+    {
+      test.identical( got, [ 'con1', 'con2', testMsg ] );
+
+      test.identical( mainCon.resourcesGet().length, 0 );
+
+      test.identical( con1.resourcesGet().length, 0 );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+
+      test.identical( con2.resourcesGet().length, 0 );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+      return null;
+    });
+
+    _.timeOut( delay * 2, () => { con2.give( 'con2' ); return null;  } )
+
+    return mainCon;
+  })
+
+  .doThen( function()
+  {
+    test.case =
+    `consequence gives an error, only first error is taken into account
+     other consequences are receiving their resources back`;
+
+    var delay = 100;
+    var mainCon = new _.Consequence();
+    var con1 = new _.Consequence();
+    var con2 = new _.Consequence();
+
+    var srcs = [ con1, con2  ];
+
+    mainCon.give( testMsg );
+
+    mainCon.andThen( srcs );
+
+    mainCon.doThen( function( err, got )
+    {
+      test.identical( err, 'con1' );
+      test.identical( got, undefined );
+
+      test.identical( mainCon.resourcesGet().length, 0 );
+
+      test.identical( con1.resourcesGet().length, 1 );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+
+      test.identical( con2.resourcesGet().length, 1 );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+      return null;
+    });
+
+    _.timeOut( delay, () => { con1.error( 'con1' );return null;  } )
+    var t = _.timeOut( delay * 2, () => { con2.give( 'con2' );return null;  } )
+
+    t.doThen( () =>
+    {
+      test.identical( con2.resourcesGet().length, 0 );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+      return mainCon;
+    })
+
+    return t;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.case = 'passed consequence dont give any resource';
+    var mainCon = new _.Consequence();
+    var con = new _.Consequence();
+    mainCon.give( null );
+    mainCon.andThen( con );
+    mainCon.doThen( () => { test.identical( 0, 1); return null; });
+    test.identical( mainCon.resourcesGet().length, 0 );
+    test.identical( mainCon.competitorsEarlyGet().length, 1 );
+    test.identical( con.resourcesGet().length, 0 );
+    return null;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.case = 'returned consequence dont give any resource';
+    var mainCon = new _.Consequence();
+    var con = new _.Consequence();
+    mainCon.give( null );
+    mainCon.andThen( () => con );
+    mainCon.doThen( () => { test.identical( 0, 1); return null; });
+    test.identical( mainCon.resourcesGet().length, 0 );
+    test.identical( mainCon.competitorsEarlyGet().length, 1 );
+    test.identical( con.resourcesGet().length, 0 );
+    return null;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.case = 'one of srcs dont give any resource';
+    var delay = 100;
+    var mainCon = new _.Consequence();
+    var con1 = new _.Consequence();
+    var con2 = new _.Consequence();
+    var con3 = new _.Consequence();
+
+    var srcs = [ con1, con2, con3 ];
+
+    mainCon.give( testMsg );
+
+    mainCon.andThen( srcs );
+
+    mainCon.doThen( () => { test.identical( 0, 1); return null; });
+
+    _.timeOut( delay, () => { con1.give( delay );return null; });
+    _.timeOut( delay * 2, () => { con2.give( delay * 2 );return null; });
+
+    return _.timeOut( delay * 2, function()
+    {
+      test.identical( mainCon.resourcesGet().length, 0 );
+      test.identical( mainCon.competitorsEarlyGet().length, 1 );
+
+      test.identical( con1.resourcesGet().length, 0);
+      test.identical( con2.resourcesGet().length, 0);
+      test.identical( con3.resourcesGet().length, 0);
+      return null;
+    });
+
+  })
+
+  return testCon;
+}
+
+//
+
+function andGot( test )
+{
+  var testMsg = 'msg';
+  var testCon = new _.Consequence().give( null )
+
+   /* */
+
+  .doThen( function()
+  {
+    test.case = 'andGot waits only for first resource, dont return the resource';
+    var delay = 100;
+    var mainCon = new _.Consequence();
+    var con = new _.Consequence();
+
+    mainCon.give( testMsg );
+
+    mainCon.andGot( con );
+
+    mainCon.doThen( function( err, got )
+    {
+      test.identical( got, [ delay, testMsg ] )
+      test.identical( mainCon.resourcesGet().length, 0 );
+      test.identical( con.resourcesGet().length, 0 );
+      test.identical( con.competitorsEarlyGet().length, 0 );
+      return null;
+    });
+
+    _.timeOut( delay, () => { con.give( delay ) });
+    _.timeOut( delay * 2, () => { con.give( delay * 2 ) });
+
+    return _.timeOut( delay * 2, function()
+    {
+      test.identical( con.resourcesGet().length, 1 );
+      test.identical( con.resourcesGet()[ 0 ].argument, delay * 2 );
+      return null;
+    })
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.case = 'dont give resource back to single consequence returned from passed routine';
+    var delay = 100;
+    var mainCon = new _.Consequence();
+    var con = new _.Consequence();
+
+    mainCon.give( testMsg );
+
+    mainCon.andGot( () => con );
+
+    mainCon.doThen( function( err, got )
+    {
+      test.identical( got, [ delay, testMsg ] );
+      test.identical( mainCon.resourcesGet().length, 0 );
+      test.identical( con.resourcesGet().length, 0 );
+      test.identical( con.competitorsEarlyGet().length, 0 );
+      return null;
+    });
+
+    _.timeOut( delay, () => { con.give( delay ); return null; });
+
+    return mainCon;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.case = 'dont give resources back to several consequences with different delays';
+    var delay = 100;
+    var mainCon = new _.Consequence();
+    var con1 = new _.Consequence();
+    var con2 = new _.Consequence();
+    var con3 = new _.Consequence();
+
+    var srcs = [ con1, con2, con3 ];
+
+    mainCon.give( testMsg );
+
+    mainCon.andGot( srcs );
+
+    mainCon.doThen( function( err, got )
+    {
+      test.identical( got, [ delay, delay * 2, testMsg + testMsg, testMsg ] );
+
+      test.identical( mainCon.resourcesGet().length, 0 );
+
+      test.identical( con1.resourcesGet(), []);
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+
+      test.identical( con2.resourcesGet(), []);
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+
+      test.identical( con3.resourcesGet(), []);
+      test.identical( con3.competitorsEarlyGet().length, 0 );
+
+      return null;
+    });
+
+    _.timeOut( delay, () => { con1.give( delay ); return null; });
+    _.timeOut( delay * 2, () => { con2.give( delay * 2 ); return null; });
+    con3.give( testMsg + testMsg );
+
+    return mainCon;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.case = 'each con gives several resources, order of provided consequence is important';
+    var delay = 100;
+    var mainCon = new _.Consequence();
+    var con1 = new _.Consequence();
+    var con2 = new _.Consequence();
+    var con3 = new _.Consequence();
+
+    var srcs = [ con3, con1, con2  ];
+
+    mainCon.give( testMsg );
+
+    mainCon.andGot( srcs );
+
+    mainCon.doThen( function( err, got )
+    {
+      test.identical( got, [ 'con3', 'con1', 'con2', testMsg ] );
+
+      test.identical( mainCon.resourcesGet().length, 0 );
+
+      test.identical( con1.resourcesGet().length, 2 );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+
+      test.identical( con2.resourcesGet().length, 2 );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+
+      test.identical( con3.resourcesGet().length, 2 );
+      test.identical( con3.competitorsEarlyGet().length, 0 );
+
+      return null;
+    });
+
+    _.timeOut( delay, () =>
+    {
+      con1.give( 'con1' );
+      con1.give( 'con1' );
+      con1.give( 'con1' );
+      return null;
+    });
+
+    _.timeOut( delay * 2, () =>
+    {
+      con2.give( 'con2' );
+      con2.give( 'con2' );
+      con2.give( 'con2' );
+      return null;
+    });
+
+    _.timeOut( delay / 2, () =>
+    {
+      con3.give( 'con3' );
+      con3.give( 'con3' );
+      con3.give( 'con3' );
+      return null;
+    });
+
+    return mainCon;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.case = 'one of provided cons waits for another one to resolve';
+    var delay = 100;
+    var mainCon = new _.Consequence();
+    var con1 = new _.Consequence();
+    var con2 = new _.Consequence();
+
+    var srcs = [ con1, con2  ];
+
+    con1.give( null );
+    con1.doThen( () => con2 );
+    con1.doThen( () => 'con1' );
+
+    mainCon.give( testMsg );
+
+    mainCon.andGot( srcs );
+
+    mainCon.doThen( function( err, got )
+    {
+      test.identical( got, [ 'con1', 'con2', testMsg ] );
+
+      test.identical( mainCon.resourcesGet().length, 0 );
+
+      test.identical( con1.resourcesGet().length, 0 );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+
+      test.identical( con2.resourcesGet().length, 0 );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+
+      return null;
+    });
+
+    _.timeOut( delay * 2, () => { con2.give( 'con2' ); return null; } )
+
+    return mainCon;
+  })
+
+  .doThen( function()
+  {
+    test.case = 'consequence gives an error, only first error is taken into account';
+
+    var delay = 100;
+    var mainCon = new _.Consequence();
+    var con1 = new _.Consequence();
+    var con2 = new _.Consequence();
+
+    var srcs = [ con1, con2  ];
+
+    mainCon.give( testMsg );
+
+    mainCon.andGot( srcs );
+
+    mainCon.doThen( function( err, got )
+    {
+      test.identical( err, 'con1' );
+      test.identical( got, undefined );
+
+      test.identical( mainCon.resourcesGet().length, 0 );
+
+      test.identical( con1.resourcesGet().length, 0 );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+
+      test.identical( con2.resourcesGet().length, 0 );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+
+      return null;
+    });
+
+    _.timeOut( delay, () => { con1.error( 'con1' );return null;  } )
+    var t = _.timeOut( delay * 2, () => { con2.give( 'con2' );return null;  } )
+
+    t.doThen( () =>
+    {
+      test.identical( con2.resourcesGet().length, 0 );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+      return mainCon;
+    })
+
+    return t;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.case = 'passed consequence dont give any resource';
+    var mainCon = new _.Consequence();
+    var con = new _.Consequence();
+    mainCon.give( null );
+    mainCon.andGot( con );
+    mainCon.doThen( () => test.identical( 0, 1 ) );
+    test.identical( mainCon.resourcesGet().length, 0 );
+    test.identical( mainCon.competitorsEarlyGet().length, 1 );
+    test.identical( con.resourcesGet().length, 0 );
+    return null;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.case = 'returned consequence dont give any resource';
+    var mainCon = new _.Consequence();
+    var con = new _.Consequence();
+    mainCon.give( null );
+    mainCon.andGot( () => con );
+    mainCon.doThen( () => test.identical( 0, 1 ) );
+    test.identical( mainCon.resourcesGet().length, 0 );
+    test.identical( mainCon.competitorsEarlyGet().length, 1 );
+    test.identical( con.resourcesGet().length, 0 );
+    return null;
+  })
+
+  /* */
+
+  .doThen( function()
+  {
+    test.case = 'one of srcs dont give any resource';
+    var delay = 100;
+    var mainCon = new _.Consequence();
+    var con1 = new _.Consequence();
+    var con2 = new _.Consequence();
+    var con3 = new _.Consequence();
+
+    var srcs = [ con1, con2, con3 ];
+
+    mainCon.give( testMsg );
+
+    mainCon.andGot( srcs );
+
+    mainCon.doThen( () => { test.identical( 0, 1);return null; });
+
+    _.timeOut( delay, () => { con1.give( delay ); return null; });
+    _.timeOut( delay * 2, () => { con2.give( delay * 2 ); return null; });
+
+    return _.timeOut( delay * 2, function()
+    {
+      test.identical( mainCon.resourcesGet().length, 0 );
+      test.identical( mainCon.competitorsEarlyGet().length, 1 );
+
+      test.identical( con1.resourcesGet().length, 0);
+      test.identical( con2.resourcesGet().length, 0);
+      test.identical( con3.resourcesGet().length, 0);
+      return null;
+    });
+
+  })
+
+  return testCon;
+}
+
+//
+
 function _and( test )
 {
   var testMsg = 'msg';
@@ -6287,8 +6386,11 @@ var Self =
 
     timeOutThen,
 
-    andGot,
+    andThenRoutinesTakeFirst,
+    andThenRoutinesTakeLast,
+    andThenRoutinesDelayed,
     andThen,
+    andGot,
     _and,
 
     inter,
