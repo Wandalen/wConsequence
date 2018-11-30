@@ -2611,7 +2611,7 @@ function promiseThen( test )
 //     }
 //
 //     var con = _.Consequence();
-//     for (let given of givSequence)
+//     for (var given of givSequence)
 //       con.give( given );
 //
 //     try
@@ -2647,7 +2647,7 @@ function promiseThen( test )
 //
 //     var con = _.Consequence();
 //
-//     for( let given of givSequence )
+//     for( var given of givSequence )
 //     {
 //       con.give( given );
 //     }
@@ -2811,7 +2811,7 @@ function promiseThen( test )
 //     }
 //
 //     var con = _.Consequence();
-//     for (let given of givSequence)
+//     for (var given of givSequence)
 //       con.give( given );
 //
 //     var newCon;
@@ -3065,7 +3065,7 @@ function split( test )
 //     }
 //
 //     var con = _.Consequence();
-//     for (let given of givSequence)
+//     for (var given of givSequence)
 //       con.give( given );
 //
 //     try
@@ -3112,7 +3112,7 @@ function split( test )
 //       got.throwErr = !! err;
 //     }
 //
-//     for (let given of givSequence)
+//     for (var given of givSequence)
 //       con.give( given );
 //
 //     test.identical( got, expected );
@@ -3271,7 +3271,7 @@ function split( test )
 //     }
 
 //     var con = _.Consequence();
-//     for (let given of givSequence)
+//     for (var given of givSequence)
 //       con.give( given );
 
 //     try
@@ -4074,7 +4074,7 @@ function ifNoErrorThen( test )
 
 //     var con = _.Consequence();
 
-//     for (let given of givSequence)
+//     for (var given of givSequence)
 //       con.give( given );
 
 //     con.timeOutThen( 20, testTaker1 );
@@ -4269,106 +4269,123 @@ function _and( test )
 
 //
 
+function inter( test )
+{
+
+  test.case = 'got';
+
+  var con1 = new _.Consequence().take( 1 );
+  var con2 = new _.Consequence();
+
+  con1.got( con2 );
+
+  test.identical( con1._resource.length, 0 );
+  test.identical( con1._competitorEarly.length, 0 );
+  test.identical( con1._competitorLate.length, 0 );
+
+  test.identical( con2._resource.length, 1 );
+  test.identical( con2._competitorEarly.length, 0 );
+  test.identical( con2._competitorLate.length, 0 );
+
+  /* */
+
+  test.case = 'done';
+
+  var con1 = new _.Consequence().take( 1 );
+  var con2 = new _.Consequence();
+
+  con1.done( con2 );
+
+  test.identical( con1._resource.length, 0 );
+  test.identical( con1._competitorEarly.length, 0 );
+  test.identical( con1._competitorLate.length, 0 );
+
+  test.identical( con2._resource.length, 1 );
+  test.identical( con2._competitorEarly.length, 0 );
+  test.identical( con2._competitorLate.length, 0 );
+
+  /* */
+
+  test.case = 'then';
+
+  var con1 = new _.Consequence().take( 1 );
+  var con2 = new _.Consequence();
+
+  con1.then( con2 );
+
+  test.identical( con1._resource.length, 1 );
+  test.identical( con1._competitorEarly.length, 0 );
+  test.identical( con1._competitorLate.length, 0 );
+
+  test.identical( con2._resource.length, 1 );
+  test.identical( con2._competitorEarly.length, 0 );
+  test.identical( con2._competitorLate.length, 0 );
+
+  /* */
+
+  test.case = 'doThen';
+
+  var con1 = new _.Consequence().take( 1 );
+  var con2 = new _.Consequence();
+
+  con1.doThen( con2 );
+
+  test.identical( con1._resource.length, 1 );
+  test.identical( con1._competitorEarly.length, 0 );
+  test.identical( con1._competitorLate.length, 0 );
+
+  test.identical( con2._resource.length, 1 );
+  test.identical( con2._competitorEarly.length, 0 );
+  test.identical( con2._competitorLate.length, 0 );
+
+  /* */
+
+  test.case = 'take';
+
+  var con1 = new _.Consequence().take( 1 );
+  var con2 = new _.Consequence();
+
+  con2.take( con1 );
+
+  test.identical( con1._resource.length, 0 );
+  test.identical( con1._competitorEarly.length, 0 );
+  test.identical( con1._competitorLate.length, 0 );
+
+  test.identical( con2._resource.length, 1 );
+  test.identical( con2._competitorEarly.length, 0 );
+  test.identical( con2._competitorLate.length, 0 );
+
+}
+
+//
+
 function concurrentTakeExperiment( test )
 {
-  let tc = new _.Consequence().take( null );
-
-  // debugger; return; xxx
-
-  /* */
-
-  function trivialSample()
-  {
-    let con = new _.Consequence();
-    let result = [];
-    let array =
-    [
-      () => { console.log( 'sync0' ); return 0; },
-      () => { console.log( 'sync1' ); return 1; },
-    ]
-
-    for( let a = 0 ; a < array.length ; a++ )
-    con.got( 1 ).take( array[ a ]() );
-    con.take( 0 );
-
-    return con.toResourceMaybe();
-  }
-
-  /* */
-
-  function putSample()
-  {
-    let result = [];
-    let con = new _.Consequence();
-    let array =
-    [
-      () => { console.log( 'sync0' ); return 0; },
-      () => { console.log( 'sync1' ); return 1; },
-    ]
-
-    for( let a = 0 ; a < array.length ; a++ )
-    con.take( array[ a ]() ).put( result );
-    con.take( result );
-
-    return con.toResourceMaybe();
-  }
-
-  /* */
-
-  function asyncSample()
-  {
-    let result = [];
-    let con = new _.Consequence();
-    _global_.xxx = con;
-    let array =
-    [
-      () => { return 0; },
-      () => { return _.timeOut( 1000, 1 ); },
-      // () => { return 1; },
-      () => { return 2; },
-    ]
-
-    debugger;
-    for( let a = 0 ; a < array.length ; a++ )
-    _.Consequence.From( array[ a ]() ).putThen( result, a ).got( con );
-    // con.wait().putThen( result, a ).take( array[ a ]() );
-    // con.wait().putThen( result, a ).take( array[ a ]() );
-    // con.take( array[ a ]() ).wait().put( result, a );
-    // con.put( result, a ).wait().take( array[ a ]() );
-    debugger;
-    con.wait().take( result );
-    debugger;
-
-    con.take( null );
-    return con.toResourceMaybe();
-  }
+  var tc = new _.Consequence().take( null );
 
   /* - */
 
   tc
-  // .ifNoErrorThen( () =>
-  // {
-  //   debugger;
-  //   let r = trivialSample();
-  //   test.identical( r, 0 );
-  //   return r;
-  // })
-  // .ifNoErrorThen( () =>
-  // {
-  //   debugger;
-  //   let r = putSample();
-  //   test.identical( r, [ 1,2 ] );
-  //   return r;
-  // })
   .ifNoErrorThen( () =>
   {
-    // debugger;
-    let c = asyncSample();
+    debugger;
+    var r = trivialSample();
+    test.identical( r, 0 );
+    return r;
+  })
+  .ifNoErrorThen( () =>
+  {
+    debugger;
+    var r = putSample();
+    test.identical( r, [ 0,1 ] );
+    return r;
+  })
+  .ifNoErrorThen( () =>
+  {
+    var c = asyncSample();
     test.is( _.consequenceIs( c ) );
-    // c = _.Consequence.From( c );
     c.doThen( ( err, arg ) =>
     {
-      debugger;
       test.is( err === undefined );
       test.identical( arg, [ 0,1,2 ] );
       if( err )
@@ -4379,10 +4396,82 @@ function concurrentTakeExperiment( test )
   })
 
   return tc;
+
+  /* */
+
+  function trivialSample()
+  {
+    var con = new _.Consequence();
+    var result = [];
+    var array =
+    [
+      () => { console.log( 'sync0' ); return 0; },
+      () => { console.log( 'sync1' ); return 1; },
+    ]
+
+    for( var a = 0 ; a < array.length ; a++ )
+    con.got( 1 ).take( array[ a ]() );
+    con.take( 0 );
+
+    return con.toResourceMaybe();
+  }
+
+  /* */
+
+  function putSample()
+  {
+    var result = [];
+    var con = new _.Consequence();
+    var array =
+    [
+      () => { return 0; },
+      () => { return 1; },
+    ]
+
+    for( var a = 0 ; a < array.length ; a++ )
+    _.after( array[ a ]() ).putThen( result, a ).participate( con );
+    con.wait().take( result );
+
+    return con.toResourceMaybe();
+  }
+
+  /* */
+
+  function asyncSample()
+  {
+    var result = [];
+    var con = new _.Consequence();
+    var array =
+    [
+      () => { return 0; },
+      () => { return timeOut( 100, 1 ); },
+      () => { return 2; },
+    ]
+
+    for( var a = 0 ; a < array.length ; a++ )
+    _.after( array[ a ]() ).putThen( result, a ).participate( con );
+    con.wait().take( result );
+
+    return con.toResourceMaybe();
+  }
+
+  /* */
+
+  function timeOut( time, arg )
+  {
+    return _.timeOut( time, arg ).doThen( function( err, arg )
+    {
+      debugger;
+      if( err )
+      throw err;
+      return arg;
+    });
+  }
+
 }
 
-concurrentTakeExperiment.timeOut = 20000;
-// concurrentTakeExperiment.experimental = 1;
+concurrentTakeExperiment.timeOut = 10000;
+concurrentTakeExperiment.experimental = 0;
 
 //
 
@@ -4496,7 +4585,7 @@ concurrentTakeExperiment.timeOut = 20000;
 //     }
 
 //     var con = _.Consequence();
-//     for (let given of givSequence)
+//     for (var given of givSequence)
 //     con.give( given );
 
 //     con._onceGot( testTaker1 );
@@ -4523,7 +4612,7 @@ concurrentTakeExperiment.timeOut = 20000;
 
 //     var con = _.Consequence();
 
-//     for( let given of givSequence ) // pass all values in givSequence to consequenced
+//     for( var given of givSequence ) // pass all values in givSequence to consequenced
 //     {
 //       con.give( given );
 //     }
@@ -4558,7 +4647,7 @@ concurrentTakeExperiment.timeOut = 20000;
 //     con._onceGot( testTaker1 );
 //     con._onceGot( testTaker2 );
 
-//     for( let given of givSequence ) // pass all values in givSequence to consequenced
+//     for( var given of givSequence ) // pass all values in givSequence to consequenced
 //     {
 //       testCon.doThen( () => con.give( given ) );
 //     }
@@ -6202,6 +6291,7 @@ var Self =
     andThen,
     _and,
 
+    inter,
     concurrentTakeExperiment,
 
     first,

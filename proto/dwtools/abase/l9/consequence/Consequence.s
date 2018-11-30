@@ -83,7 +83,7 @@ class wConsequence extends _.CallableObject
   constructor()
   {
     let self = super();
-    Self.prototype.init.apply( self,arguments );
+    Self.prototype.init.apply( self, arguments );
     return self;
   }
 }
@@ -271,7 +271,7 @@ function lateGot( competitor )
   let self = this;
   let times = 1;
 
-  _.assert( arguments.length === 1,'lateGot : expects none or single argument, lateGot',arguments.length );
+  _.assert( arguments.length === 1, 'lateGot : expects none or single argument, lateGot', arguments.length );
 
   if( _.numberIs( competitor ) )
   {
@@ -468,7 +468,7 @@ function _put( o )
     ({
       thenning : thenning,
       kindOfArguments : Self.KindOfArguments.Both,
-      early : false,
+      early : true,
       competitor : __onPutWithKey,
     });
   }
@@ -479,7 +479,7 @@ function _put( o )
     ({
       thenning : thenning,
       kindOfArguments : Self.KindOfArguments.Both,
-      early : false,
+      early : true,
       competitor : __onPutToArray,
     });
   }
@@ -492,9 +492,6 @@ function _put( o )
 
   function __onPutWithKey( err, arg )
   {
-    logger.log( 'onPutWithKey', arg, key );
-    logger.log( xxx.toString() );
-    debugger;
     if( err !== undefined )
     container[ key ] = err;
     else
@@ -511,6 +508,7 @@ function _put( o )
   function __onPutToArray( err, arg )
   {
     debugger;
+    _.assert( 0, 'not tested' );
     if( err !== undefined )
     container.push( err );
     else
@@ -577,7 +575,7 @@ putThen.defaults.thenning = true;
 //  * @memberof wConsequence#
 //  */
 
-// function thenSealed( context,competitor,args )
+// function thenSealed( context, competitor, args )
 // {
 //   let self = this;
 //
@@ -591,7 +589,7 @@ putThen.defaults.thenning = true;
 //     context = undefined;
 //   }
 //
-//   let competitorJoined = _.routineSeal( context,competitor,args );
+//   let competitorJoined = _.routineSeal( context, competitor, args );
 //
 //   debugger;
 //   return self.__competitorAppend
@@ -1257,7 +1255,7 @@ function timeOutThen( time, competitor )
   else
   cor = function __timeOutThen( err, arg )
   {
-    return _.timeOut( time,self,competitor,[ err, arg ] );
+    return _.timeOut( time, self, competitor, [ err, arg ] );
   }
 
   /* */
@@ -1357,20 +1355,49 @@ function wait()
 
   self.got( function __waitGot( err, arg )
   {
-
-    logger.log( 'wait.got', arg );
-    logger.log( xxx.toString() );
-
-    debugger;
+    // logger.log( 'wait.got', arg );
+    // logger.log( xxx.toString() );
     if( err )
     self.error( err );
     else
     self.take( result );
   });
 
-  // self.take( null );
+  self.take( null );
 
   return result;
+}
+
+//
+
+function participate( con )
+{
+  let self = this;
+
+  _.assert( _.consequenceIs( con ) );
+  _.assert( arguments.length === 1 );
+
+  debugger;
+
+  con.got( 1 );
+  self.got( con );
+
+  return con;
+}
+
+//
+
+function participateThen( con )
+{
+  let self = this;
+
+  _.assert( _.consequenceIs( con ) );
+  _.assert( arguments.length === 1 );
+
+  con.got( 1 );
+  self.then( con );
+
+  return con;
 }
 
 /**
@@ -1430,7 +1457,7 @@ function andGot( srcs )
 {
   let self = this;
   _.assert( arguments.length === 1, 'Expects single argument' );
-  return self._and( srcs,false );
+  return self._and( srcs, false );
 }
 
 andGot.having =
@@ -1454,7 +1481,7 @@ function andThen( srcs )
 {
   let self = this;
   _.assert( arguments.length === 1, 'Expects single argument' );
-  return self._and( srcs,true );
+  return self._and( srcs, true );
 }
 
 andThen.having =
@@ -1488,7 +1515,7 @@ function _and( srcs, thenning )
     if( thenning )
     for( let i = 0 ; i < srcs.length-1 ; i++ )
     if( srcs[ i ] )
-    srcs[ i ].give( errs[ i ],args[ i ] );
+    srcs[ i ].give( errs[ i ], args[ i ] );
 
     if( anyErr )
     self.error( anyErr );
@@ -1529,7 +1556,7 @@ function _and( srcs, thenning )
 
   /* */
 
-  // self.got( _.routineJoin( undefined,got,[ srcs.length ] ) );
+  // self.got( _.routineJoin( undefined, got, [ srcs.length ] ) );
 
   /* */
 
@@ -1574,16 +1601,16 @@ function _and( srcs, thenning )
       _.assert( _.consequenceIs( src ) || src === null, 'Expects consequence or null, but got', _.strType( src ) );
       if( src === null )
       {
-        __got( s,null,null );
+        __got( s, null, null );
         continue;
       }
 
-      let r = _.routineJoin( undefined,__got,[ s ] );
+      let r = _.routineJoin( undefined, __got, [ s ] );
       // r.tag = _.numberRandomInt( 100 ); // qqq
       src.got( r );
     }
 
-    __got( srcs.length-1,err, arg );
+    __got( srcs.length-1, err, arg );
 
   });
 
@@ -1596,7 +1623,7 @@ function eitherGot( srcs )
 {
   let self = this;
   _.assert( arguments.length === 1, 'Expects single argument' );
-  return self._either( srcs,false );
+  return self._either( srcs, false );
 }
 
 eitherGot.having =
@@ -1610,7 +1637,7 @@ function eitherThen( srcs )
 {
   let self = this;
   _.assert( arguments.length === 1, 'Expects single argument' );
-  return self._either( srcs,true );
+  return self._either( srcs, true );
 }
 
 eitherThen.having =
@@ -1645,7 +1672,7 @@ eitherThenSplit.having =
 
 //
 
-function _either( srcs,thenning )
+function _either( srcs, thenning )
 {
   let self = this;
 
@@ -1655,7 +1682,7 @@ function _either( srcs,thenning )
   /* */
 
   let count = 0;
-  function got( index,err, arg )
+  function got( index, err, arg )
   {
 
     count += 1;
@@ -1679,7 +1706,7 @@ function _either( srcs,thenning )
       _.assert( _.consequenceIs( src ) || src === null );
       if( src === null )
       continue;
-      src.got( _.routineJoin( undefined,got,[ a ] ) );
+      src.got( _.routineJoin( undefined, got, [ a ] ) );
     }
 
   });
@@ -1750,7 +1777,7 @@ function _either( srcs,thenning )
 function first( src )
 {
   let self = this;
-  return self._first( src,null );
+  return self._first( src, null );
 }
 
 first.having =
@@ -1791,7 +1818,7 @@ function _first( src, stack )
     self.give( result );
 
   }
-  else _.assert( 0,'first expects consequence of routine, but got',_.strType( src ) );
+  else _.assert( 0, 'first expects consequence of routine, but got', _.strType( src ) );
 
   return self;
 }
@@ -1840,7 +1867,7 @@ function _prepareJoinedWithConsequence()
     JoinedWithConsequence[ r ] = function()
     {
       let args = arguments;
-      let method = this.routineJoin( this.context,this.method, args );
+      let method = this.routineJoin( this.context, this.method, args );
       this.consequence[ r ]( method );
       return this;
     }
@@ -1880,7 +1907,7 @@ function _join( routineJoin, args )
 
 //
 
-function join( context,method )
+function join( context, method )
 {
   let self = this;
   return self._join( _.routineJoin, arguments );
@@ -1910,7 +1937,7 @@ function tolerantCallback()
   }
 }
 
-// function seal( context,method )
+// function seal( context, method )
 // {
 //   let self = this;
 //   let result = Object.create( null );
@@ -1923,7 +1950,7 @@ function tolerantCallback()
 //   result.ifNoErrorThen = function ifNoErrorThen( _method )
 //   {
 //     let args = method ? arguments : arguments[ 1 ];
-//     let c = _.routineSeal( context,method || _method,args );
+//     let c = _.routineSeal( context, method || _method, args );
 //     self.ifNoErrorThen( c );
 //     return this;
 //   }
@@ -1931,7 +1958,7 @@ function tolerantCallback()
 //   result.ifErrorThen = function ifErrorThen( _method )
 //   {
 //     let args = method ? arguments : arguments[ 1 ];
-//     let c = _.routineSeal( context,method || _method,args );
+//     let c = _.routineSeal( context, method || _method, args );
 //     self.ifErrorThen( c );
 //     return this;
 //   }
@@ -1939,7 +1966,7 @@ function tolerantCallback()
 //   result.doThen = function doThen( _method )
 //   {
 //     let args = method ? arguments : arguments[ 1 ];
-//     let c = _.routineSeal( context,method || _method,args );
+//     let c = _.routineSeal( context, method || _method, args );
 //     self.doThen( c );
 //     return this;
 //   }
@@ -1947,7 +1974,7 @@ function tolerantCallback()
 //   result.got = function got( _method )
 //   {
 //     let args = method ? arguments : arguments[ 2 ];
-//     let c = _.routineSeal( context,method || _method,args );
+//     let c = _.routineSeal( context, method || _method, args );
 //     self.got( c );
 //     return this;
 //   }
@@ -2047,7 +2074,7 @@ function error( error )
   _.assert( arguments.length === 1 || arguments.length === 0 );
   if( arguments.length === 0  )
   error = _.err();
-  return self.__giveAct( error,undefined );
+  return self.__giveAct( error, undefined );
 }
 
 error.having =
@@ -2069,7 +2096,7 @@ error.having =
  * @memberof wConsequence#
  */
 
-function _giveWithError( error,argument )
+function _giveWithError( error, argument )
 {
   let self = this;
 
@@ -2108,7 +2135,7 @@ function __giveAct( error, argument )
     // if( self.tag === 'willFilesOpenReady' )
     // debugger;
 
-    // _.assert( !_.consequenceIs( argument ),'not tested' );
+    // _.assert( !_.consequenceIs( argument ), 'not tested' );
     _.assert( !self.resourceLimit || self._resource.length < self.resourceLimit, () => 'Resource limit' + ( self.tag ? ' of ' + self.tag + ' ' : ' ' ) + 'set to ' + self.resourceLimit + ', but got more resources' );
     let msg = '{-error-} and {-argument-} channels should not be in use simultaneously\n' +
       '{-error-} or {-argument-} should be undefined, but currently ' +
@@ -2151,7 +2178,7 @@ function __giveAct( error, argument )
  * @memberof wConsequence#
  */
 
-function _ping( error,argument )
+function _ping( error, argument )
 {
   let self = this;
 
@@ -2267,7 +2294,7 @@ function __handleGot()
 {
   let self = this;
 
-  _.assert( self._resource.length,'__handleGot : none resource left' );
+  _.assert( self._resource.length, '__handleGot : none resource left' );
 
   if( self.asyncGiving )
   {
@@ -2303,12 +2330,12 @@ function __handleGotAct()
   if( self._competitorEarly.length > 0 )
   {
     let competitor = self._competitorEarly.shift();
-    __giveTo( competitor,1 );
+    __giveTo( competitor, 1 );
   }
   else if( self._competitorLate.length > 0 )
   {
     let competitor = self._competitorLate.shift();
-    __giveTo( competitor,1 );
+    __giveTo( competitor, 1 );
   }
 
   /* persistent */
@@ -2320,7 +2347,7 @@ function __handleGotAct()
   //   for( let i = 0 ; i < self._competitorPersistent.length ; i++ )
   //   {
   //     let pTaker = self._competitorPersistent[ i ];
-  //     __giveTo( pTaker,0 );
+  //     __giveTo( pTaker, 0 );
   //   }
   //
   //   if( !spliced && self._competitorPersistent.length )
@@ -2337,21 +2364,46 @@ function __handleGotAct()
 
   /* give resource to competitor consequence */
 
-  function __giveToConsequence( competitor,ordinary )
+  function __giveToConsequence( competitor, ordinary )
   {
+
+    let ifError = competitor.kindOfArguments === Self.KindOfArguments.IfError;
+    let ifNoError = competitor.kindOfArguments === Self.KindOfArguments.IfNoError;
+
+    let execute = true;
+    execute = execute && ( !ifError || ( ifError && !!resource.error ) );
+    execute = execute && ( !ifNoError || ( ifNoError && !resource.error ) );
+
+    if( !execute )
+    return;
+
+    /* reuse */
+
+    let reuse = false;
+    reuse = reuse || competitor.tapping || !ordinary;
+    reuse = reuse || !execute;
+    reuse = reuse || competitor.thenning;
+
+    if( !reuse )
+    {
+      spliced = 1;
+      self._resource.shift();
+    }
+
+    /* */
 
     if( Config.debug )
     if( self.diagnostics )
     {
-      _.arrayRemoveElementOnceStrictly( competitor.onGot.dependsOf , self );
+      _.arrayRemoveElementOnceStrictly( competitor.onGot.dependsOf, self );
       if( self.debug || competitor.onGot.debug )
       debugger;
     }
 
-    result = competitor.onGot.__giveAct( resource.error,resource.argument );
+    result = competitor.onGot.__giveAct( resource.error, resource.argument );
 
     if( ordinary )
-    if( competitor.thenning )
+    // if( competitor.thenning )
     if( self._resource.length )
     {
       self.__handleGot();
@@ -2361,7 +2413,7 @@ function __handleGotAct()
 
   /* give resource to competitor routine */
 
-  function __giveToRoutine( competitor,ordinary )
+  function __giveToRoutine( competitor, ordinary )
   {
 
     let errThrowen = 0;
@@ -2400,11 +2452,11 @@ function __handleGotAct()
     try
     {
       if( ifError )
-      result = competitor.onGot.call( self,resource.error );
+      result = competitor.onGot.call( self, resource.error );
       else if( ifNoError )
-      result = competitor.onGot.call( self,resource.argument );
+      result = competitor.onGot.call( self, resource.argument );
       else
-      result = competitor.onGot.call( self,resource.error,resource.argument );
+      result = competitor.onGot.call( self, resource.error, resource.argument );
     }
     catch( err )
     {
@@ -2434,16 +2486,16 @@ function __handleGotAct()
 
   /* give to */
 
-  function __giveTo( competitor,ordinary )
+  function __giveTo( competitor, ordinary )
   {
 
     if( _.consequenceIs( competitor.onGot ) )
     {
-      __giveToConsequence( competitor,ordinary );
+      __giveToConsequence( competitor, ordinary );
     }
     else
     {
-      __giveToRoutine( competitor,ordinary );
+      __giveToRoutine( competitor, ordinary );
     }
 
   }
@@ -2479,9 +2531,9 @@ function __competitorAppend( o )
   _.assert( _.consequenceIs( self ) );
   _.assert( _.routineIs( competitor ) || _.consequenceIs( competitor ) );
   _.assert( o.kindOfArguments >= 1 );
-  _.assert( competitor !== self,'consquence cant depend of itself' );
-  _.assert( o.early !== undefined,'Expects { o.early }' );
-  _.routineOptions( __competitorAppend,o );
+  _.assert( competitor !== self, 'consquence cant depend of itself' );
+  _.assert( o.early !== undefined, 'Expects { o.early }' );
+  _.routineOptions( __competitorAppend, o );
 
   if( Config.debug )
   if( self.diagnostics )
@@ -2492,7 +2544,7 @@ function __competitorAppend( o )
 
   if( o.times !== 1 )
   {
-    let optionsForAppend = _.mapExtend( null,o );
+    let optionsForAppend = _.mapExtend( null, o );
     optionsForAppend.times = 1;
     for( let t = 0 ; t < o.times ; t++ )
     self.__competitorAppend( optionsForAppend );
@@ -2658,7 +2710,7 @@ function assertNoDeadLockWith( competitor )
   let self = this;
 
   _.assert( _.consequenceIs( competitor ) );
-  // _.assert( !competitor.competitorHas( self ),'dead lock!' );
+  // _.assert( !competitor.competitorHas( self ), 'dead lock!' );
 
   let result = self.doesDependOf( competitor );
   let msg = '';
@@ -2669,7 +2721,7 @@ function assertNoDeadLockWith( competitor )
     // msg += 'with consequence :\n' + competitor.stack;
   }
 
-  _.assert( !result,msg );
+  _.assert( !result, msg );
 
   return result;
 }
@@ -2803,14 +2855,14 @@ function competitorsCancel( competitor )
 
   if( arguments.length === 0 )
   {
-    self._competitorEarly.splice( 0,self._competitorEarly.length );
-    self._competitorLate.splice( 0,self._competitorLate.length );
+    self._competitorEarly.splice( 0, self._competitorEarly.length );
+    self._competitorLate.splice( 0, self._competitorLate.length );
   }
   else
   {
     throw _.err( 'not tested' );
-    _.arrayRemoveElementOnce( self._competitorEarly,competitor );
-    _.arrayRemoveElementOnce( self._competitorLate,competitor );
+    _.arrayRemoveElementOnce( self._competitorEarly, competitor );
+    _.arrayRemoveElementOnce( self._competitorLate, competitor );
   }
 
 }
@@ -2910,11 +2962,11 @@ function resourcesCancel( arg )
   _.assert( arguments.length === 0 || arguments.length === 1 );
 
   if( arguments.length === 0 )
-  self._resource.splice( 0,self._resource.length );
+  self._resource.splice( 0, self._resource.length );
   else
   {
     throw _.err( 'not tested' );
-    _.arrayRemoveElementOnce( self._resource,arg );
+    _.arrayRemoveElementOnce( self._resource, arg );
   }
 
 }
@@ -3074,7 +3126,7 @@ function toStr()
   let self = this;
   let result = self.nickName;
 
-  let names = _.select( self.competitorsEarlyGet(),'*/tag' );
+  let names = _.select( self.competitorsEarlyGet(), '*/tag' );
 
   if( self.tag )
   result += '\n  tag : ' + self.tag;
@@ -3124,7 +3176,7 @@ function __call__()
 
   _.assert( arguments.length === 0 || arguments.length === 1 || arguments.length === 2 );
   if( arguments.length === 2 )
-  self.give( arguments[ 0 ],arguments[ 1 ] );
+  self.give( arguments[ 0 ], arguments[ 1 ] );
   else
   self.give( arguments[ 0 ] );
 
@@ -3165,7 +3217,7 @@ function nickNameGet()
 // static
 // --
 
-function From( src,timeOut )
+function From( src, timeOut )
 {
   _.assert( arguments.length === 1 || arguments.length === 2 );
   _.assert( timeOut === undefined || _.numberIs( timeOut ) );
@@ -3231,7 +3283,7 @@ function give_static( consequence )
 
   _.assert( arguments.length === 2 || arguments.length === 3, 'Expects two or three arguments' );
 
-  let err,got;
+  let err, got;
   if( arguments.length === 2 )
   {
     got = arguments[ 1 ];
@@ -3290,7 +3342,7 @@ function _give_static( o )
 
     for( let i = 0 ; i < o.consequence.length ; i++ )
     {
-      let optionsGive = _.mapExtend( null,o );
+      let optionsGive = _.mapExtend( null, o );
       optionsGive.consequence = o.consequence[ i ];
       _give_static( optionsGive );
     }
@@ -3305,7 +3357,7 @@ function _give_static( o )
 
     if( o.error !== undefined )
     {
-      o.consequence.__giveAct( o.error,o.args[ 0 ] );
+      o.consequence.__giveAct( o.error, o.args[ 0 ] );
     }
     else
     {
@@ -3320,11 +3372,11 @@ function _give_static( o )
 
     if( o.error !== undefined )
     {
-      return o.consequence.call( context,o.error,o.args[ 0 ] );
+      return o.consequence.call( context, o.error, o.args[ 0 ] );
     }
     else
     {
-      return o.consequence.call( context,null,o.args[ 0 ] );
+      return o.consequence.call( context, null, o.args[ 0 ] );
     }
 
   }
@@ -3364,7 +3416,7 @@ function _give_static( o )
    * @memberof wConsequence
    */
 
-function error_static( consequence,error )
+function error_static( consequence, error )
 {
 
   _.assert( arguments.length === 2, 'Expects exactly two arguments' );
@@ -3393,7 +3445,7 @@ function error_static( consequence,error )
  * @memberof wConsequence
  */
 
-function giveWithContextAndError_static( consequence,context,err,got )
+function giveWithContextAndError_static( consequence, context, err, got )
 {
 
   if( err === undefined )
@@ -3404,7 +3456,7 @@ function giveWithContextAndError_static( consequence,context,err,got )
 
   let args = [ got ];
   if( arguments.length > 4 )
-  args = _.longSlice( arguments,3 );
+  args = _.longSlice( arguments, 3 );
 
   return _give_static
   ({
@@ -3536,7 +3588,7 @@ function FunctionWithin( consequence )
   consequence.doThen( function( err, arg )
   {
 
-    return routine.apply( context,args );
+    return routine.apply( context, args );
 
   });
 
@@ -3560,7 +3612,7 @@ function FunctionThereafter()
   con.doThen( function( err, arg )
   {
 
-    return routine.apply( null,args );
+    return routine.apply( null, args );
 
   });
 
@@ -3587,8 +3639,8 @@ function experimentThereafter()
     console.log( 'done2' );
   }
 
-  _.timeOut( 5000,console.log.thereafter( 'done' ) );
-  _.timeOut( 5000,f.thereafter() );
+  _.timeOut( 5000, console.log.thereafter( 'done' ) );
+  _.timeOut( 5000, f.thereafter() );
 
   debugger;
 
@@ -3601,7 +3653,7 @@ function experimentWithin()
 
   debugger;
   let con = _.timeOut( 30000 );
-  console.log.within( con ).call( console,'done' );
+  console.log.within( con ).call( console, 'done' );
   con.doThen( function()
   {
 
@@ -3622,12 +3674,46 @@ function experimentCall()
   con.doThen( function( err, arg )
   {
 
-    console.log( 'got :',arg );
+    console.log( 'got :', arg );
 
   });
 
   debugger;
 
+}
+
+//
+
+function after( resource )
+{
+  _.assert( arguments.length === 0 || arguments.length === 1 );
+  _.assert( arguments.length === 0 || resource !== undefined );
+
+  if( resource !== undefined )
+  return _.Consequence.From( resource );
+  else
+  return new _.Consequence().take( null );
+
+}
+
+//
+
+function before( competitor )
+{
+  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 0 || competitor !== undefined );
+  _.assert( 0, 'not tested' );
+
+  let result;
+  if( _.consequenceLike( competitor ) )
+  {
+    competitor = _.Consequence.From( competitor );
+  }
+
+  let result = _.Consequence();
+  result.lateThen( competitor );
+
+  return result;
 }
 
 // --
@@ -3663,7 +3749,7 @@ let ComposesDebug =
 }
 
 if( Config.debug )
-_.mapExtend( Composes,ComposesDebug );
+_.mapExtend( Composes, ComposesDebug );
 
 let Restricts =
 {
@@ -3730,119 +3816,121 @@ let Accessors =
 let Extend =
 {
 
-  init : init,
-  is : is,
-  isJoinedWithConsequence : isJoinedWithConsequence,
+  init,
+  is,
+  isJoinedWithConsequence,
 
   // chainer
 
-  got : got,
-  lateGot : lateGot,
-  promiseGot : promiseGot,
+  got,
+  lateGot,
+  promiseGot,
   done : got,
 
+  doThen,
   then : doThen,
-  doThen : doThen,
-  _doThen : _doThen,
-  lateThen : lateThen,
-  promiseThen : promiseThen,
+  _doThen,
+  lateThen,
+  promiseThen,
 
-  _put : _put,
-  put : put,
-  putThen : putThen,
+  _put,
+  put,
+  putThen,
 
-  choke : choke,
-  chokeThen : chokeThen,
+  choke,
+  chokeThen,
 
-  _onceGot : _onceGot, /* experimental */
-  _onceThen : _onceThen, /* experimental */
+  _onceGot, /* experimental */
+  _onceThen, /* experimental */
 
-  split : split,
-  tap : tap,
+  split,
+  tap,
 
-  ifNoErrorGot : ifNoErrorGot,
-  ifNoErrorThen : ifNoErrorThen,
+  ifNoErrorGot,
+  ifNoErrorThen,
 
-  ifErrorGot : ifErrorGot,
-  ifErrorThen : ifErrorThen,
-  ifErrorThenLogThen : ifErrorThenLogThen, /* experimental */
+  ifErrorGot,
+  ifErrorThen,
+  ifErrorThenLogThen, /* experimental */
 
-  /* debugThen : debugThen, experimental */
-  timeOutThen : timeOutThen,
-
-  /* persist : persist, */ /* deprecated */
+  timeOutThen,
 
   // advanced
 
-  wait : wait,
-  andGot : andGot,
-  andThen : andThen,
-  _and : _and,
+  wait,
+  participate,
+  participateThen,
 
-  eitherGot : eitherGot,
-  eitherThen : eitherThen,
-  eitherThenSplit : eitherThenSplit,
-  _either : _either,
+  andGot,
+  andThen,
+  _and,
 
-  first : first,
-  _first : _first,
+  eitherGot,
+  eitherThen,
+  eitherThenSplit,
+  _either,
 
-  _join : _join,
-  join : join,
-  seal : seal,
-  tolerantCallback : tolerantCallback,
+  first,
+  _first,
+
+  _join,
+  join,
+  seal,
+  tolerantCallback,
 
   // resource
 
-  give : give,
+  give,
   take : give,
-  error : error,
-  _giveWithError : _giveWithError,
-  __giveAct : __giveAct,
-  _ping : _ping, /* experimental */
+  error,
+  _giveWithError,
+  __giveAct,
+  _ping, /* experimental */
 
   // handling mechanism
 
-  __handleError : __handleError,
-  __handleGot : __handleGot,
-  __handleGotAct : __handleGotAct,
-  __competitorAppend : __competitorAppend,
+  __handleError,
+  __handleGot,
+  __handleGotAct,
+  __competitorAppend,
 
   // accounting
 
-  competitorHas : competitorHas,
-  doesDependOf : doesDependOf,
-  assertNoDeadLockWith : assertNoDeadLockWith,
+  competitorHas,
+  doesDependOf,
+  assertNoDeadLockWith,
 
-  competitorsEarlyGet : competitorsEarlyGet,
-  competitorsLateGet : competitorsLateGet,
-  competitorsCancel : competitorsCancel,
-  _competitorNextGet : _competitorNextGet,
+  competitorsEarlyGet,
+  competitorsLateGet,
+  competitorsCancel,
+  _competitorNextGet,
 
-  resourcesGet : resourcesGet,
-  resourcesCancel : resourcesCancel,
-  resourcesHas : resourcesHas,
-  toResourceMaybe : toResourceMaybe,
+  resourcesGet,
+  resourcesCancel,
+  resourcesHas,
+  toResourceMaybe,
 
-  isEmpty : isEmpty,
-  clear : clear, /* experimental */
-  cancel : cancel, /* experimental */
+  isEmpty,
+  clear, /* experimental */
+  cancel, /* experimental */
 
   // etc
 
-  toStr : toStr,
-  toString : toString,
+  toStr,
+  toString,
   __call__ : __call__,
 
-  asyncModeSet : asyncModeSet,
-  asyncModeGet : asyncModeGet,
-  nickNameGet : nickNameGet,
+  asyncModeSet,
+  asyncModeGet,
+  nickNameGet,
 
   // relations
 
-  Composes : Composes,
-  Restricts : Restricts,
-  Medials : Medials,
+  Composes,
+  Restricts,
+  Medials,
+  Forbids,
+  Accessors,
 
 }
 
@@ -3853,6 +3941,12 @@ let Extend =
 let Supplement =
 {
   Statics : Statics,
+}
+
+let Tools =
+{
+  after,
+  before,
 }
 
 //
@@ -3867,6 +3961,8 @@ _.classDeclare
 });
 
 _.Copyable.mixin( wConsequence );
+
+_.mapExtend( _, Tools );
 
 //
 
@@ -3890,13 +3986,14 @@ _.assert( wConsequenceProxy.shortName === 'Consequence' );
 
 //
 
-_.accessor.declare
-({
-  object : Self.prototype,
-  names : Accessors,
-});
+// _.accessor.declare
+// ({
+//   object : Self.prototype,
+//   names : Accessors,
+// });
 
-_.accessor.forbid( Self.prototype,Forbids );
+// _.accessor.forbid( Self.prototype, Forbids );
+
 _prepareJoinedWithConsequence();
 
 _.assert( !!Self._fieldsOfRelationsGroupsGet );
