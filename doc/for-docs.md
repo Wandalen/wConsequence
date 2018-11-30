@@ -1,788 +1,351 @@
- ( function _Abstract_s_() {
+( function _GraphBranch_s_( ) {
 
 'use strict';
+
+var _ = _global_.wTools;
+var _ObjectHasOwnProperty = Object.hasOwnProperty;
 
 if( typeof module !== 'undefined' )
 {
 
-  let _ = require( '../../../Tools.s' );
-
-  _.include( 'wConsequence' );
-  _.include( 'wCopyable' );
-  _.include( 'wCommunicator' );
-  // _.include( 'wBaseEncoder' );
-  require( '../../../abase/l4/Encoder.s' )
-
-}
-
-var Http, Net, SocketIo, Udp;
-
-//
-
-var _ = _global_.wTools;
-var Parent = null;
-var Self = function wCommunicatorProtocolAbstract( o )
-{
-  return _.instanceConstructor( Self, this, arguments );
-}
-
-Self.shortName = 'Abstract';
-
-// --
-//
-// --
-
-function init( o )
-{
-  var self = this;
-
-  _.instanceInit( self );
-  _.assert( arguments.length === 0 || arguments.length === 1 );
-
-  Object.preventExtensions( self );
-
-  if( o )
-  self.copy( o );
+  require( '../UseBase.s' );
 
 }
 
 //
 
-function unform()
+function onMixin( mixinDescriptor, dstClass )
 {
-  var self = this;
 
-  self._unform();
+  var dstPrototype = dstClass.prototype;
 
-}
+  _.assert( _.mixinHas( dstPrototype,_.Copyable ) && _.mixinHas( dstPrototype,wGraphNode ),'wGraphBranch : wCopyable and wGraphNode should be mixed in first' );
+  _.assert( arguments.length === 2, 'Expects exactly two arguments' );
 
-//
+  _.mixinApply( this, dstPrototype );
+  // _.mixinApply
+  // ({
+  //   dstPrototype : dstPrototype,
+  //   descriptor : Self,
+  // });
 
-function _unform()
-{
-  var self = this;
+  _.assert( Object.hasOwnProperty.call( dstPrototype,'cloneEmpty' ) );
 
-  self.primeStreamLike.destroy();
-
-  if( self.bufferStreamLike )
-  self.bufferStreamLike.destroy();
-
-}
-
-//
-
-function form()
-{
-  var self = this;
-  var com = self.communicator;
-
-  _.assert( _.boolLike( com.isMaster ) || _.boolLike( com.isSlave ) );
-
-  if( _.strIs( self._streamDelimeter ) )
+  _.accessor.declare( dstPrototype,
   {
-    self._streamDelimeterString = self._streamDelimeter;
-    self._streamDelimeterBuffer = _.bufferBytesGet( self._streamDelimeter );
-  }
-  else
-  {
-    self._streamDelimeterString = _.bufferToStr( self._streamDelimeter );
-    self._streamDelimeterBuffer = self._streamDelimeter;
-  }
-
-  if( com.isMaster )
-  self._formMaster();
-  else
-  self._formSlave();
+    elements : 'elements',
+  });
 
 }
 
 //
 
-function _formMaster()
+function clone()
 {
   var self = this;
 
-  throw _.err( 'abstract' );
+  _.assert( arguments.length === 0 );
 
+  var elements = _.methodsCall( self.elements,'clone' );
+  var result = self.cloneExtending({ elements : elements });
+
+  return result;
 }
 
 //
 
-function _formSlave()
+function cloneEmpty()
 {
   var self = this;
 
-  throw _.err( 'abstract' );
+  _.assert( arguments.length === 0 );
 
+  var result = self.cloneExtending({ elements : [] });
+
+  return result;
 }
 
 //
 
-function _formStreams()
+function _equalAre( original )
 {
-  var self = this;
-  var com = self.communicator;
 
-  /* */
+  if( !original )
+  original = wCopyable._equalAre;
 
-  debugger;
-  if( self.bufferStreamLike )
+  _.assert( !!original );
+
+  return function _equalAre( src1,src2,o )
   {
 
-    _.assert( self.bufferStreamLike );
-    _.assert( !self._bufferSendAct );
+    var result = original.apply( this,arguments );
 
-    self._bufferSendAct = function _bufferSendAct( data )
+    if( !result )
+    return result;
+
+    if( src1.elements.length !== src2.elements.length )
+    return false;
+
+    for( var e = 0 ; e < src2.elements.length ; e++ )
     {
-      _.assert( arguments.length === 1, 'expects single argument' );
-      /* var data = this._packetSendBegin({ data : data }); */
-      this.bufferStreamLike.write( _.bufferNodeFrom( data ) );
+      debugger; xxx
+      if( !src1.elements[ e ]._equalAre( src1.elements[ e ],src2.elements[ e ],o ) )
+      return false;
     }
 
-    self.bufferStreamLike.on( 'data', function( msg )
-    {
-      logger.log( com.nameTitle,'bufferStreamLike:data',msg );
-    });
-
-    self.bufferStreamLike.on( 'message', function( msg )
-    {
-      logger.log( com.nameTitle,'bufferStreamLike:message',msg );
-    });
-
-    self.bufferStreamLike.on( 'readable', function()
-    {
-    });
-
-    self.bufferStreamLike.on( 'error', function( err )
-    {
-      self._errorReceive({ err : err });
-    });
-
-    self.bufferStreamLike.on( 'finish', function()
-    {
-      if( com.verbosity > 1 )
-      logger.log( com.nameTitle,'bufferStreamLike:finish' );
-    });
-
-    self.bufferStreamLike.on( 'end', function()
-    {
-      if( com.verbosity > 1 )
-      logger.log( com.nameTitle,'bufferStreamLike:end' );
-    });
-
+    return true;
   }
+
+}
+
+//
+
+function _elementsSet( src )
+{
+  var self = this;
+
+  _.assert( _.longIs( src ) || src === null );
+
+  self.elementsDetach();
 
   /* */
 
-  _.assert( self.primeStreamLike );
+  if( src !== null )
+  src = _.longSlice( src );
 
-  if( _.routineIs( this.primeStreamLike.send ) )
-  self._packetSendAct = function _packetSendAct( data )
+  // var validator =
+  // {
+  //   set : function set( obj, k, e )
+  //   {
+  //     debugger;
+  //     if( _.objectIs( obj[ k ] ) )
+  //     obj[ k ].downDetachBefore();
+  //
+  //     if( e.down !== self )
+  //     if( _.objectIs( e ) )
+  //     e.downAttachAfter( self );
+  //
+  //     debugger;
+  //     return true;
+  //   },
+  //   deleteProperty : function deleteProperty( obj, k )
+  //   {
+  //     debugger;
+  //     obj[ k ].downDetachBefore();
+  //     delete obj[ k ];
+  //     return true;
+  //   },
+  // }
+  //
+  // var proxy = Proxy.revocable( src, validator );
+  // src = proxy.proxy;
+  //
+  // Object.defineProperty( src, 'revoke',
+  // {
+  //   value : _.routineJoin( proxy,proxy.revoke ),
+  //   writable : true,
+  //   enumerable : false,
+  //   configurable : true,
+  // });
+
+  // _.assert( !self[ elementsSymbol ] || self[ elementsSymbol ].revoke );
+  // if( self[ elementsSymbol ] && self[ elementsSymbol ].revoke )
+  // {
+  //   debugger;
+  //   self[ elementsSymbol ].revoke();
+  //   delete self[ elementsSymbol ].revoke;
+  // }
+
+  self[ elementsSymbol ] = src;
+
+  Object.freeze( src );
+
+  if( src )
+  for( var s = 0 ; s < src.length ; s++ )
   {
-    _.assert( arguments.length === 1, 'expects single argument' );
-    debugger;
-    this.primeStreamLike.send( data );
+    src[ s ].downAttachAfter( self );
   }
-  else if( _.routineIs( this.primeStreamLike.write ) )
-  self._packetSendAct = function _packetSendAct( data )
-  {
-    _.assert( arguments.length === 1, 'expects single argument' );
-    // debugger;
-    // if( !_.bufferNodeIs( data ) && !_.strIs( data ) )
-    // data = _.toJson( data );
-    // _.assert( data instanceof Uint8Array );
-    data = _.toJson( data ) + self._streamDelimeterString;
-    this.primeStreamLike.write( data );
-  }
-  else _.assert( 0,'prime stream does not has "send" neither "write"' );
-
-  debugger;
-  if( !self.bufferStreamLike )
-  // if( !self._bufferSendAct )
-  self._bufferSendAct = self._bufferSendWithTheSameStream;
-
-  self.primeStreamLike.on( 'data', function( data )
-  {
-    self._rawReceive({ data : data });
-  });
-
-  self.primeStreamLike.on( 'message', function( packet )
-  {
-    self._packetReceive({ packet : packet });
-  });
-
-  self.primeStreamLike.on( 'error', function( err )
-  {
-    self._errorReceive({ err : err });
-  });
-
-  self.primeStreamLike.on( 'disconnect', function()
-  {
-    if( com.verbosity > 1 )
-    logger.log( com.nameTitle,'disconnect' );
-    self._terminateReceive();
-  });
-
-  self.primeStreamLike.on( 'close', function()
-  {
-    if( com.verbosity > 1 )
-    logger.log( com.nameTitle,'close' );
-    self._terminateReceive();
-  });
-
-  self.primeStreamLike.on( 'connect', function()
-  {
-    if( com.verbosity > 1 )
-    logger.log( com.nameTitle,'connect' );
-  });
-
-  self.primeStreamLike.on( 'drain', function()
-  {
-    if( com.verbosity > 1 )
-    logger.log( com.nameTitle,'drain' );
-  });
-
-  self.primeStreamLike.on( 'end', function()
-  {
-    if( com.verbosity > 1 )
-    logger.log( com.nameTitle,'end' );
-  });
-
-  self.primeStreamLike.on( 'lookup', function()
-  {
-    if( com.verbosity > 1 )
-    logger.log( com.nameTitle,'lookup' );
-  });
-
-  self.primeStreamLike.on( 'timeout', function()
-  {
-    if( com.verbosity > 1 )
-    logger.log( com.nameTitle,'timeout' );
-  });
-
-// Event: 'close'
-// Event: 'connect'
-// Event: 'data'
-// Event: 'drain'
-// Event: 'end'
-// Event: 'error'
-// Event: 'lookup'
-// Event: 'timeout'
 
 }
 
 //
 
-function _formTempSend()
+function elementsAppend( element )
 {
   var self = this;
-  var com = self.communicator;
+  var system = self.system;
+  var elements = self.elements.slice();
 
-  function _packetSendAct( data )
-  {
-    _.assert( arguments.length === 1, 'expects single argument' );
-    self._packetSendLater.push( data );
-  }
+  _.assert( arguments.length === 1, 'Expects single argument' );
+  _.assert( element instanceof self.Node || _.arrayIs( element ) );
 
-  function _bufferSendAct( data )
-  {
-    _.assert( arguments.length === 1, 'expects single argument' );
-    self._bufferSendLater.push( data );
-  }
-
-  _.assert( self._packetSendAct === null );
-  self._packetSendAct = _packetSendAct;
-  _.assert( self._bufferSendAct === null );
-  self._bufferSendAct = _bufferSendAct;
-
-  self._conConnect.doThen( function()
-  {
-    debugger;
-
-    _.assert( self._packetSendAct !== _packetSendAct );
-    for( var i = 0 ; i < self._packetSendLater.length ; i++ )
-    self._packetSendAct( self._packetSendLater[ i ] );
-    self._packetSendLater.splice( 0,self._packetSendLater.length );
-
-    _.assert( self._bufferSendAct !== _bufferSendAct );
-    for( var i = 0 ; i < self._bufferSendLater.length ; i++ )
-    self._bufferSendAct( self._bufferSendLater[ i ] );
-    self._bufferSendLater.splice( 0,self._bufferSendLater.length );
-
-  });
+  _.arrayAppendArraysOnce( elements,[ element ] );
+  self.elements = elements;
 
 }
 
-// --
 //
-// --
 
-// function _formBufferSend()
+// function elementsDetach_static( src )
 // {
 //   var self = this;
-//   var com = self.communicator;
 //
-//   _.assert( !self.bufferStreamLike );
-//   _.assert( !self._bufferSend );
+//   _.assert( !self.instanceIs() );
+//   _.assert( _.longIs( src ) );
+//   _.assert( arguments.length === 1, 'Expects single argument' );
 //
-//   self._bufferSend = function _bufferSend( data )
+//   for( var s = 0 ; s < src.length ; s++ )
 //   {
-//     _.assert( arguments.length === 1, 'expects single argument' );
-//     this.packetSpecialSend( 'buffer',{ size : data.byteLength, cls : data.constructor } );
-//     // this.primeStreamLike.write( _.bufferNodeFrom( data ) );
+//     src[ s ].detach();
+//   }
+//
+//   self[ elementsSymbol ] = src;
+//
+// }
+
+//
+
+function elementsDetach( elements )
+{
+  var self = this;
+
+  // if( !self.instanceIs() )
+  // return self.Self.elementsDetach( elements );
+
+  var selfElements = self.elements ? self.elements.slice() : [];
+  self[ elementsSymbol ] = selfElements;
+
+  _.assert( self.instanceIs() );
+  _.assert( arguments.length === 0 || arguments.length === 1 );
+
+  if( elements === undefined )
+  elements = self.elements ? self.elements.slice() : [];
+
+  for( var s = 0 ; s < elements.length ; s++ )
+  {
+    _.assert( selfElements.indexOf( elements[ s ] ) !== -1 );
+    elements[ s ].downDetachBefore();
+    _.arrayRemoveOnceStrictly( selfElements,elements[ s ] );
+  }
+
+}
+
+//
+
+// function elementsFinit_static( src )
+// {
+//   var self = this;
+//
+//   _.assert( !self.instanceIs() );
+//   _.assert( _.longIs( src ) );
+//   _.assert( arguments.length === 1, 'Expects single argument' );
+//
+//   for( var s = 0 ; s < src.length ; s++ )
+//   {
+//     src[ s ].finit();
+//     _.assert( src[ s ].down === null );
 //   }
 //
 // }
 
 //
 
-function _bufferSendWithTheSameStream( buffer )
+function elementsFinit()
 {
   var self = this;
-  var com = self.communicator;
-  _.assert( arguments.length === 1, 'expects single argument' );
 
-  self._packetSpecialSend( 'buffer',{ size : buffer.byteLength, cls : buffer.constructor.name } );
+  // if( !self.instanceIs() )
+  // return self.Self.elementsDetach( elements );
 
-  self.primeStreamLike.write( _.bufferNodeFrom( buffer ) );
-}
+  _.assert( self.instanceIs() );
+  _.assert( arguments.length === 0 );
 
-//
+  var elements = self.elements.slice();
 
-function _bufferSend( buffer )
-{
-  var self = this;
-  var com = self.communicator;
-  _.assert( arguments.length === 1, 'expects single argument' );
-  self._bufferSendAct( buffer );
-}
-
-//
-
-function _packetSpecialSend( o )
-{
-  var self = this;
-  var com = self.communicator;
-  var o;
-
-  if( arguments.length === 2 )
-  o = { channel : arguments[ 0 ], data : arguments[ 1 ] }
-
-  _.assert( o.channel !== undefined && o.channel !== null );
-  _.assert( o.data !== undefined );
-  _.assert( arguments.length === 1 || arguments.length === 2 );
-  _.routineOptions( _packetSpecialSend,o );
-
-  o.subchannel = 'packetSpecial';
-  self._packetSend( o );
-
-  return self;
-}
-
-_packetSpecialSend.defaults =
-{
-  channel : null,
-  data : null,
-}
-
-//
-
-function packetSend( o )
-{
-  var self = this;
-  var com = self.communicator;
-
-  if( arguments.length === 2 )
-  o = { channel : arguments[ 0 ], data : arguments[ 1 ] }
-  else
-  o = { channel : 'message', data : arguments[ 0 ] }
-
-  _.assert( arguments.length === 1 || arguments.length === 2 );
-
-  self._packetSend( o );
-
-  return self;
-}
-
-//
-
-function _packetSend( o )
-{
-  var self = this;
-  var com = self.communicator;
-
-  // if( arguments.length === 2 )
-  // o = { channel : arguments[ 0 ], data : arguments[ 1 ] }
-  // else
-  // o = { channel : 'message', data : arguments[ 0 ] }
-
-  _.assert( arguments.length === 1, 'expects single argument' );
-  _.assert( o.channel !== undefined && o.channel !== null );
-  _.assert( o.data !== undefined );
-  _.routineOptions( _packetSend,o );
-
-  self._packetCounter += 1;
-
-  if( o.encoding === 'complex' )
+  for( var e = 0 ; e < elements.length ; e++ )
   {
-    // debugger;
-    o.data = _.cloneDataSeparatingBuffers({ src : o.data });
-    // o.encoding = 'complex';
-    // debugger;
+    elements[ e ].finit();
+    _.assert( elements[ e ].down === null );
   }
 
-  var packet = Object.create( null );
-  packet.channel = o.channel;
-  packet.subchannel = o.subchannel;
-  packet.packetId = self._packetCounter;
-  packet.data = o.data;
-  packet.encoding = o.encoding;
+  _.assert( self.elements.length === 0 );
 
-  packet = self._packetSendBegin( packet );
-
-  debugger;
-
-  self._packetSendAct( packet );
-
-  return self;
-}
-
-_packetSend.defaults =
-{
-  channel : null,
-  subchannel : '',
-  // encoding : 'complex',
-  encoding : null,
-  data : null,
 }
 
 //
 
-function _packetSendBegin( o )
+function nodeEach( o )
 {
   var self = this;
-  var com = self.communicator;
-  _.routineOptions( _packetSendBegin,o );
-  _.assert( arguments.length === 1, 'expects single argument' );
-  _.assert( _.strIsNotEmpty( o.channel ),'expects string { channel }, but got',_.strType( o.channel ) );
-  return o;
-}
 
-_packetSendBegin.defaults =
-{
-  channel : null,
-  subchannel : '',
-  data : null,
-  packetId : null,
-  encoding : null,
+  _.assert( o === undefined || _.mapIs( o ) || _.routineIs( o ) );
+
+  if( _.routineIs( arguments[ 0 ] ) )
+  o = { onUp : arguments[ 1 ] };
+
+  o.node = self;
+
+  o.elementsGet = function( node ){ return node.elements || []; };
+  o.nameGet = function( node ){ return node.nickName; };
+
+  return _.graph.eachNode( o );
 }
 
 //
 
-function _rawReceive( o )
+function nucleusOfTypeGet( o )
 {
-  var self = this;
-  var com = self.communicator;
+  var result = [];
+  var o = o || Object.create( null );
 
-  _.routineOptions( _rawReceive,o );
-  _.assert( arguments.length === 1, 'expects single argument' );
-  _.assert( _.bufferNodeIs( o.data ) );
+  if( !o.type )
+  o.type = this.Self;
 
-  o.data = _.bufferBytesGet( o.data );
-  self._streamBuffer = _.bufferJoin( self._streamBuffer , o.data );
+  if( !o.elements )
+  o.elements = this.elements;
 
-  self._rawReceivedProceed();
+  _.assert( _.arrayIs( o.elements ) );
+  _.assert( arguments.length <= 1 );
+  _.routineOptions( nucleusOfTypeGet,o );
 
-}
-
-_rawReceive.defaults =
-{
-  data : null,
-}
-
-//
-
-function _rawReceivedProceed()
-{
-  var self = this;
-  var com = self.communicator;
-
-  try
+  function addElements( es )
   {
 
-    _.assert( arguments.length === 0 );
-
-    if( self._receivingBuffer )
-    return self._rawRecievedBufferProceed();
-
-    var packets = _.bufferCutOffLeft( self._streamBuffer , self._streamDelimeterBuffer );
-    self._streamBuffer = packets[ packets.length-1 ];
-
-    while( packets[ 0 ] )
+    for( var e = 0 ; e < es.length ; e++ )
     {
-
-      var packet = packets[ 0 ];
-      _.assert( packet.length );
-
-      var packet = self._packetReceive({ format : 'buffer', packet : packet });
-      if( packet )
-      if( packet.channel === 'buffer' && packet.subchannel === 'packetSpecial' )
+      if( es[ e ] instanceof o.type )
       {
-        self._receivingBuffer = _.mapExtend( null,packet,packet.data );
-        delete self._receivingBuffer.data;
-        logger.log( 'receiving\n',self._receivingBuffer );
-        self._rawRecievedBufferProceed();
-        return;
+        addElements( es[ e ].elements );
+        if( o.finiting )
+        es[ e ].elementsDetach();
+        _.assert( es[ e ].elements.length === 0 );
+        _.assert( es[ e ].down === null );
+        if( o.finiting )
+        es[ e ].finit();
       }
-
-      var packets = _.bufferCutOffLeft( self._streamBuffer , self._streamDelimeterBuffer );
-      self._streamBuffer = packets[ packets.length-1 ];
-
+      else
+      result.push( es[ e ] );
     }
 
   }
-  catch( err )
-  {
-    return self._errorReceive({ err : err });
-  }
 
+  addElements( o.elements );
+
+  return result;
 }
 
-_rawReceive.defaults =
+nucleusOfTypeGet.defaults =
 {
-  data : null,
-}
-
-//
-
-function _rawRecievedBufferProceed()
-{
-  var self = this;
-  var com = self.communicator;
-  var receiving = self._receivingBuffer;
-
-  _.assert( arguments.length === 0 );
-  _.assert( receiving );
-  _.assert( _global_[ receiving.cls ],'unknown type of buffer',receiving.cls );
-  _.assert( _.bufferBytesIs( self._streamBuffer ) );
-
-  if( self._streamBuffer.length < receiving.size )
-  return;
-
-  self._receivingBuffer = null;
-
-  var buffer = self._streamBuffer.subarray( 0,receiving.size );
-  self._streamBuffer = self._streamBuffer.subarray( receiving.size )
-
-  if( buffer.constructor.name !== receiving.cls )
-  buffer = _.bufferRetype( buffer , _global_[ receiving.cls ] );
-
-  self._bufferReceive({ buffer : buffer });
-  self._rawReceivedProceed();
-
-}
-
-//
-
-function _bufferReceive( o )
-{
-  var self = this;
-  var com = self.communicator;
-
-  _.routineOptions( _bufferReceive,o );
-
-  com.eventGive({ kind : 'buffer', buffer : o.buffer });
-
-}
-
-_bufferReceive.defaults =
-{
-  buffer : null,
-}
-
-//
-
-function _packetReceive( o )
-{
-  var self = this;
-  var com = self.communicator;
-
-  try
-  {
-
-    _.routineOptions( _packetReceive,o );
-    _.assert( arguments.length === 1, 'expects single argument' );
-
-    if( o.format === 'buffer' )
-    {
-      o.packet = _.bufferNodeFrom( o.packet ).toString( 'utf8' );
-      o.format = 'json';
-    }
-
-    // debugger;
-
-    if( o.format === 'json' )
-    {
-      o.packet = JSON.parse( o.packet );
-      o.format = 'parsed';
-    }
-
-    if( com.verbosity > 1 )
-    if( o.packet.subchannel === 'packetSpecial' )
-    logger.log( com.nameTitle,':', 'packet received in channel',_.strQuote( o.packet.channel ),'and subchannel',_.strQuote( o.packet.subchannel ) );
-    else
-    logger.log( com.nameTitle,':', 'packet received in channel',_.strQuote( o.packet.channel ) );
-
-    // if( o.packet.channel === 'packetSpecial' )
-    // {
-    //   // o.packet.subchannel = o.packet.subchannel;
-    //   _.assert( o.packet.subchannel );
-    // }
-
-    _.assert( o.packet.channel !== undefined );
-    _.assert( !com.specialChannels[ o.packet.channel ] );
-
-    if( com.channels[ o.packet.channel ] )
-    com.channels[ o.packet.channel ].call( self,o.packet.data,o.packet.channel );
-
-    var e = Object.create( null );
-    e.subchannel = o.packet.subchannel;
-    e.channel = o.packet.channel;
-    e.data = o.packet.data;
-    e.kind = 'packet';
-    com.eventGive( e );
-
-    if( !o.packet.subchannel )
-    {
-      e.kind = 'message';
-      com.eventGive( e );
-    }
-    else if( o.packet.subchannel === 'packetSpecial' )
-    {
-      self._packetSpecialReceive({ format : 'parsed', packet : o.packet });
-    }
-
-    return o.packet;
-  }
-  catch( err )
-  {
-    err = _.err( err,'\n',o.packet );
-    if( com.verbosity )
-    _.errLogOnce( err );
-    self._errorReceive({ err : err });
-    return null;
-  }
-
-}
-
-_packetReceive.defaults =
-{
-  format : 'parsed',
-  packet : null,
-}
-
-//
-
-function _packetSpecialReceive( o )
-{
-  var self = this;
-  var com = self.communicator;
-
-  _.routineOptions( _packetSpecialReceive,o );
-  _.assert( arguments.length === 1, 'expects single argument' );
-  _.assert( o.packet.subchannel === 'packetSpecial',o.packet );
-  _.assert( _.strIs( o.packet.subchannel ),o.packet );
-
-  com.eventGive
-  ({
-    kind : 'packetSpecial',
-    channel : o.packet.channel,
-    subchannel : o.packet.subchannel,
-    data : o.packet.data,
-  });
-
-}
-
-_packetSpecialReceive.defaults =
-{
-  format : 'parsed',
-  packet : null,
-}
-
-//
-
-function _errorReceive( o )
-{
-  var self = this;
-  var com = self.communicator;
-
-  com.errors.push( null );
-
-  _.routineOptions( _errorReceive,o );
-  _.assert( arguments.length === 1, 'expects single argument' );
-
-  var err = _.err( com.nameTitle, ':', 'error\n',o.err );
-
-  if( com.verbosity )
-  err = _.errLogOnce( err );
-
-  com.errors[ com.errors.length ] = err;
-
-  return err;
-}
-
-_errorReceive.defaults =
-{
-  err : null,
-}
-
-//
-
-function _terminateReceive()
-{
-  var self = this;
-  var com = self.communicator;
-
-  _.assert( arguments.length === 0 );
-
-  self._terminateReceiveBefore();
-
-  // if( com.channels[ 'packetSpecial' ] )
-  // com.channels[ 'packetSpecial' ].call( self, { reason : 'terminateReceived', data : null }, 'packetSpecial' );
-
-  self._packetSpecialReceive({ packet : { channel : 'terminateReceived', subchannel : 'packetSpecial' } });
-
-  com.eventGive({ kind : 'terminateReceived' });
-
-  self._terminateReceiveAfter();
-
-}
-
-//
-
-function _terminateReceiveBefore()
-{
-  var self = this;
-  var com = self.communicator;
-
-  _.assert( arguments.length === 0 );
-
-}
-
-//
-
-function _terminateReceiveAfter()
-{
-  var self = this;
-  var com = self.communicator;
-
-  _.assert( arguments.length === 0 );
-
+  type : null,
+  elements : null,
+  finiting : 1,
 }
 
 // --
 // relations
 // --
+
+var elementsSymbol = Symbol.for( 'elements' );
 
 var Composes =
 {
@@ -794,94 +357,57 @@ var Aggregates =
 
 var Associates =
 {
-  communicator : null,
-  bufferStreamLike : null,
-  primeStreamLike : null,
+  elements : _.define.own([]),
 }
 
 var Restricts =
 {
-
-  _receivingBuffer : 0,
-  _packetSendAct : null,
-  _bufferSendAct : null,
-
-  _streamDelimeter : '\0\n',
-  _streamDelimeterBuffer : null,
-  _streamDelimeterString : null,
-  _streamBuffer : null,
-
-  _conConnect : _.Consequence(),
-  _packetSendLater : [],
-  _bufferSendLater : [],
-  _packetCounter : 0,
-
 }
 
 var Statics =
 {
-}
-
-var Forbids =
-{
-  verbosity : 'verbosity',
-  errors : 'errors',
-  isMaster : 'isMaster',
-  isSlave : 'isSlave',
-  nameTitle : 'nameTitle',
-  nameRole : 'nameRole',
-  url : 'url',
-  defaultHost : 'defaultHost',
-  defaultPort : 'defaultPort',
-  specialChannels : 'specialChannels',
-  channels : 'channels',
+  nucleusOfTypeGet : nucleusOfTypeGet,
 }
 
 // --
 // declare
 // --
 
-var Proto =
+var Functors =
 {
 
-  init : init,
+  _equalAre : _equalAre,
 
-  unform : unform,
-  _unform : _unform,
+}
 
-  form : form,
+//
 
-  _formMaster : _formMaster,
-  _formSlave : _formSlave,
+var ExtendDstNotOwn =
+{
 
-  _formStreams : _formStreams,
-  _formTempSend : _formTempSend,
+  clone : clone,
+  cloneEmpty : cloneEmpty,
 
-  //
+}
 
-  _bufferSendWithTheSameStream : _bufferSendWithTheSameStream,
-  _bufferSend : _bufferSend,
+//
 
-  _packetSpecialSend : _packetSpecialSend,
+var Supplement =
+{
 
-  packetSend : packetSend,
-  _packetSend : _packetSend,
-  _packetSendBegin : _packetSendBegin,
+  _elementsSet : _elementsSet,
 
-  _rawReceive : _rawReceive,
-  _rawReceivedProceed : _rawReceivedProceed,
-  _rawRecievedBufferProceed : _rawRecievedBufferProceed,
-  _bufferReceive : _bufferReceive,
-  _packetReceive : _packetReceive,
-  _packetSpecialReceive : _packetSpecialReceive,
-  _errorReceive : _errorReceive,
-  _terminateReceive : _terminateReceive,
-  _terminateReceiveBefore : _terminateReceiveBefore,
-  _terminateReceiveAfter : _terminateReceiveAfter,
+  elementAppend : elementsAppend,
+  elementsAppend : elementsAppend,
+
+  elementsDetach : elementsDetach,
+  elementsFinit : elementsFinit,
+
+  nodeEach : nodeEach,
+  nucleusOfTypeGet : nucleusOfTypeGet,
 
 
-  // relations
-
+  /* */
 
   Composes : Composes,
   Aggregates : Aggregates,
@@ -893,22 +419,24 @@ var Proto =
 
 //
 
-_.classDeclare
-({
-  cls : Self,
-  parent : Parent,
-  extend : Proto,
-});
+var Self =
+{
 
-_.Copyable.mixin( Self );
+  onMixin : onMixin,
 
-_.accessor.forbid(Self.prototype,Forbids );
+  functors : Functors,
+  supplementOwn : ExtendDstNotOwn,
+  supplement : Supplement,
+
+  name : 'wGraphBranch',
+  shortName : 'GraphBranch',
+
+}
 
 //
 
-// _.assert( _.CommunicatorStream );
-_.CommunicatorProtocol[ Self.shortName ] = Self;
 if( typeof module !== 'undefined' )
 module[ 'exports' ] = Self;
+_global_[ Self.name ] = _[ Self.shortName ] = _.mixinDelcare( Self );
 
 })();
