@@ -4283,8 +4283,8 @@ function concurrentTakeExperiment( test )
     let result = [];
     let array =
     [
+      () => { console.log( 'sync0' ); return 0; },
       () => { console.log( 'sync1' ); return 1; },
-      () => { console.log( 'sync2' ); return 2; },
     ]
 
     for( let a = 0 ; a < array.length ; a++ )
@@ -4302,8 +4302,8 @@ function concurrentTakeExperiment( test )
     let con = new _.Consequence();
     let array =
     [
+      () => { console.log( 'sync0' ); return 0; },
       () => { console.log( 'sync1' ); return 1; },
-      () => { console.log( 'sync2' ); return 2; },
     ]
 
     for( let a = 0 ; a < array.length ; a++ )
@@ -4319,18 +4319,27 @@ function concurrentTakeExperiment( test )
   {
     let result = [];
     let con = new _.Consequence();
+    _global_.xxx = con;
     let array =
     [
-      () => { return 1; },
-      () => { return _.timeOut( 2250, 2 ); },
-      () => { return 3; },
+      () => { return 0; },
+      () => { return _.timeOut( 1000, 1 ); },
+      // () => { return 1; },
+      () => { return 2; },
     ]
 
+    debugger;
     for( let a = 0 ; a < array.length ; a++ )
-    con.take( array[ a ]() ).wait().put( result, a );
+    _.Consequence.From( array[ a ]() ).putThen( result, a ).got( con );
+    // con.wait().putThen( result, a ).take( array[ a ]() );
+    // con.wait().putThen( result, a ).take( array[ a ]() );
+    // con.take( array[ a ]() ).wait().put( result, a );
     // con.put( result, a ).wait().take( array[ a ]() );
+    debugger;
     con.wait().take( result );
+    debugger;
 
+    con.take( null );
     return con.toResourceMaybe();
   }
 
@@ -4353,25 +4362,26 @@ function concurrentTakeExperiment( test )
   // })
   .ifNoErrorThen( () =>
   {
-    debugger;
+    // debugger;
     let c = asyncSample();
     test.is( _.consequenceIs( c ) );
+    // c = _.Consequence.From( c );
     c.doThen( ( err, arg ) =>
     {
       debugger;
       test.is( err === undefined );
-      test.identical( arg, [ 1,2,3 ] );
+      test.identical( arg, [ 0,1,2 ] );
       if( err )
       throw err;
       return arg;
     });
-    debugger;
     return c;
   })
 
   return tc;
 }
 
+concurrentTakeExperiment.timeOut = 20000;
 // concurrentTakeExperiment.experimental = 1;
 
 //
@@ -6192,7 +6202,7 @@ var Self =
     andThen,
     _and,
 
-    // concurrentTakeExperiment,
+    concurrentTakeExperiment,
 
     first,
     from,

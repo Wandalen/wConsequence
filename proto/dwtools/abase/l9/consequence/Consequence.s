@@ -463,7 +463,7 @@ function _put( o )
 
   if( o.key !== null )
   {
-    debugger;
+    // debugger;
     return self.__competitorAppend
     ({
       thenning : thenning,
@@ -492,6 +492,8 @@ function _put( o )
 
   function __onPutWithKey( err, arg )
   {
+    logger.log( 'onPutWithKey', arg, key );
+    logger.log( xxx.toString() );
     debugger;
     if( err !== undefined )
     container[ key ] = err;
@@ -1355,11 +1357,18 @@ function wait()
 
   self.got( function __waitGot( err, arg )
   {
+
+    logger.log( 'wait.got', arg );
+    logger.log( xxx.toString() );
+
+    debugger;
     if( err )
-    self.take( err );
+    self.error( err );
     else
     self.take( result );
   });
+
+  // self.take( null );
 
   return result;
 }
