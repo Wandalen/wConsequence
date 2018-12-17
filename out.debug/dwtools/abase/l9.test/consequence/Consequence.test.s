@@ -7,9 +7,11 @@ if( typeof module !== 'undefined' )
 
   var _ = require( '../../../Tools.s' );
 
+  debugger;
   require( '../../l9/consequence/Consequence.s' );
-
+  debugger;
   _.include( 'wTesting' );
+  debugger;
 
 }
 

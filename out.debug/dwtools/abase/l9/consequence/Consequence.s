@@ -33,11 +33,13 @@ if( typeof module !== 'undefined' )
 let _global = _global_;
 let _ = _global_.wTools;
 
+debugger;
 if( _realGlobal_.wTools && _realGlobal_.wConsequence )
 {
+  _.assert( _.routineIs( _realGlobal_.wConsequence.After ) );
   let Tools =
   {
-    after : _realGlobal_.wTools.after,
+    after : _realGlobal_.wConsequence.After,
     // before : _realGlobal_.wTools.before,
   }
   _.mapExtend( _, Tools );
@@ -3816,6 +3818,7 @@ let Medials =
 let Statics =
 {
 
+  After : after,
   From,
   Take,
   Error,
