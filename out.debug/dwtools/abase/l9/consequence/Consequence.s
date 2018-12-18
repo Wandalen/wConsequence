@@ -33,7 +33,6 @@ if( typeof module !== 'undefined' )
 let _global = _global_;
 let _ = _global_.wTools;
 
-debugger;
 if( _realGlobal_.wTools && _realGlobal_.wConsequence )
 {
   _.assert( _.routineIs( _realGlobal_.wConsequence.After ) );
