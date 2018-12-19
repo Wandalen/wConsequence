@@ -3339,7 +3339,7 @@ function Take( consequence )
   return _Take
   ({
     consequence : consequence,
-    context : undefined,
+    context : null,
     error : err,
     args : args,
   });
@@ -3374,7 +3374,8 @@ function _Take( o )
   _.assert( arguments.length === 1, 'Expects single argument' );
   _.assert( _.objectIs( o ) );
   _.assert( _.arrayIs( o.args ) && o.args.length <= 1, 'not tested' );
-  _.assertRoutineOptions( _Take, arguments );
+  // _.assertRoutineOptions( _Take, arguments );
+  _.assertMapHasAll( o, _Take.defaults );
 
   /* */
 
@@ -3460,7 +3461,7 @@ function Error( consequence, error )
   return _Take
   ({
     consequence : consequence,
-    context : undefined,
+    context : null,
     error : error,
     args : [],
   });
