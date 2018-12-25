@@ -9692,6 +9692,7 @@ function consequenceLike( test )
 
 //
 
+<<<<<<< HEAD
 function competitorCancel( test )
 {
   var con = new _.Consequence().take( null );
@@ -9830,6 +9831,112 @@ function competitorsCancel( test )
   test.shouldThrowErrorSync( () => con.competitorsCancel( 1 ) );
   test.shouldThrowErrorSync( () => con.competitorsCancel( '1' ) );
 
+=======
+function Take( test )
+{
+  function routine( err, arg )
+  {
+    return [ err, arg ];
+  }
+
+  test.case = 'routine, single arg';
+  var got = _.Consequence.Take( routine, true );
+  test.identical( got, [ undefined, true ] );
+
+  test.case = 'routine, single arg';
+  var err = _.err('err');
+  var got = _.Consequence.Take( routine, err, undefined );
+  test.identical( got, [ err, undefined ] );
+
+  test.case = 'routine, two args';
+  var err = _.err('err');
+  var got = _.Consequence.Take( routine, err, true );
+  test.identical( got, [ err, true ] );
+
+  let mainCon = new _.Consequence().take( null )
+
+  .thenKeep( () =>
+  {
+    test.case = 'consequence, single arg';
+    let con = new _.Consequence().finally( routine );
+    con.thenKeep( ( got ) => test.identical( got, [ undefined, true ] ) )
+    _.Consequence.Take( con, true );
+    return con;
+  })
+
+  .thenKeep( () =>
+  {
+    test.case = 'consequence, single arg';
+    var err = _.err('err');
+    let con = new _.Consequence().finally( routine );
+    con.thenKeep( ( got ) => test.identical( got, [ err, undefined ] ) )
+    _.Consequence.Take( con, err, undefined );
+    return con;
+  })
+
+  .thenKeep( () =>
+  {
+    test.case = 'several consequences';
+    var cons =
+    [
+      new _.Consequence().finally( routine ),
+      new _.Consequence().finally( routine ),
+      new _.Consequence().finally( routine )
+    ]
+    let con = new _.Consequence().take( null ).andKeep( cons );
+    let expected =
+    [
+      [ undefined, true ],
+      [ undefined, true ],
+      [ undefined, true ]
+    ]
+    con.thenKeep( ( got ) => test.contains( got, expected ) );
+    _.Consequence.Take( cons, true );
+    return con;
+  })
+
+  .thenKeep( () =>
+  {
+    test.case = 'several consequences and routine';
+    let con = new _.Consequence().take( null );
+    let routineResult;
+    function routine2( err, arg )
+    {
+      routineResult = [ err, arg ];
+    }
+    let cons =
+    [
+      new _.Consequence().finally( routine ),
+      new _.Consequence().finally( routine ),
+      routine2
+    ]
+    let expected =
+    [
+      [ undefined, true ],
+      [ undefined, true ],
+    ]
+    con.andKeep( cons.slice( 0, 2 ) );
+    con.thenKeep( ( got ) =>
+    {
+      test.contains( got, expected );
+      test.identical( routineResult,[ undefined, true ] );
+      return true;
+    });
+    _.Consequence.Take( cons, true );
+    return con;
+  })
+
+  .thenKeep( () =>
+  {
+    test.case = 'consequence, two args';
+    var err = _.err('err');
+    let con = new _.Consequence().finally( routine );
+    con.thenKeep( ( got ) => test.identical( got, [ err, true ] ) )
+    return test.shouldThrowError( () => _.Consequence.Take( con, err, true ) );
+  })
+
+  return mainCon;
+>>>>>>> 24ed1a2d9cabe52109e2da55c7d159e6c7859eb9
 }
 
 // --
@@ -9893,8 +10000,12 @@ var Self =
     from,
     consequenceLike,
 
+<<<<<<< HEAD
     competitorCancel,
     competitorsCancel,
+=======
+    Take
+>>>>>>> 24ed1a2d9cabe52109e2da55c7d159e6c7859eb9
 
   },
 
