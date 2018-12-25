@@ -9,3 +9,4 @@ Algorithmically speaking Consequence is 2 queues ( FIFO ) and a customizable arb
 npm install
 node sample/Sample.s
 ```
+
