@@ -74,8 +74,6 @@ path:
       - ./dwtools/abase/l9.test/consequence
       - ./dwtools/abase/l9.test/consequence/Consequence.test.s
       - ./dwtools/abase/l9.test/consequence/Time.test.s
-      - ./dwtools/amid
-      - ./dwtools/atop
     criterion:
       default: 1
       debug: 1

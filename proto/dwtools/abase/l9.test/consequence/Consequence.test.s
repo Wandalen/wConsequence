@@ -9692,7 +9692,6 @@ function consequenceLike( test )
 
 //
 
-<<<<<<< HEAD
 function competitorCancel( test )
 {
   var con = new _.Consequence().take( null );
@@ -9831,7 +9830,10 @@ function competitorsCancel( test )
   test.shouldThrowErrorSync( () => con.competitorsCancel( 1 ) );
   test.shouldThrowErrorSync( () => con.competitorsCancel( '1' ) );
 
-=======
+}
+
+//
+
 function Take( test )
 {
   function routine( err, arg )
@@ -9936,7 +9938,6 @@ function Take( test )
   })
 
   return mainCon;
->>>>>>> 24ed1a2d9cabe52109e2da55c7d159e6c7859eb9
 }
 
 // --
@@ -10000,12 +10001,10 @@ var Self =
     from,
     consequenceLike,
 
-<<<<<<< HEAD
     competitorCancel,
     competitorsCancel,
-=======
+
     Take
->>>>>>> 24ed1a2d9cabe52109e2da55c7d159e6c7859eb9
 
   },
 

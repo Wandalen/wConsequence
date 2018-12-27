@@ -39,7 +39,8 @@
   "dependencies": {
     "wTools": "",
     "wProto": "",
-    "wCopyable": ""
+    "wCopyable": "",
+    "wprocedure": ""
   },
   "devDependencies": {
     "deasync": "",
