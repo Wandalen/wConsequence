@@ -18,7 +18,7 @@ about:
     fulfillment/rejection of a Promise or fulfilling it. Use Consequence to get
     more flexibility and improve readability of asynchronous aspect of your
     application.
-  version: 0.4.95
+  version: 0.4.114
   enabled: 1
   interpreters:
     - nodejs >= 6.0.0
@@ -252,7 +252,7 @@ step:
       export: 'path::proto'
       tar: 0
     inherit:
-      - export
+      - predefined.export
 build:
   debug.raw:
     criterion:
@@ -301,7 +301,7 @@ build:
       - 'step::export.proto'
 exported:
   proto.export:
-    version: 0.4.95
+    version: 0.4.114
     criterion:
       default: 1
       debug: 1
