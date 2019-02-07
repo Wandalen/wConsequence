@@ -25,7 +25,6 @@ if( typeof module !== 'undefined' )
 {
 
   let _ = require( '../../../Tools.s' );
-
   _.include( 'wProto' );
   _.include( 'wCopyable' );
   _.include( 'wProcedure' );
@@ -34,6 +33,7 @@ if( typeof module !== 'undefined' )
 
 let _global = _global_;
 let _ = _global_.wTools;
+let Deasync = null;
 
 if( _realGlobal_.wTools && _realGlobal_.wConsequence )
 {
@@ -287,7 +287,7 @@ function finallyGive( competitorRoutine )
   let self = this;
   let times = 1;
 
-  _.assert( arguments.length === 1, 'Expects none or single argument, but finallyGive', arguments.length, 'arguments' );
+  _.assert( arguments.length === 1, 'Expects none or single argument, but got', arguments.length, 'arguments' );
 
   if( _.numberIs( competitorRoutine ) )
   {
@@ -479,6 +479,7 @@ function _promise( o )
   let self = this;
   let procedure = self.procedureDetach( 'promise' ).sourcePathFirst( 3 );
   let keeping = o.keeping;
+  let kindOfResource =  o.kindOfResource;
 
   _.assertRoutineOptions( _promise, arguments );
 
@@ -490,7 +491,8 @@ function _promise( o )
     ({
       keeping : 0,
       competitorRoutine : competitorRoutine,
-      kindOfResource : o.kindOfResource,
+      // kindOfResource : o.kindOfResource,
+      kindOfResource : self.KindOfResource.Both,
       stackLevel : 3,
     });
 
@@ -499,51 +501,20 @@ function _promise( o )
     function competitorRoutine( err, arg )
     {
       if( err )
-      reject( err );
+      {
+        if( kindOfResource === self.KindOfResource.Both || kindOfResource === self.KindOfResource.ErrorOnly )
+        reject( err );
+      }
       else
-      resolve( arg );
+      {
+        if( kindOfResource === self.KindOfResource.Both || kindOfResource === self.KindOfResource.ErrorOnly )
+        resolve( arg );
+      }
       if( keeping )
       self.take( err, arg );
     };
 
   });
-
-  // if( o.kindOfResource === self.KindOfResource.Both || o.kindOfResource === self.KindOfResource.BothWithCompetitor )
-  // result = new Promise( function( resolve, reject )
-  // {
-  //   self.procedure( procedure );
-  //   self.finallyGive( function( err, arg )
-  //   {
-  //     if( err )
-  //     reject( err );
-  //     else
-  //     resolve( arg );
-  //     if( keeping )
-  //     self.take( err, arg );
-  //   })
-  // });
-  // else if( o.kindOfResource === self.KindOfResource.ErrorOnly )
-  // result = new Promise( function( resolve, reject )
-  // {
-  //   self.procedure( procedure );
-  //   self.thenGive( function( arg )
-  //   {
-  //     resolve( arg );
-  //     if( keeping )
-  //     self.take( undefined, arg );
-  //   })
-  // });
-  // else if( o.kindOfResource === self.KindOfResource.ArgumentOnly )
-  // result = new Promise( function( resolve, reject )
-  // {
-  //   self.procedure( procedure );
-  //   self.exceptGive( function( err )
-  //   {
-  //     reject( err );
-  //     if( keeping )
-  //     self.take( err, undefined );
-  //   })
-  // });
 
   return result;
 }
@@ -573,33 +544,6 @@ function finallyPromiseGive()
 }
 
 finallyPromiseGive.having = Object.create( _promise.having );
-
-// function finallyPromiseGive()
-// {
-//   let self = this;
-//   // debugger;
-//   let procedure = self.procedureDetach( 'finallyPromiseGive' ).sourcePathFirst( 2 );
-//   // debugger
-//
-//   let result = new Promise( function( resolve, reject )
-//   {
-//     self.procedure( procedure );
-//     self.finallyGive( function( err, arg )
-//     {
-//       if( err )
-//       reject( err );
-//       else
-//       resolve( arg );
-//     })
-//   });
-//
-//   return result;
-// }
-//
-// finallyPromiseGive.having =
-// {
-//   consequizing : 1,
-// }
 
 //
 
@@ -714,37 +658,156 @@ function exceptPromiseKeep()
 
 exceptPromiseKeep.having = Object.create( _promise.having );
 
-// //
+// --
+// deasync
+// --
+
+function _deasync( o )
+{
+  let self = this;
+  let procedure = self.procedure( '_deasync' ).sourcePathFirst( 3 );
+  let keeping = o.keeping;
+  let result = Object.create( null );
+  let ready = false;
+
+  _.assertRoutineOptions( _deasync, arguments );
+
+  self._competitorAppend
+  ({
+    competitorRoutine : competitorRoutine,
+    kindOfResource : self.KindOfResource.Both,
+    keeping : 0,
+    stackLevel : 3,
+  });
+
+  self.__handleResource( false );
+
+  if( Deasync === null )
+  Deasync = require( 'deasync' );
+  Deasync.loopWhile( () => !ready )
+
+  if( result.err )
+  if( self.KindOfResource.Both || self.KindOfResource.ErrorOnly )
+  throw result.err;
+  else
+  return new _.Consequence().error( result.err );
+
+  if( self.KindOfResource.Both || self.KindOfResource.ArgumentOnly )
+  return result.arg;
+  else
+  return new _.Consequence().take( result.arg );
+
+  function competitorRoutine( err, arg )
+  {
+    result.err = err;
+    result.arg = arg;
+    ready = true;
+    if( keeping )
+    self.take( err, arg );
+  };
+
+}
+
+_deasync.defaults =
+{
+  keeping : null,
+  kindOfResource : null,
+}
+
+_deasync.having =
+{
+  consequizing : 1,
+}
+
 //
-// function finallyPromiseKeep()
-// {
-//   let self = this;
+
+function finallyDeasyncGive()
+{
+  let self = this;
+  _.assert( arguments.length === 0 );
+  return self._deasync
+  ({
+    keeping : 0,
+    kindOfResource : self.KindOfResource.Both,
+  });
+}
+
+finallyDeasyncGive.having = Object.create( _deasync.having );
+
 //
-//   _.assert( arguments.length === 0 );
+
+function finallyDeasyncKeep()
+{
+  let self = this;
+  _.assert( arguments.length === 0 );
+  return self._deasync
+  ({
+    keeping : 1,
+    kindOfResource : self.KindOfResource.Both,
+  });
+}
+
+finallyDeasyncGive.having = Object.create( _deasync.having );
+
 //
-//   let procedure = self.procedureDetach( 'finallyPromiseKeep' ).sourcePathFirst( 2 );
+
+function thenDeasyncGive()
+{
+  let self = this;
+  _.assert( arguments.length === 0 );
+  return self._deasync
+  ({
+    keeping : 0,
+    kindOfResource : self.KindOfResource.ArgumentOnly,
+  });
+}
+
+finallyDeasyncGive.having = Object.create( _deasync.having );
+
 //
-//   return new Promise( function( resolve, reject )
-//   {
-//     debugger;
-//     self.procedure( procedure );
-//     debugger;
-//     self.finallyGive( function( err, arg )
-//     {
-//       if( err )
-//       reject( err );
-//       else
-//       resolve( arg );
-//       self.take( err, arg );
-//     });
-//   });
+
+function thenDeasyncKeep()
+{
+  let self = this;
+  _.assert( arguments.length === 0 );
+  return self._deasync
+  ({
+    keeping : 1,
+    kindOfResource : self.KindOfResource.ArgumentOnly,
+  });
+}
+
+finallyDeasyncGive.having = Object.create( _deasync.having );
+
 //
-// }
+
+function exceptDeasyncGive()
+{
+  let self = this;
+  _.assert( arguments.length === 0 );
+  return self._deasync
+  ({
+    keeping : 0,
+    kindOfResource : self.KindOfResource.ErrorOnly,
+  });
+}
+
+finallyDeasyncGive.having = Object.create( _deasync.having );
+
 //
-// finallyPromiseKeep.having =
-// {
-//   consequizing : 1,
-// }
+
+function exceptDeasyncKeep()
+{
+  let self = this;
+  _.assert( arguments.length === 0 );
+  return self._deasync
+  ({
+    keeping : 1,
+    kindOfResource : self.KindOfResource.ErrorOnly,
+  });
+}
+
+finallyDeasyncGive.having = Object.create( _deasync.having );
 
 // --
 // advanced
@@ -781,7 +844,7 @@ function _first( src, stack )
     self.take( result );
 
   }
-  else _.assert( 0, 'first expects consequence of routine, but finallyGive', _.strType( src ) );
+  else _.assert( 0, 'first expects consequence of routine, but got', _.strType( src ) );
 
   return self;
 }
@@ -1035,11 +1098,9 @@ exceptLog.having =
 function toResourceMaybe()
 {
   let self = this;
-  _.assert( self._resource.length <= 1, 'Cant convert consequence back to resource if it has several of such!' );
 
   if( self._resource.length === 1 )
   {
-    debugger;
     let resource = self._resource[ 0 ];
     if( resource.error !== undefined )
     {
@@ -1055,6 +1116,18 @@ function toResourceMaybe()
   }
 
   return self;
+}
+
+//
+
+function toResource()
+{
+  let self = this;
+
+  _.assert( self._resource.length <= 1, () => 'Cant return resource of consequence because it has ' + self._resource.length + ' of such!' );
+  _.assert( self._resource.length >= 1, () => 'Cant return resource of consequence because it has none of such!' );
+
+  return self.toResourceMaybe();
 }
 
 // --
@@ -1454,7 +1527,7 @@ function _and( o )
     for( let s = 0 ; s < competitors.length-1 ; s++ )
     {
       let src = competitors[ s ];
-      _.assert( _.consequenceIs( src ) || _.routineIs( src ) || src === null, () => 'Consequence.and expects consequence, routine or null, but finallyGive ' + _.strType( src ) );
+      _.assert( _.consequenceIs( src ) || _.routineIs( src ) || src === null, () => 'Consequence.and expects consequence, routine or null, but got ' + _.strType( src ) );
       if( !_.consequenceIs( src ) )
       continue;
       src.assertNoDeadLockWith( self );
@@ -1491,7 +1564,7 @@ function _and( o )
       if( _.consequenceIs( competitors[ s ] ) )
       src.assertNoDeadLockWith( self );
 
-      _.assert( _.consequenceIs( src ) || src === null, () => 'Expects consequence or null, but finallyGive ' + _.strType( src ) );
+      _.assert( _.consequenceIs( src ) || src === null, () => 'Expects consequence or null, but got ' + _.strType( src ) );
 
       if( src === null )
       {
@@ -2263,7 +2336,7 @@ function __take( error, argument )
 
   if( Config.debug )
   {
-    _.assert( !self.resourceLimit || self._resource.length < self.resourceLimit, () => 'Resource limit' + ( self.tag ? ' of ' + self.tag + ' ' : ' ' ) + 'set to ' + self.resourceLimit + ', but finallyGive more resources' );
+    _.assert( !self.resourceLimit || self._resource.length < self.resourceLimit, () => 'Resource limit' + ( self.tag ? ' of ' + self.tag + ' ' : ' ' ) + 'set to ' + self.resourceLimit + ', but got more resources' );
     let msg = '{-error-} and {-argument-} channels should not be in use simultaneously\n' +
       '{-error-} or {-argument-} should be undefined, but currently ' +
       '{-error-} is ' + _.strType( error ) +
@@ -2365,6 +2438,7 @@ function __handleError( err, competitor )
   if( err.attentionRequested )
   {
 
+    // debugger;
     // if( Config.debug )
     // _global.logger.error( ' Consequence caught error, details come later' );
 
@@ -3466,7 +3540,7 @@ function Take( consequence )
   return _Take
   ({
     consequence : consequence,
-    context : null,
+    context : undefined,
     error : err,
     args : args,
   });
@@ -3495,14 +3569,13 @@ function _Take( o )
 {
   let context;
 
-  if( !( _.arrayIs( o.args ) && o.args.length <= 1 ) )
-  debugger;
+  // if( !( _.arrayIs( o.args ) && o.args.length <= 1 ) )
+  // debugger;
 
   _.assert( arguments.length === 1, 'Expects single argument' );
   _.assert( _.objectIs( o ) );
   _.assert( _.arrayIs( o.args ) && o.args.length <= 1, 'not tested' );
-  // _.assertRoutineOptions( _Take, arguments );
-  _.assertMapHasAll( o, _Take.defaults );
+  _.assertRoutineOptionsPreservingUndefines( _Take, arguments );
 
   /* */
 
@@ -3588,7 +3661,7 @@ function Error( consequence, error )
   return _Take
   ({
     consequence : consequence,
-    context : null,
+    context : undefined,
     error : error,
     args : [],
   });
@@ -3995,38 +4068,45 @@ let Extend =
   finallyGive, // got, done
   got : finallyGive,
   done : finallyGive,
-
   finallyKeep, // finally
   finally : finallyKeep,
 
   thenGive, // ifNoErrorGot
   thenGot : thenGive,
   ifNoErrorGot : thenGive,
-
   thenKeep, // ifNoErrorThen
   keep : thenKeep,
+  then : thenKeep, // xxx
   ifNoErrorThen : thenKeep,
 
   exceptGive, // ifErrorGot
   exceptGot : exceptGive,
   ifErrorGot : exceptGive,
-
   exceptKeep, // ifErrorThen
   except : exceptKeep,
   ifErrorThen : exceptGive,
 
-  // to promise
+  // to promise // qqq : conver please
 
   _promise,
-
   finallyPromiseGive,
   finallyPromiseKeep,
+  promise : finallyPromiseKeep,
   thenPromiseGive,
   thenPromiseKeep,
   exceptPromiseGive,
   exceptPromiseKeep,
 
-  promise : finallyPromiseKeep,
+  // deasync // qqq : conver please
+
+  _deasync,
+  finallyDeasyncGive,
+  finallyDeasyncKeep,
+  deasync : finallyDeasyncKeep,
+  thenDeasyncGive,
+  thenDeasyncKeep,
+  exceptDeasyncGive,
+  exceptDeasyncKeep,
 
   // advanced
 
@@ -4037,6 +4117,7 @@ let Extend =
   tap,
   exceptLog,
   toResourceMaybe,
+  toResource,
 
   // experimental
 
