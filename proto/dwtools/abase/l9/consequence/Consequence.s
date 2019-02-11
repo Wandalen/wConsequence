@@ -687,12 +687,12 @@ function _deasync( o )
   Deasync.loopWhile( () => !ready )
 
   if( result.err )
-  if( self.KindOfResource.Both || self.KindOfResource.ErrorOnly )
+  if( o.kindOfResource === self.KindOfResource.Both || o.kindOfResource === self.KindOfResource.ErrorOnly )
   throw result.err;
   else
   return new _.Consequence().error( result.err );
 
-  if( self.KindOfResource.Both || self.KindOfResource.ArgumentOnly )
+  if( o.kindOfResource === self.KindOfResource.Both || o.kindOfResource === self.KindOfResource.ArgumentOnly )
   return result.arg;
   else
   return new _.Consequence().take( result.arg );
