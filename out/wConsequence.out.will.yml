@@ -18,7 +18,7 @@ about:
     fulfillment/rejection of a Promise or fulfilling it. Use Consequence to get
     more flexibility and improve readability of asynchronous aspect of your
     application.
-  version: 0.4.117
+  version: 0.4.119
   enabled: 1
   interpreters:
     - nodejs >= 6.0.0
@@ -38,11 +38,11 @@ path:
   out:
     path: out
   out.debug:
-    path: ./out.debug
+    path: ./out/debug
     criterion:
       debug: 1
   out.release:
-    path: ./out.release
+    path: ./out/release
     criterion:
       debug: 0
   repository:
@@ -61,19 +61,19 @@ path:
       public: 1
   exportedFiles.proto.export:
     path:
-      - .
-      - ./dwtools
-      - ./dwtools/Tools.s
-      - ./dwtools/abase
-      - ./dwtools/abase/l9
-      - ./dwtools/abase/l9/consequence
-      - ./dwtools/abase/l9/consequence/Consequence.s
-      - ./dwtools/abase/l9.test
-      - ./dwtools/abase/l9.test/consequence
-      - ./dwtools/abase/l9.test/consequence/Consequence.test.s
-      - ./dwtools/abase/l9.test/consequence/Time.test.s
-      - ./dwtools/amid
-      - ./dwtools/atop
+      - proto
+      - proto/dwtools
+      - proto/dwtools/Tools.s
+      - proto/dwtools/abase
+      - proto/dwtools/abase/l9
+      - proto/dwtools/abase/l9/consequence
+      - proto/dwtools/abase/l9/consequence/Consequence.s
+      - proto/dwtools/abase/l9.test
+      - proto/dwtools/abase/l9.test/consequence
+      - proto/dwtools/abase/l9.test/consequence/Consequence.test.s
+      - proto/dwtools/abase/l9.test/consequence/Time.test.s
+      - proto/dwtools/amid
+      - proto/dwtools/atop
     criterion:
       default: 1
       debug: 1
@@ -87,7 +87,7 @@ reflector:
   reflect.proto.:
     srcFilter:
       filePath:
-        ./proto: ./out.release
+        ./proto: ./out/release
       maskAll:
         excludeAny:
           - !<tag:yaml.org,2002:js/regexp> /(\W|^)node_modules(\W|$)/
@@ -108,7 +108,7 @@ reflector:
   reflect.proto.debug:
     srcFilter:
       filePath:
-        ./proto: ./out.debug
+        ./proto: ./out/debug
       maskAll:
         excludeAny:
           - !<tag:yaml.org,2002:js/regexp> /(\W|^)node_modules(\W|$)/
@@ -159,18 +159,18 @@ reflector:
     srcFilter:
       filePath:
         .: true
-        ./dwtools: true
-        ./dwtools/Tools.s: true
-        ./dwtools/abase: true
-        ./dwtools/abase/l9: true
-        ./dwtools/abase/l9/consequence: true
-        ./dwtools/abase/l9/consequence/Consequence.s: true
-        ./dwtools/abase/l9.test: true
-        ./dwtools/abase/l9.test/consequence: true
-        ./dwtools/abase/l9.test/consequence/Consequence.test.s: true
-        ./dwtools/abase/l9.test/consequence/Time.test.s: true
-        ./dwtools/amid: true
-        ./dwtools/atop: true
+        dwtools: true
+        dwtools/Tools.s: true
+        dwtools/abase: true
+        dwtools/abase/l9: true
+        dwtools/abase/l9/consequence: true
+        dwtools/abase/l9/consequence/Consequence.s: true
+        dwtools/abase/l9.test: true
+        dwtools/abase/l9.test/consequence: true
+        dwtools/abase/l9.test/consequence/Consequence.test.s: true
+        dwtools/abase/l9.test/consequence/Time.test.s: true
+        dwtools/amid: true
+        dwtools/atop: true
       basePath: .
       prefixPath: proto
     criterion:
@@ -301,7 +301,7 @@ build:
       - 'step::export.proto'
 exported:
   proto.export:
-    version: 0.4.117
+    version: 0.4.119
     criterion:
       default: 1
       debug: 1
