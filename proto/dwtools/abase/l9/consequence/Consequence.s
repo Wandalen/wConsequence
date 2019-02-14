@@ -600,63 +600,63 @@ finallyPromiseKeep.having = Object.create( _promise.having );
 
 //
 
-function thenPromiseGive()
-{
-  let self = this;
-  _.assert( arguments.length === 0 );
-  return self._promise
-  ({
-    keeping : 0,
-    kindOfResource : self.KindOfResource.ArgumentOnly,
-  });
-}
+// function thenPromiseGive()
+// {
+//   let self = this;
+//   _.assert( arguments.length === 0 );
+//   return self._promise
+//   ({
+//     keeping : 0,
+//     kindOfResource : self.KindOfResource.ArgumentOnly,
+//   });
+// }
 
-thenPromiseGive.having = Object.create( _promise.having );
-
-//
-
-function thenPromiseKeep()
-{
-  let self = this;
-  _.assert( arguments.length === 0 );
-  return self._promise
-  ({
-    keeping : 1,
-    kindOfResource : self.KindOfResource.ArgumentOnly,
-  });
-}
-
-thenPromiseKeep.having = Object.create( _promise.having );
+// thenPromiseGive.having = Object.create( _promise.having );
 
 //
 
-function exceptPromiseGive()
-{
-  let self = this;
-  _.assert( arguments.length === 0 );
-  return self._promise
-  ({
-    keeping : 0,
-    kindOfResource : self.KindOfResource.ErrorOnly,
-  });
-}
+// function thenPromiseKeep()
+// {
+//   let self = this;
+//   _.assert( arguments.length === 0 );
+//   return self._promise
+//   ({
+//     keeping : 1,
+//     kindOfResource : self.KindOfResource.ArgumentOnly,
+//   });
+// }
 
-exceptPromiseGive.having = Object.create( _promise.having );
+// thenPromiseKeep.having = Object.create( _promise.having );
 
 //
 
-function exceptPromiseKeep()
-{
-  let self = this;
-  _.assert( arguments.length === 0 );
-  return self._promise
-  ({
-    keeping : 1,
-    kindOfResource : self.KindOfResource.ErrorOnly,
-  });
-}
+// function exceptPromiseGive()
+// {
+//   let self = this;
+//   _.assert( arguments.length === 0 );
+//   return self._promise
+//   ({
+//     keeping : 0,
+//     kindOfResource : self.KindOfResource.ErrorOnly,
+//   });
+// }
 
-exceptPromiseKeep.having = Object.create( _promise.having );
+// exceptPromiseGive.having = Object.create( _promise.having );
+
+//
+
+// function exceptPromiseKeep()
+// {
+//   let self = this;
+//   _.assert( arguments.length === 0 );
+//   return self._promise
+//   ({
+//     keeping : 1,
+//     kindOfResource : self.KindOfResource.ErrorOnly,
+//   });
+// }
+
+// exceptPromiseKeep.having = Object.create( _promise.having );
 
 // --
 // deasync
