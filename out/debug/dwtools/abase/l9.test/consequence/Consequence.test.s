@@ -3017,6 +3017,772 @@ function except( test )
 
 //
 
+function deasync( test )
+{
+  let self = this;
+  let testMsg = 'msg';
+
+  test.case = 'simplest take';
+  var con = new _.Consequence();
+  con.take( testMsg );
+  var got = con.deasync();
+  test.identical( got, testMsg );
+
+  con.finally( ( err, got ) =>
+  {
+    test.identical( err, undefined );
+    test.identical( got, testMsg );
+
+    test.identical( con.competitorsEarlyGet().length, 0 );
+    test.identical( con.resourcesGet().length, 0 );
+
+    return null;
+  })
+  var got = con.deasync();
+  test.identical( got, null );
+
+  //
+
+  test.case = 'simplest error';
+  var con = new _.Consequence();
+  con.error( testMsg );
+  test.shouldThrowError( () => con.deasync() )
+  con.finally( ( err, got ) =>
+  {
+    test.identical( err, testMsg );
+    test.identical( got, undefined );
+
+    test.identical( con.competitorsEarlyGet().length, 0 );
+    test.identical( con.resourcesGet().length, 0 );
+
+    return null;
+  })
+  var got = con.deasync();
+  test.identical( got, null );
+
+  //
+
+  test.case = 'timeOut';
+  var time1 = _.timeNow();
+  var con = _.timeOut( 150, () => testMsg );
+  var got = con.deasync();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 150 );
+  test.identical( got, testMsg )
+  con.finally( ( err, got ) =>
+  {
+    test.identical( err, undefined );
+    test.identical( got, testMsg );
+
+    test.identical( con.competitorsEarlyGet().length, 0 );
+    test.identical( con.resourcesGet().length, 0 );
+
+    return null;
+  })
+  var got = con.deasync();
+  test.identical( got, null );
+
+  //
+
+  test.case = 'several competitors';
+  var con = new _.Consequence().take( testMsg );
+  var order = [];
+
+  con.keep( ( got ) =>
+  {
+    order.push( 'keep1' );
+    test.identical( got, testMsg );
+    return got;
+  })
+
+  var got = con.deasync();
+  order.push( 'deasync1' );
+  test.identical( got, testMsg );
+
+  con.keep( ( got ) =>
+  {
+    order.push( 'keep2' );
+    test.identical( got, testMsg );
+    return got;
+  })
+
+  var got = con.deasync();
+  order.push( 'deasync2' );
+  test.identical( got, testMsg );
+
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 1 );
+
+  test.identical( order, [ 'keep1', 'deasync1', 'keep2', 'deasync2' ] )
+
+  //
+
+  test.case = 'sync timeouts';
+  var time1 = _.timeNow();
+  var got = [];
+  _.timeOut( 100, () => { got.push( 1 ); return 1 } ).deasync();
+  _.timeOut( 100, () => { got.push( 2 ); return 2 } ).deasync();
+  _.timeOut( 100, () => { got.push( 3 ); return 3 } ).deasync();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 300 );
+  test.identical( got, [ 1,2,3 ] )
+
+  //
+
+  test.case = 'sync andThen'
+  var con = new _.Consequence().take( null );
+  var time1 = _.timeNow();
+  con.andKeep
+  ([
+    _.timeOut( 100, () => 1 ),
+    _.timeOut( 120, () => 2 )
+  ])
+  var got = con.deasync();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 120 );
+  test.identical( got, [ 1,2,null ] );
+
+  //
+
+  test.case = 'sync chain'
+  var con = new _.Consequence().take( null );
+  var time1 = _.timeNow();
+  con.keep( () => _.timeOut( 50, () => 1 ) )
+  con.keep( () => _.timeOut( 50, () => 2 ) )
+  con.keep( () => _.timeOut( 50, () => 3 ) )
+  var got = con.deasync();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 150 );
+  test.identical( got, 3 );
+
+}
+
+//
+
+function finallyDeasyncGive( test )
+{
+  let self = this;
+  let testMsg = 'msg';
+
+  test.case = 'simplest take';
+  var con = new _.Consequence();
+  con.take( testMsg );
+  var got = con.finallyDeasyncGive();
+  test.identical( got, testMsg );
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 0 );
+
+  //
+
+  test.case = 'simplest error';
+  var con = new _.Consequence();
+  con.error( testMsg );
+  test.shouldThrowError( () => con.finallyDeasyncGive() )
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 0 );
+
+  //
+
+  test.case = 'timeOut';
+  var time1 = _.timeNow();
+  var con = _.timeOut( 150, () => testMsg );
+  var got = con.finallyDeasyncGive();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 150 );
+  test.identical( got, testMsg )
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 0 );
+
+  //
+
+  test.case = 'several competitors';
+  var con = new _.Consequence().take( testMsg );
+
+  con.keep( ( got ) =>
+  {
+    test.identical( got, testMsg );
+    return 'keep1';
+  })
+
+  var got = con.finallyDeasyncGive();
+  test.identical( got, 'keep1' );
+  test.identical( con.resourcesGet().length, 0 );
+  con.take( 'deasync1' )
+
+  con.keep( ( got ) =>
+  {
+    test.identical( got, 'deasync1' )
+    return 'keep2';
+  })
+
+  var got = con.finallyDeasyncGive();
+  test.identical( got, 'keep2' );
+
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 0 );
+
+  //
+
+  test.case = 'sync timeouts';
+  var time1 = _.timeNow();
+  var got = [];
+  _.timeOut( 100, () => { got.push( 1 ); return 1 } ).finallyDeasyncGive();
+  _.timeOut( 100, () => { got.push( 2 ); return 2 } ).finallyDeasyncGive();
+  _.timeOut( 100, () => { got.push( 3 ); return 3 } ).finallyDeasyncGive();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 300 );
+  test.identical( got, [ 1,2,3 ] )
+
+  //
+
+  test.case = 'sync andThen'
+  var con = new _.Consequence().take( null );
+  var time1 = _.timeNow();
+  con.andKeep
+  ([
+    _.timeOut( 100, () => 1 ),
+    _.timeOut( 120, () => 2 )
+  ])
+  var got = con.finallyDeasyncGive();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 120 );
+  test.identical( got, [ 1,2,null ] );
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 0 );
+
+  //
+
+  test.case = 'sync chain'
+  var con = new _.Consequence().take( null );
+  var time1 = _.timeNow();
+  con.keep( () => _.timeOut( 50, () => 1 ) )
+  con.keep( () => _.timeOut( 50, () => 2 ) )
+  con.keep( () => _.timeOut( 50, () => 3 ) )
+  var got = con.finallyDeasyncGive();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 150 );
+  test.identical( got, 3 );
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 0 );
+
+}
+
+//
+
+function thenDeasyncGive( test )
+{
+  let self = this;
+  let testMsg = 'msg';
+
+  test.case = 'simplest take';
+  var con = new _.Consequence();
+  con.take( testMsg );
+  var got = con.thenDeasyncGive();
+  test.identical( got, testMsg );
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 0 );
+
+  //
+
+  test.case = 'simplest error';
+  var con = new _.Consequence();
+  con.error( testMsg );
+  var got = con.thenDeasyncGive();
+  test.is( _.consequenceIs( got ) )
+  test.identical( got.competitorsEarlyGet().length, 0 );
+  test.identical( got.competitorsCount(), 0 );
+  test.identical( got.resourcesGet(),[{ error : testMsg, argument : undefined }] );
+
+  //
+
+  test.case = 'timeOut';
+  var time1 = _.timeNow();
+  var con = _.timeOut( 150, () => testMsg );
+  var got = con.thenDeasyncGive();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 150 );
+  test.identical( got, testMsg )
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 0 );
+
+  //
+
+  test.case = 'several competitors';
+  var con = new _.Consequence().take( testMsg );
+
+  con.keep( ( got ) =>
+  {
+    test.identical( got, testMsg );
+    return 'keep1';
+  })
+
+  var got = con.thenDeasyncGive();
+  test.identical( got, 'keep1' );
+  test.identical( con.resourcesGet().length, 0 );
+  con.take( 'deasync1' )
+
+  con.keep( ( got ) =>
+  {
+    test.identical( got, 'deasync1' )
+    return 'keep2';
+  })
+
+  var got = con.thenDeasyncGive();
+  test.identical( got, 'keep2' );
+
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 0 );
+
+  //
+
+  test.case = 'sync timeouts';
+  var time1 = _.timeNow();
+  var got = [];
+  _.timeOut( 100, () => { got.push( 1 ); return 1 } ).thenDeasyncGive();
+  _.timeOut( 100, () => { got.push( 2 ); return 2 } ).thenDeasyncGive();
+  _.timeOut( 100, () => { got.push( 3 ); return 3 } ).thenDeasyncGive();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 300 );
+  test.identical( got, [ 1,2,3 ] )
+
+  //
+
+  test.case = 'sync andThen'
+  var con = new _.Consequence().take( null );
+  var time1 = _.timeNow();
+  con.andKeep
+  ([
+    _.timeOut( 100, () => 1 ),
+    _.timeOut( 120, () => 2 )
+  ])
+  var got = con.thenDeasyncGive();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 120 );
+  test.identical( got, [ 1,2,null ] );
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 0 );
+
+  //
+
+  test.case = 'sync chain'
+  var con = new _.Consequence().take( null );
+  var time1 = _.timeNow();
+  con.keep( () => _.timeOut( 50, () => 1 ) )
+  con.keep( () => _.timeOut( 50, () => 2 ) )
+  con.keep( () => _.timeOut( 50, () => 3 ) )
+  var got = con.thenDeasyncGive();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 150 );
+  test.identical( got, 3 );
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 0 );
+
+}
+
+//
+
+function thenDeasyncKeep( test )
+{
+  let self = this;
+  let testMsg = 'msg';
+
+  test.case = 'simplest take';
+  var con = new _.Consequence();
+  con.take( testMsg );
+  var got = con.thenDeasyncKeep();
+  test.identical( got, testMsg );
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 1 );
+
+  //
+
+  test.case = 'simplest error';
+  var con = new _.Consequence();
+  con.error( testMsg );
+  var got = con.thenDeasyncKeep();
+  test.is( _.consequenceIs( got ) )
+  test.identical( got.competitorsEarlyGet().length, 0 );
+  test.identical( got.competitorsCount(), 0 );
+  test.identical( got.resourcesGet(),[{ error : testMsg, argument : undefined }] );
+
+  //
+
+  test.case = 'timeOut';
+  var time1 = _.timeNow();
+  var con = _.timeOut( 150, () => testMsg );
+  var got = con.thenDeasyncKeep();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 150 );
+  test.identical( got, testMsg )
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 1 );
+
+  //
+
+  test.case = 'several competitors';
+  var con = new _.Consequence().take( testMsg );
+
+  con.keep( ( got ) =>
+  {
+    test.identical( got, testMsg );
+    return 'keep1';
+  })
+
+  var got = con.thenDeasyncKeep();
+  test.identical( got, 'keep1' );
+  test.identical( con.resourcesGet().length, 1 );
+
+  con.keep( ( got ) =>
+  {
+    test.identical( got, 'keep1' )
+    return 'keep2';
+  })
+
+  var got = con.thenDeasyncKeep();
+  test.identical( got, 'keep2' );
+
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 1 );
+
+  //
+
+  test.case = 'sync timeouts';
+  var time1 = _.timeNow();
+  var got = [];
+  _.timeOut( 100, () => { got.push( 1 ); return 1 } ).thenDeasyncKeep();
+  _.timeOut( 100, () => { got.push( 2 ); return 2 } ).thenDeasyncKeep();
+  _.timeOut( 100, () => { got.push( 3 ); return 3 } ).thenDeasyncKeep();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 300 );
+  test.identical( got, [ 1,2,3 ] )
+
+  //
+
+  test.case = 'sync andThen'
+  var con = new _.Consequence().take( null );
+  var time1 = _.timeNow();
+  con.andKeep
+  ([
+    _.timeOut( 100, () => 1 ),
+    _.timeOut( 120, () => 2 )
+  ])
+  var got = con.thenDeasyncKeep();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 120 );
+  test.identical( got, [ 1,2,null ] );
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 1 );
+
+  //
+
+  test.case = 'sync chain'
+  var con = new _.Consequence().take( null );
+  var time1 = _.timeNow();
+  con.keep( () => _.timeOut( 50, () => 1 ) )
+  con.keep( () => _.timeOut( 50, () => 2 ) )
+  con.keep( () => _.timeOut( 50, () => 3 ) )
+  var got = con.thenDeasyncKeep();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 150 );
+  test.identical( got, 3 );
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 1 );
+
+}
+
+//
+
+function exceptDeasyncGive( test )
+{
+  let self = this;
+  let testMsg = 'msg';
+
+  test.case = 'simplest take';
+  var con = new _.Consequence();
+  con.take( testMsg );
+  var got = con.exceptDeasyncGive();
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 0 );
+  test.is( _.consequenceIs( got ) );
+  test.identical( got.competitorsEarlyGet().length, 0 );
+  test.identical( got.competitorsCount(), 0 );
+  test.identical( got.resourcesGet(), [{ error : undefined, argument : testMsg }] );
+
+  //
+
+  test.case = 'simplest error';
+  var con = new _.Consequence();
+  con.error( testMsg );
+  test.shouldThrowError( () => con.exceptDeasyncGive() );
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 0 );
+
+  //
+
+  test.case = 'timeOut';
+  var time1 = _.timeNow();
+  var con = _.timeOut( 150, () => testMsg );
+  var got = con.exceptDeasyncGive();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 150 );
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 0 );
+  test.is( _.consequenceIs( got ) );
+  test.identical( got.competitorsEarlyGet().length, 0 );
+  test.identical( got.competitorsCount(), 0 );
+  test.identical( got.resourcesGet(), [{ error : undefined, argument : testMsg }] );
+
+
+  //
+
+  test.case = 'several competitors';
+  var con = new _.Consequence().take( testMsg );
+
+  con.keep( ( got ) =>
+  {
+    test.identical( got, testMsg );
+    return 'keep1';
+  })
+
+  var got = con.exceptDeasyncGive();
+  test.identical( got.competitorsEarlyGet().length, 0 );
+  test.identical( got.competitorsCount(), 0 );
+  test.identical( got.resourcesGet(), [{ error : undefined, argument : 'keep1' }] );
+  con.take( 'deasync1' )
+
+  con.keep( ( got ) =>
+  {
+    test.identical( got, 'deasync1' )
+    return 'keep2';
+  })
+
+  var got = con.exceptDeasyncGive();
+  test.is( _.consequenceIs( got ) );
+  test.identical( got.competitorsEarlyGet().length, 0 );
+  test.identical( got.competitorsCount(), 0 );
+  test.identical( got.resourcesGet(), [{ error : undefined, argument : 'keep2' }] );
+
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 0 );
+
+  //
+
+  test.case = 'sync timeouts';
+  var time1 = _.timeNow();
+  var got = [];
+  _.timeOut( 100, () => { got.push( 1 ); return 1 } ).exceptDeasyncGive();
+  _.timeOut( 100, () => { got.push( 2 ); return 2 } ).exceptDeasyncGive();
+  _.timeOut( 100, () => { got.push( 3 ); return 3 } ).exceptDeasyncGive();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 300 );
+  test.identical( got, [ 1,2,3 ] )
+
+  //
+
+  test.case = 'sync andThen'
+  var con = new _.Consequence().take( null );
+  var time1 = _.timeNow();
+  con.andKeep
+  ([
+    _.timeOut( 100, () => 1 ),
+    _.timeOut( 120, () => 2 )
+  ])
+  var got = con.exceptDeasyncGive();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 120 );
+  test.is( _.consequenceIs( got ) );
+  test.identical( got.competitorsEarlyGet().length, 0 );
+  test.identical( got.competitorsCount(), 0 );
+  test.identical( got.resourcesGet(), [{ error : undefined, argument : [ 1,2,null ] }] );
+
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 0 );
+
+  //
+
+  test.case = 'sync chain'
+  var con = new _.Consequence().take( null );
+  var time1 = _.timeNow();
+  con.keep( () => _.timeOut( 50, () => 1 ) )
+  con.keep( () => _.timeOut( 50, () => 2 ) )
+  con.keep( () => _.timeOut( 50, () => 3 ) )
+  var got = con.exceptDeasyncGive();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 150 );
+  test.is( _.consequenceIs( got ) );
+  test.identical( got.competitorsEarlyGet().length, 0 );
+  test.identical( got.competitorsCount(), 0 );
+  test.identical( got.resourcesGet(), [{ error : undefined, argument : 3 }] );
+
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 0 );
+
+}
+
+//
+
+function exceptDeasyncKeep( test )
+{
+  let self = this;
+  let testMsg = 'msg';
+
+  test.case = 'simplest take';
+  var con = new _.Consequence();
+  con.take( testMsg );
+  var got = con.exceptDeasyncKeep();
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 1 );
+  test.is( _.consequenceIs( got ) );
+  test.identical( got.competitorsEarlyGet().length, 0 );
+  test.identical( got.competitorsCount(), 0 );
+  test.identical( got.resourcesGet(), [{ error : undefined, argument : testMsg }] );
+
+  //
+
+  test.case = 'simplest error';
+  var con = new _.Consequence();
+  con.error( testMsg );
+  test.shouldThrowError( () => con.exceptDeasyncKeep() );
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 1 );
+
+  //
+
+  test.case = 'timeOut';
+  var time1 = _.timeNow();
+  var con = _.timeOut( 150, () => testMsg );
+  var got = con.exceptDeasyncKeep();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 150 );
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet().length, 1 );
+  test.is( _.consequenceIs( got ) );
+  test.identical( got.competitorsEarlyGet().length, 0 );
+  test.identical( got.competitorsCount(), 0 );
+  test.identical( got.resourcesGet(), [{ error : undefined, argument : testMsg }] );
+
+
+  //
+
+  test.case = 'several competitors';
+  var con = new _.Consequence().take( testMsg );
+
+  con.keep( ( got ) =>
+  {
+    test.identical( got, testMsg );
+    return 'keep1';
+  })
+
+  var got = con.exceptDeasyncKeep();
+  test.is( _.consequenceIs( got ) );
+  test.identical( got.competitorsEarlyGet().length, 0 );
+  test.identical( got.competitorsCount(), 0 );
+  test.identical( got.resourcesGet(), [{ error : undefined, argument : 'keep1' }] );
+
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet(), [{ error : undefined, argument : 'keep1' }] );
+
+  con.keep( ( got ) =>
+  {
+    test.identical( got, 'keep1' )
+    return 'keep2';
+  })
+
+  var got = con.exceptDeasyncKeep();
+  test.is( _.consequenceIs( got ) );
+  test.identical( got.competitorsEarlyGet().length, 0 );
+  test.identical( got.competitorsCount(), 0 );
+  test.identical( got.resourcesGet(), [{ error : undefined, argument : 'keep2' }] );
+
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet(), [{ error : undefined, argument : 'keep2' }] );
+
+  //
+
+  test.case = 'sync timeouts';
+  var time1 = _.timeNow();
+  var got = [];
+  _.timeOut( 100, () => { got.push( 1 ); return 1 } ).exceptDeasyncKeep();
+  _.timeOut( 100, () => { got.push( 2 ); return 2 } ).exceptDeasyncKeep();
+  _.timeOut( 100, () => { got.push( 3 ); return 3 } ).exceptDeasyncKeep();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 300 );
+  test.identical( got, [ 1,2,3 ] )
+
+  //
+
+  test.case = 'sync andThen'
+  var con = new _.Consequence().take( null );
+  var time1 = _.timeNow();
+  con.andKeep
+  ([
+    _.timeOut( 100, () => 1 ),
+    _.timeOut( 120, () => 2 )
+  ])
+  var got = con.exceptDeasyncKeep();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 120 );
+  test.is( _.consequenceIs( got ) );
+  test.identical( got.competitorsEarlyGet().length, 0 );
+  test.identical( got.competitorsCount(), 0 );
+  test.identical( got.resourcesGet(), [{ error : undefined, argument : [ 1,2,null ] }] );
+
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet(), [{ error : undefined, argument : [ 1,2,null ] }] );
+
+  //
+
+  test.case = 'sync chain'
+  var con = new _.Consequence().take( null );
+  var time1 = _.timeNow();
+  con.keep( () => _.timeOut( 50, () => 1 ) )
+  con.keep( () => _.timeOut( 50, () => 2 ) )
+  con.keep( () => _.timeOut( 50, () => 3 ) )
+  var got = con.exceptDeasyncKeep();
+  var time2 = _.timeNow();
+  test.ge( time2 - time1, 150 );
+  test.is( _.consequenceIs( got ) );
+  test.identical( got.competitorsEarlyGet().length, 0 );
+  test.identical( got.competitorsCount(), 0 );
+  test.identical( got.resourcesGet(), [{ error : undefined, argument : 3 }] );
+
+  test.identical( con.competitorsEarlyGet().length, 0 );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( con.resourcesGet(), [{ error : undefined, argument : 3 }] );
+
+}
+
+//
+
 // function keep( test )
 // {
 
@@ -9978,6 +10744,15 @@ var Self =
     ifNoErrorGotThrowing,
     keep,
     except,
+
+    //deasync
+
+    finallyDeasyncGive,
+    deasync,
+    thenDeasyncGive,
+    thenDeasyncKeep,
+    exceptDeasyncGive,
+    exceptDeasyncKeep,
 
     timeOut,
 
