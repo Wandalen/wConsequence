@@ -4092,10 +4092,10 @@ let Extend =
   finallyPromiseGive,
   finallyPromiseKeep,
   promise : finallyPromiseKeep,
-  thenPromiseGive,
-  thenPromiseKeep,
-  exceptPromiseGive,
-  exceptPromiseKeep,
+  // thenPromiseGive,
+  // thenPromiseKeep,
+  // exceptPromiseGive,
+  // exceptPromiseKeep,
 
   // deasync // qqq : conver please
 
