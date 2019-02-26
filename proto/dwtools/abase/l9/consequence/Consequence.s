@@ -143,7 +143,7 @@ wConsequence.shortName = 'Consequence';
  * @param {Object|Function|wConsequence} [o] initialization options
  * @private
  * @method init
- * @memberof wConsequence#
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 function init( o )
@@ -279,7 +279,7 @@ function isJoinedWithConsequence( src )
  * @see {@link wConsequence~Competitor} competitor callback
  * @throws {Error} if passed more than one argument.
  * @method finallyGive
- * @memberof wConsequence#
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 function finallyGive( competitorRoutine )
@@ -377,7 +377,7 @@ thenGive.having =
  * @throws {Error} if passed more than one arguments
  * @see {@link wConsequence#finallyGive} finally method
  * @method thenKeep
- * @memberof wConsequence#
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 function thenKeep( competitorRoutine )
@@ -440,7 +440,7 @@ exceptGive.having =
  * @throws {Error} if passed more than one arguments
  * @see {@link wConsequence#finallyGive} finally method
  * @method exceptKeep
- * @memberof wConsequence#
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 function exceptKeep( competitorRoutine )
@@ -582,7 +582,7 @@ finallyPromiseGive.having = Object.create( _promise.having );
  * @see {@link wConsequence~Competitor} competitor callback
  * @see {@link wConsequence#finallyGive} finallyGive method
  * @method finally
- * @memberof wConsequence#
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 function finallyPromiseKeep()
@@ -906,7 +906,7 @@ function _first( src, stack )
  * @returns {wConsequence}
  * @throws {Error} if `src` has unexpected type.
  * @method first
- * @memberof wConsequence#
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 function first( src )
@@ -954,7 +954,7 @@ first.having =
  * @returns {wConsequence}
  * @throws {Error} if passed any argument.
  * @method split
- * @memberof wConsequence#
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 function split( first )
@@ -1025,7 +1025,7 @@ split.having =
  * @throws {Error} if passed more than one arguments
  * @see {@link wConsequence#finallyGive} finallyGive method
  * @method tap
- * @memberof wConsequence#
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 function tap( competitorRoutine )
@@ -1058,7 +1058,7 @@ tap.having =
  * @returns {wConsequence}
  * @throws {Error} If called with any argument.
  * @method exceptLog
- * @memberof wConsequence#
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 function exceptLog()
@@ -1460,7 +1460,7 @@ _timeOut.having =
  * @throws {Error} if passed extra arguments.
  * @see {@link wConsequence~finally} finally method
  * @method timeOut
- * @memberof wConsequence#
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 let finnallyTimeOut = _.routineFromPreAndBody( timeOut_pre, _timeOut, 'finnallyTimeOut' );
@@ -1693,7 +1693,7 @@ having.andLike = 1;
  * @throws {Error} if missed arguments.
  * @throws {Error} if passed extra arguments.
  * @method andTake
- * @memberof wConsequence#
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 let andTake = _.routineFromPreAndBody( and_pre, _and, 'andTake' );
@@ -1708,7 +1708,7 @@ defaults.taking = true;
  * @param {wConsequence[]|wConsequence} competitors Array of wConsequence objects
  * @throws {Error} If missed or passed extra argument.
  * @method andKeep
- * @memberof wConsequence#
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 let andKeep = _.routineFromPreAndBody( and_pre, _and, 'andKeep' );
@@ -2188,7 +2188,7 @@ function takeSoon( error, argument )
  * @returns {wConsequence} consequence current wConsequence instance.
  * @throws {Error} if passed extra parameters.
  * @method take
- * @memberof wConsequence#
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 function take( error, argument )
@@ -2261,7 +2261,7 @@ take.having =
  * @param {*|Error} error error, or value that represent error reason
  * @throws {Error} if passed extra parameters.
  * @method error
- * @memberof wConsequence#
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 function error( error, argument )
@@ -2299,7 +2299,7 @@ error.having =
 //  * @private
 //  * @throws {Error} if missed arguments or passed extra arguments
 //  * @method _giveWithError
-//  * @memberof wConsequence#
+//  * @memberof module:Tools/base/mixin/Consequence
 //  */
 //
 // function _giveWithError( error, argument )
@@ -2380,7 +2380,7 @@ function __onTake( err, arg )
 //  * @returns {*} result
 //  * @throws {Error} if missed arguments or passed extra arguments
 //  * @method ping
-//  * @memberof wConsequence#
+//  * @memberof module:Tools/base/mixin/Consequence
 //  */
 //
 // function _ping( error, argument )
@@ -2414,7 +2414,7 @@ function __onTake( err, arg )
  * @returns {wConsequence}
  * @private
  * @method __handleError
- * @memberof wConsequence#
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 function __handleError( err, competitor )
@@ -2492,7 +2492,7 @@ function __handleError( err, competitor )
  * @throws {Error} if on invocation moment the _resource queue is empty.
  * @private
  * @method __handleResource
- * @memberof wConsequence#
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 function __handleResource( isResource )
@@ -2680,7 +2680,7 @@ function __handleResourceNow()
  * @returns {wConsequence}
  * @private
  * @method _competitorAppend
- * @memberof wConsequence#
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 function _competitorAppend( o )
@@ -2851,7 +2851,7 @@ function isEmpty()
 /**
  * Clears all resources and corespondents of wConsequence.
  * @method cancel
- * @memberof wConsequence
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 function cancel()
@@ -2958,7 +2958,7 @@ function competitorsCount()
 
  * @returns {_corespondentMap[]}
  * @method competitorsEarlyGet
- * @memberof wConsequence
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 function competitorsEarlyGet()
@@ -3009,7 +3009,7 @@ function competitorsEarlyGet()
  // corespondent1 value: bar
  * @param [competitor]
  * @method competitorsCancel
- * @memberof wConsequence
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 function competitorsCancel( competitorRoutine )
@@ -3143,7 +3143,7 @@ function errorsCount()
 
  * @returns {number}
  * @method resourcesCount
- * @memberof wConsequence
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 function resourcesCount()
@@ -3183,7 +3183,7 @@ function resourcesCount()
 
  * @returns {_resourceObject[]}
  * @method resourcesGet
- * @memberof wConsequence
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 function resourcesGet( index )
@@ -3218,7 +3218,7 @@ function resourcesGet( index )
  * @param {_resourceObject} arg resource object for removing.
  * @throws {Error} If passed extra arguments.
  * @method competitorsCancel
- * @memberof wConsequence
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 function resourcesCancel( arg )
@@ -3367,7 +3367,7 @@ _.routineExtend( infoExport, _infoExport );
 
  * @returns {string}
  * @method toStr
- * @memberof wConsequence
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 function toStr()
@@ -3393,7 +3393,7 @@ function toString()
 //  value no exception occurred, it will be set to null;
 //  * @param {*} arg resolved by wConsequence value;
 //  * @returns {*}
-//  * @memberof wConsequence
+//  * @memberof module:Tools/base/mixin/Consequence
 //  */
 //
 // function _onDebug( err, arg )
@@ -3516,7 +3516,7 @@ function From( src, timeOut )
  * @returns {*}
  * @static
  * @method take
- * @memberof wConsequence
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 function Take( consequence )
@@ -3562,7 +3562,7 @@ function Take( consequence )
    * @throws {Error} if passed argument is not object.
    * @throws {Error} if o.consequence has unexpected type.
    * @method _Take
-   * @memberof wConsequence
+   * @memberof module:Tools/base/mixin/Consequence
    */
 
 function _Take( o )
@@ -3650,7 +3650,7 @@ _Take.defaults =
    * @returns {*}
    * @static
    * @method error
-   * @memberof wConsequence
+   * @memberof module:Tools/base/mixin/Consequence
    */
 
 function Error( consequence, error )
@@ -3679,7 +3679,7 @@ function Error( consequence, error )
 //  * @param {*} finallyGive arguments
 //  * @returns {*}
 //  * @method GiveWithContextAndError
-//  * @memberof wConsequence
+//  * @memberof module:Tools/base/mixin/Consequence
 //  */
 //
 // function GiveWithContextAndError( consequence, context, err, finallyGive )
@@ -3716,7 +3716,7 @@ function Error( consequence, error )
 //  * @static
 //  * @thorws If missed arguments or passed extra ones.
 //  * @method exceptKeep
-//  * @memberof wConsequence
+//  * @memberof module:Tools/base/mixin/Consequence
 //  * @see {@link wConsequence#exceptKeep}
 //  */
 //
@@ -3758,7 +3758,7 @@ function Error( consequence, error )
 //  * @static
 //  * @throws {Error} If missed arguments or passed extra one;
 //  * @method thenKeep
-//  * @memberof wConsequence
+//  * @memberof module:Tools/base/mixin/Consequence
 //  */
 //
 // function IfNoErrorThen()
@@ -3797,7 +3797,7 @@ function Error( consequence, error )
  value no exception occurred, it will be set to null;
  * @param {*} arg resolved by wConsequence value;
  * @returns {*}
- * @memberof wConsequence
+ * @memberof module:Tools/base/mixin/Consequence
  */
 
 function FinallyPass( err, arg )
