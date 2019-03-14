@@ -149,7 +149,7 @@ reflector:
   exported.proto.export:
     src:
       filePath:
-        .: null
+        .: true
       prefixPath: proto
     criterion:
       default: 1
@@ -163,19 +163,19 @@ reflector:
     recursive: 0
     src:
       filePath:
-        .: null
-        dwtools: null
-        dwtools/Tools.s: null
-        dwtools/abase: null
-        dwtools/abase/l9: null
-        dwtools/abase/l9/consequence: null
-        dwtools/abase/l9/consequence/Consequence.s: null
-        dwtools/abase/l9.test: null
-        dwtools/abase/l9.test/consequence: null
-        dwtools/abase/l9.test/consequence/Consequence.test.s: null
-        dwtools/abase/l9.test/consequence/Time.test.s: null
-        dwtools/amid: null
-        dwtools/atop: null
+        .: true
+        dwtools: true
+        dwtools/Tools.s: true
+        dwtools/abase: true
+        dwtools/abase/l9: true
+        dwtools/abase/l9/consequence: true
+        dwtools/abase/l9/consequence/Consequence.s: true
+        dwtools/abase/l9.test: true
+        dwtools/abase/l9.test/consequence: true
+        dwtools/abase/l9.test/consequence/Consequence.test.s: true
+        dwtools/abase/l9.test/consequence/Time.test.s: true
+        dwtools/amid: true
+        dwtools/atop: true
       basePath: .
       prefixPath: proto
     criterion:
