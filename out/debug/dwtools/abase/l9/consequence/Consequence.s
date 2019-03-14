@@ -3,8 +3,7 @@
 'use strict';
 
 /**
- * Advanced synchronization mechanism. Asynchronous routines may use Consequence to wrap postponed result, what allows classify callback for such routines as output, not input, what improves analyzability of a program. Consequence may be used to make a queue for mutually exclusive access to a resource. Algorithmically speaking Consequence is 2 queues ( FIFO ) and a customizable arbitrating algorithm. The first queue contains available resources, the second queue includes competitors for this resources. At any specific moment, one or another queue may be empty or full. Arbitrating algorithm makes resource available for a competitor as soon as possible. There are 2 kinds of resource: regular and erroneous. Unlike Promise, Consequence is much more customizable and can solve engineering problem which Promise cant. But have in mind with great power great responsibility comes. Consequence can coexist and interact with a Promise, getting fulfillment/rejection of a Promise or fulfilling it. Use Consequence to get more flexibility and improve readability of asynchronous aspect of your application.
-  @module Tools/base/mixin/Consequence
+  @module Tools/base/mixin/Consequence - Advanced synchronization mechanism. Asynchronous routines may use Consequence to wrap postponed result, what allows classify callback for such routines as output, not input, what improves analyzability of a program. Consequence may be used to make a queue for mutually exclusive access to a resource. Algorithmically speaking Consequence is 2 queues ( FIFO ) and a customizable arbitrating algorithm. The first queue contains available resources, the second queue includes competitors for this resources. At any specific moment, one or another queue may be empty or full. Arbitrating algorithm makes resource available for a competitor as soon as possible. There are 2 kinds of resource: regular and erroneous. Unlike Promise, Consequence is much more customizable and can solve engineering problem which Promise cant. But have in mind with great power great responsibility comes. Consequence can coexist and interact with a Promise, getting fulfillment/rejection of a Promise or fulfilling it. Use Consequence to get more flexibility and improve readability of asynchronous aspect of your application.
 */
 
 /**
@@ -13,11 +12,33 @@
 
 /*
 
-chainer :
+= Concepts
 
-1. ignore / use returned
-2. append / prepend returned
-3.
+Consequence ::
+Resource ::
+Error of resource ::
+Argument of resource ::
+Competitor ::
+Procedure ::
+
+*/
+
+/*
+
+= Principles
+
+1. Methods of Consequence should call callback instantly and synchronously if all necessary data provided, otherwise, Consequence should call callback asynchronously.
+2. Handlers of keeping methods cannot return undefined. It is often a sign of a bug.
+3. A resource of Consequence cannot have both an error and an argument but must have either one.
+
+*/
+
+/*
+
+= Groups
+
+1. then / except / finally
+2. give / keep
 
 */
 
@@ -158,9 +179,7 @@ function init( o )
   if( Config.debug )
   {
     self.tag = self.Composes.tag;
-    //debugger;
     self.id = _.procedure.indexAlloc();
-    //debugger;
     self.resourceLimit = self.Composes.resourceLimit;
     self.dependsOf = [];
     self.sourcePath = null;
@@ -205,7 +224,7 @@ function isJoinedWithConsequence( src )
 {
   _.assert( arguments.length === 1 );
   debugger;
-  let result = _.subOf( src, JoinedWithConsequence );
+  let result = _.subPrototypeOf( src, JoinedWithConsequence );
   if( result )
   debugger;
   return result;
@@ -319,8 +338,20 @@ finallyGive.having =
 function finallyKeep( competitorRoutine )
 {
   let self = this;
+  // let times = 1;
 
   _.assert( arguments.length === 1, 'Expects single argument' );
+
+  // if( _.numberIs( competitorRoutine ) )
+  // {
+  //   times = competitorRoutine;
+  //   competitorRoutine = function( err, arg )
+  //   {
+  //     if( err )
+  //     throw err;
+  //     return arg;
+  //   };
+  // }
 
   self._competitorAppend
   ({
@@ -328,6 +359,8 @@ function finallyKeep( competitorRoutine )
     keeping : true,
     kindOfResource : Self.KindOfResource.Both,
     stackLevel : 2,
+    times : 1,
+    // times : times,
   });
 
   self.__handleResource( false );
@@ -600,63 +633,63 @@ finallyPromiseKeep.having = Object.create( _promise.having );
 
 //
 
-// function thenPromiseGive()
-// {
-//   let self = this;
-//   _.assert( arguments.length === 0 );
-//   return self._promise
-//   ({
-//     keeping : 0,
-//     kindOfResource : self.KindOfResource.ArgumentOnly,
-//   });
-// }
+function thenPromiseGive()
+{
+  let self = this;
+  _.assert( arguments.length === 0 );
+  return self._promise
+  ({
+    keeping : 0,
+    kindOfResource : self.KindOfResource.ArgumentOnly,
+  });
+}
 
-// thenPromiseGive.having = Object.create( _promise.having );
-
-//
-
-// function thenPromiseKeep()
-// {
-//   let self = this;
-//   _.assert( arguments.length === 0 );
-//   return self._promise
-//   ({
-//     keeping : 1,
-//     kindOfResource : self.KindOfResource.ArgumentOnly,
-//   });
-// }
-
-// thenPromiseKeep.having = Object.create( _promise.having );
+thenPromiseGive.having = Object.create( _promise.having );
 
 //
 
-// function exceptPromiseGive()
-// {
-//   let self = this;
-//   _.assert( arguments.length === 0 );
-//   return self._promise
-//   ({
-//     keeping : 0,
-//     kindOfResource : self.KindOfResource.ErrorOnly,
-//   });
-// }
+function thenPromiseKeep()
+{
+  let self = this;
+  _.assert( arguments.length === 0 );
+  return self._promise
+  ({
+    keeping : 1,
+    kindOfResource : self.KindOfResource.ArgumentOnly,
+  });
+}
 
-// exceptPromiseGive.having = Object.create( _promise.having );
+thenPromiseKeep.having = Object.create( _promise.having );
 
 //
 
-// function exceptPromiseKeep()
-// {
-//   let self = this;
-//   _.assert( arguments.length === 0 );
-//   return self._promise
-//   ({
-//     keeping : 1,
-//     kindOfResource : self.KindOfResource.ErrorOnly,
-//   });
-// }
+function exceptPromiseGive()
+{
+  let self = this;
+  _.assert( arguments.length === 0 );
+  return self._promise
+  ({
+    keeping : 0,
+    kindOfResource : self.KindOfResource.ErrorOnly,
+  });
+}
 
-// exceptPromiseKeep.having = Object.create( _promise.having );
+exceptPromiseGive.having = Object.create( _promise.having );
+
+//
+
+function exceptPromiseKeep()
+{
+  let self = this;
+  _.assert( arguments.length === 0 );
+  return self._promise
+  ({
+    keeping : 1,
+    kindOfResource : self.KindOfResource.ErrorOnly,
+  });
+}
+
+exceptPromiseKeep.having = Object.create( _promise.having );
 
 // --
 // deasync
@@ -687,12 +720,12 @@ function _deasync( o )
   Deasync.loopWhile( () => !ready )
 
   if( result.err )
-  if( o.kindOfResource === self.KindOfResource.Both || o.kindOfResource === self.KindOfResource.ErrorOnly )
+  if( self.KindOfResource.Both || self.KindOfResource.ErrorOnly )
   throw result.err;
   else
   return new _.Consequence().error( result.err );
 
-  if( o.kindOfResource === self.KindOfResource.Both || o.kindOfResource === self.KindOfResource.ArgumentOnly )
+  if( self.KindOfResource.Both || self.KindOfResource.ArgumentOnly )
   return result.arg;
   else
   return new _.Consequence().take( result.arg );
@@ -1106,7 +1139,7 @@ function toResourceMaybe()
     {
       debugger;
       _.assert( resource.argument === undefined );
-      throw resource.error;
+      throw _.err( resource.error );
     }
     else
     {
@@ -1162,7 +1195,7 @@ function wait()
 
   _.assert( arguments.length === 0 );
 
-  self.finallyGive( function __waitGot( err, arg )
+  self.finallyGive( function __wait( err, arg )
   {
     if( err )
     self.error( err );
@@ -1504,34 +1537,36 @@ function _and( o )
   let competitors = o.competitors;
   let taking = o.taking;
   let procedure = self.procedure( 'and' ).sourcePathFirst( o.stackLevel + 1 );
+  let escaped = 0;
 
   _.assertRoutineOptions( _and, arguments );
+
+  /* */
 
   if( !_.arrayIs( competitors ) )
   competitors = [ competitors ];
   else
   competitors = competitors.slice();
-
   competitors.push( self );
-
-  /* */
-
   let count = competitors.length;
 
   /* */
 
-  if( Config.debug )
-  if( self.Diagnostics )
+  if( Config.debug && self.Diagnostics )
   {
+    let competitors2 = [];
 
     for( let s = 0 ; s < competitors.length-1 ; s++ )
     {
-      let src = competitors[ s ];
-      _.assert( _.consequenceIs( src ) || _.routineIs( src ) || src === null, () => 'Consequence.and expects consequence, routine or null, but got ' + _.strType( src ) );
-      if( !_.consequenceIs( src ) )
+      let competitor = competitors[ s ];
+      _.assert( _.consequenceIs( competitor ) || _.routineIs( competitor ) || competitor === null, () => 'Consequence.and expects consequence, routine or null, but got ' + _.strType( competitor ) );
+      if( !_.consequenceIs( competitor ) )
       continue;
-      src.assertNoDeadLockWith( self );
-      self.dependsOf.push( src );
+      if( _.arrayHas( competitors2, competitor ) )
+      continue;
+      competitor.assertNoDeadLockWith( self );
+      _.arrayAppendOnceStrictly( self.dependsOf, competitor );
+      competitors2.push( competitor );
     }
 
   }
@@ -1540,81 +1575,128 @@ function _and( o )
 
   self.finallyGive( start );
 
+  escaped = 1;
   return self;
 
   /* - */
 
   function start( err, arg )
   {
+    let competitors2 = [];
 
-    for( let s = 0 ; s < competitors.length-1 ; s++ )
+    for( let c = 0 ; c < competitors.length-1 ; c++ )
     {
-      let src = competitors[ s ];
+      let competitor = competitors[ c ];
+      let wasRoutine = false;
 
-      if( !_.consequenceIs( src ) && _.routineIs( src ) )
+      if( !_.consequenceIs( competitor ) && _.routineIs( competitor ) )
+      try
       {
-        src = competitors[ s ] = src();
-        if( Config.debug )
-        if( self.Diagnostics )
-        self.dependsOf.push( src );
+        wasRoutine = true;
+        competitor = competitors[ c ] = competitor();
+      }
+      catch( err )
+      {
+        competitor = new _.Consequence().error( _.err( err ) );
       }
 
-      if( Config.debug )
-      if( self.Diagnostics )
-      if( _.consequenceIs( competitors[ s ] ) )
-      src.assertNoDeadLockWith( self );
+      _.assert( _.consequenceIs( competitor ) || competitor === null, () => 'Expects consequence or null, but got ' + _.strType( competitor ) );
 
-      _.assert( _.consequenceIs( src ) || src === null, () => 'Expects consequence or null, but got ' + _.strType( src ) );
-
-      if( src === null )
+      if( competitor === null )
       {
-        __got( s, undefined, null );
+        __got.call( c, undefined, null );
+        continue;
+      }
+      else if( _.arrayHas( competitors2, competitor ) )
+      {
         continue;
       }
 
-      let r = _.routineJoin( undefined, __got, [ s ] );
-      src.procedure( 'and' ).sourcePathFirst( procedure.sourcePath() );
-      src.finallyGive( r );
+      /*
+      accounting of dependencies of routines
+      consequences have already been accounted
+      */
+
+      if( wasRoutine )
+      if( _.consequenceIs( competitor ) )
+      if( Config.debug && self.Diagnostics )
+      {
+        competitor.assertNoDeadLockWith( self );
+        _.assert( !_.arrayHas( self.dependsOf, competitor ) );
+        _.arrayAppendOnceStrictly( self.dependsOf, competitor );
+      }
+
+      competitors2.push( competitor );
+
+      let r = __got;
+      // r = _.routineJoin( undefined, __got, [ c ] ); // yyy
+
+      competitor.procedure( 'and' ).sourcePathFirst( procedure.sourcePath() );
+      competitor.finallyGive( r );
 
     }
 
-    __got( competitors.length-1, err, arg );
+    __got.call( self, err, arg );
+    // __got( competitors.length-1, err, arg );
 
   }
 
   /* */
 
-  function __got( index, err, arg )
+  // function __got( index, err, arg )
+  function __got( err, arg )
   {
+    let first = -1;
 
     // console.log( 'and', index, ':', count, -1, ' = ', count-1, '-', arg && arg.argsStr ? arg.argsStr : arg );
-    count -= 1;
 
     if( err && !anyErr )
     anyErr = err;
 
-    errs[ index ] = err;
-    args[ index ] = arg;
-
-    if( Config.debug )
-    if( self.Diagnostics )
-    if( index < competitors.length-1 )
-    if( _.consequenceIs( competitors[ index ] ) )
+    if( _.numberIs( this ) )
+    account( this )
+    else
+    for( let c = 0 ; c < competitors.length ; c++ )
     {
-      _.arrayRemoveElementOnceStrictly( self.dependsOf, competitors[ index ] );
+      let competitor = competitors[ c ];
+      if( competitor === this )
+      account( c );
     }
 
+    if( Config.debug && self.Diagnostics )
+    if( first < competitors.length-1 )
+    if( _.consequenceIs( this ) )
+    {
+      _.arrayRemoveElementOnceStrictly( self.dependsOf, this );
+    }
+
+    _.assert( count >= 0 );
+
     if( count === 0 )
-    _.timeSoon( __give );
+    {
+      if( escaped )
+      _.timeSoon( __take ); // yyy
+      else
+      __take();
+    }
+
+    function account( c )
+    {
+      // debugger;
+      // console.log( 'and.account', c, ':', ( count - 1 ), '-', arg && arg.argsStr ? arg.argsStr : arg );
+      errs[ c ] = err;
+      args[ c ] = arg;
+      count -= 1;
+      if( first === -1 )
+      first = c;
+    }
 
   }
 
   /* */
 
-  function __give()
+  function __take()
   {
-
-    // console.log( 'and :', 'take' );
 
     if( !taking )
     for( let i = 0 ; i < competitors.length-1 ; i++ )
@@ -2618,6 +2700,7 @@ function __handleResourceNow()
       }
       catch( err )
       {
+        // debugger;
         throwenErr = self.__handleError( err, competitor );
       }
 
@@ -2787,49 +2870,125 @@ _competitorAppend.defaults =
 // accounter
 // --
 
-function doesDependOf( competitorRoutine )
+function dependencyChainFor( competitor )
 {
   let self = this;
 
-  _.assert( _.consequenceIs( competitorRoutine ) );
+  _.assert( _.consequenceIs( competitor ) );
 
-  if( !self.dependsOf )
-  return false;
+  return look( self, competitor, [] );
 
-  for( let c = 0 ; c < self.dependsOf.length ; c++ )
+  /* */
+
+  function look( con1, con2, visited )
   {
-    let cor = self.dependsOf[ c ];
-    if( cor === competitorRoutine )
-    return true;
-    if( _.consequenceIs( cor ) )
-    if( cor.doesDependOf( competitorRoutine ) )
-    return true;
+
+    if( _.arrayHas( visited, con1 ) )
+    return null;
+    visited.push( con1 );
+
+    _.assert( _.consequenceIs( con1 ) );
+
+    if( !con1.dependsOf )
+    return null;
+    if( con1 === con2 )
+    return [ con1 ];
+
+    for( let c = 0 ; c < con1.dependsOf.length ; c++ )
+    {
+      let con1b = con1.dependsOf[ c ];
+      if( _.consequenceIs( con1b ) )
+      {
+        let chain = look( con1b, con2, visited );
+        if( chain )
+        {
+          chain.unshift( con1 );
+          return chain;
+        }
+      }
+    }
+
+    return null;
   }
 
-  return false;
 }
 
 //
 
-function assertNoDeadLockWith( competitorRoutine )
+function doesDependOf( competitor )
 {
   let self = this;
 
-  _.assert( _.consequenceIs( competitorRoutine ) );
-  // _.assert( !competitorRoutine.competitorHas( self ), 'dead lock!' );
+  _.assert( _.consequenceIs( competitor ) );
 
-  let result = self.doesDependOf( competitorRoutine );
-  let msg = '';
+  let chain = self.dependencyChainFor( competitor );
 
-  if( result )
-  {
-    msg += 'Dead lock!\n';
-    // msg += 'with consequence :\n' + competitorRoutine.stack;
-  }
+  return !!chain;
+
+  // if( !self.dependsOf )
+  // return false;
+  //
+  // for( let c = 0 ; c < self.dependsOf.length ; c++ )
+  // {
+  //   let cor = self.dependsOf[ c ];
+  //   if( cor === competitor )
+  //   return true;
+  //   if( _.consequenceIs( cor ) )
+  //   if( cor.doesDependOf( competitor ) )
+  //   return true;
+  // }
+  //
+  // return false;
+}
+
+//
+
+function assertNoDeadLockWith( competitor )
+{
+  let self = this;
+
+  _.assert( _.consequenceIs( competitor ) );
+
+  let result = self.doesDependOf( competitor );
+
+  if( !result )
+  return !result;
+
+  return true; // xxx
+
+  logger.log( self.deadLockReport( competitor ) );
+
+  let msg = 'Dead lock!\n';
 
   _.assert( !result, msg );
 
   return result;
+}
+
+//
+
+function deadLockReport( competitor )
+{
+  let self = this;
+
+  _.assert( _.consequenceIs( competitor ) );
+
+  let chain = self.dependencyChainFor( competitor );
+
+  if( !chain )
+  return '';
+
+  let report = '';
+
+  debugger;
+  chain.forEach( ( con ) =>
+  {
+    if( report )
+    report += '\n';
+    report += con.id + ' : ' + con.sourcePath;
+  });
+
+  return report;
 }
 
 //
@@ -3668,6 +3827,26 @@ function Error( consequence, error )
 
 }
 
+//
+
+function AndTake( srcs )
+{
+  _.assert( !_.instanceIs( this ) )
+  _.assert( arguments.length === 1 );
+  srcs = _.arrayAs( srcs );
+  return _.Consequence().take( null ).andTake( srcs );
+}
+
+//
+
+function AndKeep( srcs )
+{
+  _.assert( !_.instanceIs( this ) )
+  _.assert( arguments.length === 1 );
+  srcs = _.arrayAs( srcs );
+  return _.Consequence().take( null ).andKeep( srcs );
+}
+
 // //
 //
 // /**
@@ -4015,6 +4194,9 @@ let Statics =
   Take,
   Error,
 
+  AndTake,
+  AndKeep,
+
   // IfErrorThen, // xxx IfErrorThen
   // IfNoErrorThen, // xxx IfNoErrorThen
 
@@ -4092,10 +4274,10 @@ let Extend =
   finallyPromiseGive,
   finallyPromiseKeep,
   promise : finallyPromiseKeep,
-  // thenPromiseGive,
-  // thenPromiseKeep,
-  // exceptPromiseGive,
-  // exceptPromiseKeep,
+  thenPromiseGive,
+  thenPromiseKeep,
+  exceptPromiseGive,
+  exceptPromiseKeep,
 
   // deasync // qqq : conver please
 
@@ -4146,8 +4328,8 @@ let Extend =
   // and
 
   _and,
-  andTake, // andGot
-  andKeep, // andThen
+  andTake,
+  andKeep,
 
   // or
 
@@ -4185,7 +4367,9 @@ let Extend =
   // accounter
 
   doesDependOf,
+  dependencyChainFor,
   assertNoDeadLockWith,
+  deadLockReport,
 
   isEmpty,
   cancel,
@@ -4294,11 +4478,11 @@ _.assert( wConsequenceProxy.shortName === 'Consequence' );
 
 _prepareJoinedWithConsequence();
 
-_.assert( !!Self._fieldsOfRelationsGroupsGet );
-_.assert( !!Self.prototype._fieldsOfRelationsGroupsGet );
-_.assert( !!Self.fieldsOfRelationsGroups );
-_.assert( !!Self.prototype.fieldsOfRelationsGroups );
-_.assert( _.mapKeys( Self.fieldsOfRelationsGroups ).length );
+_.assert( !!Self.FieldsOfRelationsGroupsGet );
+_.assert( !!Self.prototype.FieldsOfRelationsGroupsGet );
+_.assert( !!Self.FieldsOfRelationsGroups );
+_.assert( !!Self.prototype.FieldsOfRelationsGroups );
+_.assert( _.mapKeys( Self.FieldsOfRelationsGroups ).length );
 
 _global_[ Self.name ] = _[ Self.shortName ] = Self;
 if( !_global_.WTOOLS_PRIVATE_CONSEQUENCE )
