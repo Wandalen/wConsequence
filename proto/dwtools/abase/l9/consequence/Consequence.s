@@ -176,7 +176,7 @@ function init( o )
   self._competitorEarly = [];
   self._resource = [];
   self._procedure = null;
-  self.associated = null;
+  // self.associated = null;
 
   if( Config.debug )
   {
@@ -4174,7 +4174,7 @@ _.mapExtend( Composes, ComposesDebug );
 
 let Associates =
 {
-  associated : null,
+  // associated : null,
 }
 
 let Restricts =
