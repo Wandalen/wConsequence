@@ -18,14 +18,17 @@ about:
     fulfillment/rejection of a Promise or fulfilling it. Use Consequence to get
     more flexibility and improve readability of asynchronous aspect of your
     application.
-  version: 0.4.122
   enabled: 1
-  interpreters:
-    - nodejs >= 6.0.0
-    - chrome >= 60.0.0
-    - firefox >= 60.0.0
-  keywords:
-    - wTools
+  version: 0.4.122
+  values:
+    enabled: 1
+    name: wConsequence
+    interpreters:
+      - nodejs >= 6.0.0
+      - chrome >= 60.0.0
+      - firefox >= 60.0.0
+    keywords:
+      - wTools
 execution:
   scripts:
     test: wtest proto
