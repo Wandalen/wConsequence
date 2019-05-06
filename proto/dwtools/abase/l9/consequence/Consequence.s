@@ -988,11 +988,11 @@ first.having =
 
  * @returns {wConsequence}
  * @throws {Error} if passed any argument.
- * @method split
+ * @method splitKeep
  * @memberof module:Tools/base/Consequence.wConsequence#
  */
 
-function split( first )
+function splitKeep( first )
 {
   let self = this;
 
@@ -1017,7 +1017,39 @@ function split( first )
   return result;
 }
 
-split.having =
+splitKeep.having =
+{
+  consequizing : 1,
+}
+
+//
+
+function splitGive( first )
+{
+  let self = this;
+
+  _.assert( arguments.length === 0 || arguments.length === 1 );
+
+  let result = new Self({ sourcePath : 2 });
+
+  if( first ) // xxx
+  {
+    result.finally( first );
+    self.done( function( err, arg )
+    {
+      result.take( err, arg );
+      // this.take( err, arg );
+    });
+  }
+  else
+  {
+    self.finallyGive( result );
+  }
+
+  return result;
+}
+
+splitGive.having =
 {
   consequizing : 1,
 }
@@ -4297,7 +4329,9 @@ let Extend =
   _first,
   first,
 
-  split,
+  split : splitKeep,
+  splitKeep,
+  splitGive,
   tap,
   exceptLog,
   toResourceMaybe,
