@@ -1663,7 +1663,6 @@ function _and( o )
       competitors2.push( competitor );
 
       let r = __got;
-      // r = _.routineJoin( undefined, __got, [ c ] ); // yyy
 
       competitor.procedure( 'and' ).sourcePathFirst( procedure.sourcePath() );
       competitor.finallyGive( r );
@@ -1671,18 +1670,14 @@ function _and( o )
     }
 
     __got.call( self, err, arg );
-    // __got( competitors.length-1, err, arg );
 
   }
 
   /* */
 
-  // function __got( index, err, arg )
   function __got( err, arg )
   {
     let first = -1;
-
-    // console.log( 'and', index, ':', count, -1, ' = ', count-1, '-', arg && arg.argsStr ? arg.argsStr : arg );
 
     if( err && !anyErr )
     anyErr = err;
