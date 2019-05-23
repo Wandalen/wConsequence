@@ -4176,6 +4176,19 @@ function after( resource )
 //   return result;
 // }
 
+/**
+ * @typedef {Object} Fields
+ * @property {Array} _competitorEarly=[] Queue of competitor that are penging for resource.
+ * @property {Array} _resource=[] Queue of messages that are penging for competitor. 
+ * @property {wProcedure} _procedure=null Instance of wProcedure.
+ * @property {String} tag
+ * @property {Number} id Id of current instance
+ * @property {Array} dependsOf=[]
+ * @property {Number} resourceLimit=0 Maximal number of resources. Unlimited by default.
+ * @property {String} sourcePath Path to source file were wConsequence instance was created.
+ * @memberof module:Tools/base/Consequence.wConsequence
+*/
+
 // --
 // relations
 // --
