@@ -1171,7 +1171,7 @@ function toResourceMaybe()
     let resource = self._resource[ 0 ];
     if( resource.error !== undefined )
     {
-      debugger;
+      // debugger;
       _.assert( resource.argument === undefined );
       throw _.err( resource.error );
     }
@@ -4179,7 +4179,7 @@ function after( resource )
 /**
  * @typedef {Object} Fields
  * @property {Array} _competitorEarly=[] Queue of competitor that are penging for resource.
- * @property {Array} _resource=[] Queue of messages that are penging for competitor. 
+ * @property {Array} _resource=[] Queue of messages that are penging for competitor.
  * @property {wProcedure} _procedure=null Instance of wProcedure.
  * @property {String} tag
  * @property {Number} id Id of current instance
