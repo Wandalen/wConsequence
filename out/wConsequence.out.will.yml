@@ -1,0 +1,300 @@
+format: willfile-1.0.0
+about:
+  name: wConsequence
+  description: >-
+    Advanced synchronization mechanism. Asynchronous routines may use
+    Consequence to wrap postponed result, what allows classify callback for such
+    routines as output, not input, what improves analyzability of a program.
+    Consequence may be used to make a queue for mutually exclusive access to a
+    resource. Algorithmically speaking Consequence is 2 queues ( FIFO ) and a
+    customizable arbitrating algorithm. The first queue contains available
+    resources, the second queue includes competitors for this resources. At any
+    specific moment, one or another queue may be empty or full. Arbitrating
+    algorithm makes resource available for a competitor as soon as possible.
+    There are 2 kinds of resource: regular and erroneous. Unlike Promise,
+    Consequence is much more customizable and can solve engineering problem
+    which Promise cant. But have in mind with great power great responsibility
+    comes. Consequence can coexist and interact with a Promise, getting
+    fulfillment/rejection of a Promise or fulfilling it. Use Consequence to get
+    more flexibility and improve readability of asynchronous aspect of your
+    application.
+  enabled: 1
+  version: 0.4.122
+  interpreters:
+    - nodejs >= 6.0.0
+    - chrome >= 60.0.0
+    - firefox >= 60.0.0
+  keywords:
+    - wTools
+path:
+  module.willfiles:
+    path: out/wConsequence.out.will.yml
+    criterion:
+      predefined: 1
+  module.original.willfiles:
+    path:
+      - .im.will.yml
+      - .ex.will.yml
+    criterion:
+      predefined: 1
+  module.dir:
+    path: out
+    criterion:
+      predefined: 1
+  local:
+    criterion:
+      predefined: 1
+  remote:
+    criterion:
+      predefined: 1
+  in:
+    path: ..
+  temp:
+    path: out
+  out:
+    path: out
+  out.debug:
+    path: ./out/debug
+    criterion:
+      debug: 1
+  out.release:
+    path: ./out/release
+    criterion:
+      debug: 0
+  proto:
+    path: ./proto
+  repository:
+    path: 'git+https:///github.com/Wandalen/wConsequence.git'
+  bugs:
+    path: 'https:///github.com/Wandalen/wConsequence/issues'
+  exported.dir.proto.export:
+    path: ./proto
+    criterion:
+      default: 1
+      debug: 1
+      raw: 1
+      proto: 1
+      export: 1
+      tar: 1
+      public: 1
+  exported.files.proto.export:
+    path:
+      - proto
+      - proto/dwtools
+      - proto/dwtools/Tools.s
+      - proto/dwtools/abase
+      - proto/dwtools/abase/l9
+      - proto/dwtools/abase/l9/consequence
+      - proto/dwtools/abase/l9/consequence/Consequence.s
+      - proto/dwtools/abase/l9.test
+      - proto/dwtools/abase/l9.test/consequence
+      - proto/dwtools/abase/l9.test/consequence/Consequence.test.s
+      - proto/dwtools/abase/l9.test/consequence/Time.test.s
+      - proto/dwtools/amid
+      - proto/dwtools/atop
+    criterion:
+      default: 1
+      debug: 1
+      raw: 1
+      proto: 1
+      export: 1
+      tar: 1
+      public: 1
+submodule: {}
+reflector:
+  reflect.proto.:
+    src:
+      filePath:
+        'path::proto': 'path::out.*=1'
+    criterion:
+      debug: 0
+    mandatory: 1
+    inherit:
+      - predefined.*
+  reflect.proto.debug:
+    src:
+      filePath:
+        'path::proto': 'path::out.*=1'
+    criterion:
+      debug: 1
+    mandatory: 1
+    inherit:
+      - predefined.*
+  reflect.submodules:
+    src:
+      filePath:
+        'submodule::*/exported::*=1/path::exportedDir*=1': 'path::out.*=1'
+    criterion:
+      debug: 1
+    mandatory: 1
+    inherit:
+      - predefined.*
+  exported.proto.export:
+    src:
+      filePath:
+        .: null
+      prefixPath: proto
+    criterion:
+      default: 1
+      debug: 1
+      raw: 1
+      proto: 1
+      export: 1
+      tar: 1
+      public: 1
+    mandatory: 1
+  exported.files.proto.export:
+    src:
+      filePath: 'path::exported.files.proto.export'
+      basePath: .
+      prefixPath: 'path::exported.dir.proto.export'
+    criterion:
+      default: 1
+      debug: 1
+      raw: 1
+      proto: 1
+      export: 1
+      tar: 1
+      public: 1
+    recursive: 0
+    mandatory: 1
+step:
+  clean.out.:
+    criterion:
+      debug: 0
+    opts:
+      filePath: 'path::out.debug'
+    inherit:
+      - predefined.delete
+  clean.out.debug:
+    criterion:
+      debug: 1
+    opts:
+      filePath: 'path::out.debug'
+    inherit:
+      - predefined.delete
+  reflect.proto.:
+    criterion:
+      debug: 0
+      raw: 0
+    opts:
+      reflector: 'reflector::reflect.proto.*=1'
+    inherit:
+      - predefined.reflect
+  reflect.proto.debug:
+    criterion:
+      debug: 1
+      raw: 0
+    opts:
+      reflector: 'reflector::reflect.proto.*=1'
+    inherit:
+      - predefined.reflect
+  reflect.proto.raw:
+    criterion:
+      debug: 0
+      raw: 1
+    opts:
+      reflector: 'reflector::reflect.proto.*=1'
+    inherit:
+      - predefined.reflect
+  reflect.proto.debug.raw:
+    criterion:
+      debug: 1
+      raw: 1
+    opts:
+      reflector: 'reflector::reflect.proto.*=1'
+    inherit:
+      - predefined.reflect
+  reflect.submodules.:
+    criterion:
+      debug: 1
+      raw: 0
+    opts:
+      reflector: 'reflector::reflect.submodules*=1'
+    inherit:
+      - predefined.reflect
+  reflect.submodules.raw:
+    criterion:
+      debug: 1
+      raw: 1
+    opts:
+      reflector: 'reflector::reflect.submodules*=1'
+    inherit:
+      - predefined.reflect
+  reflect.submodules:
+    criterion:
+      debug: 1
+    opts:
+      reflector: 'reflector::reflect.submodules*'
+    inherit:
+      - predefined.reflect
+  export.proto:
+    criterion:
+      debug: 1
+      proto: 1
+    opts:
+      export: 'path::proto'
+      tar: 0
+    inherit:
+      - module.export
+build:
+  debug.raw:
+    criterion:
+      default: 1
+      debug: 1
+      raw: 1
+    steps:
+      - 'step::clean.out*=1'
+      - 'step::reflect.proto.*=1'
+  debug.compiled:
+    criterion:
+      debug: 1
+      raw: 0
+    steps:
+      - 'step::clean.out*=1'
+      - 'step::reflect.proto.*=1'
+  release.raw:
+    criterion:
+      debug: 0
+      raw: 1
+    steps:
+      - 'step::clean.out*=1'
+      - 'step::reflect.proto.*=1'
+  release.compiled:
+    criterion:
+      debug: 0
+      raw: 0
+    steps:
+      - 'step::clean.out*=1'
+      - 'step::reflect.proto.*=1'
+  all:
+    steps:
+      - 'build::debug.raw'
+      - 'build::release.compiled'
+  proto.export:
+    criterion:
+      default: 1
+      debug: 1
+      raw: 1
+      proto: 1
+      export: 1
+      tar: 1
+      public: 1
+    steps:
+      - 'build::debug.raw'
+      - 'step::export.proto'
+exported:
+  proto.export:
+    version: 0.4.122
+    criterion:
+      default: 1
+      debug: 1
+      raw: 1
+      proto: 1
+      export: 1
+      tar: 1
+      public: 1
+    exportedReflector: 'reflector::exported.proto.export'
+    exportedFilesReflector: 'reflector::exported.files.proto.export'
+    exportedDirPath: 'path::exported.dir.proto.export'
+    exportedFilesPath: 'path::exported.files.proto.export'
