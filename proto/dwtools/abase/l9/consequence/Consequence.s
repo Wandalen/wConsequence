@@ -1162,7 +1162,7 @@ exceptLog.having =
 
 //
 
-function toResourceMaybe()
+function syncMaybe()
 {
   let self = this;
 
@@ -1187,14 +1187,14 @@ function toResourceMaybe()
 
 //
 
-function toResource()
+function sync()
 {
   let self = this;
 
   _.assert( self._resource.length <= 1, () => 'Cant return resource of consequence because it has ' + self._resource.length + ' of such!' );
   _.assert( self._resource.length >= 1, () => 'Cant return resource of consequence because it has none of such!' );
 
-  return self.toResourceMaybe();
+  return self.syncMaybe();
 }
 
 // --
@@ -2553,13 +2553,14 @@ function __handleError( err, competitor )
     // if( Config.debug )
     // _global.logger.error( ' Consequence caught error, details come later' );
 
+    // debugger;
     _.timeOut( 250, function _unhandledError()
     {
       if( !_.errIsAttended( err ) )
       {
         _global.logger.error( 'Unhandled error caught by Consequence' );
         _.errLog( err );
-        // debugger; // xxx
+        debugger; // xxx
       }
       return null;
     });
@@ -4342,8 +4343,8 @@ let Extend =
   splitGive,
   tap,
   exceptLog,
-  toResourceMaybe,
-  toResource,
+  syncMaybe,
+  sync,
 
   // experimental
 

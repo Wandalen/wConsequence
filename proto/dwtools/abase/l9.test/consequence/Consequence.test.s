@@ -8518,7 +8518,7 @@ function put( test )
     con.got( 1 ).take( array[ a ]() );
     con.take( 0 );
 
-    return con.toResourceMaybe();
+    return con.syncMaybe();
   }
 
   /* */
@@ -8537,7 +8537,7 @@ function put( test )
     _.after( array[ a ]() ).putKeep( result, a ).participateGive( con );
     con.wait().take( result );
 
-    return con.toResourceMaybe();
+    return con.syncMaybe();
   }
 
   /* */
@@ -8557,7 +8557,7 @@ function put( test )
     _.after( array[ a ]() ).putKeep( result, a ).participateGive( con );
     con.wait().take( result );
 
-    return con.toResourceMaybe();
+    return con.syncMaybe();
   }
 
   /* */
