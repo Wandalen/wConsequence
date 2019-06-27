@@ -3473,7 +3473,7 @@ function _infoExport( o )
 
   _.assertRoutineOptions( _infoExport, arguments );
 
-  if( o.detailing >= 2 )
+  if( o.verbosity >= 2 )
   {
     result += self.nickName;
 
@@ -3491,7 +3491,7 @@ function _infoExport( o )
   }
   else
   {
-    if( o.detailing >= 1 )
+    if( o.verbosity >= 1 )
     result += self.nickName + ' ';
 
     result += self.resourcesGet().length + ' / ' + ( self.competitorsEarlyGet().length /*+ self.competitorsLateGet().length*/ );
@@ -3502,7 +3502,7 @@ function _infoExport( o )
 
 _infoExport.defaults =
 {
-  detailing : 2,
+  verbosity : 2,
 }
 
 //
@@ -3562,7 +3562,7 @@ _.routineExtend( infoExport, _infoExport );
 function toStr()
 {
   let self = this;
-  return self.infoExport({ detailing : 9 });
+  return self.infoExport({ verbosity : 9 });
 }
 
 //
