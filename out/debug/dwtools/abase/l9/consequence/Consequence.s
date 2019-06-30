@@ -318,10 +318,10 @@ function finallyGive( competitorRoutine )
 
   self._competitorAppend
   ({
-    competitorRoutine : competitorRoutine,
+    /*ttt*/competitorRoutine,
     keeping : false,
     kindOfResource : Self.KindOfResource.Both,
-    times : times,
+    /*ttt*/times,
     stackLevel : 2,
   });
 
@@ -357,12 +357,12 @@ function finallyKeep( competitorRoutine )
 
   self._competitorAppend
   ({
-    competitorRoutine : competitorRoutine,
+    /*ttt*/competitorRoutine,
     keeping : true,
     kindOfResource : Self.KindOfResource.Both,
     stackLevel : 2,
     times : 1,
-    // times : times,
+    // /*ttt*/times,
   });
 
   self.__handleResource( false );
@@ -385,7 +385,7 @@ function thenGive( competitorRoutine )
 
   self._competitorAppend
   ({
-    competitorRoutine : competitorRoutine,
+    /*ttt*/competitorRoutine,
     keeping : false,
     kindOfResource : Self.KindOfResource.ArgumentOnly,
     stackLevel : 2,
@@ -423,7 +423,7 @@ function thenKeep( competitorRoutine )
 
   self._competitorAppend
   ({
-    competitorRoutine : competitorRoutine,
+    /*ttt*/competitorRoutine,
     keeping : true,
     kindOfResource : Self.KindOfResource.ArgumentOnly,
     stackLevel : 2,
@@ -448,7 +448,7 @@ function exceptGive( competitorRoutine )
 
   self._competitorAppend
   ({
-    competitorRoutine : competitorRoutine,
+    /*ttt*/competitorRoutine,
     keeping : false,
     kindOfResource : Self.KindOfResource.ErrorOnly,
     stackLevel : 2,
@@ -486,7 +486,7 @@ function exceptKeep( competitorRoutine )
 
   self._competitorAppend
   ({
-    competitorRoutine : competitorRoutine,
+    /*ttt*/competitorRoutine,
     keeping : true,
     kindOfResource : Self.KindOfResource.ErrorOnly,
     stackLevel : 2,
@@ -525,7 +525,7 @@ function _promise( o )
     self._competitorAppend
     ({
       keeping : 0,
-      competitorRoutine : competitorRoutine,
+      /*ttt*/competitorRoutine,
       // kindOfResource : o.kindOfResource,
       kindOfResource : self.KindOfResource.Both,
       stackLevel : 3,
@@ -709,7 +709,7 @@ function _deasync( o )
 
   self._competitorAppend
   ({
-    competitorRoutine : competitorRoutine,
+    /*ttt*/competitorRoutine,
     kindOfResource : self.KindOfResource.Both,
     keeping : 0,
     stackLevel : 3,
@@ -1103,7 +1103,7 @@ function tap( competitorRoutine )
 
   self._competitorAppend
   ({
-    competitorRoutine : competitorRoutine,
+    /*ttt*/competitorRoutine,
     keeping : false,
     tapping : true,
     kindOfResource : Self.KindOfResource.Both,
@@ -1209,7 +1209,7 @@ function _competitorFinally( competitorRoutine ) // xxx
 
   self._competitorAppend
   ({
-    competitorRoutine : competitorRoutine,
+    /*ttt*/competitorRoutine,
     keeping : true,
     kindOfResource : Self.KindOfResource.BothWithCompetitor,
     stackLevel : 2,
@@ -1293,7 +1293,7 @@ function _put( o )
   {
     self._competitorAppend
     ({
-      keeping : keeping,
+      /*ttt*/keeping,
       kindOfResource : o.kindOfResource,
       competitorRoutine : __onPutWithKey,
       stackLevel : 3,
@@ -1307,7 +1307,7 @@ function _put( o )
     debugger;
     self._competitorAppend
     ({
-      keeping : keeping,
+      /*ttt*/keeping,
       kindOfResource : o.kindOfResource,
       competitorRoutine : __onPutToArray,
       stackLevel : 3,
@@ -1951,7 +1951,7 @@ function thenOrTaking( competitors )
   _.assert( arguments.length === 1, 'Expects single argument' );
   return self._or
   ({
-    competitors : competitors,
+    /*ttt*/competitors,
     taking : true,
     ready : true,
     stackLevel : 2,
@@ -1968,7 +1968,7 @@ function thenOrKeeping( competitors )
   _.assert( arguments.length === 1, 'Expects single argument' );
   return self._or
   ({
-    competitors : competitors,
+    /*ttt*/competitors,
     taking : false,
     ready : true,
     stackLevel : 2,
@@ -2010,7 +2010,7 @@ function orTaking( competitors )
   _.assert( arguments.length === 1, 'Expects single argument' );
   return self._or
   ({
-    competitors : competitors,
+    /*ttt*/competitors,
     taking : true,
     ready : false,
     stackLevel : 2,
@@ -2027,7 +2027,7 @@ function orKeeping( competitors )
   _.assert( arguments.length === 1, 'Expects single argument' );
   return self._or
   ({
-    competitors : competitors,
+    /*ttt*/competitors,
     taking : false,
     ready : false,
     stackLevel : 2,
@@ -2185,7 +2185,7 @@ function tolerantCallback()
 //
 //   result.thenKeep = function thenKeep( _method )
 //   {
-//     let args = method ? arguments : arguments[ 1 ];
+//     let args = method ? /*ttt*/arguments[ 1 ];
 //     let c = _.routineSeal( context, method || _method, args );
 //     self.thenKeep( c );
 //     return this;
@@ -2193,7 +2193,7 @@ function tolerantCallback()
 //
 //   result.exceptKeep = function exceptKeep( _method )
 //   {
-//     let args = method ? arguments : arguments[ 1 ];
+//     let args = method ? /*ttt*/arguments[ 1 ];
 //     let c = _.routineSeal( context, method || _method, args );
 //     self.exceptKeep( c );
 //     return this;
@@ -2201,7 +2201,7 @@ function tolerantCallback()
 //
 //   result.finally = function finally( _method )
 //   {
-//     let args = method ? arguments : arguments[ 1 ];
+//     let args = method ? /*ttt*/arguments[ 1 ];
 //     let c = _.routineSeal( context, method || _method, args );
 //     self.finally( c );
 //     return this;
@@ -2209,7 +2209,7 @@ function tolerantCallback()
 //
 //   result.finallyGive = function finallyGive( _method )
 //   {
-//     let args = method ? arguments : arguments[ 2 ];
+//     let args = method ? /*ttt*/arguments[ 2 ];
 //     let c = _.routineSeal( context, method || _method, args );
 //     self.finallyGive( c );
 //     return this;
@@ -2504,8 +2504,8 @@ function __onTake( err, arg )
 //
 //   let resource =
 //   {
-//     error : error,
-//     argument : argument,
+//     /*ttt*/error,
+//     /*ttt*/argument,
 //   }
 //
 //   self._resource.push( resource );
@@ -3728,10 +3728,10 @@ function Take( consequence )
 
   return _Take
   ({
-    consequence : consequence,
+    /*ttt*/consequence,
     context : undefined,
     error : err,
-    args : args,
+    /*ttt*/args,
   });
 
 }
@@ -3849,9 +3849,9 @@ function Error( consequence, error )
 
   return _Take
   ({
-    consequence : consequence,
+    /*ttt*/consequence,
     context : undefined,
-    error : error,
+    /*ttt*/error,
     args : [],
   });
 
@@ -3906,10 +3906,10 @@ function AndKeep( srcs )
 //
 //   return _Take
 //   ({
-//     consequence : consequence,
-//     context : context,
+//     /*ttt*/consequence,
+//     /*ttt*/context,
 //     error : err,
-//     args : args,
+//     /*ttt*/args,
 //   });
 //
 // }
@@ -4247,10 +4247,10 @@ let Statics =
   ThenPass,
   ExceptPass,
 
-  AsyncModeSet : AsyncModeSet,
-  AsyncModeGet : AsyncModeGet,
+  /*ttt*/AsyncModeSet,
+  /*ttt*/AsyncModeGet,
 
-  KindOfResource : KindOfResource,
+  /*ttt*/KindOfResource,
   Diagnostics : 1,
   Stacking : 1,
   AsyncCompetitorHanding : 0,
@@ -4455,7 +4455,7 @@ let Extend =
   AsyncModeGet,
   nickNameGet,
 
-  __call__ : __call__,
+  /*ttt*/__call__,
 
   // relations
 
@@ -4474,7 +4474,7 @@ let Extend =
 
 let Supplement =
 {
-  Statics : Statics,
+  /*ttt*/Statics,
 }
 
 let Tools =
