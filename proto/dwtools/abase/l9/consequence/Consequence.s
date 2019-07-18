@@ -3654,14 +3654,14 @@ function From( src, timeOut )
   _.assert( arguments.length === 1 || arguments.length === 2 );
   _.assert( timeOut === undefined || _.numberIs( timeOut ) );
 
-  if( !_.consequenceIs( src ) )
-  {
-    console.log( '_.promiseLike( src )', _.promiseLike( src ) );
-    console.log( 'src.then', src.then );
-    console.log( 'src.catch', src.catch );
-    // console.log( 'src.reject', src.reject );
-    // console.log( 'src.resolve', src.resolve );
-  }
+  // if( !_.consequenceIs( src ) )
+  // {
+  //   console.log( '_.promiseLike( src )', _.promiseLike( src ) );
+  //   console.log( 'src.then', src.then );
+  //   console.log( 'src.catch', src.catch );
+  //   // console.log( 'src.reject', src.reject );
+  //   // console.log( 'src.resolve', src.resolve );
+  // }
 
   if( _.promiseLike( src ) )
   {

@@ -9985,41 +9985,41 @@ function from( test )
   var testMsg = 'value';
   var que = new _.Consequence().take( null )
 
-  // /**/
-  //
-  // .thenKeep( function( arg )
-  // {
-  //   test.case = 'passing value';
-  //   var con = _.Consequence.From( testMsg );
-  //   test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
-  //   test.identical( con.competitorsEarlyGet(), [] );
-  //   return con;
-  // })
-  //
-  // /**/
-  //
-  // .thenKeep( function( arg )
-  // {
-  //   test.case = 'passing an error';
-  //   var err = _.err( testMsg );
-  //   var con = _.Consequence.From( err );
-  //   test.identical( con.resourcesGet(), [ { error : err, argument : undefined } ] );
-  //   test.identical( con.competitorsEarlyGet(), [] );
-  //   return con.finally( () => null );
-  // })
-  //
-  // /**/
-  //
-  // .thenKeep( function( arg )
-  // {
-  //   test.case = 'passing consequence';
-  //   var src = new _.Consequence().take( testMsg );
-  //   var con = _.Consequence.From( src );
-  //   test.identical( con, src );
-  //   test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
-  //   test.identical( con.competitorsEarlyGet(), [] );
-  //   return con;
-  // })
+  /**/
+
+  .thenKeep( function( arg )
+  {
+    test.case = 'passing value';
+    var con = _.Consequence.From( testMsg );
+    test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
+    test.identical( con.competitorsEarlyGet(), [] );
+    return con;
+  })
+
+  /**/
+
+  .thenKeep( function( arg )
+  {
+    test.case = 'passing an error';
+    var err = _.err( testMsg );
+    var con = _.Consequence.From( err );
+    test.identical( con.resourcesGet(), [ { error : err, argument : undefined } ] );
+    test.identical( con.competitorsEarlyGet(), [] );
+    return con.finally( () => null );
+  })
+
+  /**/
+
+  .thenKeep( function( arg )
+  {
+    test.case = 'passing consequence';
+    var src = new _.Consequence().take( testMsg );
+    var con = _.Consequence.From( src );
+    test.identical( con, src );
+    test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
+    test.identical( con.competitorsEarlyGet(), [] );
+    return con;
+  })
 
   /**/
 
@@ -10027,11 +10027,9 @@ function from( test )
   {
     test.case = 'passing resolved promise';
     var src = Promise.resolve( testMsg );
-    debugger;
     var con = _.Consequence.From( src );
     return _.timeOut( 1, function()
     {
-      debugger;
       test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
       test.identical( con.competitorsEarlyGet(), [] );
       return null;
