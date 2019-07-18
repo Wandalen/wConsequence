@@ -318,10 +318,10 @@ function finallyGive( competitorRoutine )
 
   self._competitorAppend
   ({
-    /*ttt*/competitorRoutine,
+    competitorRoutine,
     keeping : false,
     kindOfResource : Self.KindOfResource.Both,
-    /*ttt*/times,
+    times,
     stackLevel : 2,
   });
 
@@ -357,12 +357,12 @@ function finallyKeep( competitorRoutine )
 
   self._competitorAppend
   ({
-    /*ttt*/competitorRoutine,
+    competitorRoutine,
     keeping : true,
     kindOfResource : Self.KindOfResource.Both,
     stackLevel : 2,
     times : 1,
-    // /*ttt*/times,
+    // times,
   });
 
   self.__handleResource( false );
@@ -385,7 +385,7 @@ function thenGive( competitorRoutine )
 
   self._competitorAppend
   ({
-    /*ttt*/competitorRoutine,
+    competitorRoutine,
     keeping : false,
     kindOfResource : Self.KindOfResource.ArgumentOnly,
     stackLevel : 2,
@@ -423,7 +423,7 @@ function thenKeep( competitorRoutine )
 
   self._competitorAppend
   ({
-    /*ttt*/competitorRoutine,
+    competitorRoutine,
     keeping : true,
     kindOfResource : Self.KindOfResource.ArgumentOnly,
     stackLevel : 2,
@@ -440,7 +440,7 @@ thenKeep.having =
 
 //
 
-function exceptGive( competitorRoutine )
+function catchGive( competitorRoutine )
 {
   let self = this;
 
@@ -448,7 +448,7 @@ function exceptGive( competitorRoutine )
 
   self._competitorAppend
   ({
-    /*ttt*/competitorRoutine,
+    competitorRoutine,
     keeping : false,
     kindOfResource : Self.KindOfResource.ErrorOnly,
     stackLevel : 2,
@@ -458,7 +458,7 @@ function exceptGive( competitorRoutine )
   return self;
 }
 
-exceptGive.having =
+catchGive.having =
 {
   consequizing : 1,
 }
@@ -466,7 +466,7 @@ exceptGive.having =
 //
 
 /**
- * exceptKeep method pushed `competitor` callback into wConsequence competitors queue. That callback will
+ * catchKeep method pushed `competitor` callback into wConsequence competitors queue. That callback will
    trigger only in that case if accepted error parameter will be defined and not null. Else accepted parameters will
    be passed to the next competitor in queue.
 
@@ -474,11 +474,11 @@ exceptGive.having =
  * @returns {wConsequence}
  * @throws {Error} if passed more than one arguments
  * @see {@link module:Tools/base/Consequence.wConsequence#finallyGive} finally method
- * @method exceptKeep
+ * @method catchKeep
  * @memberof module:Tools/base/Consequence.wConsequence#
  */
 
-function exceptKeep( competitorRoutine )
+function catchKeep( competitorRoutine )
 {
   let self = this;
 
@@ -486,7 +486,7 @@ function exceptKeep( competitorRoutine )
 
   self._competitorAppend
   ({
-    /*ttt*/competitorRoutine,
+    competitorRoutine,
     keeping : true,
     kindOfResource : Self.KindOfResource.ErrorOnly,
     stackLevel : 2,
@@ -498,7 +498,7 @@ function exceptKeep( competitorRoutine )
   return self;
 }
 
-exceptKeep.having =
+catchKeep.having =
 {
   consequizing : 1,
 }
@@ -525,7 +525,7 @@ function _promise( o )
     self._competitorAppend
     ({
       keeping : 0,
-      /*ttt*/competitorRoutine,
+      competitorRoutine,
       // kindOfResource : o.kindOfResource,
       kindOfResource : self.KindOfResource.Both,
       stackLevel : 3,
@@ -709,7 +709,7 @@ function _deasync( o )
 
   self._competitorAppend
   ({
-    /*ttt*/competitorRoutine,
+    competitorRoutine,
     kindOfResource : self.KindOfResource.Both,
     keeping : 0,
     stackLevel : 3,
@@ -1003,7 +1003,7 @@ function splitKeep( first )
   if( first ) // xxx
   {
     result.finally( first );
-    self.done( function( err, arg )
+    self.give( function( err, arg )
     {
       result.take( err, arg );
       this.take( err, arg );
@@ -1035,7 +1035,7 @@ function splitGive( first )
   if( first ) // xxx
   {
     result.finally( first );
-    self.done( function( err, arg )
+    self.give( function( err, arg )
     {
       result.take( err, arg );
       // this.take( err, arg );
@@ -1103,7 +1103,7 @@ function tap( competitorRoutine )
 
   self._competitorAppend
   ({
-    /*ttt*/competitorRoutine,
+    competitorRoutine,
     keeping : false,
     tapping : true,
     kindOfResource : Self.KindOfResource.Both,
@@ -1209,7 +1209,7 @@ function _competitorFinally( competitorRoutine ) // xxx
 
   self._competitorAppend
   ({
-    /*ttt*/competitorRoutine,
+    competitorRoutine,
     keeping : true,
     kindOfResource : Self.KindOfResource.BothWithCompetitor,
     stackLevel : 2,
@@ -1293,7 +1293,7 @@ function _put( o )
   {
     self._competitorAppend
     ({
-      /*ttt*/keeping,
+      keeping,
       kindOfResource : o.kindOfResource,
       competitorRoutine : __onPutWithKey,
       stackLevel : 3,
@@ -1307,7 +1307,7 @@ function _put( o )
     debugger;
     self._competitorAppend
     ({
-      /*ttt*/keeping,
+      keeping,
       kindOfResource : o.kindOfResource,
       competitorRoutine : __onPutToArray,
       stackLevel : 3,
@@ -1951,7 +1951,7 @@ function thenOrTaking( competitors )
   _.assert( arguments.length === 1, 'Expects single argument' );
   return self._or
   ({
-    /*ttt*/competitors,
+    competitors,
     taking : true,
     ready : true,
     stackLevel : 2,
@@ -1968,7 +1968,7 @@ function thenOrKeeping( competitors )
   _.assert( arguments.length === 1, 'Expects single argument' );
   return self._or
   ({
-    /*ttt*/competitors,
+    competitors,
     taking : false,
     ready : true,
     stackLevel : 2,
@@ -2010,7 +2010,7 @@ function orTaking( competitors )
   _.assert( arguments.length === 1, 'Expects single argument' );
   return self._or
   ({
-    /*ttt*/competitors,
+    competitors,
     taking : true,
     ready : false,
     stackLevel : 2,
@@ -2027,7 +2027,7 @@ function orKeeping( competitors )
   _.assert( arguments.length === 1, 'Expects single argument' );
   return self._or
   ({
-    /*ttt*/competitors,
+    competitors,
     taking : false,
     ready : false,
     stackLevel : 2,
@@ -2185,23 +2185,23 @@ function tolerantCallback()
 //
 //   result.thenKeep = function thenKeep( _method )
 //   {
-//     let args = method ? /*ttt*/arguments[ 1 ];
+//     let args = method ? arguments[ 1 ];
 //     let c = _.routineSeal( context, method || _method, args );
 //     self.thenKeep( c );
 //     return this;
 //   }
 //
-//   result.exceptKeep = function exceptKeep( _method )
+//   result.catchKeep = function catchKeep( _method )
 //   {
-//     let args = method ? /*ttt*/arguments[ 1 ];
+//     let args = method ? arguments[ 1 ];
 //     let c = _.routineSeal( context, method || _method, args );
-//     self.exceptKeep( c );
+//     self.catchKeep( c );
 //     return this;
 //   }
 //
 //   result.finally = function finally( _method )
 //   {
-//     let args = method ? /*ttt*/arguments[ 1 ];
+//     let args = method ? arguments[ 1 ];
 //     let c = _.routineSeal( context, method || _method, args );
 //     self.finally( c );
 //     return this;
@@ -2209,7 +2209,7 @@ function tolerantCallback()
 //
 //   result.finallyGive = function finallyGive( _method )
 //   {
-//     let args = method ? /*ttt*/arguments[ 2 ];
+//     let args = method ? arguments[ 2 ];
 //     let c = _.routineSeal( context, method || _method, args );
 //     self.finallyGive( c );
 //     return this;
@@ -2504,8 +2504,8 @@ function __onTake( err, arg )
 //
 //   let resource =
 //   {
-//     /*ttt*/error,
-//     /*ttt*/argument,
+//     error,
+//     argument,
 //   }
 //
 //   self._resource.push( resource );
@@ -2582,7 +2582,7 @@ function __handleError( err, competitor )
       occurred, it will be catch by __handleError method. If corespondent was not added by tap or persist method,
       __handleResource will remove resource from head of queue.
 
-      If corespondent was added by finally, _onceThen, exceptKeep, or by other "thenable" method of wConsequence, finally:
+      If corespondent was added by finally, _onceThen, catchKeep, or by other "thenable" method of wConsequence, finally:
 
       1) if result of corespondents is ordinary value, finally __handleResource method appends result of corespondent to the
       head of resources queue, and therefore pass it to the next competitor in corespondents queue.
@@ -2594,7 +2594,7 @@ function __handleError( err, competitor )
     - if corespondent is instance of wConsequence:
       in that case __handleResource pass resource into corespondent`s resources queue.
 
-      If corespondent was added by tap, or one of finally, _onceThen, exceptKeep, or by other "thenable" method of
+      If corespondent was added by tap, or one of finally, _onceThen, catchKeep, or by other "thenable" method of
       wConsequence finally __handleResource try to pass current resource to the next competitor in corespondents sequence.
 
     - if in current wConsequence are present corespondents added by persist method, finally __handleResource passes resource to
@@ -2803,7 +2803,7 @@ function _competitorAppend( o )
 
   _.assert( arguments.length === 1, 'Expects single argument' );
   _.assert( _.consequenceIs( self ) );
-  _.assert( _.routineIs( competitorRoutine ) || _.consequenceIs( competitorRoutine ) );
+  _.assert( _.routineIs( competitorRoutine ) || _.consequenceIs( competitorRoutine ), () => 'Expects routine or consequence, but got ' + _.strType( competitorRoutine ) );
   _.assert( o.kindOfResource >= 1 );
   _.assert( competitorRoutine !== self, 'Consquence cant depend on itself' );
   _.assert( o.stackLevel >= 0, 'Competitor should have stack level greater or equal to zero' );
@@ -3728,10 +3728,10 @@ function Take( consequence )
 
   return _Take
   ({
-    /*ttt*/consequence,
+    consequence,
     context : undefined,
     error : err,
-    /*ttt*/args,
+    args,
   });
 
 }
@@ -3849,11 +3849,31 @@ function Error( consequence, error )
 
   return _Take
   ({
-    /*ttt*/consequence,
+    consequence,
     context : undefined,
-    /*ttt*/error,
+    error,
     args : [],
   });
+
+}
+
+//
+
+function Try( routine )
+{
+  _.assert( arguments.length === 1 );
+  _.assert( _.routineIs( routine ) );
+
+  try
+  {
+    let r = routine();
+    return Self.From( r );
+  }
+  catch( err )
+  {
+    err = _.err( err );
+    return new Self().error( err );
+  }
 
 }
 
@@ -3906,10 +3926,10 @@ function AndKeep( srcs )
 //
 //   return _Take
 //   ({
-//     /*ttt*/consequence,
-//     /*ttt*/context,
+//     consequence,
+//     context,
 //     error : err,
-//     /*ttt*/args,
+//     args,
 //   });
 //
 // }
@@ -3924,9 +3944,9 @@ function AndKeep( srcs )
 //  * @returns {competitor}
 //  * @static
 //  * @thorws If missed arguments or passed extra ones.
-//  * @method exceptKeep
+//  * @method catchKeep
 //  * @memberof module:Tools/base/Consequence.wConsequence#
-//  * @see {@link module:Tools/base/Consequence.wConsequence#exceptKeep}
+//  * @see {@link module:Tools/base/Consequence.wConsequence#catchKeep}
 //  */
 //
 // function IfErrorThen()
@@ -3938,7 +3958,7 @@ function AndKeep( srcs )
 //   _.assert( this === Self );
 //   _.assert( _.routineIs( onEnd ) );
 //
-//   return function exceptKeep( err, arg )
+//   return function catchKeep( err, arg )
 //   {
 //
 //     _.assert( arguments.length === 2, 'Expects exactly two arguments' );
@@ -4236,6 +4256,7 @@ let Statics =
   From,
   Take,
   Error,
+  Try,
 
   AndTake,
   AndKeep,
@@ -4247,10 +4268,10 @@ let Statics =
   ThenPass,
   ExceptPass,
 
-  /*ttt*/AsyncModeSet,
-  /*ttt*/AsyncModeGet,
+  AsyncModeSet,
+  AsyncModeGet,
 
-  /*ttt*/KindOfResource,
+  KindOfResource,
   Diagnostics : 1,
   Stacking : 1,
   AsyncCompetitorHanding : 0,
@@ -4263,7 +4284,7 @@ let Statics =
 
 let Forbids =
 {
-  give : 'give',
+  // give : 'give',
   every : 'every',
   mutex : 'mutex',
   mode : 'mode',
@@ -4291,25 +4312,26 @@ let Extend =
   // basic
 
   finallyGive, // got, done
-  got : finallyGive,
-  done : finallyGive,
+  // got : finallyGive,
+  // done : finallyGive,
+  give : finallyGive,
   finallyKeep, // finally
   finally : finallyKeep,
 
   thenGive, // ifNoErrorGot
-  thenGot : thenGive,
+  // thenGot : thenGive,
   ifNoErrorGot : thenGive,
   thenKeep, // ifNoErrorThen
-  keep : thenKeep,
+  // keep : thenKeep,
   then : thenKeep, // xxx
   ifNoErrorThen : thenKeep,
 
-  exceptGive, // ifErrorGot
-  exceptGot : exceptGive,
-  ifErrorGot : exceptGive,
-  exceptKeep, // ifErrorThen
-  except : exceptKeep,
-  ifErrorThen : exceptGive,
+  catchGive, // ifErrorGot
+  // exceptGot : catchGive,
+  // ifErrorGot : catchGive,
+  catchKeep, // ifErrorThen
+  catch : catchKeep,
+  ifErrorThen : catchGive,
 
   // to promise // qqq : conver please
 
@@ -4455,7 +4477,7 @@ let Extend =
   AsyncModeGet,
   nickNameGet,
 
-  /*ttt*/__call__,
+  __call__,
 
   // relations
 
@@ -4474,7 +4496,7 @@ let Extend =
 
 let Supplement =
 {
-  /*ttt*/Statics,
+  Statics,
 }
 
 let Tools =
