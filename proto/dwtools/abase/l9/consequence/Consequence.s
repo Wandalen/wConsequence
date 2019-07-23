@@ -4561,16 +4561,12 @@ _.assert( !!Self.prototype.FieldsOfRelationsGroups );
 _.assert( _.mapKeys( Self.FieldsOfRelationsGroups ).length );
 
 _global_[ Self.name ] = _[ Self.shortName ] = Self;
-if( !_global_.WTOOLS_PRIVATE_CONSEQUENCE )
+if( !_global_.__GLOBAL_PRIVATE_CONSEQUENCE__ )
 _realGlobal_[ Self.name ] = Self;
 
 // --
 // export
 // --
-
-// if( typeof module !== 'undefined' )
-// if( _global_.WTOOLS_PRIVATE )
-// { /* delete require.cache[ module.id ]; */ }
 
 if( typeof module !== 'undefined' && module !== null )
 module[ 'exports' ] = Self;
