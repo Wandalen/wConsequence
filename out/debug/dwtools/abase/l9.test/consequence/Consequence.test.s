@@ -5145,14 +5145,14 @@ function _and( test )
 
     mainCon.take( testMsg );
 
-    mainCon._and({ competitors : [ con1, con2 ], taking : false, stackLevel : 1 });
+    mainCon._and({ competitors : [ con1, con2 ], taking : false, accumulative : false, stackLevel : 1 });
 
     con1.give( ( err, got ) => { test.identical( got, delay ); return null; });
     con2.give( ( err, got ) => { test.identical( got, delay * 2 ); return null; });
 
     mainCon.finally( function( err, got )
     {
-      //at that moment all resources from srcs are processed
+      // at that moment all resources from srcs are processed
       test.identical( con1.resourcesGet().length, 0 );
       test.identical( con1.competitorsEarlyGet().length, 0 );
       test.identical( con2.resourcesGet().length, 0 );
@@ -5179,7 +5179,7 @@ function _and( test )
 
     mainCon.take( testMsg );
 
-    mainCon._and({ competitors : [ con1, con2 ], taking : true, stackLevel : 1 });
+    mainCon._and({ competitors : [ con1, con2 ], taking : true, accumulative : false, stackLevel : 1 });
 
     con1.give( ( err, got ) => { test.identical( 0, 1 ); return null; });
     con2.give( ( err, got ) => { test.identical( 0, 1 ); return null; });
@@ -5216,7 +5216,6 @@ function _and( test )
       test.identical( con2.competitorsEarlyGet().length, 0 );
     });
 
-    // return mainCon;
   })
 
   return que;

@@ -226,7 +226,7 @@ function isJoinedWithConsequence( src )
 {
   _.assert( arguments.length === 1 );
   debugger;
-  let result = _.subPrototypeOf( src, JoinedWithConsequence );
+  let result = _.isSubPrototypeOf( src, JoinedWithConsequence );
   if( result )
   debugger;
   return result;
@@ -1570,6 +1570,7 @@ function _and( o )
   let anyErr;
   let competitors = o.competitors;
   let taking = o.taking;
+  let accumulative = o.accumulative;
   let procedure = self.procedure( 'and' ).sourcePathFirst( o.stackLevel + 1 );
   let escaped = 0;
 
@@ -1704,15 +1705,13 @@ function _and( o )
     if( count === 0 )
     {
       if( escaped )
-      _.timeSoon( __take ); // yyy
+      _.timeSoon( __take );
       else
       __take();
     }
 
     function account( c )
     {
-      // debugger;
-      // console.log( 'and.account', c, ':', ( count - 1 ), '-', arg && arg.argsStr ? arg.argsStr : arg );
       errs[ c ] = err;
       args[ c ] = arg;
       count -= 1;
@@ -1732,6 +1731,9 @@ function _and( o )
     if( competitors[ i ] )
     competitors[ i ].take( errs[ i ], args[ i ] );
 
+    if( accumulative )
+    args = _.arrayFlatten( args );
+
     if( anyErr )
     self.error( anyErr );
     else
@@ -1745,6 +1747,7 @@ _and.defaults =
 {
   competitors : null,
   taking : 1,
+  accumulative : 0,
   stackLevel : 2,
 }
 
@@ -1825,6 +1828,11 @@ defaults.taking = true;
 let andKeep = _.routineFromPreAndBody( and_pre, _and, 'andKeep' );
 var defaults = andKeep.defaults;
 defaults.taking = false;
+
+let andKeepAccumulative = _.routineFromPreAndBody( and_pre, _and, 'andKeepAccumulative' );
+var defaults = andKeepAccumulative.defaults;
+defaults.taking = false;
+defaults.accumulative = true;
 
 // --
 // or
@@ -4406,6 +4414,8 @@ let Extend =
   _and,
   andTake,
   andKeep,
+  andKeepAccumulative, /* qqq : cover routine andKeepAccumulative */
+  and : andKeepAccumulative,
 
   // or
 

@@ -14,7 +14,7 @@ if( typeof module !== 'undefined' )
 
 //
 
-function onMixin( mixinDescriptor, dstClass )
+function onMixinApply( mixinDescriptor, dstClass )
 {
 
   var dstPrototype = dstClass.prototype;
@@ -422,7 +422,7 @@ var Supplement =
 var Self =
 {
 
-  onMixin : onMixin,
+  onMixinApply : onMixinApply,
 
   functors : Functors,
   supplementOwn : ExtendDstNotOwn,
