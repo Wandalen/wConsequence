@@ -5288,7 +5288,7 @@ function AndTake( test )
 
     con.finally( function( err, got )
     {
-      test.identical( got, [ 1, 2, null ] );
+      test.identical( got, [ 1, 2 ] );
       test.identical( con.resourcesGet(), [] );
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con1.resourcesGet(), [] );
@@ -5336,7 +5336,7 @@ function AndKeep( test )
 
     con.finally( function( err, got )
     {
-      test.identical( got, [ 1, 2, null ] );
+      test.identical( got, [ 1, 2 ] );
       test.identical( con.resourcesGet(), [] );
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );

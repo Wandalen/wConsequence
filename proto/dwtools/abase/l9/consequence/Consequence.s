@@ -3900,8 +3900,14 @@ function AndTake( srcs )
 {
   _.assert( !_.instanceIs( this ) )
   _.assert( arguments.length === 1 );
-  srcs = _.arrayAs( srcs );
-  return _.Consequence().take( null ).andTake( srcs );
+  srcs = _.arrayFlatten( _.arrayAs( srcs ) );
+
+  return _.Consequence().take( null ).andTake( srcs ).then( ( arg ) =>
+  {
+    _.assert( arg[ arg.length - 1 ] === null );
+    arg.splice( arg.length - 1, 1 );
+    return arg;
+  });
 }
 
 //
@@ -3910,8 +3916,14 @@ function AndKeep( srcs )
 {
   _.assert( !_.instanceIs( this ) )
   _.assert( arguments.length === 1 );
-  srcs = _.arrayAs( srcs );
-  return _.Consequence().take( null ).andKeep( srcs );
+  srcs = _.arrayFlatten( _.arrayAs( srcs ) );
+
+  return _.Consequence().take( null ).andKeep( srcs ).then( ( arg ) =>
+  {
+    _.assert( arg[ arg.length - 1 ] === null );
+    arg.splice( arg.length - 1, 1 );
+    return arg;
+  });
 }
 
 // //
