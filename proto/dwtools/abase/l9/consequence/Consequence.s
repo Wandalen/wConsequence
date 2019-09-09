@@ -149,7 +149,14 @@ let wConsequenceProxy = new Proxy( wConsequence,
       o.sourcePath = _.procedure.sourcePathGet( o.sourcePath );
     }
     return new original( ...args );
-  }
+  },
+
+  set : function set( original, name, value )
+  {
+    debugger;
+    return Reflect.set( ...arguments );
+  },
+
 });
 
 let Parent = null;
@@ -173,31 +180,41 @@ function init( o )
 {
   let self = this;
 
-  self._competitorEarly = [];
-  self._resource = [];
-  self._procedure = null;
-  // self.associated = null;
+  // self._competitorsEarly = [];
+  // self._competitorsLate = [];
+  // self._resources = [];
+  // self._procedure = null;
+  // self.capacity = self.Composes.capacity;
 
   if( Config.debug )
   {
-    self.tag = self.Composes.tag;
-    self.id = _.procedure.indexAlloc();
-    self.resourceLimit = self.Composes.resourceLimit;
-    self.dependsOf = [];
-    self.sourcePath = null;
+    // self.tag = self.Composes.tag;
+    // self.id = _.procedure.indexAlloc();
+    // self.dependsOf = [];
+    // self.sourcePath = null;
   }
 
-  Object.preventExtensions( self );
+  // Object.preventExtensions( self );
 
   if( o )
   {
     if( !Config.debug )
     {
       delete o.tag;
-      delete o.resourceLimit;
+      delete o.capacity;
       delete o.dependsOf;
+      delete o.sourcePath;
     }
-    self.copy( o );
+    if( o instanceof Self )
+    {
+      o = _.mapOnly( o, self.Composes );
+    }
+    else
+    {
+      _.assertMapHasOnly( o, self.Composes );
+    }
+    _.mapExtend( self, o );
+    // self.copy( o );
   }
 
   if( Config.debug )
@@ -209,6 +226,7 @@ function init( o )
     self.sourcePath = _.procedure.sourcePathGet( self.sourcePath );
   }
 
+  _.assert( arguments.length === 0 || arguments.length === 1 );
   _.assert( self.sourcePath === undefined || _.strIs( self.sourcePath ) );
 }
 
@@ -235,25 +253,6 @@ function isJoinedWithConsequence( src )
 // --
 // basic
 // --
-
-// function sleep()
-// {
-//   let self = this;
-//
-//   debugger;
-//   _.timeSleepUntil( resourcesCount );
-//   debugger;
-//
-//   function resourcesCount()
-//   {
-//     if( self.resourcesCount() )
-//     return true;
-//     return false;
-//   }
-//
-// }
-
-//
 
 /**
  * Method appends resolved value and error competitor to wConsequence competitors sequence. That competitor accept only one
@@ -325,7 +324,7 @@ function finallyGive( competitorRoutine )
     stackLevel : 2,
   });
 
-  self.__handleResource( false );
+  self.__handleResourceSoon( false );
 
   return self;
 }
@@ -340,20 +339,8 @@ finallyGive.having =
 function finallyKeep( competitorRoutine )
 {
   let self = this;
-  // let times = 1;
 
   _.assert( arguments.length === 1, 'Expects single argument' );
-
-  // if( _.numberIs( competitorRoutine ) )
-  // {
-  //   times = competitorRoutine;
-  //   competitorRoutine = function( err, arg )
-  //   {
-  //     if( err )
-  //     throw err;
-  //     return arg;
-  //   };
-  // }
 
   self._competitorAppend
   ({
@@ -362,10 +349,9 @@ function finallyKeep( competitorRoutine )
     kindOfResource : Self.KindOfResource.Both,
     stackLevel : 2,
     times : 1,
-    // times,
   });
 
-  self.__handleResource( false );
+  self.__handleResourceSoon( false );
 
   return self;
 }
@@ -391,7 +377,7 @@ function thenGive( competitorRoutine )
     stackLevel : 2,
   });
 
-  self.__handleResource( false );
+  self.__handleResourceSoon( false );
 
   return self;
 }
@@ -429,7 +415,7 @@ function thenKeep( competitorRoutine )
     stackLevel : 2,
   });
 
-  self.__handleResource( false );
+  self.__handleResourceSoon( false );
   return self;
 }
 
@@ -454,7 +440,7 @@ function catchGive( competitorRoutine )
     stackLevel : 2,
   });
 
-  self.__handleResource( false );
+  self.__handleResourceSoon( false );
   return self;
 }
 
@@ -493,7 +479,7 @@ function catchKeep( competitorRoutine )
     // early : true,
   });
 
-  self.__handleResource( false );
+  self.__handleResourceSoon( false );
 
   return self;
 }
@@ -531,7 +517,7 @@ function _promise( o )
       stackLevel : 3,
     });
 
-    self.__handleResource( false );
+    self.__handleResourceSoon( false );
 
     function competitorRoutine( err, arg )
     {
@@ -715,7 +701,7 @@ function _deasync( o )
     stackLevel : 3,
   });
 
-  self.__handleResource( false );
+  self.__handleResourceSoon( false );
 
   if( Deasync === null )
   Deasync = require( 'deasync' );
@@ -1110,7 +1096,7 @@ function tap( competitorRoutine )
     stackLevel : 2,
   });
 
-  self.__handleResource( false );
+  self.__handleResourceSoon( false );
 
   return self;
 }
@@ -1142,7 +1128,7 @@ function exceptLog()
     stackLevel : 2,
   });
 
-  self.__handleResource( false );
+  self.__handleResourceSoon( false );
 
   return self;
 
@@ -1166,9 +1152,9 @@ function syncMaybe()
 {
   let self = this;
 
-  if( self._resource.length === 1 )
+  if( self._resources.length === 1 )
   {
-    let resource = self._resource[ 0 ];
+    let resource = self._resources[ 0 ];
     if( resource.error !== undefined )
     {
       // debugger;
@@ -1191,8 +1177,8 @@ function sync()
 {
   let self = this;
 
-  _.assert( self._resource.length <= 1, () => 'Cant return resource of consequence because it has ' + self._resource.length + ' of such!' );
-  _.assert( self._resource.length >= 1, () => 'Cant return resource of consequence because it has none of such!' );
+  _.assert( self._resources.length <= 1, () => 'Cant return resource of consequence because it has ' + self._resources.length + ' of such!' );
+  _.assert( self._resources.length >= 1, () => 'Cant return resource of consequence because it has none of such!' );
 
   return self.syncMaybe();
 }
@@ -1201,7 +1187,7 @@ function sync()
 // experimental
 // --
 
-function _competitorFinally( competitorRoutine ) // xxx
+function _competitorFinally( competitorRoutine )
 {
   let self = this;
 
@@ -1215,7 +1201,7 @@ function _competitorFinally( competitorRoutine ) // xxx
     stackLevel : 2,
   });
 
-  self.__handleResource( false );
+  self.__handleResourceSoon( false );
 
   return self;
 }
@@ -1299,7 +1285,7 @@ function _put( o )
       stackLevel : 3,
     });
 
-    self.__handleResource( false );
+    self.__handleResourceSoon( false );
     return self;
   }
   else if( _.arrayIs( o.container ) )
@@ -1312,7 +1298,7 @@ function _put( o )
       competitorRoutine : __onPutToArray,
       stackLevel : 3,
     });
-    self.__handleResource( false );
+    self.__handleResourceSoon( false );
     return self;
   }
   else
@@ -1474,7 +1460,7 @@ function _timeOut( o )
     stackLevel : 3,
   });
 
-  self.__handleResource( false );
+  self.__handleResourceSoon( false );
 
   return self;
 }
@@ -1652,6 +1638,8 @@ function _and( o )
       consequences have already been accounted
       */
 
+      competitors2.push( competitor );
+
       if( wasRoutine )
       if( _.consequenceIs( competitor ) )
       if( Config.debug && self.Diagnostics )
@@ -1660,8 +1648,6 @@ function _and( o )
         _.assert( !_.arrayHas( self.dependsOf, competitor ) );
         _.arrayAppendOnceStrictly( self.dependsOf, competitor );
       }
-
-      competitors2.push( competitor );
 
       let r = __got;
 
@@ -1726,10 +1712,17 @@ function _and( o )
   function __take()
   {
 
+    let competitors2 = [];
     if( !taking )
     for( let i = 0 ; i < competitors.length-1 ; i++ )
     if( competitors[ i ] )
-    competitors[ i ].take( errs[ i ], args[ i ] );
+    {
+      let competitor = competitors[ i ]
+      if( _.arrayHas( competitors2, competitor ) )
+      continue;
+      competitor.take( errs[ i ], args[ i ] );
+      competitors2.push( competitor );
+    }
 
     if( accumulative )
     args = _.arrayFlatten( args );
@@ -2070,6 +2063,7 @@ orKeeping.having = Object.create( _or.having );
 
 //
 
+/* xxx : deprecate */
 let JoinedWithConsequence = Object.create( null );
 JoinedWithConsequence.routineJoin = _.routineSeal;
 JoinedWithConsequence.context = null;
@@ -2327,7 +2321,7 @@ function take( error, argument )
   self.__take( error, argument );
 
   if( self.AsyncCompetitorHanding || self.AsyncResourceAdding )
-  self.__handleResource( true );
+  self.__handleResourceSoon( true );
   else
   self.__handleResourceNow();
 
@@ -2395,7 +2389,7 @@ function error( error, argument )
   self.__take( error, undefined );
 
   if( self.AsyncCompetitorHanding || self.AsyncResourceAdding )
-  self.__handleResource( true );
+  self.__handleResourceSoon( true );
   else
   self.__handleResourceNow();
 
@@ -2455,15 +2449,31 @@ function __take( error, argument )
 
   if( Config.debug )
   {
-    _.assert( !self.resourceLimit || self._resource.length < self.resourceLimit, () => 'Resource limit' + ( self.tag ? ' of ' + self.tag + ' ' : ' ' ) + 'set to ' + self.resourceLimit + ', but got more resources' );
-    let msg = '{-error-} and {-argument-} channels should not be in use simultaneously\n' +
-      '{-error-} or {-argument-} should be undefined, but currently ' +
-      '{-error-} is ' + _.strType( error ) +
-      '{-argument-} is ' + _.strType( argument );
-    _.assert( error === undefined || argument === undefined, msg );
+    if( !( !self.capacity || self._resources.length < self.capacity ) )
+    {
+      let args =
+      [
+        `Resource capacity of ${self.nickName} set to ${self.capacity}, but got more resources.`
+        + `\nConsider resetting : "{ capacity : 0 }"`
+      ]
+      debugger;
+      throw _._err({ args : args, stackRemobeBeginExclude : /\bConsequence.s\b/ });
+    }
+    if( !( error === undefined || argument === undefined ) )
+    {
+      let args =
+      [
+        '{-error-} and {-argument-} channels should not be in use simultaneously\n'
+        + '{-error-} or {-argument-} should be undefined, but currently '
+        + '\n{-error-} is ' + _.strType( error )
+        + '\n{-argument-} is ' + _.strType( argument )
+      ]
+      debugger;
+      throw _._err({ args : args, stackRemobeBeginExclude : /\bConsequence.s\b/ });
+    }
   }
 
-  self._resource.push( resource );
+  self._resources.push( resource );
 
   return self;
 }
@@ -2516,8 +2526,8 @@ function __onTake( err, arg )
 //     argument,
 //   }
 //
-//   self._resource.push( resource );
-//   let result = self.__handleResource();
+//   self._resources.push( resource );
+//   let result = self.__handleResourceSoon();
 //
 //   return result;
 // }
@@ -2552,23 +2562,16 @@ function __handleError( err, competitor )
   if( !_.errIsAttended( err ) )
   _.errAttentionRequest( err );
 
-  // let result = new Self().error( err );
-
   if( err.attentionRequested )
   {
 
-    // debugger;
-    // if( Config.debug )
-    // _global.logger.error( ' Consequence caught error, details come later' );
-
-    // debugger;
     _.timeOut( 250, function _unhandledError()
     {
       if( !_.errIsAttended( err ) )
       {
         _global.logger.error( 'Unhandled error caught by Consequence' );
         _.errLog( err );
-        debugger; // xxx
+        debugger;
       }
       return null;
     });
@@ -2581,41 +2584,41 @@ function __handleError( err, competitor )
 //
 
 /**
- * Method for processing corespondents and _resource queue. Provides handling of resolved resource values and errors by
-    corespondents from competitors value. Method takes first resource from _resource sequence and try to pass it to
+ * Method for processing corespondents and _resources queue. Provides handling of resolved resource values and errors by
+    corespondents from competitors value. Method takes first resource from _resources sequence and try to pass it to
     the first corespondent in corespondents sequence. Method returns the result of current corespondent execution.
-    There are several cases of __handleResource behavior:
+    There are several cases of __handleResourceSoon behavior:
     - if corespondent is regular function:
       trying to pass resources error and argument values into corespondent and executing. If during execution exception
       occurred, it will be catch by __handleError method. If corespondent was not added by tap or persist method,
-      __handleResource will remove resource from head of queue.
+      __handleResourceSoon will remove resource from head of queue.
 
       If corespondent was added by finally, _onceThen, catchKeep, or by other "thenable" method of wConsequence, finally:
 
-      1) if result of corespondents is ordinary value, finally __handleResource method appends result of corespondent to the
+      1) if result of corespondents is ordinary value, finally __handleResourceSoon method appends result of corespondent to the
       head of resources queue, and therefore pass it to the next competitor in corespondents queue.
-      2) if result of corespondents is instance of wConsequence, __handleResource will append current wConsequence instance
+      2) if result of corespondents is instance of wConsequence, __handleResourceSoon will append current wConsequence instance
       to result instance corespondents sequence.
 
       After method try to handle next resource in queue if exists.
 
     - if corespondent is instance of wConsequence:
-      in that case __handleResource pass resource into corespondent`s resources queue.
+      in that case __handleResourceSoon pass resource into corespondent`s resources queue.
 
       If corespondent was added by tap, or one of finally, _onceThen, catchKeep, or by other "thenable" method of
-      wConsequence finally __handleResource try to pass current resource to the next competitor in corespondents sequence.
+      wConsequence finally __handleResourceSoon try to pass current resource to the next competitor in corespondents sequence.
 
-    - if in current wConsequence are present corespondents added by persist method, finally __handleResource passes resource to
+    - if in current wConsequence are present corespondents added by persist method, finally __handleResourceSoon passes resource to
       all of them, without removing them from sequence.
 
  * @returns {*}
- * @throws {Error} if on invocation moment the _resource queue is empty.
+ * @throws {Error} if on invocation moment the _resources queue is empty.
  * @private
- * @method __handleResource
+ * @method __handleResourceSoon
  * @memberof module:Tools/base/Consequence.wConsequence#
  */
 
-function __handleResource( isResource )
+function __handleResourceSoon( isResource )
 {
   let self = this;
   let async = isResource ? self.AsyncResourceAdding : self.AsyncCompetitorHanding;
@@ -2625,9 +2628,9 @@ function __handleResource( isResource )
   if( async )
   {
 
-    if( !self._competitorEarly.length /*&& !self._competitorLate.length*/ )
+    if( !self._competitorsEarly.length && !self._competitorsLate.length )
     return;
-    if( !self._resource.length )
+    if( !self._resources.length )
     return;
 
     _.timeSoon( () => self.__handleResourceNow() );
@@ -2650,27 +2653,29 @@ function __handleResourceNow()
   while( true )
   {
 
-    if( !self._competitorEarly.length /*&& !self._competitorLate.length*/ )
+    if( !self._resources.length )
     return;
-    if( !self._resource.length )
+    if( !self._competitorsEarly.length && !self._competitorsLate.length )
     return;
 
-    let resource = self._resource[ 0 ];
+    /* */
+
+    let resource = self._resources[ 0 ];
     let competitor;
     let isEarly;
-    let isConsequence;
 
-    /* */
-
-    if( self._competitorEarly.length > 0 )
+    if( self._competitorsEarly.length > 0 )
     {
-      competitor = self._competitorEarly.shift();
-      isConsequence = _.consequenceIs( competitor.competitorRoutine )
+      competitor = self._competitorsEarly.shift();
       isEarly = true;
     }
+    else
+    {
+      competitor = self._competitorsLate.shift();
+      isEarly = false;
+    }
 
-    /* */
-
+    let isConsequence = _.consequenceIs( competitor.competitorRoutine )
     let errorOnly = competitor.kindOfResource === Self.KindOfResource.ErrorOnly;
     let argumentOnly = competitor.kindOfResource === Self.KindOfResource.ArgumentOnly;
 
@@ -2687,14 +2692,16 @@ function __handleResourceNow()
 
     /* resourceReusing */
 
+    _.assert( !!competitor.instant, 'not implemented' );
+
     let resourceReusing = false;
     resourceReusing = resourceReusing || !executing;
     resourceReusing = resourceReusing || competitor.tapping;
-    if( isConsequence )
-    resourceReusing = resourceReusing || competitor.keeping;
+    if( isConsequence && competitor.keeping && competitor.instant )
+    resourceReusing = true;
 
     if( !resourceReusing )
-    self._resource.shift();
+    self._resources.shift();
 
     /* debug */
 
@@ -2708,13 +2715,26 @@ function __handleResourceNow()
     if( isConsequence )
     {
 
-      competitor.competitorRoutine.__take( resource.error, resource.argument ); /* should be async, maybe */
+      competitor.competitorRoutine.__take( resource.error, resource.argument );
 
       if( competitor.procedure )
       _.procedure.end( competitor.procedure );
 
+      // if( !competitor.instant && competitor.keeping )
+      // debugger;
+      // if( !competitor.instant && competitor.keeping )
+      // competitor.competitorRoutine._competitorAppend
+      // ({
+      //   competitorRoutine : self,
+      //   keeping : true,
+      //   kindOfResource : Self.KindOfResource.Both,
+      //   stackLevel : 3,
+      //   instant : 1,
+      //   late : 1,
+      // });
+
       if( competitor.competitorRoutine.AsyncCompetitorHanding || competitor.competitorRoutine.AsyncResourceAdding )
-      competitor.competitorRoutine.__handleResource( true );
+      competitor.competitorRoutine.__handleResourceSoon( true );
       else
       competitor.competitorRoutine.__handleResourceNow();
 
@@ -2738,7 +2758,6 @@ function __handleResourceNow()
       }
       catch( err )
       {
-        // debugger;
         throwenErr = self.__handleError( err, competitor );
       }
 
@@ -2777,7 +2796,7 @@ function __handleResourceNow()
     }
 
     if( self.AsyncCompetitorHanding || self.AsyncResourceAdding )
-    return self.__handleResource( true );
+    return self.__handleResourceSoon( true );
 
     counter += 1;
   }
@@ -2828,55 +2847,46 @@ function _competitorAppend( o )
     return;
   }
 
+  let stackLevel = o.stackLevel;
+  let competitorDescriptor = o;
+  delete competitorDescriptor.times;
+  delete competitorDescriptor.stackLevel;
+
   /* */
 
   if( Config.debug )
-  if( !_.consequenceIs( competitorRoutine ) )
   {
 
-    if( o.kindOfResource === Self.KindOfResource.ErrorOnly )
-    _.assert( competitorRoutine.length <= 1, 'ErrorOnly competitor should expect single argument' );
-    else if( o.kindOfResource === Self.KindOfResource.ArgumentOnly )
-    _.assert( competitorRoutine.length <= 1, 'ArgumentOnly competitor should expect single argument' );
-    else if( o.kindOfResource === Self.KindOfResource.Both )
-    _.assert( competitorRoutine.length === 0 || competitorRoutine.length === 2, 'Finally competitor should expect two arguments' );
+    if( !_.consequenceIs( competitorRoutine ) )
+    {
+      if( o.kindOfResource === Self.KindOfResource.ErrorOnly )
+      _.assert( competitorRoutine.length <= 1, 'ErrorOnly competitor should expect single argument' );
+      else if( o.kindOfResource === Self.KindOfResource.ArgumentOnly )
+      _.assert( competitorRoutine.length <= 1, 'ArgumentOnly competitor should expect single argument' );
+      else if( o.kindOfResource === Self.KindOfResource.Both )
+      _.assert( competitorRoutine.length === 0 || competitorRoutine.length === 2, 'Finally competitor should expect two arguments' );
+    }
+
+    if( _.consequenceIs( competitorRoutine ) )
+    if( self.Diagnostics )
+    {
+      self.assertNoDeadLockWith( competitorRoutine );
+      competitorRoutine.dependsOf.push( self );
+    }
+
+    if( self.Diagnostics && self.Stacking )
+    {
+      competitorDescriptor.stack = _.diagnosticStack([ stackLevel+1, Infinity ]);
+    }
 
   }
 
-  /* store */
+  /* procedure */
 
-  if( Config.debug )
-  if( self.Diagnostics )
-  if( _.consequenceIs( competitorRoutine ) )
-  {
-
-    self.assertNoDeadLockWith( competitorRoutine );
-    competitorRoutine.dependsOf.push( self );
-
-  }
-
-  let competitorDescriptor = o;
-  delete o.times;
-
-  // competitorDescriptor
-
-  if( Config.debug && self.Diagnostics && self.Stacking )
-  {
-    competitorDescriptor.stack = _.diagnosticStack([ o.stackLevel+1, Infinity ]);
-  }
-
-  /* - */
-
-  // if( !self._procedure )
-  // debugger;
   if( !self._procedure )
-  self._procedure = new _.Procedure({ _sourcePath : o.stackLevel+1 });
+  self._procedure = new _.Procedure({ _sourcePath : stackLevel+1 });
 
   _.assert( _.routineIs( o.competitorRoutine ) );
-  // _.assert( _.strIs( o.competitorRoutine.name ), () => 'Routine should have name\n' + o.competitorRoutine.toString() + '\n' + o.competitorRoutine.originalRoutine.name + '\n' + o.competitorRoutine.originalRoutine );
-
-  if( !_.strIs( o.competitorRoutine.name ) )
-  debugger;
 
   if( !self._procedure.name() )
   self._procedure.name( o.competitorRoutine.name || '' );
@@ -2885,11 +2895,19 @@ function _competitorAppend( o )
 
   competitorDescriptor.procedure = self._procedure;
 
-  self._procedure = null;
+  self._procedure = null; // xxx
 
-  /* - */
+  /* */
 
-  self._competitorEarly.push( competitorDescriptor );
+  // if( o.late === null )
+  // o.late = _.consequenceIs( o.competitorRoutine );
+  // if( o.late )
+  // xxx;
+
+  if( o.late )
+  self._competitorsLate.unshift( competitorDescriptor );
+  else
+  self._competitorsEarly.push( competitorDescriptor );
 
   return competitorDescriptor;
 }
@@ -2900,6 +2918,9 @@ _competitorAppend.defaults =
   keeping : null,
   tapping : null,
   kindOfResource : null,
+  late : false,
+  instant : true,
+
   times : 1,
   stackLevel : null,
 }
@@ -3023,7 +3044,8 @@ function deadLockReport( competitor )
   {
     if( report )
     report += '\n';
-    report += con.id + ' : ' + con.sourcePath;
+    report += con.nickName + ' : ' + con.sourcePath;
+    // report += con.id + ' : ' + con.sourcePath;
   });
 
   return report;
@@ -3034,12 +3056,10 @@ function deadLockReport( competitor )
 function isEmpty()
 {
   let self = this;
-  if( self.resourcesGet().length )
+  if( self.resourcesCount() )
   return false;
-  if( self.competitorsEarlyGet().length )
+  if( self.competitorsCount() )
   return false;
-  // if( self.competitorsLateGet().length )
-  // return false;
   return true;
 }
 
@@ -3072,9 +3092,16 @@ function competitorOwn( competitorRoutine )
 
   _.assert( _.routineIs( competitorRoutine ) );
 
-  for( let c = 0 ; c < self._competitorEarly.length ; c++ )
+  for( let c = 0 ; c < self._competitorsEarly.length ; c++ )
   {
-    let competitor = self._competitorEarly[ c ];
+    let competitor = self._competitorsEarly[ c ];
+    if( competitor.competitorRoutine === competitorRoutine )
+    return competitor;
+  }
+
+  for( let c = 0 ; c < self._competitorsLate.length ; c++ )
+  {
+    let competitor = self._competitorsLate[ c ];
     if( competitor.competitorRoutine === competitorRoutine )
     return competitor;
   }
@@ -3090,9 +3117,19 @@ function competitorHas( competitorRoutine )
 
   _.assert( _.routineIs( competitorRoutine ) );
 
-  for( let c = 0 ; c < self._competitorEarly.length ; c++ )
+  for( let c = 0 ; c < self._competitorsEarly.length ; c++ )
   {
-    let competitor = self._competitorEarly[ c ];
+    let competitor = self._competitorsEarly[ c ];
+    if( competitor.competitorRoutine === competitorRoutine )
+    return competitor;
+    if( _.consequenceIs( cor ) )
+    if( cor.competitorHas( competitorRoutine ) )
+    return competitor;
+  }
+
+  for( let c = 0 ; c < self._competitorsLate.length ; c++ )
+  {
+    let competitor = self._competitorsLate[ c ];
     if( competitor.competitorRoutine === competitorRoutine )
     return competitor;
     if( _.consequenceIs( cor ) )
@@ -3109,7 +3146,7 @@ function competitorsCount()
 {
   let self = this;
   _.assert( arguments.length === 0 );
-  return self._competitorEarly.length /*+ self._competitorLate.length*/;
+  return self._competitorsEarly.length + self._competitorsLate.length;
 }
 
 //
@@ -3161,16 +3198,32 @@ function competitorsCount()
 function competitorsEarlyGet()
 {
   let self = this;
-  return self._competitorEarly;
+  _.assert( arguments.length === 0 );
+  return self._competitorsEarly;
 }
 
-// //
 //
-// function competitorsLateGet()
-// {
-//   let self = this;
-//   return self._competitorLate;
-// }
+
+function competitorsLateGet()
+{
+  let self = this;
+  _.assert( arguments.length === 0 );
+  return self._competitorsLate;
+}
+
+//
+
+function competitorsGet()
+{
+  let self = this;
+  let r = [];
+  _.assert( arguments.length === 0 );
+  if( self._competitorsEarly.length )
+  _.arrayAppendArray( r, self._competitorsEarly );
+  if( self._competitorsLate.length )
+  _.arrayAppendArray( r, self._competitorsLate );
+  return r;
+}
 
 //
 
@@ -3218,32 +3271,52 @@ function competitorsCancel( competitorRoutine )
   _.assert( arguments.length === 0 || _.routineIs( competitorRoutine ) );
 
   // logger.log( self.toStr() );
-  // logger.log( 'competitorsCancel', self.id, self._competitorEarly.length );
+  // logger.log( 'competitorsCancel', self.id, self._competitorsEarly.length );
   // debugger;
 
   if( arguments.length === 0 )
   {
 
-    for( let c = self._competitorEarly.length - 1 ; c >= 0 ; c-- )
+    for( let c = self._competitorsEarly.length - 1 ; c >= 0 ; c-- )
     {
-      let competitorDescriptor = self._competitorEarly[ c ];
+      let competitorDescriptor = self._competitorsEarly[ c ];
       if( competitorDescriptor.procedure )
       _.procedure.end( competitorDescriptor.procedure );
-      self._competitorEarly.splice( c, 1 );
+      self._competitorsEarly.splice( c, 1 );
+    }
+
+    for( let c = self._competitorsLate.length - 1 ; c >= 0 ; c-- )
+    {
+      let competitorDescriptor = self._competitorsLate[ c ];
+      if( competitorDescriptor.procedure )
+      _.procedure.end( competitorDescriptor.procedure );
+      self._competitorsLate.splice( c, 1 );
     }
 
   }
   else
   {
-    let found = _.arrayLeft( self._competitorEarly, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
+
+    let found = _.arrayLeft( self._competitorsEarly, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
     while( found.element )
     {
       _.assert( found.element.competitorRoutine === competitorRoutine );
       if( found.element.procedure )
       _.procedure.end( found.element.procedure );
-      self._competitorEarly.splice( found.index, 1 )
-      found = _.arrayLeft( self._competitorEarly, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
+      self._competitorsEarly.splice( found.index, 1 )
+      found = _.arrayLeft( self._competitorsEarly, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
     }
+
+    found = _.arrayLeft( self._competitorsLate, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
+    while( found.element )
+    {
+      _.assert( found.element.competitorRoutine === competitorRoutine );
+      if( found.element.procedure )
+      _.procedure.end( found.element.procedure );
+      self._competitorsLate.splice( found.index, 1 )
+      found = _.arrayLeft( self._competitorsLate, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
+    }
+
   }
 
   return self;
@@ -3258,10 +3331,14 @@ function competitorCancel( competitorRoutine )
   _.assert( arguments.length === 1 );
   _.assert( _.routineIs( competitorRoutine ) );
 
-  // logger.log( self.toStr() );
-  // logger.log( 'competitorCancel', self.id, self._competitorEarly.length );
-  let found = _.arrayLeft( self._competitorEarly, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
-  // debugger;
+  let found = _.arrayLeft( self._competitorsEarly, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
+  found.container = self._competitorsEarly;
+
+  if( !found.element )
+  {
+    found = _.arrayLeft( self._competitorsLate, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
+    found.container = self._competitorsLate;
+  }
 
   if( !found.element )
   {
@@ -3275,37 +3352,17 @@ function competitorCancel( competitorRoutine )
 
   if( found.element.procedure )
   _.procedure.end( found.element.procedure );
-  self._competitorEarly.splice( found.index, 1 );
+  found.container.splice( found.index, 1 );
 
   return self;
 }
-
-// //
-//
-// function _competitorNextGet()
-// {
-//   let self = this;
-//
-//   if( !self._competitorEarly[ 0 ] )
-//   {
-//     if( !self._competitorLate[ 0 ] )
-//     return;
-//     else
-//     return self._competitorLate[ 0 ].competitorRoutine;
-//   }
-//   else
-//   {
-//     return self._competitorEarly[ 0 ].competitorRoutine;
-//   }
-//
-// }
 
 //
 
 function argumentsCount()
 {
   let self = this;
-  return self._resource.filter( ( e ) => e.argument !== undefined ).length;
+  return self._resources.filter( ( e ) => e.argument !== undefined ).length;
 }
 
 //
@@ -3313,7 +3370,7 @@ function argumentsCount()
 function errorsCount()
 {
   let self = this;
-  return self._resource.filter( ( e ) => e.error !== undefined ).length;
+  return self._resources.filter( ( e ) => e.error !== undefined ).length;
 }
 
 //
@@ -3346,7 +3403,7 @@ function errorsCount()
 function resourcesCount()
 {
   let self = this;
-  return self._resource.length;
+  return self._resources.length;
 }
 
 //
@@ -3389,9 +3446,35 @@ function resourcesGet( index )
   _.assert( arguments.length === 0 || arguments.length === 1 )
   _.assert( index === undefined || _.numberIs( index ) );
   if( index !== undefined )
-  return self._resource[ index ];
+  return self._resources[ index ];
   else
-  return self._resource;
+  return self._resources;
+}
+
+//
+
+function argumentsGet( index )
+{
+  let self = this;
+  _.assert( arguments.length === 0 || arguments.length === 1 )
+  _.assert( index === undefined || _.numberIs( index ) );
+  if( index !== undefined )
+  return self._resources[ index ].argument;
+  else
+  return _.filter( self._resources, ( r ) => r.argument ? r.argument : undefined );
+}
+
+//
+
+function errorsGet( index )
+{
+  let self = this;
+  _.assert( arguments.length === 0 || arguments.length === 1 )
+  _.assert( index === undefined || _.numberIs( index ) );
+  if( index !== undefined )
+  return self._resources[ index ].error;
+  else
+  return _.filter( self._resources, ( r ) => r.error ? r.error : undefined );
 }
 
 //
@@ -3425,11 +3508,11 @@ function resourcesCancel( arg )
   _.assert( arguments.length === 0 || arguments.length === 1 );
 
   if( arguments.length === 0 )
-  self._resource.splice( 0, self._resource.length );
+  self._resources.splice( 0, self._resources.length );
   else
   {
     throw _.err( 'not tested' );
-    _.arrayRemoveElementOnce( self._resource, arg );
+    _.arrayRemoveElementOnce( self._resources, arg );
   }
 
 }
@@ -3487,12 +3570,13 @@ function _infoExport( o )
 
     let names = _.select( self.competitorsEarlyGet(), '*/tag' );
 
-    if( self.id )
-    result += '\n  id : ' + self.id;
+    // if( self.id )
+    // result += '\n  id : ' + self.id;
 
     result += '\n  argument resources : ' + self.argumentsCount();
     result += '\n  error resources : ' + self.errorsCount();
-    result += '\n  competitors : ' + self.competitorsEarlyGet().length;
+    result += '\n  early competitors : ' + self.competitorsEarlyGet().length;
+    result += '\n  late competitors : ' + self.competitorsLateGet().length;
     result += '\n  AsyncCompetitorHanding : ' + self.AsyncCompetitorHanding;
     result += '\n  AsyncResourceAdding : ' + self.AsyncResourceAdding;
 
@@ -3502,7 +3586,7 @@ function _infoExport( o )
     if( o.verbosity >= 1 )
     result += self.nickName + ' ';
 
-    result += self.resourcesGet().length + ' / ' + ( self.competitorsEarlyGet().length /*+ self.competitorsLateGet().length*/ );
+    result += self.resourcesCount() + ' / ' + self.competitorsCount();
   }
 
   return result;
@@ -3635,6 +3719,34 @@ function nickNameGet()
   else
   result = result + '::';
   return result;
+}
+
+//
+
+function _arrayGetter_functor( name )
+{
+  let symbol = Symbol.for( name );
+  return function _get()
+  {
+    var self = this;
+    if( self[ symbol ] === undefined )
+    self[ symbol ] = [];
+    return self[ symbol ];
+  }
+}
+
+//
+
+function _defGetter_functor( name, def )
+{
+  let symbol = Symbol.for( name );
+  return function _get()
+  {
+    var self = this;
+    if( self[ symbol ] === undefined )
+    return def;
+    return self[ symbol ];
+  }
 }
 
 //
@@ -4228,13 +4340,13 @@ function after( resource )
 
 /**
  * @typedef {Object} Fields
- * @property {Array} _competitorEarly=[] Queue of competitor that are penging for resource.
- * @property {Array} _resource=[] Queue of messages that are penging for competitor.
+ * @property {Array} _competitorsEarly=[] Queue of competitor that are penging for resource.
+ * @property {Array} _resources=[] Queue of messages that are penging for competitor.
  * @property {wProcedure} _procedure=null Instance of wProcedure.
  * @property {String} tag
  * @property {Number} id Id of current instance
  * @property {Array} dependsOf=[]
- * @property {Number} resourceLimit=0 Maximal number of resources. Unlimited by default.
+ * @property {Number} capacity=0 Maximal number of resources. Unlimited by default.
  * @property {String} sourcePath Path to source file were wConsequence instance was created.
  * @memberof module:Tools/base/Consequence.wConsequence
 */
@@ -4245,17 +4357,18 @@ function after( resource )
 
 let Composes =
 {
-  _competitorEarly : [],
-  _resource : [],
+  _competitorsEarly : null,
+  _competitorsLate : null,
+  _resources : null,
   _procedure : null,
+  capacity : 1,
 }
 
 let ComposesDebug =
 {
   tag : '',
-  id : null,
-  dependsOf : [],
-  resourceLimit : 0,
+  // id : null,
+  dependsOf : null,
   sourcePath : null,
 }
 
@@ -4264,7 +4377,6 @@ _.mapExtend( Composes, ComposesDebug );
 
 let Associates =
 {
-  // associated : null,
 }
 
 let Restricts =
@@ -4275,7 +4387,6 @@ let Medials =
 {
   tag : '',
   dependsOf : [],
-  resourceLimit : 0,
 }
 
 let Statics =
@@ -4290,9 +4401,6 @@ let Statics =
   AndTake,
   AndKeep,
 
-  // IfErrorThen, // xxx IfErrorThen
-  // IfNoErrorThen, // xxx IfNoErrorThen
-
   FinallyPass,
   ThenPass,
   ExceptPass,
@@ -4305,7 +4413,6 @@ let Statics =
   Stacking : 1,
   AsyncCompetitorHanding : 0,
   AsyncResourceAdding : 0,
-  CompetitorCounter : 0,
 
   shortName : 'Consequence',
 
@@ -4313,19 +4420,35 @@ let Statics =
 
 let Forbids =
 {
-  // give : 'give',
   every : 'every',
   mutex : 'mutex',
   mode : 'mode',
   resourcesCounter : 'resourcesCounter',
   _competitor : '_competitor',
   _competitorPersistent : '_competitorPersistent',
+  id : 'id',
 }
 
 let Accessors =
 {
   competitorNext : 'competitorNext',
+  _competitorsEarly : { getter : _arrayGetter_functor( '_competitorsEarly' ) },
+  _competitorsLate : { getter : _arrayGetter_functor( '_competitorsLate' ) },
+  _resources : { getter : _arrayGetter_functor( '_resources' ) },
+  _procedure : { getter : _defGetter_functor( '_procedure', null ) },
+  capacity : { getter : _defGetter_functor( 'capacity', 1 ) },
 }
+
+let DebugAccessors =
+{
+  tag : { getter : _defGetter_functor( 'tag', null ) },
+  // id : { getter : _defGetter_functor( 'id', null ) },
+  sourcePath : { getter : _defGetter_functor( 'sourcePath', null ) },
+  dependsOf : { getter : _arrayGetter_functor( 'dependsOf' ) },
+}
+
+if( Config.debug )
+_.mapExtend( Accessors, DebugAccessors );
 
 // --
 // declare
@@ -4340,25 +4463,19 @@ let Extend =
 
   // basic
 
-  finallyGive, // got, done
-  // got : finallyGive,
-  // done : finallyGive,
+  finallyGive,
   give : finallyGive,
-  finallyKeep, // finally
+  finallyKeep,
   finally : finallyKeep,
 
-  thenGive, // ifNoErrorGot
-  // thenGot : thenGive,
+  thenGive,
   ifNoErrorGot : thenGive,
-  thenKeep, // ifNoErrorThen
-  // keep : thenKeep,
-  then : thenKeep, // xxx
+  thenKeep,
+  then : thenKeep,
   ifNoErrorThen : thenKeep,
 
-  catchGive, // ifErrorGot
-  // exceptGot : catchGive,
-  // ifErrorGot : catchGive,
-  catchKeep, // ifErrorThen
+  catchGive,
+  catchKeep,
   catch : catchKeep,
   ifErrorThen : catchGive,
 
@@ -4458,7 +4575,7 @@ let Extend =
   // handling mechanism
 
   __handleError,
-  __handleResource,
+  __handleResourceSoon,
   __handleResourceNow,
   _competitorAppend,
 
@@ -4471,7 +4588,6 @@ let Extend =
 
   isEmpty,
   cancel,
-  //clear,
 
   // competitor
 
@@ -4479,6 +4595,8 @@ let Extend =
   competitorHas,
   competitorsCount,
   competitorsEarlyGet,
+  competitorsLateGet,
+  competitorsGet,
   competitorsCancel,
   competitorCancel,
 
@@ -4488,6 +4606,8 @@ let Extend =
   errorsCount,
   resourcesCount,
   resourcesGet,
+  argumentsGet,
+  errorsGet,
   resourcesCancel,
 
   // procedure
@@ -4547,7 +4667,7 @@ _.classDeclare
   usingOriginalPrototype : 1,
 });
 
-_.Copyable.mixin( wConsequence );
+_.Copyable.mixin( wConsequence ); /* xxx : try to remove */
 
 _.mapExtend( _, Tools );
 _.mapExtend( _realGlobal_.wTools, Tools );
@@ -4572,15 +4692,23 @@ _.assert( _.routineIs( wConsequenceProxy.prototype.take ) );
 
 _.assert( wConsequenceProxy.shortName === 'Consequence' );
 
-//
+_prepareJoinedWithConsequence(); /* xxx : deprecate _prepareJoinedWithConsequence */
 
-_prepareJoinedWithConsequence();
+// _.assert( !Self.FieldsOfRelationsGroupsGet );
+// _.assert( !Self.prototype.FieldsOfRelationsGroupsGet );
+// _.assert( !Self.FieldsOfRelationsGroups );
+// _.assert( !Self.prototype.FieldsOfRelationsGroups );
 
 _.assert( !!Self.FieldsOfRelationsGroupsGet );
 _.assert( !!Self.prototype.FieldsOfRelationsGroupsGet );
 _.assert( !!Self.FieldsOfRelationsGroups );
 _.assert( !!Self.prototype.FieldsOfRelationsGroups );
 _.assert( _.mapKeys( Self.FieldsOfRelationsGroups ).length );
+
+_.assert( _.mapIs( Self.KindOfResource ) );
+_.assert( _.mapIs( Self.prototype.KindOfResource ) );
+_.assert( Self.AsyncCompetitorHanding === 0 );
+_.assert( Self.prototype.AsyncCompetitorHanding === 0 );
 
 _global_[ Self.name ] = _[ Self.shortName ] = Self;
 if( !_global_.__GLOBAL_PRIVATE_CONSEQUENCE__ )

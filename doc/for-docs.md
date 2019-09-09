@@ -5,12 +5,12 @@
 var _ = _global_.wTools;
 var _ObjectHasOwnProperty = Object.hasOwnProperty;
 
-if( typeof module !== 'undefined' )
-{
-
-  require( '../UseBase.s' );
-
-}
+// if( typeof module !== 'undefined' )
+// {
+//
+//   require( '../UseBase.s' );
+//
+// }
 
 //
 
@@ -437,6 +437,6 @@ var Self =
 
 if( typeof module !== 'undefined' )
 module[ 'exports' ] = Self;
-_global_[ Self.name ] = _[ Self.shortName ] = _.mixinDelcare( Self );
+_.graph[ Self.shortName ] = _.mixinDelcare( Self );
 
 })();
