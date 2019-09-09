@@ -109,24 +109,22 @@ function trivial( test )
 
 //
 
-function ordinarMessage( test )
+//--
+// ordinarMessage
+//--
+
+function ordinarMessageSingleRes_0_0( test )
 {
   var c = this;
   var amode = _.Consequence.AsyncModeGet();
 
-  test.case = 'give single resource';
-
   var que = new _.Consequence().take( null )
-
-   /* AsyncCompetitorHanding : 0, AsyncResourceAdding : 0 */
-
   .finally( () =>
   {
     _.Consequence.AsyncModeSet([ 0, 0 ]);
     test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
     return null;
   })
-
   .thenKeep( function( arg )
   {
     var con = new _.Consequence({ tag : 'con' });
@@ -142,41 +140,71 @@ function ordinarMessage( test )
     return null;
   })
 
-  /* AsyncCompetitorHanding : 1, AsyncResourceAdding : 0 */
-
-  .finally( () =>
+  que.finally( () =>
   {
     test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
-    _.Consequence.AsyncModeSet([ 1, 0 ]);
-    test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
+    _.Consequence.AsyncModeSet( amode );
     return null;
   })
+  return que;
+}
 
-  .thenKeep( function( arg )
+//
+
+function ordinarMessageSingleRes_1_0( test )
+{
+  var c = this;
+  var amode = _.Consequence.AsyncModeGet();
+
+  var que = new _.Consequence().take( null )
+
+   .finally( () =>
+   {
+     _.Consequence.AsyncModeSet([ 1, 0 ]);
+     test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
+     return null;
+   })
+
+   .thenKeep( function( arg )
+   {
+     var con = new _.Consequence({ tag : 'con' });
+     con.take( 1 );
+     test.identical( con.resourcesGet().length, 1 );
+     con.give( function( err, got )
+     {
+       test.identical( err, undefined )
+       test.identical( got, 1 );
+     })
+     test.identical( con.resourcesGet().length, 1 );
+     test.identical( con.competitorsEarlyGet().length, 1 );
+     return _.timeOut( 1, function()
+     {
+       test.identical( con.resourcesGet().length, 0 );
+       test.identical( con.competitorsEarlyGet().length, 0 );
+       return null;
+     })
+   })
+
+  que.finally( () =>
   {
-    var con = new _.Consequence({ tag : 'con' });
-    con.take( 1 );
-    test.identical( con.resourcesGet().length, 1 );
-    con.give( function( err, got )
-    {
-      test.identical( err, undefined )
-      test.identical( got, 1 );
-    })
-    test.identical( con.resourcesGet().length, 1 );
-    test.identical( con.competitorsEarlyGet().length, 1 );
-    return _.timeOut( 1, function()
-    {
-      test.identical( con.resourcesGet().length, 0 );
-      test.identical( con.competitorsEarlyGet().length, 0 );
-      return null;
-    })
+    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
+    _.Consequence.AsyncModeSet( amode );
+    return null;
   })
+  return que;
+}
 
-  /* AsyncCompetitorHanding : 0, AsyncResourceAdding : 1 */
+//
+
+function ordinarMessageSingleRes_0_1( test )
+{
+  var c = this;
+  var amode = _.Consequence.AsyncModeGet();
+
+  var que = new _.Consequence().take( null )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
     _.Consequence.AsyncModeSet([ 0, 1 ]);
     test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
     return null;
@@ -207,11 +235,26 @@ function ordinarMessage( test )
     })
   })
 
-  /* AsyncCompetitorHanding : 1, AsyncResourceAdding : 1 */
+  que.finally( () =>
+  {
+    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
+    _.Consequence.AsyncModeSet( amode );
+    return null;
+  })
+  return que;
+}
+
+//
+
+function ordinarMessageSingleRes_1_1( test )
+{
+  var c = this;
+  var amode = _.Consequence.AsyncModeGet();
+
+  var que = new _.Consequence().take( null )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
     _.Consequence.AsyncModeSet([ 1, 1 ]);
     test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
     return null;
@@ -236,20 +279,33 @@ function ordinarMessage( test )
     })
   });
 
-  test.case = 'give several resources';
-
-  /* - AsyncCompetitorHanding : 0, AsyncResourceAdding : 0 - */
-
   que.finally( () =>
   {
     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
+    _.Consequence.AsyncModeSet( amode );
+    return null;
+  })
+  return que;
+}
+
+//
+
+function ordinarMessageSeveralRes_0_0( test )
+{
+  var c = this;
+  var amode = _.Consequence.AsyncModeGet();
+
+  var que = new _.Consequence().take( null )
+
+  .finally( () =>
+  {
     _.Consequence.AsyncModeSet([ 0, 0 ]);
     test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
     return null;
   })
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 0 });
     con.take( 1 ).take( 2 ).take( 3 );
     test.identical( con.resourcesGet().length, 3 );
     con.give( ( err, got ) => test.identical( got, 1 ) );
@@ -258,13 +314,28 @@ function ordinarMessage( test )
     test.identical( con.competitorsEarlyGet().length, 0 );
     test.identical( con.resourcesGet().length, 0 );
     return null;
-  })
+  });
 
-  /* AsyncCompetitorHanding : 1, AsyncResourceAdding : 0 */
+  que.finally( () =>
+  {
+    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+    _.Consequence.AsyncModeSet( amode );
+    return null;
+  })
+  return que;
+}
+
+//
+
+function ordinarMessageSeveralRes_1_0( test )
+{
+  var c = this;
+  var amode = _.Consequence.AsyncModeGet();
+
+  var que = new _.Consequence().take( null )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
     _.Consequence.AsyncModeSet([ 1, 0 ]);
     test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
     return null;
@@ -272,7 +343,7 @@ function ordinarMessage( test )
 
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 0 });
     con.take( 1 ).take( 2 ).take( 3 );
     con.give( ( err, got ) => test.identical( got, 1 ) );
     con.give( ( err, got ) => test.identical( got, 2 ) );
@@ -287,11 +358,26 @@ function ordinarMessage( test )
     })
   })
 
-  /* AsyncCompetitorHanding : 0, AsyncResourceAdding : 1 */
+  que.finally( () =>
+  {
+    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
+    _.Consequence.AsyncModeSet( amode );
+    return null;
+  })
+  return que;
+}
+
+//
+
+function ordinarMessageSeveralRes_0_1( test )
+{
+  var c = this;
+  var amode = _.Consequence.AsyncModeGet();
+
+  var que = new _.Consequence().take( null )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
     _.Consequence.AsyncModeSet([ 0, 1 ]);
     test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
     return null;
@@ -299,7 +385,7 @@ function ordinarMessage( test )
 
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 0 });
     con.take( 1 ).take( 2 ).take( 3 );
 
     return _.timeOut( 1, function()
@@ -321,11 +407,26 @@ function ordinarMessage( test )
 
   })
 
-  /* AsyncCompetitorHanding : 1, AsyncResourceAdding : 1 */
+  que.finally( () =>
+  {
+    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
+    _.Consequence.AsyncModeSet( amode );
+    return null;
+  })
+  return que;
+}
+
+//
+
+function ordinarMessageSeveralRes_1_1( test )
+{
+  var c = this;
+  var amode = _.Consequence.AsyncModeGet();
+
+  var que = new _.Consequence().take( null )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
     _.Consequence.AsyncModeSet([ 1, 1 ]);
     test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
     return null;
@@ -333,7 +434,7 @@ function ordinarMessage( test )
 
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 0 });
     con.take( 1 ).take( 2 ).take( 3 );
     con.give( ( err, got ) => test.identical( got, 1 ) );
     con.give( ( err, got ) => test.identical( got, 2 ) );
@@ -348,13 +449,26 @@ function ordinarMessage( test )
     })
   });
 
-  test.case = 'give single error';
-
-  /* AsyncCompetitorHanding : 0, AsyncResourceAdding : 0 */
-
   que.finally( () =>
   {
     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
+    _.Consequence.AsyncModeSet( amode );
+    return null;
+  })
+  return que;
+}
+
+//
+
+function ordinarMessageSingleErr_0_0( test )
+{
+  var c = this;
+  var amode = _.Consequence.AsyncModeGet();
+
+  var que = new _.Consequence().take( null )
+
+  .finally( () =>
+  {
     _.Consequence.AsyncModeSet([ 0, 0 ]);
     test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
     return null;
@@ -375,11 +489,26 @@ function ordinarMessage( test )
     return null;
   })
 
-  /* AsyncCompetitorHanding : 1, AsyncResourceAdding : 0 */
+  que.finally( () =>
+  {
+    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+    _.Consequence.AsyncModeSet( amode );
+    return null;
+  })
+  return que;
+}
+
+//
+
+function ordinarMessageSingleErr_1_0( test )
+{
+  var c = this;
+  var amode = _.Consequence.AsyncModeGet();
+
+  var que = new _.Consequence().take( null )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
     _.Consequence.AsyncModeSet([ 1, 0 ]);
     test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
     return null;
@@ -405,11 +534,26 @@ function ordinarMessage( test )
     })
   })
 
-  /* AsyncCompetitorHanding : 0, AsyncResourceAdding : 1 */
+  que.finally( () =>
+  {
+    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
+    _.Consequence.AsyncModeSet( amode );
+    return null;
+  })
+  return que;
+}
+
+//
+
+function ordinarMessageSingleErr_0_1( test )
+{
+  var c = this;
+  var amode = _.Consequence.AsyncModeGet();
+
+  var que = new _.Consequence().take( null )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
     _.Consequence.AsyncModeSet([ 0, 1 ]);
     test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
     return null;
@@ -440,11 +584,26 @@ function ordinarMessage( test )
     })
   })
 
-  /* AsyncCompetitorHanding : 1, AsyncResourceAdding : 1 */
+  que.finally( () =>
+  {
+    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
+    _.Consequence.AsyncModeSet( amode );
+    return null;
+  })
+  return que;
+}
+
+//
+
+function ordinarMessageSingleErr_1_1( test )
+{
+  var c = this;
+  var amode = _.Consequence.AsyncModeGet();
+
+  var que = new _.Consequence().take( null )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
     _.Consequence.AsyncModeSet([ 1, 1 ]);
     test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
     return null;
@@ -469,13 +628,26 @@ function ordinarMessage( test )
     })
   });
 
-  test.case = 'give several error resources';
-
-  /* AsyncCompetitorHanding : 0, AsyncResourceAdding : 0 */
-
   que.finally( () =>
   {
     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
+    _.Consequence.AsyncModeSet( amode );
+    return null;
+  })
+  return que;
+}
+
+//
+
+function ordinarMessageSeveralErr_0_0( test )
+{
+  var c = this;
+  var amode = _.Consequence.AsyncModeGet();
+
+  var que = new _.Consequence().take( null )
+
+  .finally( () =>
+  {
     _.Consequence.AsyncModeSet([ 0, 0 ]);
     test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
     return null;
@@ -483,7 +655,7 @@ function ordinarMessage( test )
 
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 0 });
     con.error( 'err1' ).error( 'err2' ).error( 'err3' );
     test.identical( con.resourcesGet().length, 3 );
     con.give( ( err, got ) => test.identical( err, 'err1' ) );
@@ -494,11 +666,26 @@ function ordinarMessage( test )
     return null;
   })
 
-  /* AsyncCompetitorHanding : 1, AsyncResourceAdding : 0 */
+  que.finally( () =>
+  {
+    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+    _.Consequence.AsyncModeSet( amode );
+    return null;
+  })
+  return que;
+}
+
+//
+
+function ordinarMessageSeveralErr_1_0( test )
+{
+  var c = this;
+  var amode = _.Consequence.AsyncModeGet();
+
+  var que = new _.Consequence().take( null )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
     _.Consequence.AsyncModeSet([ 1, 0 ]);
     test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
     return null;
@@ -506,7 +693,7 @@ function ordinarMessage( test )
 
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 0 });
     con.error( 'err1' ).error( 'err2' ).error( 'err3' );
     con.give( ( err, got ) => test.identical( err, 'err1' ) );
     con.give( ( err, got ) => test.identical( err, 'err2' ) );
@@ -521,11 +708,26 @@ function ordinarMessage( test )
     })
   })
 
-  /* AsyncCompetitorHanding : 0, AsyncResourceAdding : 1 */
+  que.finally( () =>
+  {
+    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
+    _.Consequence.AsyncModeSet( amode );
+    return null;
+  })
+  return que;
+}
+
+//
+
+function ordinarMessageSeveralErr_0_1( test )
+{
+  var c = this;
+  var amode = _.Consequence.AsyncModeGet();
+
+  var que = new _.Consequence().take( null )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
     _.Consequence.AsyncModeSet([ 0, 1 ]);
     test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
     return null;
@@ -533,7 +735,7 @@ function ordinarMessage( test )
 
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 0 });
     con.error( 'err1' ).error( 'err2' ).error( 'err3' );
 
     return _.timeOut( 1, function()
@@ -554,11 +756,26 @@ function ordinarMessage( test )
     })
   })
 
-  /* AsyncCompetitorHanding : 1, AsyncResourceAdding : 1 */
+  que.finally( () =>
+  {
+    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
+    _.Consequence.AsyncModeSet( amode );
+    return null;
+  })
+  return que;
+}
+
+//
+
+function ordinarMessageSeveralErr_1_1( test )
+{
+  var c = this;
+  var amode = _.Consequence.AsyncModeGet();
+
+  var que = new _.Consequence().take( null )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
     _.Consequence.AsyncModeSet([ 1, 1 ]);
     test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
     return null;
@@ -566,7 +783,7 @@ function ordinarMessage( test )
 
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 0 });
     con.error( 'err1' ).error( 'err2' ).error( 'err3' );
     con.give( ( err, got ) => test.identical( err, 'err1' ) );
     con.give( ( err, got ) => test.identical( err, 'err2' ) );
@@ -581,8 +798,6 @@ function ordinarMessage( test )
     })
   });
 
-  /* */
-
   que.finally( () =>
   {
     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
@@ -592,7 +807,10 @@ function ordinarMessage( test )
   return que;
 }
 
-//
+//--
+// finallyPromiseGive
+//--
+
 
 function finallyPromiseGive( test )
 {
@@ -9679,7 +9897,28 @@ var Self =
     clone,
 
     trivial,
-    ordinarMessage,
+
+    // ordinarMessage
+
+    ordinarMessageSingleRes_0_0,
+    ordinarMessageSingleRes_1_0,
+    ordinarMessageSingleRes_0_1,
+    ordinarMessageSingleRes_1_1,
+
+    ordinarMessageSeveralRes_0_0,
+    ordinarMessageSeveralRes_1_0,
+    ordinarMessageSeveralRes_0_1,
+    ordinarMessageSeveralRes_1_1,
+
+    ordinarMessageSingleErr_0_0,
+    ordinarMessageSingleErr_1_0,
+    ordinarMessageSingleErr_0_1,
+    ordinarMessageSingleErr_1_1,
+
+    ordinarMessageSeveralErr_0_0,
+    ordinarMessageSeveralErr_1_0,
+    ordinarMessageSeveralErr_0_1,
+    ordinarMessageSeveralErr_1_1,
 
     finallyPromiseGive,
 
