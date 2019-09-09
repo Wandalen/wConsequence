@@ -216,12 +216,15 @@ function init( o )
     {
       _.assertMapHasOnly( o, self.Composes );
     }
+    if( o._resources )
+    o._resources = o._resources.slice();
+    if( o._competitorsEarly )
+    o._competitorsEarly = o._competitorsEarly.slice();
+    if( o._competitorsLate )
+    o._competitorsLate = o._competitorsLate.slice();
     _.mapExtend( self, o );
     // self.copy( o );
   }
-
-  if( self.tag === 'openedReady' )
-  debugger;
 
   if( Config.debug )
   {

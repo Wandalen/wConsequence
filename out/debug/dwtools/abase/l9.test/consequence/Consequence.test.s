@@ -36,6 +36,9 @@ function clone( test )
   test.identical( con2.nickName, 'Consequence::con1' );
   test.identical( con2.infoExport({ verbosity : 1 }), 'Consequence::con1 1 / 0' );
   test.identical( con2.capacity, 2 );
+  test.is( con1._resources !== con2._resources );
+  test.is( con1._competitorsEarly !== con2._competitorsEarly );
+  test.is( con1._competitorsLate !== con2._competitorsLate );
 
   test.case = 'consequence with competitor';
   var con1 = new _.Consequence({ tag : 'con1', capacity : 2 });
@@ -52,6 +55,9 @@ function clone( test )
   test.identical( con2.nickName, 'Consequence::con1' );
   test.identical( con2.infoExport({ verbosity : 1 }), 'Consequence::con1 0 / 1' );
   test.identical( con2.capacity, 2 );
+  test.is( con1._resources !== con2._resources );
+  test.is( con1._competitorsEarly !== con2._competitorsEarly );
+  test.is( con1._competitorsLate !== con2._competitorsLate );
 
 }
 
