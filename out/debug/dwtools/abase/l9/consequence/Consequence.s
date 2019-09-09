@@ -170,7 +170,7 @@ wConsequence.shortName = 'Consequence';
 
 /**
  * Initialises instance of wConsequence
- * @param {Object|Function|wConsequence} [o] initialization options
+ * @param {Object|wConsequence} [o] initialization options
  * @private
  * @method init
  * @memberof module:Tools/base/Consequence.wConsequence#
@@ -179,6 +179,10 @@ wConsequence.shortName = 'Consequence';
 function init( o )
 {
   let self = this;
+
+  // if( o )
+  // if( o.tag === 'openedReady' )
+  // debugger;
 
   // self._competitorsEarly = [];
   // self._competitorsLate = [];
@@ -190,7 +194,7 @@ function init( o )
   {
     // self.tag = self.Composes.tag;
     // self.id = _.procedure.indexAlloc();
-    // self.dependsOf = [];
+    // self._dependsOf = [];
     // self.sourcePath = null;
   }
 
@@ -202,7 +206,6 @@ function init( o )
     {
       delete o.tag;
       delete o.capacity;
-      delete o.dependsOf;
       delete o.sourcePath;
     }
     if( o instanceof Self )
@@ -216,6 +219,9 @@ function init( o )
     _.mapExtend( self, o );
     // self.copy( o );
   }
+
+  if( self.tag === 'openedReady' )
+  debugger;
 
   if( Config.debug )
   {
@@ -1586,7 +1592,7 @@ function _and( o )
       if( _.arrayHas( competitors2, competitor ) )
       continue;
       competitor.assertNoDeadLockWith( self );
-      _.arrayAppendOnceStrictly( self.dependsOf, competitor );
+      _.arrayAppendOnceStrictly( self._dependsOf, competitor );
       competitors2.push( competitor );
     }
 
@@ -1645,8 +1651,8 @@ function _and( o )
       if( Config.debug && self.Diagnostics )
       {
         competitor.assertNoDeadLockWith( self );
-        _.assert( !_.arrayHas( self.dependsOf, competitor ) );
-        _.arrayAppendOnceStrictly( self.dependsOf, competitor );
+        _.assert( !_.arrayHas( self._dependsOf, competitor ) );
+        _.arrayAppendOnceStrictly( self._dependsOf, competitor );
       }
 
       let r = __got;
@@ -1683,7 +1689,7 @@ function _and( o )
     if( first < competitors.length-1 )
     if( _.consequenceIs( this ) )
     {
-      _.arrayRemoveElementOnceStrictly( self.dependsOf, this );
+      _.arrayRemoveElementOnceStrictly( self._dependsOf, this );
     }
 
     _.assert( count >= 0 );
@@ -2709,7 +2715,7 @@ function __handleResourceNow()
     if( self.Diagnostics )
     {
       if( isConsequence )
-      _.arrayRemoveElementOnceStrictly( competitor.competitorRoutine.dependsOf, self );
+      _.arrayRemoveElementOnceStrictly( competitor.competitorRoutine._dependsOf, self );
     }
 
     if( isConsequence )
@@ -2871,7 +2877,7 @@ function _competitorAppend( o )
     if( self.Diagnostics )
     {
       self.assertNoDeadLockWith( competitorRoutine );
-      competitorRoutine.dependsOf.push( self );
+      competitorRoutine._dependsOf.push( self );
     }
 
     if( self.Diagnostics && self.Stacking )
@@ -2948,14 +2954,14 @@ function dependencyChainFor( competitor )
 
     _.assert( _.consequenceIs( con1 ) );
 
-    if( !con1.dependsOf )
+    if( !con1._dependsOf )
     return null;
     if( con1 === con2 )
     return [ con1 ];
 
-    for( let c = 0 ; c < con1.dependsOf.length ; c++ )
+    for( let c = 0 ; c < con1._dependsOf.length ; c++ )
     {
-      let con1b = con1.dependsOf[ c ];
+      let con1b = con1._dependsOf[ c ];
       if( _.consequenceIs( con1b ) )
       {
         let chain = look( con1b, con2, visited );
@@ -2984,12 +2990,12 @@ function doesDependOf( competitor )
 
   return !!chain;
 
-  // if( !self.dependsOf )
+  // if( !self._dependsOf )
   // return false;
   //
-  // for( let c = 0 ; c < self.dependsOf.length ; c++ )
+  // for( let c = 0 ; c < self._dependsOf.length ; c++ )
   // {
-  //   let cor = self.dependsOf[ c ];
+  //   let cor = self._dependsOf[ c ];
   //   if( cor === competitor )
   //   return true;
   //   if( _.consequenceIs( cor ) )
@@ -4345,7 +4351,7 @@ function after( resource )
  * @property {wProcedure} _procedure=null Instance of wProcedure.
  * @property {String} tag
  * @property {Number} id Id of current instance
- * @property {Array} dependsOf=[]
+ * @property {Array} _dependsOf=[]
  * @property {Number} capacity=0 Maximal number of resources. Unlimited by default.
  * @property {String} sourcePath Path to source file were wConsequence instance was created.
  * @memberof module:Tools/base/Consequence.wConsequence
@@ -4355,6 +4361,7 @@ function after( resource )
 // relations
 // --
 
+/*
 let Composes =
 {
   _competitorsEarly : null,
@@ -4367,8 +4374,7 @@ let Composes =
 let ComposesDebug =
 {
   tag : '',
-  // id : null,
-  dependsOf : null,
+  _dependsOf : null,
   sourcePath : null,
 }
 
@@ -4382,11 +4388,46 @@ let Associates =
 let Restricts =
 {
 }
+*/
+
+let Composes =
+{
+  capacity : 1,
+  _resources : null,
+  _competitorsEarly : null,
+  _competitorsLate : null,
+}
+
+let ComposesDebug =
+{
+  tag : '',
+  sourcePath : null,
+}
+
+if( Config.debug )
+_.mapExtend( Composes, ComposesDebug );
+
+let Aggregates =
+{
+}
+
+let Restricts =
+{
+  _procedure : null,
+}
+
+let RestrictsDebug =
+{
+  _dependsOf : null,
+}
+
+if( Config.debug )
+_.mapExtend( Restricts, RestrictsDebug );
 
 let Medials =
 {
   tag : '',
-  dependsOf : [],
+  sourcePath : null,
 }
 
 let Statics =
@@ -4427,6 +4468,7 @@ let Forbids =
   _competitor : '_competitor',
   _competitorPersistent : '_competitorPersistent',
   id : 'id',
+  dependsOf : 'dependsOf',
 }
 
 let Accessors =
@@ -4444,7 +4486,7 @@ let DebugAccessors =
   tag : { getter : _defGetter_functor( 'tag', null ) },
   // id : { getter : _defGetter_functor( 'id', null ) },
   sourcePath : { getter : _defGetter_functor( 'sourcePath', null ) },
-  dependsOf : { getter : _arrayGetter_functor( 'dependsOf' ) },
+  _dependsOf : { getter : _arrayGetter_functor( '_dependsOf' ) },
 }
 
 if( Config.debug )
@@ -4633,7 +4675,7 @@ let Extend =
   // relations
 
   Composes,
-  Associates,
+  Aggregates,
   Restricts,
   Medials,
   Forbids,

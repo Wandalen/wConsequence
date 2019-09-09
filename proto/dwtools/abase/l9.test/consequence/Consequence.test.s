@@ -18,6 +18,45 @@ var _ = _global_.wTools;
 // test
 // --
 
+function clone( test )
+{
+  var self = this;
+
+  test.case = 'consequence with resource';
+  var con1 = new _.Consequence({ tag : 'con1', capacity : 2 });
+  con1.take( 'arg1' );
+  var con2 = con1.clone();
+  test.identical( con1.argumentsCount(), 1 );
+  test.identical( con1.competitorsCount(), 0 );
+  test.identical( con1.nickName, 'Consequence::con1' );
+  test.identical( con1.infoExport({ verbosity : 1 }), 'Consequence::con1 1 / 0' );
+  test.identical( con1.capacity, 2 );
+  test.identical( con2.argumentsCount(), 1 );
+  test.identical( con2.competitorsCount(), 0 );
+  test.identical( con2.nickName, 'Consequence::con1' );
+  test.identical( con2.infoExport({ verbosity : 1 }), 'Consequence::con1 1 / 0' );
+  test.identical( con2.capacity, 2 );
+
+  test.case = 'consequence with competitor';
+  var con1 = new _.Consequence({ tag : 'con1', capacity : 2 });
+  var f = function f(){};
+  con1.then( f );
+  var con2 = con1.clone();
+  test.identical( con1.argumentsCount(), 0 );
+  test.identical( con1.competitorsCount(), 1 );
+  test.identical( con1.nickName, 'Consequence::con1' );
+  test.identical( con1.infoExport({ verbosity : 1 }), 'Consequence::con1 0 / 1' );
+  test.identical( con1.capacity, 2 );
+  test.identical( con2.argumentsCount(), 0 );
+  test.identical( con2.competitorsCount(), 1 );
+  test.identical( con2.nickName, 'Consequence::con1' );
+  test.identical( con2.infoExport({ verbosity : 1 }), 'Consequence::con1 0 / 1' );
+  test.identical( con2.capacity, 2 );
+
+}
+
+//
+
 function trivial( test )
 {
   var self = this;
@@ -2943,12 +2982,12 @@ function notDeadLock1( test )
 
   var got = [];
 
-  test.identical( con1.dependsOf, [] );
-  test.identical( con2.dependsOf, [] );
+  test.identical( con1._dependsOf, [] );
+  test.identical( con2._dependsOf, [] );
   con1.then( con2 );
 
-  test.identical( con1.dependsOf, [] );
-  test.identical( con2.dependsOf, [ con1 ] );
+  test.identical( con1._dependsOf, [] );
+  test.identical( con2._dependsOf, [ con1 ] );
   con2.then( con1 );
 
   con1.then( ( arg ) => got.push( arg+1 ) );
@@ -2967,8 +3006,8 @@ function notDeadLock1( test )
   con1.cancel();
   con2.cancel();
 
-  test.identical( con1.dependsOf, [] );
-  test.identical( con2.dependsOf, [] );
+  test.identical( con1._dependsOf, [] );
+  test.identical( con2._dependsOf, [] );
 
   con2.take( 0 );
   con1.then( con2 );
@@ -2988,12 +3027,12 @@ function notDeadLock1( test )
   con1.cancel();
   con2.cancel();
 
-  test.identical( con1.dependsOf, [] );
-  test.identical( con2.dependsOf, [] );
+  test.identical( con1._dependsOf, [] );
+  test.identical( con2._dependsOf, [] );
   con1.thenGive( con2 );
 
-  test.identical( con1.dependsOf, [] );
-  test.identical( con2.dependsOf, [ con1 ] );
+  test.identical( con1._dependsOf, [] );
+  test.identical( con2._dependsOf, [ con1 ] );
   con2.then( con1 );
 
   con1.thenGive( ( arg ) => got.push( arg+1 ) );
@@ -3026,35 +3065,35 @@ function andNotDeadLock( test )
   {
     let currentReady = new _.Consequence();
 
-    test.identical( currentReady.dependsOf, [] );
+    test.identical( currentReady._dependsOf, [] );
     if( c === 1 )
-    test.identical( prevReady.dependsOf, [ ready ] );
+    test.identical( prevReady._dependsOf, [ ready ] );
     else
-    test.identical( prevReady.dependsOf, [] );
+    test.identical( prevReady._dependsOf, [] );
 
     readies.push( currentReady );
     prevReady.then( currentReady );
 
-    test.identical( currentReady.dependsOf, [ prevReady ] );
+    test.identical( currentReady._dependsOf, [ prevReady ] );
     if( c === 1 )
-    test.identical( prevReady.dependsOf, [ ready ] );
+    test.identical( prevReady._dependsOf, [ ready ] );
     else
-    test.identical( prevReady.dependsOf, [] );
+    test.identical( prevReady._dependsOf, [] );
 
     prevReady = currentReady;
     currentReady.then( () => c );
   }
 
-  test.identical( ready.dependsOf, [] );
-  test.identical( readies[ 0 ].dependsOf, [ ready ] );
-  test.identical( readies[ 1 ].dependsOf, [ readies[ 0 ] ] );
+  test.identical( ready._dependsOf, [] );
+  test.identical( readies[ 0 ]._dependsOf, [ ready ] );
+  test.identical( readies[ 1 ]._dependsOf, [ readies[ 0 ] ] );
 
   ready.take( null );
   ready.andKeep( readies );
 
-  test.identical( ready.dependsOf, [] );
-  test.identical( readies[ 0 ].dependsOf, [] );
-  test.identical( readies[ 1 ].dependsOf, [] );
+  test.identical( ready._dependsOf, [] );
+  test.identical( readies[ 0 ]._dependsOf, [] );
+  test.identical( readies[ 1 ]._dependsOf, [] );
 
   ready.finally( ( err, arg ) =>
   {
@@ -3397,7 +3436,7 @@ function andKeepDuplicates( test )
       test.identical( err, undefined );
       test.identical( arg, [ 3, 3, 1, 2, 2, 2, 1, null ] );
       if( Config.debug )
-      test.identical( con.dependsOf.length, 0 );
+      test.identical( con._dependsOf.length, 0 );
       test.identical( con1.infoExport({ verbosity : 1 }), 'Consequence::con1 1 / 0' );
       test.identical( con2.infoExport({ verbosity : 1 }), 'Consequence::con2 1 / 0' );
       test.identical( con3.infoExport({ verbosity : 1 }), 'Consequence::con3 1 / 0' );
@@ -3448,7 +3487,7 @@ function andKeepDuplicates( test )
       test.identical( err, undefined );
       test.identical( arg, [ 3, 3, 1, 2, 2, 2, 1, null ] );
       if( Config.debug )
-      test.identical( con.dependsOf.length, 0 );
+      test.identical( con._dependsOf.length, 0 );
 
       test.identical( con1.infoExport({ verbosity : 1 }), 'Consequence::con1 1 / 0' );
       test.identical( con2.infoExport({ verbosity : 1 }), 'Consequence::con2 1 / 0' );
@@ -9630,6 +9669,8 @@ var Self =
 
   tests :
   {
+
+    clone,
 
     trivial,
     ordinarMessage,
