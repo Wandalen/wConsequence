@@ -122,7 +122,7 @@ function ordinarMessageSingleRes_0_0( test )
   .finally( () =>
   {
     _.Consequence.AsyncModeSet([ 0, 0 ]);
-    test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+    test.case = 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0';
     return null;
   })
   .thenKeep( function( arg )
@@ -142,7 +142,6 @@ function ordinarMessageSingleRes_0_0( test )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
     _.Consequence.AsyncModeSet( amode );
     return null;
   })
@@ -160,7 +159,7 @@ function ordinarMessageSingleRes_1_0( test )
   .finally( () =>
   {
     _.Consequence.AsyncModeSet([ 1, 0 ]);
-    test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
+    test.case = 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0';
     return null;
   })
 
@@ -186,7 +185,6 @@ function ordinarMessageSingleRes_1_0( test )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
     _.Consequence.AsyncModeSet( amode );
     return null;
   })
@@ -204,7 +202,7 @@ function ordinarMessageSingleRes_0_1( test )
   .finally( () =>
   {
     _.Consequence.AsyncModeSet([ 0, 1 ]);
-    test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
+    test.case = 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1'
     return null;
   })
 
@@ -234,7 +232,6 @@ function ordinarMessageSingleRes_0_1( test )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
     _.Consequence.AsyncModeSet( amode );
     return null;
   })
@@ -252,7 +249,7 @@ function ordinarMessageSingleRes_1_1( test )
   .finally( () =>
   {
     _.Consequence.AsyncModeSet([ 1, 1 ]);
-    test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
+    test.case = 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1'
     return null;
   })
 
@@ -277,7 +274,6 @@ function ordinarMessageSingleRes_1_1( test )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
     _.Consequence.AsyncModeSet( amode );
     return null;
   })
@@ -292,15 +288,15 @@ function ordinarMessageSeveralRes_0_0( test )
   var amode = _.Consequence.AsyncModeGet();
   var que = new _.Consequence().take( null )
 
-  .finally( () =>
+  que.finally( () =>
   {
     _.Consequence.AsyncModeSet([ 0, 0 ]);
-    test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+    test.case = 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0';
     return null;
   })
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con', capacity : 0 });
+    var con = new _.Consequence({ tag : 'con' });
     con.take( 1 ).take( 2 ).take( 3 );
     test.identical( con.resourcesGet().length, 3 );
     con.give( ( err, got ) => test.identical( got, 1 ) );
@@ -313,12 +309,70 @@ function ordinarMessageSeveralRes_0_0( test )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
     _.Consequence.AsyncModeSet( amode );
     return null;
   })
   return que;
 }
+
+//
+
+function ordinarMessageSeveralExperiment( test )
+{
+  var c = this;
+  var amode = _.Consequence.AsyncModeGet();
+  var que = new _.Consequence().take( null )
+
+  que.finally( () =>
+  {
+    _.Consequence.AsyncModeSet([ 0, 0 ]);
+    test.case = 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0';
+    return null;
+  })
+  .thenKeep( function( arg )
+  {
+    var con = new _.Consequence({ tag : 'con' });
+    con.take( 1 ).take( 2 ).take( 3 );
+    test.identical( con.resourcesGet().length, 3 );
+    return null;
+  })
+
+  /* */
+
+  // Uncomment and test will pass
+
+  // .finally( () =>
+  // {
+  //   _.Consequence.AsyncModeSet([ 1, 1 ]);
+  //   test.case = 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1'
+  //   return null;
+  // })
+  //
+  // .thenKeep( function( arg )
+  // {
+  //   var con = new _.Consequence({ tag : 'con' });
+  //   con.take( 1 );
+  //   con.give( function( err, got )
+  //   {
+  //     test.identical( err, undefined )
+  //   })
+  //   test.identical( con.resourcesGet().length, 1 );
+  //   return _.timeOut( 1, function()
+  //   {
+  //     test.identical( con.competitorsEarlyGet().length, 0 );
+  //     return null;
+  //   })
+  // })
+
+  .finally( () =>
+  {
+    _.Consequence.AsyncModeSet( amode );
+    return null;
+  })
+  return que;
+}
+
+ordinarMessageSeveralExperiment.experimental = 1;
 
 //
 
@@ -331,13 +385,13 @@ function ordinarMessageSeveralRes_1_0( test )
   .finally( () =>
   {
     _.Consequence.AsyncModeSet([ 1, 0 ]);
-    test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
+    test.case = 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0'
     return null;
   })
 
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con', capacity : 0 });
+    var con = new _.Consequence({ tag : 'con' });
     con.take( 1 ).take( 2 ).take( 3 );
     con.give( ( err, got ) => test.identical( got, 1 ) );
     con.give( ( err, got ) => test.identical( got, 2 ) );
@@ -354,7 +408,6 @@ function ordinarMessageSeveralRes_1_0( test )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
     _.Consequence.AsyncModeSet( amode );
     return null;
   })
@@ -372,13 +425,13 @@ function ordinarMessageSeveralRes_0_1( test )
   .finally( () =>
   {
     _.Consequence.AsyncModeSet([ 0, 1 ]);
-    test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
+    test.case = 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1'
     return null;
   })
 
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con', capacity : 0 });
+    var con = new _.Consequence({ tag : 'con' });
     con.take( 1 ).take( 2 ).take( 3 );
 
     return _.timeOut( 1, function()
@@ -400,7 +453,6 @@ function ordinarMessageSeveralRes_0_1( test )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
     _.Consequence.AsyncModeSet( amode );
     return null;
   })
@@ -418,13 +470,13 @@ function ordinarMessageSeveralRes_1_1( test )
   .finally( () =>
   {
     _.Consequence.AsyncModeSet([ 1, 1 ]);
-    test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
+    test.case = 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1'
     return null;
   })
 
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con', capacity : 0 });
+    var con = new _.Consequence({ tag : 'con' });
     con.take( 1 ).take( 2 ).take( 3 );
     con.give( ( err, got ) => test.identical( got, 1 ) );
     con.give( ( err, got ) => test.identical( got, 2 ) );
@@ -441,7 +493,6 @@ function ordinarMessageSeveralRes_1_1( test )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
     _.Consequence.AsyncModeSet( amode );
     return null;
   })
@@ -459,7 +510,7 @@ function ordinarMessageSingleErr_0_0( test )
   .finally( () =>
   {
     _.Consequence.AsyncModeSet([ 0, 0 ]);
-    test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+    test.case = 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0'
     return null;
   })
 
@@ -480,7 +531,6 @@ function ordinarMessageSingleErr_0_0( test )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
     _.Consequence.AsyncModeSet( amode );
     return null;
   })
@@ -498,7 +548,7 @@ function ordinarMessageSingleErr_1_0( test )
   .finally( () =>
   {
     _.Consequence.AsyncModeSet([ 1, 0 ]);
-    test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
+    test.case = 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0'
     return null;
   })
 
@@ -524,7 +574,6 @@ function ordinarMessageSingleErr_1_0( test )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
     _.Consequence.AsyncModeSet( amode );
     return null;
   })
@@ -542,7 +591,7 @@ function ordinarMessageSingleErr_0_1( test )
   .finally( () =>
   {
     _.Consequence.AsyncModeSet([ 0, 1 ]);
-    test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
+    test.case = 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1'
     return null;
   })
 
@@ -572,7 +621,6 @@ function ordinarMessageSingleErr_0_1( test )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
     _.Consequence.AsyncModeSet( amode );
     return null;
   })
@@ -590,7 +638,7 @@ function ordinarMessageSingleErr_1_1( test )
   .finally( () =>
   {
     _.Consequence.AsyncModeSet([ 1, 1 ]);
-    test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
+    test.case = 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1'
     return null;
   })
 
@@ -615,7 +663,6 @@ function ordinarMessageSingleErr_1_1( test )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
     _.Consequence.AsyncModeSet( amode );
     return null;
   })
@@ -633,13 +680,13 @@ function ordinarMessageSeveralErr_0_0( test )
   .finally( () =>
   {
     _.Consequence.AsyncModeSet([ 0, 0 ]);
-    test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+    test.case = 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0'
     return null;
   })
 
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con', capacity : 0 });
+    var con = new _.Consequence({ tag : 'con' });
     con.error( 'err1' ).error( 'err2' ).error( 'err3' );
     test.identical( con.resourcesGet().length, 3 );
     con.give( ( err, got ) => test.identical( err, 'err1' ) );
@@ -652,7 +699,6 @@ function ordinarMessageSeveralErr_0_0( test )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
     _.Consequence.AsyncModeSet( amode );
     return null;
   })
@@ -670,13 +716,13 @@ function ordinarMessageSeveralErr_1_0( test )
   .finally( () =>
   {
     _.Consequence.AsyncModeSet([ 1, 0 ]);
-    test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
+    test.case = 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0'
     return null;
   })
 
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con', capacity : 0 });
+    var con = new _.Consequence({ tag : 'con' });
     con.error( 'err1' ).error( 'err2' ).error( 'err3' );
     con.give( ( err, got ) => test.identical( err, 'err1' ) );
     con.give( ( err, got ) => test.identical( err, 'err2' ) );
@@ -693,7 +739,6 @@ function ordinarMessageSeveralErr_1_0( test )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
     _.Consequence.AsyncModeSet( amode );
     return null;
   })
@@ -711,13 +756,13 @@ function ordinarMessageSeveralErr_0_1( test )
   .finally( () =>
   {
     _.Consequence.AsyncModeSet([ 0, 1 ]);
-    test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
+    test.case = 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1'
     return null;
   })
 
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con', capacity : 0 });
+    var con = new _.Consequence({ tag : 'con' });
     con.error( 'err1' ).error( 'err2' ).error( 'err3' );
 
     return _.timeOut( 1, function()
@@ -739,7 +784,6 @@ function ordinarMessageSeveralErr_0_1( test )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
     _.Consequence.AsyncModeSet( amode );
     return null;
   })
@@ -757,13 +801,13 @@ function ordinarMessageSeveralErr_1_1( test )
   .finally( () =>
   {
     _.Consequence.AsyncModeSet([ 1, 1 ]);
-    test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
+    test.case = 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1'
     return null;
   })
 
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con', capacity : 0 });
+    var con = new _.Consequence({ tag : 'con' });
     con.error( 'err1' ).error( 'err2' ).error( 'err3' );
     con.give( ( err, got ) => test.identical( err, 'err1' ) );
     con.give( ( err, got ) => test.identical( err, 'err2' ) );
@@ -780,7 +824,6 @@ function ordinarMessageSeveralErr_1_1( test )
 
   .finally( () =>
   {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
     _.Consequence.AsyncModeSet( amode );
     return null;
   })
@@ -790,7 +833,6 @@ function ordinarMessageSeveralErr_1_1( test )
 //--
 // finallyPromiseGive
 //--
-
 
 function finallyPromiseGive( test )
 {
@@ -3019,7 +3061,7 @@ function tapHandling( test )
 //     test.identical( got, expected );
 //   } )( testCheck1 );
 
-//   /**/
+//   /* */
 
 //   test.case = 'single err in give sequence, and single taker : attached taker after value resolved';
 //   ( function( { givSequence, got, expected }  )
@@ -3043,7 +3085,7 @@ function tapHandling( test )
 //     test.identical( got, expected );
 //   } )( testCheck2 );
 
-//   /**/
+//   /* */
 
 //   test.case = 'test tap in chain';
 
@@ -8474,7 +8516,7 @@ function first_0_0( test )
   .thenKeep( function( arg )
   {
     test.case = 'simplest, empty routine';
-    var con = new _.Consequence({ tag : 'con', capacity : 0 });
+    var con = new _.Consequence({ tag : 'con' });
     con.first( () => null );
     con.take( testMsg );
     con.finally( function( err, got )
@@ -8486,7 +8528,7 @@ function first_0_0( test )
     return con;
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -8503,7 +8545,7 @@ function first_0_0( test )
     return con;
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -8520,7 +8562,7 @@ function first_0_0( test )
     return con;
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -8537,7 +8579,7 @@ function first_0_0( test )
     return con;
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -8554,7 +8596,7 @@ function first_0_0( test )
     return con;
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -8576,7 +8618,7 @@ function first_0_0( test )
     return con;
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -8614,7 +8656,7 @@ function first_0_0( test )
     return con;
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -8668,7 +8710,7 @@ function first_1_0( test )
    .thenKeep( function( arg )
   {
     test.case = 'simplest, empty routine';
-    var con = new _.Consequence({ tag : 'con', capacity : 0 });
+    var con = new _.Consequence({ tag : 'con' });
     con.first( () => null );
     con.take( testMsg );
     con.give( function( err, got )
@@ -8686,7 +8728,7 @@ function first_1_0( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -8707,7 +8749,7 @@ function first_1_0( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -8729,7 +8771,7 @@ function first_1_0( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -8750,7 +8792,7 @@ function first_1_0( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -8771,7 +8813,7 @@ function first_1_0( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -8797,7 +8839,7 @@ function first_1_0( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -8839,7 +8881,7 @@ function first_1_0( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -8924,7 +8966,7 @@ function first_0_1( test )
 
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -8949,7 +8991,7 @@ function first_0_1( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -8980,7 +9022,7 @@ function first_0_1( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9009,7 +9051,7 @@ function first_0_1( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9039,7 +9081,7 @@ function first_0_1( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9073,7 +9115,7 @@ function first_0_1( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9119,7 +9161,7 @@ function first_0_1( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9200,7 +9242,7 @@ function first_1_1( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9225,7 +9267,7 @@ function first_1_1( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9248,7 +9290,7 @@ function first_1_1( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9270,7 +9312,7 @@ function first_1_1( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9292,7 +9334,7 @@ function first_1_1( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9319,7 +9361,7 @@ function first_1_1( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9368,7 +9410,7 @@ function first_1_1( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9414,7 +9456,7 @@ function from( test )
   var testMsg = 'value';
   var que = new _.Consequence().take( null )
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9425,7 +9467,7 @@ function from( test )
     return con;
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9437,7 +9479,7 @@ function from( test )
     return con.finally( () => null );
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9450,7 +9492,7 @@ function from( test )
     return con;
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9465,7 +9507,7 @@ function from( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9480,7 +9522,7 @@ function from( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9489,7 +9531,7 @@ function from( test )
     return null;
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9508,7 +9550,7 @@ function from( test )
     return con;
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9528,7 +9570,7 @@ function from( test )
     return con;
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9549,7 +9591,7 @@ function from( test )
     return con;
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9566,7 +9608,7 @@ function from( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9583,7 +9625,7 @@ function from( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9592,7 +9634,7 @@ function from( test )
     return null;
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9611,7 +9653,7 @@ function from( test )
     return con;
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9631,7 +9673,7 @@ function from( test )
     return con;
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9652,7 +9694,7 @@ function from( test )
     return con;
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9670,7 +9712,7 @@ function from( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9688,7 +9730,7 @@ function from( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9697,7 +9739,7 @@ function from( test )
     return null;
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9716,7 +9758,7 @@ function from( test )
     return con;
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9736,7 +9778,7 @@ function from( test )
     return con;
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9757,7 +9799,7 @@ function from( test )
     return con;
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9775,7 +9817,7 @@ function from( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9793,7 +9835,7 @@ function from( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9817,7 +9859,7 @@ function from( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9838,7 +9880,7 @@ function from( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9851,7 +9893,7 @@ function from( test )
     return null;
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -9869,7 +9911,7 @@ function from( test )
     })
   })
 
-  /**/
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -10264,6 +10306,7 @@ var Self =
     ordinarMessageSingleRes_1_1,
 
     ordinarMessageSeveralRes_0_0,
+    ordinarMessageSeveralExperiment,
     ordinarMessageSeveralRes_1_0,
     ordinarMessageSeveralRes_0_1,
     ordinarMessageSeveralRes_1_1,
@@ -10277,6 +10320,8 @@ var Self =
     ordinarMessageSeveralErr_1_0,
     ordinarMessageSeveralErr_0_1,
     ordinarMessageSeveralErr_1_1,
+
+    // finallyPromiseGive
 
     finallyPromiseGive,
 
