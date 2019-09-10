@@ -117,10 +117,6 @@ function trivial( test )
 
 //
 
-//--
-// ordinarMessage
-//--
-
 function ordinarMessageAsyncMode00( test )
 {
   var c = this;
@@ -161,7 +157,7 @@ function ordinarMessageAsyncMode00( test )
   })
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 3 });
     con.take( 1 ).take( 2 ).take( 3 );
     test.identical( con.resourcesGet().length, 3 );
     con.give( ( err, got ) => test.identical( got, 1 ) );
@@ -203,7 +199,7 @@ function ordinarMessageAsyncMode00( test )
   })
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 3 });
     con.error( 'err1' ).error( 'err2' ).error( 'err3' );
     test.identical( con.resourcesGet().length, 3 );
     con.give( ( err, got ) => test.identical( err, 'err1' ) );
@@ -221,12 +217,12 @@ function ordinarMessageAsyncMode00( test )
     test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
 
     _.Consequence.AsyncModeSet( amode );
-    return null;
-    /* Dmytro :
+
+
     if( err )
     throw err;
     return arg;
-    */
+
   })
   return que;
 }
@@ -278,7 +274,7 @@ function ordinarMessageAsyncMode10( test )
   })
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 3 });
     con.take( 1 ).take( 2 ).take( 3 );
     con.give( ( err, got ) => test.identical( got, 1 ) );
     con.give( ( err, got ) => test.identical( got, 2 ) );
@@ -329,7 +325,7 @@ function ordinarMessageAsyncMode10( test )
   })
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 3 });
     con.error( 'err1' ).error( 'err2' ).error( 'err3' );
     con.give( ( err, got ) => test.identical( err, 'err1' ) );
     con.give( ( err, got ) => test.identical( err, 'err2' ) );
@@ -351,12 +347,12 @@ function ordinarMessageAsyncMode10( test )
     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
 
     _.Consequence.AsyncModeSet( amode );
-    return null;
-    /* Dmytro :
+
+
     if( err )
     throw err;
     return arg;
-    */
+
   })
   return que;
 }
@@ -412,7 +408,7 @@ function ordinarMessageAsyncMode01( test )
   })
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 3 });
     con.take( 1 ).take( 2 ).take( 3 );
 
     return _.timeOut( 1, function()
@@ -472,7 +468,7 @@ function ordinarMessageAsyncMode01( test )
   })
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 3 });
     con.error( 'err1' ).error( 'err2' ).error( 'err3' );
 
     return _.timeOut( 1, function()
@@ -499,12 +495,12 @@ function ordinarMessageAsyncMode01( test )
     test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
 
     _.Consequence.AsyncModeSet( amode );
-    return null;
-    /* Dmytro :
+
+
     if( err )
     throw err;
     return arg;
-    */
+
   })
   return que;
 }
@@ -555,7 +551,7 @@ function ordinarMessageAsyncMode11( test )
   })
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 3 });
     con.take( 1 ).take( 2 ).take( 3 );
     con.give( ( err, got ) => test.identical( got, 1 ) );
     con.give( ( err, got ) => test.identical( got, 2 ) );
@@ -605,7 +601,7 @@ function ordinarMessageAsyncMode11( test )
   })
   .thenKeep( function( arg )
   {
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 3 });
     con.error( 'err1' ).error( 'err2' ).error( 'err3' );
     con.give( ( err, got ) => test.identical( err, 'err1' ) );
     con.give( ( err, got ) => test.identical( err, 'err2' ) );
@@ -627,12 +623,12 @@ function ordinarMessageAsyncMode11( test )
     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
 
     _.Consequence.AsyncModeSet( amode );
-    return null;
-    /* Dmytro :
+
+
     if( err )
     throw err;
     return arg;
-    */
+
   })
   return que;
 }
@@ -744,7 +740,7 @@ function finallyPromiseGiveAsyncMode00( test )
   .thenKeep( function( arg )
   {
     test.case = 'several resources';
-    var con = new _.Consequence({ capacity : 0 });
+    var con = new _.Consequence({ capacity : 3 });
     con.take( testMsg + 1 );
     con.take( testMsg + 2 );
     con.take( testMsg + 3 );
@@ -767,12 +763,12 @@ function finallyPromiseGiveAsyncMode00( test )
     test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
 
     _.Consequence.AsyncModeSet( amode );
-    return null;
-    /* Dmytro :
+
+
     if( err )
     throw err;
     return arg;
-    */
+
   })
   return que;
 }
@@ -846,7 +842,7 @@ function finallyPromiseGiveAsyncMode10( test )
   .thenKeep( function( arg )
   {
     test.case = 'async competitors adding, several resources';
-    var con = new _.Consequence({ capacity : 0 });
+    var con = new _.Consequence({ capacity : 3 });
     con.take( testMsg + 1 );
     con.take( testMsg + 2 );
     con.take( testMsg + 3 );
@@ -874,12 +870,12 @@ function finallyPromiseGiveAsyncMode10( test )
     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
 
     _.Consequence.AsyncModeSet( amode );
-    return null;
-    /* Dmytro :
+
+
     if( err )
     throw err;
     return arg;
-    */
+
   })
   return que;
 }
@@ -953,7 +949,7 @@ function finallyPromiseGiveAsyncMode01( test )
   .thenKeep( function( arg )
   {
     test.case = 'async resources adding, several resources';
-    var con = new _.Consequence({ capacity : 0 });
+    var con = new _.Consequence({ capacity : 3 });
     var promise = con.finallyPromiseGive();
     con.take( testMsg + 1 );
     con.take( testMsg + 2 );
@@ -981,12 +977,12 @@ function finallyPromiseGiveAsyncMode01( test )
     test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
 
     _.Consequence.AsyncModeSet( amode );
-    return null;
-    /* Dmytro :
+
+
     if( err )
     throw err;
     return arg;
-    */
+
   })
   return que;
 }
@@ -1060,7 +1056,7 @@ function finallyPromiseGiveAsyncMode11( test )
   .thenKeep( function( arg )
   {
     test.case = 'async competitors adding+resources adding several resources';
-    var con = new _.Consequence({ capacity : 0 });
+    var con = new _.Consequence({ capacity : 3 });
     con.take( testMsg + 1 );
     con.take( testMsg + 2 );
     con.take( testMsg + 3 );
@@ -1088,12 +1084,12 @@ function finallyPromiseGiveAsyncMode11( test )
     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
 
     _.Consequence.AsyncModeSet( amode );
-    return null;
-    /* Dmytro :
+
+
     if( err )
     throw err;
     return arg;
-    */
+
   })
   return que;
 }
@@ -2028,7 +2024,7 @@ function finallyPromiseKeepAsyncMode00( test )
   .thenKeep( function( arg )
   {
     test.case = 'several resources';
-    var con = new _.Consequence({ capacity : 0 });
+    var con = new _.Consequence({ capacity : 3 });
     con.take( testMsg + 1 );
     con.take( testMsg + 2 );
     con.take( testMsg + 3 );
@@ -2131,7 +2127,7 @@ function finallyPromiseKeepAsyncMode10( test )
   .thenKeep( function( arg )
   {
     test.case = 'async competitors adding, several resources';
-    var con = new _.Consequence({ capacity : 0 });
+    var con = new _.Consequence({ capacity : 3 });
     con.take( testMsg + 1 );
     con.take( testMsg + 2 );
     con.take( testMsg + 3 );
@@ -2239,7 +2235,7 @@ function finallyPromiseKeepAsyncMode01( test )
   .thenKeep( function( arg )
   {
     test.case = 'async resources adding, several resources';
-    var con = new _.Consequence({ capacity : 0 });
+    var con = new _.Consequence({ capacity : 3 });
     var promise = con.finallyPromiseKeep();
     con.take( testMsg + 1 );
     con.take( testMsg + 2 );
@@ -2347,7 +2343,7 @@ function finallyPromiseKeepAsyncMode11( test )
   .thenKeep( function( arg )
   {
     test.case = 'async competitors adding+resources adding, several resources';
-    var con = new _.Consequence({ capacity : 0 });
+    var con = new _.Consequence({ capacity : 3 });
     con.take( testMsg + 1 );
     con.take( testMsg + 2 );
     con.take( testMsg + 3 );
@@ -3196,7 +3192,7 @@ function timeOut( test )
   {
     test.case = 'test timeOut in chain';
     var delay = 0;
-    var con = new _.Consequence({ capacity : 0 });
+    var con = new _.Consequence({ capacity : 3 });
     con.take( testMsg );
     con.take( testMsg + 1 );
     con.take( testMsg + 2 );
@@ -8145,7 +8141,6 @@ put.experimental = 0;
 // first
 //--
 
-
 function firstAsyncMode00( test )
 {
   var c = this;
@@ -8165,7 +8160,7 @@ function firstAsyncMode00( test )
   .thenKeep( function( arg )
   {
     test.case = 'simplest, empty routine';
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 2 });
     con.first( () => null );
     con.take( testMsg );
     con.finally( function( err, got )
@@ -8182,7 +8177,7 @@ function firstAsyncMode00( test )
   .thenKeep( function( arg )
   {
     test.case = 'routine returns something';
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 2 });
     con.first( () => testMsg );
     con.take( testMsg + 2 );
     con.finally( function( err, got )
@@ -8334,12 +8329,12 @@ function firstAsyncMode00( test )
     test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
 
     _.Consequence.AsyncModeSet( amode );
-    return null;
-    /* Dmytro : has the same problem as ordinarMessage
+
+
     if( err )
     throw err;
     return arg;
-    */
+
   })
   return que;
 }
@@ -8362,10 +8357,10 @@ function firstAsyncMode10( test )
 
   /* */
 
-   .thenKeep( function( arg )
+  .thenKeep( function( arg )
   {
     test.case = 'simplest, empty routine';
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 2 });
     con.first( () => null );
     con.take( testMsg );
     con.give( function( err, got )
@@ -8388,7 +8383,7 @@ function firstAsyncMode10( test )
   .thenKeep( function( arg )
   {
     test.case = 'routine returns something';
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 2 });
     con.first( () => testMsg );
     con.take( testMsg + 2 );
     con.give( function( err, got )
@@ -8571,12 +8566,12 @@ function firstAsyncMode10( test )
     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
 
     _.Consequence.AsyncModeSet( amode );
-    return null;
-    /* Dmytro : has the same problem as ordinarMessage
+
+
     if( err )
     throw err;
     return arg;
-    */
+
   })
   return que;
 }
@@ -8600,7 +8595,7 @@ function firstAsyncMode01( test )
   .thenKeep( function( arg )
   {
     test.case = 'simplest, empty routine';
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 2 });
     con.give( function( err, got )
     {
       test.identical( err, undefined );
@@ -8634,7 +8629,7 @@ function firstAsyncMode01( test )
   .thenKeep( function( arg )
   {
     test.case = 'routine returns something';
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 2 });
     con.give( function( err, got )
     {
       test.identical( got, testMsg );
@@ -8865,12 +8860,12 @@ function firstAsyncMode01( test )
     test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
 
     _.Consequence.AsyncModeSet( amode );
-    return null;
-    /* Dmytro :
+
+
     if( err )
     throw err;
     return arg;
-    */
+
   })
   return que;
 }
@@ -8894,7 +8889,7 @@ function firstAsyncMode11( test )
   .thenKeep( function( arg )
   {
     test.case = 'simplest, empty routine';
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 2 });
     con.give( function( err, got )
     {
       test.identical( got, null );
@@ -8918,7 +8913,7 @@ function firstAsyncMode11( test )
   .thenKeep( function( arg )
   {
     test.case = 'routine returns something';
-    var con = new _.Consequence({ tag : 'con' });
+    var con = new _.Consequence({ tag : 'con', capacity : 2 });
     con.give( function( err, got )
     {
       test.identical( got, testMsg );
@@ -9115,12 +9110,12 @@ function firstAsyncMode11( test )
     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
 
     _.Consequence.AsyncModeSet( amode );
-    return null;
-    /* Dmytro :
+
+
     if( err )
     throw err;
     return arg;
-    */
+
   })
   return que;
 }
@@ -9285,12 +9280,12 @@ function fromAsyncMode00( test )
     test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
 
     _.Consequence.AsyncModeSet( amode );
-    return null;
-    /* Dmytro :
+
+
     if( err )
     throw err;
     return arg;
-    */
+
   })
   return que;
 }
@@ -9415,12 +9410,12 @@ function fromAsyncMode10( test )
     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
 
     _.Consequence.AsyncModeSet( amode );
-    return null;
-    /* Dmytro :
+
+
     if( err )
     throw err;
     return arg;
-    */
+
   })
   return que;
 }
@@ -9543,12 +9538,12 @@ function fromAsyncMode01( test )
     test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
 
     _.Consequence.AsyncModeSet( amode );
-    return null;
-    /* Dmytro :
+
+
     if( err )
     throw err;
     return arg;
-    */
+
   })
   return que;
 }
@@ -9673,12 +9668,12 @@ function fromAsyncMode11( test )
     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
 
     _.Consequence.AsyncModeSet( amode );
-    return null;
-    /* Dmytro :
+
+
     if( err )
     throw err;
     return arg;
-    */
+
   })
   return que;
 }
@@ -10099,8 +10094,8 @@ var Self =
     inter,
     put,
 
-    // firstAsyncMode00, /* Dmytro : uncomment when resolve problem with ordinarMessage */
-    // firstAsyncMode10, /* Dmytro : uncomment when resolve problem with ordinarMessage */
+    firstAsyncMode00,
+    firstAsyncMode10,
     firstAsyncMode01,
     firstAsyncMode11,
 
