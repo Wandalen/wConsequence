@@ -2468,7 +2468,6 @@ function __take( error, argument )
         `Resource capacity of ${self.nickName} set to ${self.capacity}, but got more resources.`
         + `\nConsider resetting : "{ capacity : 0 }"`
       ]
-      debugger;
       throw _._err({ args : args, stackRemobeBeginExclude : /\bConsequence.s\b/ });
     }
     if( !( error === undefined || argument === undefined ) )
