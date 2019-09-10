@@ -10252,97 +10252,97 @@ var Self =
   tests :
   {
 
-    // clone,
-    //
-    // trivial,
-    //
-    // // ordinarMessage
-    //
-    // ordinarMessageSingleRes_0_0,
-    // ordinarMessageSingleRes_1_0,
-    // ordinarMessageSingleRes_0_1,
-    // ordinarMessageSingleRes_1_1,
-    //
-    // ordinarMessageSeveralRes_0_0,
-    // ordinarMessageSeveralRes_1_0,
-    // ordinarMessageSeveralRes_0_1,
-    // ordinarMessageSeveralRes_1_1,
-    //
-    // ordinarMessageSingleErr_0_0,
-    // ordinarMessageSingleErr_1_0,
-    // ordinarMessageSingleErr_0_1,
-    // ordinarMessageSingleErr_1_1,
-    //
-    // ordinarMessageSeveralErr_0_0,
-    // ordinarMessageSeveralErr_1_0,
-    // ordinarMessageSeveralErr_0_1,
-    // ordinarMessageSeveralErr_1_1,
-    //
-    // finallyPromiseGive,
-    //
-    // // _finally
-    //
-    // _finallyNoRes_0_0,
-    // _finallyNoRes_1_0,
-    // _finallyNoRes_0_1,
-    // _finallyNoRes_1_1,
-    //
-    // _finallySingleRes_0_0,
-    // _finallySingleRes_1_0,
-    // _finallySingleRes_0_1,
-    // _finallySingleRes_1_1,
-    //
-    // _finallySeveralFinally_0_0,
-    // _finallySeveralFinally_1_0,
-    // _finallySeveralFinally_0_1,
-    // _finallySeveralFinally_1_1,
-    //
-    // _finallyConsequenceCompetitor_0_0,
-    // _finallyConsequenceCompetitor_1_0,
-    // _finallyConsequenceCompetitor_0_1,
-    // _finallyConsequenceCompetitor_1_1,
-    //
-    // _finallyConsequenceWithMsg_0_0,
-    // _finallyConsequenceWithMsg_1_0,
-    // _finallyConsequenceWithMsg_0_1,
-    // _finallyConsequenceWithMsg_1_1,
-    // finallyPromiseKeep,
-    //
-    // split,
-    // tap,
-    // tapHandling,
-    //
-    // ifNoErrorGotTrivial,
-    // ifNoErrorGotThrowing,
-    // keep,
-    // catchTestRoutine,
-    //
-    // timeOut,
-    //
-    // notDeadLock1,
-    //
-    // andNotDeadLock,
-    // andConcurrent,
-    // andKeepRoutinesTakeFirst,
-    // andKeepRoutinesTakeLast,
-    // andKeepRoutinesDelayed,
-    // andKeepDuplicates,
-    // andKeepInstant,
-    // andKeep,
-    // andTake,
-    // _and,
-    //
-    // AndKeep,
-    // AndTake,
-    //
-    // orKeeping,
-    // orTaking,
-    // thenOrKeepingNotFiring,
-    // thenOrKeeping,
-    // thenOrTaking,
-    //
-    // inter,
-    // put,
+    clone,
+
+    trivial,
+
+    // ordinarMessage
+
+    ordinarMessageSingleRes_0_0,
+    ordinarMessageSingleRes_1_0,
+    ordinarMessageSingleRes_0_1,
+    ordinarMessageSingleRes_1_1,
+
+    ordinarMessageSeveralRes_0_0,
+    ordinarMessageSeveralRes_1_0,
+    ordinarMessageSeveralRes_0_1,
+    ordinarMessageSeveralRes_1_1,
+
+    ordinarMessageSingleErr_0_0,
+    ordinarMessageSingleErr_1_0,
+    ordinarMessageSingleErr_0_1,
+    ordinarMessageSingleErr_1_1,
+
+    ordinarMessageSeveralErr_0_0,
+    ordinarMessageSeveralErr_1_0,
+    ordinarMessageSeveralErr_0_1,
+    ordinarMessageSeveralErr_1_1,
+
+    finallyPromiseGive,
+
+    // _finally
+
+    _finallyNoRes_0_0,
+    _finallyNoRes_1_0,
+    _finallyNoRes_0_1,
+    _finallyNoRes_1_1,
+
+    _finallySingleRes_0_0,
+    _finallySingleRes_1_0,
+    _finallySingleRes_0_1,
+    _finallySingleRes_1_1,
+
+    _finallySeveralFinally_0_0,
+    _finallySeveralFinally_1_0,
+    _finallySeveralFinally_0_1,
+    _finallySeveralFinally_1_1,
+
+    _finallyConsequenceCompetitor_0_0,
+    _finallyConsequenceCompetitor_1_0,
+    _finallyConsequenceCompetitor_0_1,
+    _finallyConsequenceCompetitor_1_1,
+
+    _finallyConsequenceWithMsg_0_0,
+    _finallyConsequenceWithMsg_1_0,
+    _finallyConsequenceWithMsg_0_1,
+    _finallyConsequenceWithMsg_1_1,
+    finallyPromiseKeep,
+
+    split,
+    tap,
+    tapHandling,
+
+    ifNoErrorGotTrivial,
+    ifNoErrorGotThrowing,
+    keep,
+    catchTestRoutine,
+
+    timeOut,
+
+    notDeadLock1,
+
+    andNotDeadLock,
+    andConcurrent,
+    andKeepRoutinesTakeFirst,
+    andKeepRoutinesTakeLast,
+    andKeepRoutinesDelayed,
+    andKeepDuplicates,
+    andKeepInstant,
+    andKeep,
+    andTake,
+    _and,
+
+    AndKeep,
+    AndTake,
+
+    orKeeping,
+    orTaking,
+    thenOrKeepingNotFiring,
+    thenOrKeeping,
+    thenOrTaking,
+
+    inter,
+    put,
 
     // first
 
