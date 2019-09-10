@@ -2398,6 +2398,8 @@ function split( test )
     return null;
   })
 
+  /* */
+
   .thenKeep( function( arg )
   {
     test.case = 'split : run before resolve value';
@@ -2413,6 +2415,8 @@ function split( test )
     test.identical( con2.resourcesGet().length, 0 );
     return null;
   })
+
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -2447,6 +2451,8 @@ function split( test )
 
     return null;
   })
+
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -2490,7 +2496,6 @@ function tap( test )
   .thenKeep( function( arg )
   {
     test.case = 'single value in give sequence, and single taker : attached taker after value resolved';
-
     var con = new _.Consequence({ tag : 'con' });
     con.take( testMsg );
     con.tap( ( err, got ) => test.identical( got, testMsg ) );
@@ -2505,7 +2510,6 @@ function tap( test )
   .thenKeep( function( arg )
   {
     test.case = 'single error and single taker : attached taker after value resolved';
-
     var con = new _.Consequence({ tag : 'con' });
     con.error( testMsg );
     con.tap( ( err, got ) => test.identical( err, testMsg ) );
@@ -2520,7 +2524,6 @@ function tap( test )
   .thenKeep( function( arg )
   {
     test.case = 'test tap in chain';
-
     var con = new _.Consequence({ tag : 'con' });
     con.take( testMsg );
     con.tap( ( err, got ) => test.identical( got, testMsg ) );
@@ -2539,9 +2542,7 @@ function tap( test )
     return;
 
     test.case = 'missed arguments';
-
     var con = _.Consequence();
-
     test.shouldThrowError( function()
     {
       con.tap();
@@ -2559,17 +2560,15 @@ function tapHandling( test )
 {
   var que = new _.Consequence().take( null )
 
-  /* - */
+  /* */
 
   .then( function( arg )
   {
     test.case = 'take at the end'
-
     var con = new _.Consequence({ tag : 'con' });
     var visited = [ 0, 0, 0, 0, 0, 0 ];
 
     con.take( null );
-
     con.then( ( arg ) =>
     {
       debugger;
@@ -2577,21 +2576,18 @@ function tapHandling( test )
       throw 'Error';
       return arg;
     });
-
     con.then( ( arg ) =>
     {
       debugger;
       visited[ 1 ] = 1;
       return arg;
     });
-
     con.then( ( arg ) =>
     {
       debugger;
       visited[ 2 ] = 1;
       return arg;
     });
-
     con.tap( ( err, arg ) =>
     {
       debugger;
@@ -2599,14 +2595,12 @@ function tapHandling( test )
       test.identical( arg, undefined );
       visited[ 3 ] = 1;
     });
-
     con.then( ( arg ) =>
     {
       debugger;
       visited[ 4 ] = 1;
       return arg;
     });
-
     con.then( ( arg ) =>
     {
       debugger;
@@ -2621,15 +2615,13 @@ function tapHandling( test )
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.competitorsCount(), 0 );
     });
-
   })
 
-  /* - */
+  /* */
 
   .then( function( arg )
   {
     test.case = 'take at the end'
-
     var con = new _.Consequence({ tag : 'con' });
     var visited = [ 0, 0, 0, 0, 0, 0 ];
 
@@ -2640,21 +2632,18 @@ function tapHandling( test )
       throw 'Error';
       return arg;
     });
-
     con.then( ( arg ) =>
     {
       debugger;
       visited[ 1 ] = 1;
       return arg;
     });
-
     con.then( ( arg ) =>
     {
       debugger;
       visited[ 2 ] = 1;
       return arg;
     });
-
     con.tap( ( err, arg ) =>
     {
       debugger;
@@ -2662,21 +2651,18 @@ function tapHandling( test )
       test.identical( arg, undefined );
       visited[ 3 ] = 1;
     });
-
     con.then( ( arg ) =>
     {
       debugger;
       visited[ 4 ] = 1;
       return arg;
     });
-
     con.then( ( arg ) =>
     {
       debugger;
       visited[ 5 ] = 1;
       return arg;
     });
-
     con.take( null );
 
     return _.timeOut( 50, () =>
@@ -2686,10 +2672,9 @@ function tapHandling( test )
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.competitorsCount(), 0 );
     });
-
   })
 
-  /* - */
+  /* */
 
   return que;
 }
@@ -2872,7 +2857,6 @@ function catchTestRoutine( test )
   .thenKeep( function( arg )
   {
     test.case = 'single value in give sequence, and single taker : attached taker after value resolved';
-
     var con = new _.Consequence({ tag : 'con' });
     con.take( testMsg );
     con.catch( ( err ) => { test.identical( 0, 1 ); return null; } );
@@ -2889,7 +2873,6 @@ function catchTestRoutine( test )
   .thenKeep( function( arg )
   {
     test.case = 'single err in give sequence, and single taker : attached taker after value resolved';
-
     var con = new _.Consequence({ tag : 'con' });
     con.error( testMsg );
     con.catch( ( err ) => { test.identical( err, testMsg ); return null; });
@@ -2906,7 +2889,6 @@ function catchTestRoutine( test )
   .thenKeep( function( arg )
   {
     test.case = 'test catchTestRoutine in chain, regular resource is given before error';
-
     var con = new _.Consequence({ capacity : 0 });
     con.take( testMsg );
     con.error( testMsg + 1 );
@@ -2929,7 +2911,6 @@ function catchTestRoutine( test )
   .thenKeep( function( arg )
   {
     test.case = 'test catchTestRoutine in chain, regular resource is given after error';
-
     var con = new _.Consequence({ capacity : 0 });
     con.error( testMsg + 1 );
     con.error( testMsg + 2 );
@@ -2955,14 +2936,11 @@ function catchTestRoutine( test )
     return;
 
     test.case = 'missed arguments';
-
     var con = _.Consequence();
-
     return test.shouldThrowErrorSync( function()
     {
       con.catch();
     });
-
   })
 
   return que;
@@ -3059,7 +3037,6 @@ function keep( test )
   .thenKeep( function( arg )
   {
     test.case = 'single value in give sequence, and single taker : attached taker after value resolved';
-
     var con = new _.Consequence({ tag : 'con' });
     con.take( testMsg );
     con.then( ( got ) => { test.identical( got, testMsg ); return null; } );
@@ -3075,7 +3052,6 @@ function keep( test )
   .thenKeep( function( arg )
   {
     test.case = 'single err in give sequence, and single taker : attached taker after value resolved';
-
     var con = new _.Consequence({ tag : 'con' });
     con.error( testMsg );
     con.then( ( got ) => { test.identical( 0, 1 ); return null; });
@@ -3091,7 +3067,6 @@ function keep( test )
   .thenKeep( function( arg )
   {
     test.case = 'test keep in chain, regular resource is given before error';
-
     var con = new _.Consequence({ capacity : 0 });
     con.take( testMsg );
     con.take( testMsg );
@@ -3113,7 +3088,6 @@ function keep( test )
   .thenKeep( function( arg )
   {
     test.case = 'test keep in chain, regular resource is given after error';
-
     var con = new _.Consequence({ capacity : 0 });
     con.error( testMsg );
     con.take( testMsg );
@@ -3135,7 +3109,6 @@ function keep( test )
   .thenKeep( function( arg )
   {
     test.case = 'test keep in chain serveral resources';
-
     var con = new _.Consequence({ capacity : 0 });
     con.take( testMsg );
     con.take( testMsg );
@@ -3158,9 +3131,7 @@ function keep( test )
     return;
 
     test.case = 'missed arguments';
-
     var con = _.Consequence();
-
     test.shouldThrowError( function()
     {
       con.then();
@@ -3183,7 +3154,6 @@ function timeOut( test )
   .thenKeep( function( arg )
   {
     test.case = 'single value in give sequence, and single taker : attached taker after value resolved';
-
     var con = new _.Consequence({ tag : 'con' });
     con.take( testMsg );
     con.timeOut( 0, ( err, got ) => { test.identical( got, testMsg ); return null; } );
@@ -3201,7 +3171,6 @@ function timeOut( test )
   .thenKeep( function( arg )
   {
     test.case = 'single err in give sequence, and single taker : attached taker after value resolved';
-
     var con = new _.Consequence({ tag : 'con' });
     con.error( testMsg );
     con.timeOut( 0, ( err, got ) => { test.identical( err, testMsg ); return null; } );
@@ -3245,9 +3214,8 @@ function timeOut( test )
     if( !Config.debug )
     return;
 
-    var con = _.Consequence();
-
     test.case = 'missed arguments';
+    var con = _.Consequence();
     test.shouldThrowError( function()
     {
       con.timeOut();
@@ -3269,9 +3237,7 @@ function notDeadLock1( test )
   return _.dont;
 
   test.case = 'take argument later';
-
   var got = [];
-
   test.identical( con1._dependsOf, [] );
   test.identical( con2._dependsOf, [] );
   con1.then( con2 );
@@ -3290,8 +3256,9 @@ function notDeadLock1( test )
   test.identical( con2.competitorsEarlyGet().length, 0 );
   test.identical( got, [ 1, 2 ] );
 
-  test.case = 'take argument early';
+  /* */
 
+  test.case = 'take argument early';
   var got = [];
   con1.cancel();
   con2.cancel();
@@ -3311,8 +3278,9 @@ function notDeadLock1( test )
   test.identical( con2.competitorsEarlyGet().length, 0 );
   test.identical( got, [ 3, 4 ] );
 
-  test.case = 'thenGive';
+  /* */
 
+  test.case = 'thenGive';
   var got = [];
   con1.cancel();
   con2.cancel();
@@ -3335,7 +3303,6 @@ function notDeadLock1( test )
   test.identical( con2.resourcesGet(), [] );
   test.identical( con2.competitorsEarlyGet().length, 0 );
   test.identical( got, [ 1, 2 ] );
-
 }
 
 //
@@ -3694,9 +3661,7 @@ function andKeepRoutinesDelayed( test )
 function andKeepDuplicates( test )
 {
 
-  let que = _.Consequence().take( null );
-
-  que
+  let que = _.Consequence().take( null )
 
   /* */
 
@@ -3967,8 +3932,6 @@ function andKeep( test )
 {
   var testMsg = 'msg';
   var que = new _.Consequence().take( null )
-
-  que
 
   /* */
 
@@ -4712,7 +4675,6 @@ function andTake( test )
       test.identical( con.resourcesGet().length, 0 );
       test.identical( con.competitorsEarlyGet().length, 0 );
     });
-
   })
 
   /* */
@@ -4759,9 +4721,7 @@ function andTake( test )
       test.identical( con2.competitorsEarlyGet().length, 0 );
       test.identical( con3.resourcesGet().length, 0 );
       test.identical( con3.competitorsEarlyGet().length, 0 );
-
     });
-
   })
 
   return que;
@@ -4857,7 +4817,6 @@ function _and( test )
       test.identical( con2.resourcesGet().length, 0 );
       test.identical( con2.competitorsEarlyGet().length, 0 );
     });
-
   })
 
   return que;
@@ -4953,7 +4912,6 @@ function AndTake( test )
       test.identical( con2.competitorsEarlyGet().length, 0 );
       return null;
     });
-
   });
 
   return que;
@@ -5001,21 +4959,20 @@ function AndKeep( test )
       test.identical( con2.competitorsEarlyGet().length, 0 );
       return null;
     });
-
   });
 
   return que;
 }
 
-//
+//--
+// orKeeping
+//--
 
-function orKeeping( test )
+function orKeepingWithSimple( test )
 {
-  var que = new _.Consequence().take( null );
+  var que = new _.Consequence().take( null )
 
-  que
-
-  /* - */
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -5097,7 +5054,7 @@ function orKeeping( test )
     });
   })
 
-  /* - */
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -5207,10 +5164,9 @@ function orKeeping( test )
 
       // con.competitorsCancel();
     });
-
   })
 
-  /* - */
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -5285,12 +5241,19 @@ function orKeeping( test )
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
       test.identical( con2.resourcesGet( 0 ), { argument : 2, error : undefined } );
-
     });
-
   })
 
-  /* - */
+  return que;
+}
+
+//
+
+function orKeepingWithLater( test )
+{
+  var que = new _.Consequence().take( null )
+
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -5344,7 +5307,6 @@ function orKeeping( test )
       test.identical( err, undefined );
       test.identical( arg, 0 );
       got = arg;
-
     });
 
     con.finally( ( err, arg ) =>
@@ -5372,10 +5334,9 @@ function orKeeping( test )
 
       con.competitorsCancel();
     });
-
   })
 
-  /* - */
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -5413,7 +5374,6 @@ function orKeeping( test )
 
     con.finallyGive( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.competitorsCount(), 1 );
@@ -5427,7 +5387,6 @@ function orKeeping( test )
       test.identical( err, undefined );
       test.identical( arg, 0 );
       got = arg;
-
     });
 
     con.finally( ( err, arg ) =>
@@ -5452,10 +5411,104 @@ function orKeeping( test )
       test.identical( con2.competitorsCount(), 0 );
       con.competitorsCancel();
     });
-
   })
 
-  /* - */
+  /* */
+
+  .thenKeep( function( arg )
+  {
+    test.case = 'orKeeping, later take1, later take2, later take0';
+
+    var got = null;
+    var con = new _.Consequence({ tag : 'or' });
+    var con1 = new _.Consequence({ tag : 'con1' });
+    var con2 = new _.Consequence({ tag : 'con2' });
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+    test.identical( con1.errorsCount(), 0 );
+    test.identical( con1.argumentsCount(), 0 );
+    test.identical( con1.competitorsCount(), 0 );
+    test.identical( con2.errorsCount(), 0 );
+    test.identical( con2.argumentsCount(), 0 );
+    test.identical( con2.competitorsCount(), 0 );
+
+    con.orKeeping([ con1, con2 ]);
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 1 );
+    test.identical( con1.errorsCount(), 0 );
+    test.identical( con1.argumentsCount(), 0 );
+    test.identical( con1.competitorsCount(), 1 );
+    test.identical( con2.errorsCount(), 0 );
+    test.identical( con2.argumentsCount(), 0 );
+    test.identical( con2.competitorsCount(), 1 );
+
+    con1.takeLater( 100, 1 );
+    con2.takeLater( 50, 2 );
+
+    con.finallyGive( ( err, arg ) =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 0 );
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 0 );
+      test.identical( con2.competitorsCount(), 0 );
+
+      test.identical( err, undefined );
+      test.identical( arg, 2 );
+      got = arg;
+    });
+
+    con.finally( ( err, arg ) =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 1 );
+      test.identical( con1.competitorsCount(), 0 );
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 1 );
+      test.identical( con2.competitorsCount(), 0 );
+      test.identical( err, undefined );
+      test.identical( arg, 0 );
+      got += 100;
+      return got;
+    });
+
+    con.takeLater( 150, 0 );
+
+    return _.timeOut( 200, function( err, arg )
+    {
+      test.identical( got, 102 );
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 1 );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 1 );
+      test.identical( con1.competitorsCount(), 0 );
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 1 );
+      test.identical( con2.competitorsCount(), 0 );
+      con.competitorsCancel();
+    });
+  })
+
+  return que;
+}
+
+function orKeepingWithNow( test )
+{
+  var que = new _.Consequence().take( null )
+
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -5509,12 +5562,10 @@ function orKeeping( test )
 
       test.identical( err, undefined );
       test.identical( arg, 10 );
-
     });
 
     con.finallyGive( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.competitorsCount(), 0 );
@@ -5528,7 +5579,6 @@ function orKeeping( test )
       test.identical( err, undefined );
       test.identical( arg, 0 );
       got = arg;
-
     });
 
     return _.timeOut( 200, function( err, arg )
@@ -5546,98 +5596,7 @@ function orKeeping( test )
     });
   })
 
-  /* - */
-
-  .thenKeep( function( arg )
-  {
-    test.case = 'orKeeping, later take1, later take2, later take0';
-
-    var got = null;
-    var con = new _.Consequence({ tag : 'or' });
-    var con1 = new _.Consequence({ tag : 'con1' });
-    var con2 = new _.Consequence({ tag : 'con2' });
-
-    test.identical( con.errorsCount(), 0 );
-    test.identical( con.argumentsCount(), 0 );
-    test.identical( con.competitorsCount(), 0 );
-    test.identical( con1.errorsCount(), 0 );
-    test.identical( con1.argumentsCount(), 0 );
-    test.identical( con1.competitorsCount(), 0 );
-    test.identical( con2.errorsCount(), 0 );
-    test.identical( con2.argumentsCount(), 0 );
-    test.identical( con2.competitorsCount(), 0 );
-
-    con.orKeeping([ con1, con2 ]);
-
-    test.identical( con.errorsCount(), 0 );
-    test.identical( con.argumentsCount(), 0 );
-    test.identical( con.competitorsCount(), 1 );
-    test.identical( con1.errorsCount(), 0 );
-    test.identical( con1.argumentsCount(), 0 );
-    test.identical( con1.competitorsCount(), 1 );
-    test.identical( con2.errorsCount(), 0 );
-    test.identical( con2.argumentsCount(), 0 );
-    test.identical( con2.competitorsCount(), 1 );
-
-    con1.takeLater( 100, 1 );
-    con2.takeLater( 50, 2 );
-
-    con.finallyGive( ( err, arg ) =>
-    {
-
-      test.identical( con.errorsCount(), 0 );
-      test.identical( con.argumentsCount(), 0 );
-      test.identical( con.competitorsCount(), 1 );
-      test.identical( con1.errorsCount(), 0 );
-      test.identical( con1.argumentsCount(), 0 );
-      test.identical( con1.competitorsCount(), 0 );
-      test.identical( con2.errorsCount(), 0 );
-      test.identical( con2.argumentsCount(), 0 );
-      test.identical( con2.competitorsCount(), 0 );
-
-      test.identical( err, undefined );
-      test.identical( arg, 2 );
-      got = arg;
-
-    });
-
-    con.finally( ( err, arg ) =>
-    {
-      test.identical( con.errorsCount(), 0 );
-      test.identical( con.argumentsCount(), 0 );
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con1.errorsCount(), 0 );
-      test.identical( con1.argumentsCount(), 1 );
-      test.identical( con1.competitorsCount(), 0 );
-      test.identical( con2.errorsCount(), 0 );
-      test.identical( con2.argumentsCount(), 1 );
-      test.identical( con2.competitorsCount(), 0 );
-      test.identical( err, undefined );
-      test.identical( arg, 0 );
-      got += 100;
-      return got;
-    });
-
-    con.takeLater( 150, 0 );
-
-    return _.timeOut( 200, function( err, arg )
-    {
-      test.identical( got, 102 );
-      test.identical( con.errorsCount(), 0 );
-      test.identical( con.argumentsCount(), 1 );
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con1.errorsCount(), 0 );
-      test.identical( con1.argumentsCount(), 1 );
-      test.identical( con1.competitorsCount(), 0 );
-      test.identical( con2.errorsCount(), 0 );
-      test.identical( con2.argumentsCount(), 1 );
-      test.identical( con2.competitorsCount(), 0 );
-      con.competitorsCancel();
-    });
-
-  })
-
-  /* - */
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -5678,7 +5637,6 @@ function orKeeping( test )
 
     con.finallyGive( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 1 );
       test.identical( con.competitorsCount(), 0 );
@@ -5691,7 +5649,6 @@ function orKeeping( test )
 
       test.identical( err, undefined );
       test.identical( arg, 10 );
-
     });
 
     con.finallyGive( ( err, arg ) =>
@@ -5710,7 +5667,6 @@ function orKeeping( test )
       test.identical( err, undefined );
       test.identical( arg, 0 );
       got = arg;
-
     });
 
     return _.timeOut( 200, function( err, arg )
@@ -5735,13 +5691,11 @@ function orKeeping( test )
 
 //
 
-function orTaking( test )
+function orTakingWithSimple( test )
 {
-  var que = new _.Consequence().take( null );
+  var que = new _.Consequence().take( null )
 
-  que
-
-  /* - */
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -5782,7 +5736,6 @@ function orTaking( test )
 
     con.finallyGive( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.competitorsCount(), 0 );
@@ -5796,7 +5749,6 @@ function orTaking( test )
       test.identical( err, undefined );
       test.identical( arg, 0 );
       got = arg;
-
     });
 
     con.finally( ( err, arg ) =>
@@ -5823,7 +5775,7 @@ function orTaking( test )
     });
   })
 
-  /* - */
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -5874,7 +5826,6 @@ function orTaking( test )
 
     con.finallyGive( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 1 );
       test.identical( con.competitorsCount(), 0 );
@@ -5889,12 +5840,10 @@ function orTaking( test )
       test.identical( err, undefined );
       test.identical( arg, 1 );
       got = arg;
-
     });
 
     con.finally( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.competitorsCount(), 0 );
@@ -5932,10 +5881,9 @@ function orTaking( test )
 
       // con.competitorsCancel();
     });
-
   })
 
-  /* - */
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -5974,7 +5922,6 @@ function orTaking( test )
 
     con.finallyKeep( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.competitorsCount(), 0 );
@@ -6007,12 +5954,21 @@ function orTaking( test )
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
       test.identical( con2.resourcesGet( 0 ), { argument : 2, error : undefined } );
-
     });
-
   })
 
-  /* - */
+  /* */
+
+  return que;
+}
+
+//
+
+function orTakingWithLater( test )
+{
+  var que = new _.Consequence().take( null )
+
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -6052,7 +6008,6 @@ function orTaking( test )
 
     con.finallyGive( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.competitorsCount(), 0 );
@@ -6066,7 +6021,6 @@ function orTaking( test )
       test.identical( err, undefined );
       test.identical( arg, 0 );
       got = arg;
-
     });
 
     con.finally( ( err, arg ) =>
@@ -6094,10 +6048,9 @@ function orTaking( test )
 
       con.competitorsCancel();
     });
-
   })
 
-  /* - */
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -6135,7 +6088,6 @@ function orTaking( test )
 
     con.finallyGive( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.competitorsCount(), 1 );
@@ -6149,7 +6101,6 @@ function orTaking( test )
       test.identical( err, undefined );
       test.identical( arg, 0 );
       got = arg;
-
     });
 
     con.finally( ( err, arg ) =>
@@ -6174,10 +6125,9 @@ function orTaking( test )
       test.identical( con2.competitorsCount(), 0 );
       con.competitorsCancel();
     });
-
   })
 
-  /* - */
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -6215,7 +6165,6 @@ function orTaking( test )
 
     con.finallyGive( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.competitorsCount(), 1 );
@@ -6229,7 +6178,6 @@ function orTaking( test )
       test.identical( err, undefined );
       test.identical( arg, 2 );
       got = arg;
-
     });
 
     con.finally( ( err, arg ) =>
@@ -6265,10 +6213,20 @@ function orTaking( test )
       test.identical( con2.competitorsCount(), 0 );
       con.competitorsCancel();
     });
-
   })
 
-  /* - */
+  /* */
+
+  return que;
+}
+
+//
+
+function orTakingWithNow( test )
+{
+  var que = new _.Consequence().take( null )
+
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -6309,7 +6267,6 @@ function orTaking( test )
 
     con.finallyGive( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 1 );
       test.identical( con.competitorsCount(), 0 );
@@ -6322,7 +6279,6 @@ function orTaking( test )
 
       test.identical( err, undefined );
       test.identical( arg, 10 );
-
     });
 
     con.finallyGive( ( err, arg ) =>
@@ -6341,7 +6297,6 @@ function orTaking( test )
       test.identical( err, undefined );
       test.identical( arg, 0 );
       got = arg;
-
     });
 
     return _.timeOut( 200, function( err, arg )
@@ -6359,7 +6314,7 @@ function orTaking( test )
     });
   })
 
-  /* - */
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -6400,7 +6355,6 @@ function orTaking( test )
 
     con.finallyGive( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 1 );
       test.identical( con.competitorsCount(), 0 );
@@ -6413,12 +6367,10 @@ function orTaking( test )
 
       test.identical( err, undefined );
       test.identical( arg, 10 );
-
     });
 
     con.finallyGive( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.competitorsCount(), 0 );
@@ -6432,7 +6384,6 @@ function orTaking( test )
       test.identical( err, undefined );
       test.identical( arg, 0 );
       got = arg;
-
     });
 
     return _.timeOut( 200, function( err, arg )
@@ -6450,7 +6401,7 @@ function orTaking( test )
     });
   })
 
-  /* - */
+  /* */
 
   return que;
 }
@@ -6459,11 +6410,9 @@ function orTaking( test )
 
 function thenOrKeepingNotFiring( test )
 {
-  var que = new _.Consequence().take( null );
+  var que = new _.Consequence().take( null )
 
-  que
-
-  /* - */
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -6500,7 +6449,6 @@ function thenOrKeepingNotFiring( test )
 
     con.finallyGive( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.competitorsCount(), 0 );
@@ -6514,7 +6462,6 @@ function thenOrKeepingNotFiring( test )
       test.identical( err, undefined );
       test.identical( arg, 10 );
       got = arg;
-
     });
 
     con.finally( ( err, arg ) =>
@@ -6541,7 +6488,7 @@ function thenOrKeepingNotFiring( test )
     });
   })
 
-  /* - */
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -6578,7 +6525,6 @@ function thenOrKeepingNotFiring( test )
 
     con.finallyGive( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.competitorsCount(), 1 );
@@ -6592,7 +6538,6 @@ function thenOrKeepingNotFiring( test )
       test.identical( err, undefined );
       test.identical( arg, 10 );
       got = arg;
-
     });
 
     con.finally( ( err, arg ) =>
@@ -6619,10 +6564,9 @@ function thenOrKeepingNotFiring( test )
       con1.competitorsCancel();
       con2.competitorsCancel();
     });
-
   })
 
-  /* - */
+  /* */
 
   return que;
 }
@@ -6631,11 +6575,9 @@ function thenOrKeepingNotFiring( test )
 
 function thenOrKeeping( test )
 {
-  var que = new _.Consequence().take( null );
+  var que = new _.Consequence().take( null )
 
-  que
-
-  /* - */
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -10065,10 +10007,10 @@ var Self =
     tap,
     tapHandling,
 
+    catchTestRoutine,
     ifNoErrorGotTrivial,
     ifNoErrorGotThrowing,
     keep,
-    catchTestRoutine,
 
     timeOut,
 
@@ -10088,8 +10030,13 @@ var Self =
     AndKeep,
     AndTake,
 
-    orKeeping,
-    orTaking,
+    orKeepingWithSimple,
+    orKeepingWithLater,
+    orKeepingWithNow,
+    orTakingWithSimple,
+    orTakingWithLater,
+    orTakingWithNow,
+
     thenOrKeepingNotFiring,
     thenOrKeeping,
     thenOrTaking,
