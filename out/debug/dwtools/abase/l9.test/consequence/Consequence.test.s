@@ -51,13 +51,20 @@ function clone( test )
   test.identical( con1.infoExport({ verbosity : 1 }), 'Consequence::con1 0 / 1' );
   test.identical( con1.capacity, 2 );
   test.identical( con2.argumentsCount(), 0 );
-  test.identical( con2.competitorsCount(), 1 );
+  test.identical( con2.competitorsCount(), 0 );
   test.identical( con2.nickName, 'Consequence::con1' );
-  test.identical( con2.infoExport({ verbosity : 1 }), 'Consequence::con1 0 / 1' );
+  test.identical( con2.infoExport({ verbosity : 1 }), 'Consequence::con1 0 / 0' );
   test.identical( con2.capacity, 2 );
   test.is( con1._resources !== con2._resources );
   test.is( con1._competitorsEarly !== con2._competitorsEarly );
   test.is( con1._competitorsLate !== con2._competitorsLate );
+
+  debugger;
+  test.identical( _.Procedure.Get( f ).length, 1 );
+  con2.cancel();
+  test.identical( _.Procedure.Get( f ).length, 1 );
+  con1.cancel();
+  test.identical( _.Procedure.Get( f ).length, 0 );
 
 }
 
