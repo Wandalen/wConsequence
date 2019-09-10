@@ -7259,7 +7259,7 @@ function thenOrKeepingWithTwoTake0( test )
 
 //
 
-function thenOrTaking( test )
+function thenOrTakingWithSimple( test )
 {
   var que = new _.Consequence().take( null )
 
@@ -7303,7 +7303,6 @@ function thenOrTaking( test )
 
     con.finallyGive( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.competitorsCount(), 0 );
@@ -7317,7 +7316,6 @@ function thenOrTaking( test )
       test.identical( err, undefined );
       test.identical( arg, 1 );
       got = arg;
-
     });
 
     con.finally( ( err, arg ) =>
@@ -7342,7 +7340,7 @@ function thenOrTaking( test )
     });
   })
 
-  /* - */
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -7382,7 +7380,6 @@ function thenOrTaking( test )
 
     con.finallyGive( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.competitorsCount(), 0 );
@@ -7396,7 +7393,6 @@ function thenOrTaking( test )
       test.identical( err, 'error' );
       test.identical( arg, undefined );
       got = err;
-
     });
 
     con.finally( ( err, arg ) =>
@@ -7419,10 +7415,9 @@ function thenOrTaking( test )
       test.identical( con2.competitorsCount(), 0 );
       con.competitorsCancel();
     });
-
   })
 
-  /* - */
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -7472,7 +7467,6 @@ function thenOrTaking( test )
 
     con.finallyGive( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.competitorsCount(), 0 );
@@ -7486,7 +7480,6 @@ function thenOrTaking( test )
       test.identical( err, undefined );
       test.identical( arg, 1 );
       got = arg;
-
     });
 
     con.finally( ( err, arg ) =>
@@ -7513,10 +7506,20 @@ function thenOrTaking( test )
 
       con.competitorsCancel();
     });
-
   })
 
-  /* - */
+  /* */
+
+  return que;
+}
+
+//
+
+function thenOrTakingWithLater( test )
+{
+  var que = new _.Consequence().take( null )
+
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -7556,7 +7559,6 @@ function thenOrTaking( test )
 
     con.finallyGive( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.competitorsCount(), 1 );
@@ -7570,7 +7572,6 @@ function thenOrTaking( test )
       test.identical( err, undefined );
       test.identical( arg, 2 );
       got = arg;
-
     });
 
     con.finally( ( err, arg ) =>
@@ -7593,10 +7594,9 @@ function thenOrTaking( test )
       test.identical( con2.competitorsCount(), 0 );
       con.competitorsCancel();
     });
-
   })
 
-  /* - */
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -7634,7 +7634,6 @@ function thenOrTaking( test )
 
     con.finallyGive( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.competitorsCount(), 1 );
@@ -7648,7 +7647,6 @@ function thenOrTaking( test )
       test.identical( err, undefined );
       test.identical( arg, 2 );
       got = arg;
-
     });
 
     con.finally( ( err, arg ) =>
@@ -7673,10 +7671,9 @@ function thenOrTaking( test )
       test.identical( con2.competitorsCount(), 0 );
       con.competitorsCancel();
     });
-
   })
 
-  /* - */
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -7714,7 +7711,6 @@ function thenOrTaking( test )
 
     con.finallyGive( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.competitorsCount(), 1 );
@@ -7728,7 +7724,6 @@ function thenOrTaking( test )
       test.identical( err, undefined );
       test.identical( arg, 1 );
       got = arg;
-
     });
 
     con.finally( ( err, arg ) =>
@@ -7753,10 +7748,20 @@ function thenOrTaking( test )
       test.identical( con2.competitorsCount(), 0 );
       con.competitorsCancel();
     });
-
   })
 
-  /* - */
+  /* */
+
+  return que;
+}
+
+//
+
+function thenOrTakingWithTwoTake0( test )
+{
+  var que = new _.Consequence().take( null )
+
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -7797,7 +7802,6 @@ function thenOrTaking( test )
 
     con.finallyGive( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 1 );
       test.identical( con.competitorsCount(), 0 );
@@ -7810,12 +7814,10 @@ function thenOrTaking( test )
 
       test.identical( err, undefined );
       test.identical( arg, 10 );
-
     });
 
     con.finallyGive( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.competitorsCount(), 0 );
@@ -7829,7 +7831,6 @@ function thenOrTaking( test )
       test.identical( err, undefined );
       test.identical( arg, 1 );
       got = arg;
-
     });
 
     return _.timeOut( 200, function( err, arg )
@@ -7847,7 +7848,7 @@ function thenOrTaking( test )
     });
   })
 
-  /* - */
+  /* */
 
   .thenKeep( function( arg )
   {
@@ -7888,7 +7889,6 @@ function thenOrTaking( test )
 
     con.finallyGive( ( err, arg ) =>
     {
-
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 1 );
       test.identical( con.competitorsCount(), 0 );
@@ -7901,7 +7901,6 @@ function thenOrTaking( test )
 
       test.identical( err, undefined );
       test.identical( arg, 10 );
-
     });
 
     con.finallyGive( ( err, arg ) =>
@@ -7920,7 +7919,6 @@ function thenOrTaking( test )
       test.identical( err, undefined );
       test.identical( arg, 1 );
       got = arg;
-
     });
 
     return _.timeOut( 200, function( err, arg )
@@ -7938,7 +7936,7 @@ function thenOrTaking( test )
     });
   })
 
-  /* - */
+  /* */
 
   return que;
 }
@@ -10039,7 +10037,9 @@ var Self =
     thenOrKeepingWithSimple,
     thenOrKeepingWithLater,
     thenOrKeepingWithTwoTake0,
-    thenOrTaking,
+    thenOrTakingWithSimple,
+    thenOrTakingWithLater,
+    thenOrTakingWithTwoTake0,
 
     inter,
     put,
