@@ -512,9 +512,10 @@ catchKeep.having =
 function _promise( o )
 {
   let self = this;
-  let procedure = self.procedureDetach( 'promise' ).sourcePathFirst( 3 );
   let keeping = o.keeping;
   let kindOfResource =  o.kindOfResource;
+  let procedure = self.procedure( 'promise' ).sourcePathFirst( 3 );
+  self.procedureDetach();
 
   _.assertRoutineOptions( _promise, arguments );
 
@@ -3282,7 +3283,7 @@ function competitorsGet()
 function competitorsCancel( competitorRoutine )
 {
   let self = this;
-  let r;
+  let r = 0;
 
   _.assert( arguments.length === 0 || arguments.length === 1 );
   _.assert( arguments.length === 0 || _.routineIs( competitorRoutine ) );
@@ -3300,6 +3301,7 @@ function competitorsCancel( competitorRoutine )
       if( competitorDescriptor.procedure )
       _.procedure.end( competitorDescriptor.procedure );
       self._competitorsEarly.splice( c, 1 );
+      r += 1;
     }
 
     for( let c = self._competitorsLate.length - 1 ; c >= 0 ; c-- )
@@ -3308,6 +3310,7 @@ function competitorsCancel( competitorRoutine )
       if( competitorDescriptor.procedure )
       _.procedure.end( competitorDescriptor.procedure );
       self._competitorsLate.splice( c, 1 );
+      r += 1;
     }
 
   }
@@ -3322,6 +3325,7 @@ function competitorsCancel( competitorRoutine )
       _.procedure.end( found.element.procedure );
       self._competitorsEarly.splice( found.index, 1 )
       found = _.arrayLeft( self._competitorsEarly, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
+      r += 1;
     }
 
     found = _.arrayLeft( self._competitorsLate, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
@@ -3332,47 +3336,50 @@ function competitorsCancel( competitorRoutine )
       _.procedure.end( found.element.procedure );
       self._competitorsLate.splice( found.index, 1 )
       found = _.arrayLeft( self._competitorsLate, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
+      r += 1;
     }
 
+    _.assert( r > 0, `Found no competitor ${competitorRoutine.name}` );
+
   }
 
   return self;
 }
 
+// //
 //
-
-function competitorCancel( competitorRoutine )
-{
-  let self = this;
-
-  _.assert( arguments.length === 1 );
-  _.assert( _.routineIs( competitorRoutine ) );
-
-  let found = _.arrayLeft( self._competitorsEarly, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
-  found.container = self._competitorsEarly;
-
-  if( !found.element )
-  {
-    found = _.arrayLeft( self._competitorsLate, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
-    found.container = self._competitorsLate;
-  }
-
-  if( !found.element )
-  {
-    debugger;
-    let procedure = _.procedure.getSingleMaybe( competitorRoutine );
-    let procedureName = ( procedure ? '\n' + procedure.longName : '' );
-    throw _.err( 'Competitor', _.toStrShort( competitorRoutine ), 'is not on the queue', procedureName );
-  }
-
-  _.assert( found.element.competitorRoutine === competitorRoutine );
-
-  if( found.element.procedure )
-  _.procedure.end( found.element.procedure );
-  found.container.splice( found.index, 1 );
-
-  return self;
-}
+// function competitorCancel( competitorRoutine )
+// {
+//   let self = this;
+//
+//   _.assert( arguments.length === 1 );
+//   _.assert( _.routineIs( competitorRoutine ) );
+//
+//   let found = _.arrayLeft( self._competitorsEarly, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
+//   found.container = self._competitorsEarly;
+//
+//   if( !found.element )
+//   {
+//     found = _.arrayLeft( self._competitorsLate, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
+//     found.container = self._competitorsLate;
+//   }
+//
+//   if( !found.element )
+//   {
+//     debugger;
+//     let procedure = _.procedure.getSingleMaybe( competitorRoutine );
+//     let procedureName = ( procedure ? '\n' + procedure.longName : '' );
+//     throw _.err( 'Competitor', _.toStrShort( competitorRoutine ), 'is not on the queue', procedureName );
+//   }
+//
+//   _.assert( found.element.competitorRoutine === competitorRoutine );
+//
+//   if( found.element.procedure )
+//   _.procedure.end( found.element.procedure );
+//   found.container.splice( found.index, 1 );
+//
+//   return self;
+// }
 
 //
 
@@ -3525,11 +3532,13 @@ function resourcesCancel( arg )
   _.assert( arguments.length === 0 || arguments.length === 1 );
 
   if( arguments.length === 0 )
-  self._resources.splice( 0, self._resources.length );
+  {
+    self._resources.splice( 0, self._resources.length );
+  }
   else
   {
     throw _.err( 'not tested' );
-    _.arrayRemoveElementOnce( self._resources, arg );
+    _.arrayRemoveElement( self._resources, arg );
   }
 
 }
@@ -3557,18 +3566,19 @@ function procedure( longName )
 
 //
 
-function procedureDetach( longName )
+function procedureDetach()
 {
   let self = this;
 
-  _.assert( arguments.length === 0 || arguments.length === 1 );
+  _.assert( arguments.length === 0 );
 
+  // _.assert( arguments.length === 0 || arguments.length === 1 );
   // let procedure = self.procedure( longName );
+  // if( self._procedure )
+  // debugger;
+  // let procedure = self._procedure = self._procedure || self.procedure( longName );
 
-  if( self._procedure )
-  debugger;
-
-  let procedure = self._procedure = self._procedure || self.procedure( longName );
+  let procedure = self._procedure;
   self._procedure = null;
 
   return procedure;
@@ -4655,7 +4665,7 @@ let Extend =
   competitorsLateGet,
   competitorsGet,
   competitorsCancel,
-  competitorCancel,
+  // competitorCancel,
 
   // resource
 

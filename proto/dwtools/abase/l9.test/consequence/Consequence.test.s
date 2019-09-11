@@ -2448,7 +2448,7 @@ function split( test )
     test.identical( _got, [ 5 ] );
     test.identical( _err, [ undefined ] );
 
-    con2.competitorCancel( competitor );
+    con2.competitorsCancel( competitor );
     test.identical( con2.resourcesGet().length, 0 );
     test.identical( con2.competitorsEarlyGet().length, 0 );
 
@@ -2546,7 +2546,7 @@ function tap( test )
 
     test.case = 'missed arguments';
     var con = _.Consequence();
-    test.shouldThrowError( function()
+    test.shouldThrowErrorOfAnyKind( function()
     {
       con.tap();
     });
@@ -2840,7 +2840,7 @@ function tapHandling( test )
 //     var conDeb1 = _.Consequence();
 
 //     test.case = 'missed arguments';
-//     test.shouldThrowError( function()
+//     test.shouldThrowErrorOfAnyKind( function()
 //     {
 //       conDeb1.catch();
 //     } );
@@ -3135,7 +3135,7 @@ function keep( test )
 
     test.case = 'missed arguments';
     var con = _.Consequence();
-    test.shouldThrowError( function()
+    test.shouldThrowErrorOfAnyKind( function()
     {
       con.then();
     });
@@ -3219,7 +3219,7 @@ function timeOut( test )
 
     test.case = 'missed arguments';
     var con = _.Consequence();
-    test.shouldThrowError( function()
+    test.shouldThrowErrorOfAnyKind( function()
     {
       con.timeOut();
     });
@@ -9703,7 +9703,7 @@ function consequenceLike( test )
 
 //
 
-function competitorCancel( test )
+function competitorsCancelSingle( test )
 {
   var con = new _.Consequence({ tag : 'con' }).take( null );
 
@@ -9720,17 +9720,26 @@ function competitorCancel( test )
   test.identical( con.competitorsCount(), 2 );
 
   test.case = 'cancel comeptitor2';
-  con.competitorCancel( competitor2 );
+  con.competitorsCancel( competitor2 );
   if( Config.debug )
-  test.shouldThrowErrorSync( () => con.competitorCancel( competitor2 ) );
+  test.shouldThrowErrorSync( () => con.competitorsCancel( competitor2 ) );
   test.identical( con.argumentsCount(), 0 );
   test.identical( con.errorsCount(), 0 );
   test.identical( con.competitorsCount(), 1 );
 
   test.case = 'cancel comeptitor1';
-  con.competitorCancel( competitor1 );
+  con.competitorsCancel( competitor1 );
   if( Config.debug )
-  test.shouldThrowErrorSync( () => con.competitorCancel( competitor1 ) );
+  test.shouldThrowErrorSync( () => con.competitorsCancel( competitor1 ) );
+  test.identical( con.argumentsCount(), 0 );
+  test.identical( con.errorsCount(), 0 );
+  test.identical( con.competitorsCount(), 0 );
+
+  test.case = 'all';
+  con.give( competitor1 );
+  con.give( competitor1 );
+  con.give( competitor2 );
+  con.competitorsCancel();
   test.identical( con.argumentsCount(), 0 );
   test.identical( con.errorsCount(), 0 );
   test.identical( con.competitorsCount(), 0 );
@@ -9741,12 +9750,13 @@ function competitorCancel( test )
   return;
 
   test.case = 'throwing';
-  test.shouldThrowErrorSync( () => con.competitorCancel( competitor1 ) );
-  test.shouldThrowErrorSync( () => con.competitorCancel( competitor2 ) );
-  test.shouldThrowErrorSync( () => con.competitorCancel() );
-  test.shouldThrowErrorSync( () => con.competitorCancel( null ) );
-  test.shouldThrowErrorSync( () => con.competitorCancel( 1 ) );
-  test.shouldThrowErrorSync( () => con.competitorCancel( '1' ) );
+  test.shouldThrowErrorSync( () => con.competitorsCancel( competitor1 ) );
+  test.shouldThrowErrorSync( () => con.competitorsCancel( competitor2 ) );
+  test.shouldThrowErrorSync( () => con.competitorsCancel( undefined ) );
+  test.shouldThrowErrorSync( () => con.competitorsCancel( null ) );
+  test.shouldThrowErrorSync( () => con.competitorsCancel( 1 ) );
+  test.shouldThrowErrorSync( () => con.competitorsCancel( '1' ) );
+
 }
 
 //
@@ -9774,11 +9784,14 @@ function competitorsCancel( test )
   test.identical( con.errorsCount(), 0 );
   test.identical( con.competitorsCount(), 2 );
 
-  test.case = 'cancel competitor2, none found';
-  con.competitorsCancel( competitor2 );
-  test.identical( con.argumentsCount(), 0 );
-  test.identical( con.errorsCount(), 0 );
-  test.identical( con.competitorsCount(), 2 );
+  test.shouldThrowErrorSync( () =>
+  {
+    test.case = 'cancel competitor2, none found';
+    con.competitorsCancel( competitor2 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.competitorsCount(), 2 );
+  });
 
   test.case = 'cancel several competitor1';
   con.competitorsCancel( competitor1 );
@@ -9786,11 +9799,14 @@ function competitorsCancel( test )
   test.identical( con.errorsCount(), 0 );
   test.identical( con.competitorsCount(), 0 );
 
-  test.case = 'cancel competitor1, none found';
-  con.competitorsCancel( competitor1 );
-  test.identical( con.argumentsCount(), 0 );
-  test.identical( con.errorsCount(), 0 );
-  test.identical( con.competitorsCount(), 0 );
+  test.shouldThrowErrorSync( () =>
+  {
+    test.case = 'cancel competitor1, none found';
+    con.competitorsCancel( competitor1 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+  });
 
   test.case = 'cancel all, none found';
   con.competitorsCancel();
@@ -10105,7 +10121,7 @@ var Self =
     fromAsyncMode11,
     consequenceLike,
 
-    competitorCancel,
+    competitorsCancelSingle,
     competitorsCancel,
 
     thenSequenceSync,
