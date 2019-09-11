@@ -117,7 +117,7 @@ function trivial( test )
 
 //
 
-function ordinarMessageAsyncMode00( test )
+function ordinarResourceAsyncMode00( test )
 {
   var c = this;
   var amode = _.Consequence.AsyncModeGet();
@@ -182,7 +182,7 @@ function ordinarMessageAsyncMode00( test )
     test.identical( con.resourcesGet().length, 1 );
     con.give( function( err, got )
     {
-      test.identical( err, 'err' )
+      test.is( !!err );
       test.identical( got, undefined );
     })
     test.identical( con.resourcesGet().length, 0 );
@@ -202,9 +202,9 @@ function ordinarMessageAsyncMode00( test )
     var con = new _.Consequence({ tag : 'con', capacity : 3 });
     con.error( 'err1' ).error( 'err2' ).error( 'err3' );
     test.identical( con.resourcesGet().length, 3 );
-    con.give( ( err, got ) => test.identical( err, 'err1' ) );
-    con.give( ( err, got ) => test.identical( err, 'err2' ) );
-    con.give( ( err, got ) => test.identical( err, 'err3' ) );
+    con.give( ( err, got ) => test.is( !!err ) );
+    con.give( ( err, got ) => test.is( !!err ) );
+    con.give( ( err, got ) => test.is( !!err ) );
     test.identical( con.competitorsEarlyGet().length, 0 );
     test.identical( con.resourcesGet().length, 0 );
     return null;
@@ -229,7 +229,7 @@ function ordinarMessageAsyncMode00( test )
 
 //
 
-function ordinarMessageAsyncMode10( test )
+function ordinarResourceAsyncMode10( test )
 {
   var c = this;
   var amode = _.Consequence.AsyncModeGet();
@@ -303,7 +303,7 @@ function ordinarMessageAsyncMode10( test )
     test.identical( con.resourcesGet().length, 1 );
     con.give( function( err, got )
     {
-      test.identical( err, 'err' )
+      test.is( !!err );
       test.identical( got, undefined );
     })
     test.identical( con.resourcesGet().length, 1 );
@@ -327,9 +327,9 @@ function ordinarMessageAsyncMode10( test )
   {
     var con = new _.Consequence({ tag : 'con', capacity : 3 });
     con.error( 'err1' ).error( 'err2' ).error( 'err3' );
-    con.give( ( err, got ) => test.identical( err, 'err1' ) );
-    con.give( ( err, got ) => test.identical( err, 'err2' ) );
-    con.give( ( err, got ) => test.identical( err, 'err3' ) );
+    con.give( ( err, got ) => test.is( !!err ) );
+    con.give( ( err, got ) => test.is( !!err ) );
+    con.give( ( err, got ) => test.is( !!err ) );
     test.identical( con.competitorsEarlyGet().length, 3 );
     test.identical( con.resourcesGet().length, 3 );
     return _.timeOut( 1, function()
@@ -359,7 +359,7 @@ function ordinarMessageAsyncMode10( test )
 
 //
 
-function ordinarMessageAsyncMode01( test )
+function ordinarResourceAsyncMode01( test )
 {
   var c = this;
   var amode = _.Consequence.AsyncModeGet();
@@ -446,7 +446,7 @@ function ordinarMessageAsyncMode01( test )
       test.identical( con.competitorsEarlyGet().length, 0 );
       con.give( function( err, got )
       {
-        test.identical( err, 'err' )
+        test.is( !!err );
         test.identical( got, undefined );
       })
       return null;
@@ -475,9 +475,9 @@ function ordinarMessageAsyncMode01( test )
     {
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( con.resourcesGet().length, 3 );
-      con.give( ( err, got ) => test.identical( err, 'err1' ) );
-      con.give( ( err, got ) => test.identical( err, 'err2' ) );
-      con.give( ( err, got ) => test.identical( err, 'err3' ) );
+      con.give( ( err, got ) => test.is( !!err ) );
+      con.give( ( err, got ) => test.is( !!err ) );
+      con.give( ( err, got ) => test.is( !!err ) );
       return null;
     })
     .thenKeep( function( arg )
@@ -507,7 +507,7 @@ function ordinarMessageAsyncMode01( test )
 
 //
 
-function ordinarMessageAsyncMode11( test )
+function ordinarResourceAsyncMode11( test )
 {
   var c = this;
   var amode = _.Consequence.AsyncModeGet();
@@ -579,7 +579,7 @@ function ordinarMessageAsyncMode11( test )
     con.error( 'err' );
     con.give( function( err, got )
     {
-      test.identical( err, 'err' )
+      test.is( !!err );
       test.identical( got, undefined );
     })
     test.identical( con.resourcesGet().length, 1 );
@@ -603,9 +603,9 @@ function ordinarMessageAsyncMode11( test )
   {
     var con = new _.Consequence({ tag : 'con', capacity : 3 });
     con.error( 'err1' ).error( 'err2' ).error( 'err3' );
-    con.give( ( err, got ) => test.identical( err, 'err1' ) );
-    con.give( ( err, got ) => test.identical( err, 'err2' ) );
-    con.give( ( err, got ) => test.identical( err, 'err3' ) );
+    con.give( ( err, got ) => test.is( !!err ) );
+    con.give( ( err, got ) => test.is( !!err ) );
+    con.give( ( err, got ) => test.is( !!err ) );
     test.identical( con.competitorsEarlyGet().length, 3 );
     test.identical( con.resourcesGet().length, 3 );
     return _.timeOut( 1, function()
@@ -724,7 +724,7 @@ function finallyPromiseGiveAsyncMode00( test )
 
     promise.catch( function( err )
     {
-      test.identical( err, testMsg );
+      test.is( _.strHas( String( err ), testMsg ) );
       test.is( _.promiseIs( promise ) );
       test.identical( con.resourcesCount(), 0 );
       test.identical( con.argumentsCount(), 0 );
@@ -824,7 +824,7 @@ function finallyPromiseGiveAsyncMode10( test )
     var promise = con.finallyPromiseGive();
     promise.catch( function( err )
     {
-      test.identical( err, testMsg );
+      test.is( _.strHas( String( err ), testMsg ) );
       test.is( _.promiseIs( promise ) );
     });
     test.identical( con.resourcesGet().length, 1 );
@@ -931,7 +931,7 @@ function finallyPromiseGiveAsyncMode01( test )
     con.error( testMsg );
     promise.catch( function( err )
     {
-      test.identical( err, testMsg );
+      test.is( _.strHas( String( err ), testMsg ) );
       test.is( _.promiseIs( promise ) );
     });
     test.identical( con.resourcesGet().length, 1 );
@@ -1038,7 +1038,7 @@ function finallyPromiseGiveAsyncMode11( test )
     var promise = con.finallyPromiseGive();
     promise.catch( function( err )
     {
-      test.identical( err, testMsg );
+      test.is( _.strHas( String( err ), testMsg ) );
       test.is( _.promiseIs( promise ) );
     });
     test.identical( con.resourcesGet().length, 1 );
@@ -2011,9 +2011,11 @@ function finallyPromiseKeepAsyncMode00( test )
     var promise = con.finallyPromiseKeep();
     promise.catch( function( err )
     {
-      test.identical( err, testMsg );
+      test.is( _.strHas( String( err ), testMsg ) );
       test.is( _.promiseIs( promise ) );
-      test.identical( con.resourcesGet(), [{ error : testMsg, argument : undefined }] );
+      // test.identical( con.resourcesGet(), [{ error : testMsg, argument : undefined }] );
+      test.identical( con.argumentsGet(), [] );
+      test.identical( con.errorsGet().length, 1 );
       test.identical( con.competitorsEarlyGet().length, 0 );
     })
     return _.Consequence.From( promise ).finally( () => null );
@@ -2108,14 +2110,16 @@ function finallyPromiseKeepAsyncMode10( test )
     promise.catch( function( err )
     {
       catched = 1;
-      test.identical( err, testMsg );
+      test.is( _.strHas( String( err ), testMsg ) );
       test.is( _.promiseIs( promise ) );
     });
     test.identical( con.resourcesGet().length, 1 );
     test.identical( con.competitorsEarlyGet().length, 1 );
     return _.timeOut( 1, function()
     {
-      test.identical( con.resourcesGet(), [{ error : testMsg, argument : undefined }] );
+      // test.identical( con.resourcesGet(), [{ error : testMsg, argument : undefined }] );
+      test.identical( con.argumentsGet(), [] );
+      test.identical( con.errorsGet().length, 1 );
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( catched, 1 );
       return _.Consequence.From( promise ).finally( () => null );
@@ -2214,7 +2218,7 @@ function finallyPromiseKeepAsyncMode01( test )
     var promise = con.finallyPromiseKeep();
     promise.catch( function( err )
     {
-      test.identical( err, testMsg );
+      test.is( _.strHas( String( err ), testMsg ) );
       test.is( _.promiseIs( promise ) );
       catched = 1;
     });
@@ -2223,7 +2227,9 @@ function finallyPromiseKeepAsyncMode01( test )
     test.identical( con.competitorsEarlyGet().length, 1 );
     return _.timeOut( 1, function()
     {
-      test.identical( con.resourcesGet(), [{ error : testMsg, argument : undefined }] );
+      // test.identical( con.resourcesGet(), [{ error : testMsg, argument : undefined }] );
+      test.identical( con.argumentsGet(), [] );
+      test.identical( con.errorsGet().length, 1 );
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( catched, 1 );
       return _.Consequence.From( promise ).finally( () => null );
@@ -2323,7 +2329,7 @@ function finallyPromiseKeepAsyncMode11( test )
     var promise = con.finallyPromiseKeep();
     promise.catch( function( err )
     {
-      test.identical( err, testMsg );
+      test.is( _.strHas( String( err ), testMsg ) );
       test.is( _.promiseIs( promise ) );
       catched = 1;
     });
@@ -2331,7 +2337,9 @@ function finallyPromiseKeepAsyncMode11( test )
     test.identical( con.competitorsEarlyGet().length, 1 );
     return _.timeOut( 1, function()
     {
-      test.identical( con.resourcesGet(), [{ error : testMsg, argument : undefined }] );
+      // test.identical( con.resourcesGet(), [{ error : testMsg, argument : undefined }] );
+      test.identical( con.argumentsGet(), [] );
+      test.identical( con.errorsGet().length, 1 );
       test.identical( con.competitorsEarlyGet().length, 0 );
       test.identical( catched, 1 );
       return _.Consequence.From( promise ).finally( () => null );
@@ -2515,8 +2523,8 @@ function tap( test )
     test.case = 'single error and single taker : attached taker after value resolved';
     var con = new _.Consequence({ tag : 'con' });
     con.error( testMsg );
-    con.tap( ( err, got ) => test.identical( err, testMsg ) );
-    con.give( ( err, got ) => test.identical( err, testMsg ) );
+    con.tap( ( err, got ) => test.is( _.strHas( String( err ), testMsg ) ) );
+    con.give( ( err, got ) => test.is( _.strHas( String( err ), testMsg ) ) );
     test.identical( con.competitorsEarlyGet().length, 0 );
     test.identical( con.resourcesGet().length, 0 );
     return null;
@@ -2878,7 +2886,7 @@ function catchTestRoutine( test )
     test.case = 'single err in give sequence, and single taker : attached taker after value resolved';
     var con = new _.Consequence({ tag : 'con' });
     con.error( testMsg );
-    con.catch( ( err ) => { test.identical( err, testMsg ); return null; });
+    con.catch( ( err ) => { test.is( _.strHas( String( err ), testMsg ) ); return null; });
     con.give( ( err, got ) => test.identical( got, null ) );
 
     test.identical( con.competitorsEarlyGet().length, 0 );
@@ -2902,8 +2910,8 @@ function catchTestRoutine( test )
     con.give( ( err, got ) => test.identical( got, testMsg ) );
 
     test.identical( con.resourcesGet().length, 2 );
-    test.identical( con.resourcesGet()[ 0 ].error, testMsg + 1 );
-    test.identical( con.resourcesGet()[ 1 ].error, testMsg + 2 );
+    test.is( _.strHas( String( con.resourcesGet()[ 0 ].error ), testMsg + 1 ) );
+    test.is( _.strHas( String( con.resourcesGet()[ 1 ].error ), testMsg + 2 ) );
     test.identical( con.competitorsEarlyGet().length, 0 );
 
     return arg;
@@ -2919,8 +2927,10 @@ function catchTestRoutine( test )
     con.error( testMsg + 2 );
     con.take( testMsg );
 
-    con.catch( ( err ) => { test.identical( err, testMsg + 1 ); return null; });
-    con.catch( ( err ) => { test.identical( err, testMsg + 2 ); return null; });
+    test.is( _.strHas( String( con.resourcesGet()[ 0 ].error ), testMsg + 1 ) );
+
+    con.catch( ( err ) => { test.is( _.strHas( String( err ), testMsg + 1 ) ); return null; });
+    con.catch( ( err ) => { test.is( _.strHas( String( err ), testMsg + 2 ) ); return null; });
     con.give( ( err, got ) => test.identical( got, testMsg ) );
 
     test.identical( con.resourcesGet().length, 2 );
@@ -3058,7 +3068,7 @@ function keep( test )
     var con = new _.Consequence({ tag : 'con' });
     con.error( testMsg );
     con.then( ( got ) => { test.identical( 0, 1 ); return null; });
-    con.give( ( err, got ) => test.identical( err, testMsg ) );
+    con.give( ( err, got ) => test.is( _.strHas( String( err ), testMsg ) ) );
 
     test.identical( con.competitorsEarlyGet().length, 0 );
     test.identical( con.resourcesGet().length, 0 );
@@ -3079,7 +3089,8 @@ function keep( test )
     con.then( ( got ) => { test.identical( got, testMsg ); return null; });
 
     test.identical( con.resourcesGet().length, 3 );
-    test.identical( con.resourcesGet()[ 0 ].error, testMsg );
+    // test.identical( con.resourcesGet()[ 0 ].error, testMsg );
+    test.is( _.strHas( String( con.resourcesGet()[ 0 ].error ), testMsg ) );
     test.identical( con.resourcesGet()[ 1 ], { error : undefined, argument : null } );
     test.identical( con.resourcesGet()[ 2 ], { error : undefined, argument : null } );
     test.identical( con.competitorsEarlyGet().length, 0 );
@@ -3100,7 +3111,8 @@ function keep( test )
     con.then( ( got ) => { test.identical( 0, 1 ); return null; });
 
     test.identical( con.resourcesGet().length, 3 );
-    test.identical( con.resourcesGet()[ 0 ].error, testMsg );
+    // test.identical( con.resourcesGet()[ 0 ].error, testMsg );
+    test.is( _.strHas( String( con.resourcesGet()[ 0 ].error ), testMsg ) );
     test.identical( con.resourcesGet()[ 1 ], { error : undefined, argument : testMsg } );
     test.identical( con.resourcesGet()[ 2 ], { error : undefined, argument : testMsg } );
     test.identical( con.competitorsEarlyGet().length, 0 );
@@ -3176,7 +3188,7 @@ function timeOut( test )
     test.case = 'single err in give sequence, and single taker : attached taker after value resolved';
     var con = new _.Consequence({ tag : 'con' });
     con.error( testMsg );
-    con.timeOut( 0, ( err, got ) => { test.identical( err, testMsg ); return null; } );
+    con.timeOut( 0, ( err, got ) => { test.is( _.strHas( String( err ), testMsg ) ); return null; } );
     con.give( ( err, got ) => test.identical( got, null ) );
 
     return _.timeOut( 0, function()
@@ -3477,13 +3489,13 @@ function andConcurrent( test )
       test.is( err === undefined );
 
       if( error )
-      test.identical( readies[ 0 ].resourcesGet(), [ { 'error' : gotError, 'argument' : undefined } ] );
+      test.identical( readies[ 0 ].resourcesGet(), [ { 'error' : err, 'argument' : undefined } ] );
       else
       test.identical( readies[ 0 ].resourcesGet(), [ { 'error' : undefined, 'argument' : 10 } ] );
       test.identical( readies[ 0 ].competitorsEarlyGet().length, 0 );
 
       if( error && !concurrent )
-      test.identical( readies[ 1 ].resourcesGet(), [ { 'error' : gotError, 'argument' : undefined } ] );
+      test.identical( readies[ 1 ].resourcesGet(), [ { 'error' : err, 'argument' : undefined } ] );
       else
       test.identical( readies[ 1 ].resourcesGet(), [ { 'error' : undefined, 'argument' : 11 } ] );
       test.identical( readies[ 1 ].competitorsEarlyGet().length, 0 );
@@ -3492,9 +3504,9 @@ function andConcurrent( test )
       test.identical( ready.competitorsEarlyGet().length, sync ? 0 : 1 );
 
       if( error )
-      test.identical( gotArg, undefined );
+      test.identical( arg, undefined );
       else
-      test.identical( gotArg, [ 10, 11, null ] );
+      test.identical( arg, [ 10, 11, null ] );
 
       if( error )
       test.identical( elements, [ 0, concurrent ? 11 : 1 ] );
@@ -3508,6 +3520,10 @@ function andConcurrent( test )
         else
         throw err;
       }
+
+      if( err )
+      _.errAttend( err );
+
       return arg;
     });
 
@@ -4225,7 +4241,7 @@ function andKeep( test )
 
     mainCon.finally( function( err, got )
     {
-      test.identical( err, 'con1' );
+      test.is( _.strHas( String( err ), 'con1' ) );
       test.identical( got, undefined );
 
       test.identical( mainCon.resourcesGet().length, 0 );
@@ -4594,7 +4610,7 @@ function andTake( test )
 
     mainCon.finally( function( err, got )
     {
-      test.identical( err, 'con1' );
+      test.is( _.strHas( String( err ), 'con1' ) );
       test.identical( got, undefined );
 
       test.identical( mainCon.resourcesGet().length, 0 );
@@ -6668,7 +6684,7 @@ function thenOrKeepingWithSimple( test )
     var con1 = new _.Consequence({ tag : 'con1' });
     var con2 = new _.Consequence({ tag : 'con2' });
 
-    con.error( 'error' );
+    con.error( 'error1' );
 
     test.identical( con.errorsCount(), 1 );
     test.identical( con.argumentsCount(), 0 );
@@ -6707,7 +6723,7 @@ function thenOrKeepingWithSimple( test )
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
 
-      test.identical( err, 'error' );
+      test.is( _.strHas( String( err ), 'error1' ) );
       test.identical( arg, undefined );
       got = err;
     });
@@ -6720,7 +6736,7 @@ function thenOrKeepingWithSimple( test )
 
     return _.timeOut( 200, function( err, arg )
     {
-      test.identical( got, 'error' );
+      test.is( _.strHas( String( got ), 'error1' ) );
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.competitorsCount(), 1 );
@@ -7354,7 +7370,7 @@ function thenOrTakingWithSimple( test )
     var con1 = new _.Consequence({ tag : 'con1' });
     var con2 = new _.Consequence({ tag : 'con2' });
 
-    con.error( 'error' );
+    con.error( 'error1' );
 
     test.identical( con.errorsCount(), 1 );
     test.identical( con.argumentsCount(), 0 );
@@ -7393,7 +7409,7 @@ function thenOrTakingWithSimple( test )
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
 
-      test.identical( err, 'error' );
+      test.is( _.strHas( String( err ), 'error1' ) );
       test.identical( arg, undefined );
       got = err;
     });
@@ -7406,7 +7422,7 @@ function thenOrTakingWithSimple( test )
 
     return _.timeOut( 200, function( err, arg )
     {
-      test.identical( got, 'error' );
+      test.is( _.strHas( String( got ), 'error1' ) );
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.competitorsCount(), 1 );
@@ -8232,7 +8248,7 @@ function firstAsyncMode00( test )
     con.first( () => new _.Consequence().error( testMsg ));
     con.finally( function( err, got )
     {
-      test.identical( err, testMsg );
+      test.is( _.strHas( String( err ), testMsg ) );
       test.identical( got, undefined );
       test.identical( con.resourcesGet(), [] );
       return null;
@@ -8451,7 +8467,7 @@ function firstAsyncMode10( test )
     con.first( () => new _.Consequence().error( testMsg ));
     con.give( function( err, got )
     {
-      test.identical( err, testMsg );
+      test.is( _.strHas( String( err ), testMsg ) );
       test.identical( got, undefined );
       test.identical( con.resourcesGet(), [] );
     })
@@ -8726,7 +8742,7 @@ function firstAsyncMode01( test )
 
       con.give( function( err, got )
       {
-        test.identical( err, testMsg );
+        test.is( _.strHas( String( err ), testMsg ) );
         test.identical( got, undefined );
       })
       return null;
@@ -8987,7 +9003,7 @@ function firstAsyncMode11( test )
     con.first( () => new _.Consequence().error( testMsg ));
     con.give( function( err, got )
     {
-      test.identical( err, testMsg );
+      test.is( _.strHas( String( err ), testMsg ) );
       test.identical( got, undefined );
     })
     test.identical( con.resourcesGet().length, 0 );
@@ -9197,7 +9213,8 @@ function fromAsyncMode00( test )
     var con = _.Consequence.From( src );
     return _.timeOut( 1, function()
     {
-      test.identical( con.resourcesGet(), [ { error : testMsg, argument : undefined } ] );
+      // test.identical( con.resourcesGet(), [ { error : testMsg, argument : undefined } ] );
+        test.is( _.strHas( String( con.errorsGet()[ 0 ] ), testMsg ) );
       test.identical( con.competitorsEarlyGet(), [] );
       return null;
     })
@@ -9333,7 +9350,7 @@ function fromAsyncMode10( test )
     test.case = 'async competitors adding, passing an error';
     var src = _.err( testMsg );
     var con = _.Consequence.From( src );
-    con.give( ( err, got ) => test.identical( err, src ) )
+    con.give( ( err, got ) => test.is( err === src ) );
     test.identical( con.resourcesGet(), [ { error : src, argument : undefined } ] );
     test.identical( con.competitorsEarlyGet().length, 1 );
     return _.timeOut( 1, function()
@@ -9392,7 +9409,7 @@ function fromAsyncMode10( test )
     test.case = 'async competitors adding, passing rejected promise';
     var src = Promise.reject( testMsg );
     var con = _.Consequence.From( src );
-    con.give( ( err, got ) => test.identical( err, testMsg ) );
+    con.give( ( err, got ) => test.is( _.strHas( String( err ), testMsg ) ) );
     test.identical( con.competitorsEarlyGet().length, 1 );
     test.identical( con.resourcesGet().length, 0 )
     return _.timeOut( 1, function()
@@ -9464,7 +9481,8 @@ function fromAsyncMode01( test )
     var src = _.err( testMsg );
     var con = _.Consequence.From( src );
     test.identical( con.resourcesGet(), [ { error : src, argument : undefined } ] );
-    con.give( ( err, got ) => test.identical( err, src ) )
+    // con.give( ( err, got ) => test.is( _.strHas( String( err ), src ) ) );
+    con.give( ( err, got ) => test.is( err === src ) );
     test.identical( con.resourcesGet(), [] );
     return _.timeOut( 1, function()
     {
@@ -9521,7 +9539,7 @@ function fromAsyncMode01( test )
     test.case = 'passing rejected promise';
     var src = Promise.reject( testMsg );
     var con = _.Consequence.From( src );
-    con.give( ( err, got ) => test.identical( err, testMsg ) );
+    con.give( ( err, got ) => test.is( _.strHas( String( err ), testMsg ) ) );
     test.identical( con.resourcesGet().length, 0 )
     return _.timeOut( 1, function()
     {
@@ -9591,7 +9609,7 @@ function fromAsyncMode11( test )
     test.case = 'async, passing an error';
     var src = _.err( testMsg );
     var con = _.Consequence.From( src );
-    con.give( ( err, got ) => test.identical( err, src ) )
+    con.give( ( err, got ) => test.is( err === src ) );
     test.identical( con.resourcesGet(), [ { error : src, argument : undefined } ] );
     test.identical( con.competitorsEarlyGet().length, 1 );
     return _.timeOut( 1, function()
@@ -9650,7 +9668,7 @@ function fromAsyncMode11( test )
     test.case = 'async, passing rejected promise';
     var src = Promise.reject( testMsg );
     var con = _.Consequence.From( src );
-    con.give( ( err, got ) => test.identical( err, testMsg ) );
+    con.give( ( err, got ) => test.is( _.strHas( String( err ), testMsg ) ) );
     test.identical( con.competitorsEarlyGet().length, 1 );
     test.identical( con.resourcesGet().length, 0 )
     return _.timeOut( 1, function()
@@ -10045,10 +10063,10 @@ var Self =
 
     trivial,
 
-    ordinarMessageAsyncMode00,
-    ordinarMessageAsyncMode10,
-    ordinarMessageAsyncMode01,
-    ordinarMessageAsyncMode11,
+    ordinarResourceAsyncMode00,
+    ordinarResourceAsyncMode10,
+    ordinarResourceAsyncMode01,
+    ordinarResourceAsyncMode11,
 
     finallyPromiseGiveAsyncMode00,
     finallyPromiseGiveAsyncMode10,

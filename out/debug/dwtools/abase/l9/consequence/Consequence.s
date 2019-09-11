@@ -870,6 +870,7 @@ function _first( src, stack )
     }
     catch( err )
     {
+      // result = new _.Consequence().error( err );
       result = new _.Consequence().error( self.__handleError( err ) );
     }
 
@@ -1679,6 +1680,13 @@ function _and( o )
   {
     let first = -1;
 
+    // if( err && !anyErr )
+    // anyErr = _.err( err );
+    // if( err )
+    // debugger;
+    // if( err )
+    // err = _.err( err );
+
     if( err && !anyErr )
     anyErr = err;
 
@@ -2331,6 +2339,12 @@ function take( error, argument )
     error = undefined;
   }
 
+  // if( error !== undefined )
+  // error = _._err( err );
+
+  if( error !== undefined )
+  error = self.__handleError( error )
+
   self.__take( error, argument );
 
   if( self.AsyncCompetitorHanding || self.AsyncResourceAdding )
@@ -2390,7 +2404,7 @@ take.having =
  * @memberof module:Tools/base/Consequence.wConsequence#
  */
 
-function error( error, argument )
+function error( error )
 {
   let self = this;
 
@@ -2398,6 +2412,9 @@ function error( error, argument )
 
   if( arguments.length === 0  )
   error = _.err();
+
+  if( error !== undefined )
+  error = self.__handleError( error )
 
   self.__take( error, undefined );
 
@@ -2565,7 +2582,7 @@ function __handleError( err, competitor )
   err = _._err
   ({
     args : [ err ],
-    level : 2,
+    level : 3,
   });
 
   if( Config.debug )
@@ -2582,8 +2599,9 @@ function __handleError( err, competitor )
     {
       if( !_.errIsAttended( err ) )
       {
-        _global.logger.error( 'Unhandled error caught by Consequence' );
-        _.errLog( err );
+        err = _.err( 'Unhandled error caught by Consequence\n', err );
+        // logger.log( err );
+        _.errLog( err ); /* xxx : make working console.log( err ) */
         debugger;
       }
       return null;
@@ -2781,7 +2799,8 @@ function __handleResourceNow()
       if( competitor.keeping && result === undefined )
       {
         debugger;
-        throwenErr = self.__handleError( _.err( 'Thenning competitor of consequence should return something, not undefined' ), competitor.competitorRoutine )
+        let err = _.err( `Thenning callback of consequence should return something, but ${competitor.competitorRoutine.name} returned undefined` )
+        throwenErr = self.__handleError( err, competitor.competitorRoutine )
       }
 
       /* keeping */
@@ -4206,7 +4225,9 @@ function FinallyPass( err, arg )
   _.assert( err !== undefined || arg !== undefined, 'Argument of take should be something, not undefined' );
   _.assert( err === undefined || arg === undefined, 'Cant take both error and argument, one should be undefined' );
   if( err )
-  throw _.err( err );
+  throw err;
+  // if( err )
+  // throw _.err( err );
   return arg;
 }
 
@@ -4476,7 +4497,7 @@ let Statics =
 
   KindOfResource,
   Diagnostics : 1,
-  Stacking : 1,
+  Stacking : 0,
   AsyncCompetitorHanding : 0,
   AsyncResourceAdding : 0,
 
