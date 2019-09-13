@@ -9921,7 +9921,7 @@ function thenSequenceSync( test )
 
 }
 
-//
+// xxx : implement con1.then( con )
 
 function thenSequenceAsync( test )
 {

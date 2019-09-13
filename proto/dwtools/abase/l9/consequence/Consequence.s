@@ -1001,7 +1001,7 @@ function splitKeep( first )
 
   let result = new Self({ sourcePath : 2 });
 
-  if( first ) // xxx
+  if( first ) // xxx : remove, maybe argument?
   {
     result.finally( first );
     self.give( function( err, arg )
@@ -1033,7 +1033,7 @@ function splitGive( first )
 
   let result = new Self({ sourcePath : 2 });
 
-  if( first ) // xxx
+  if( first ) // xxx : remove, maybe argument?
   {
     result.finally( first );
     self.give( function( err, arg )
@@ -2940,7 +2940,7 @@ function _competitorAppend( o )
   // if( o.late === null )
   // o.late = _.consequenceIs( o.competitorRoutine );
   // if( o.late )
-  // xxx;
+  // xxx : implement con1.then( con )
 
   if( o.late )
   self._competitorsLate.unshift( competitorDescriptor );
@@ -2958,6 +2958,7 @@ _competitorAppend.defaults =
   kindOfResource : null,
   late : false,
   instant : true,
+  // instant : false, // xxx : implement con1.then( con )
 
   times : 1,
   stackLevel : null,
@@ -4755,7 +4756,7 @@ _.classDeclare
   usingOriginalPrototype : 1,
 });
 
-_.Copyable.mixin( wConsequence ); /* xxx : try to remove */
+_.Copyable.mixin( wConsequence ); /* xxx : try to remove mixin */
 
 _.mapExtend( _, Tools );
 _.mapExtend( _realGlobal_.wTools, Tools );
