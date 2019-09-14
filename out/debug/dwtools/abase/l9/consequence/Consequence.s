@@ -1150,7 +1150,10 @@ function exceptLog()
 
   function reportError( err )
   {
-    throw _.errLogOnce( err );
+    err = _.err( err );
+    logger.log( _.errOnce( err ) );
+    throw err;
+    // throw _.errLogOnce( err );
   }
 
 }
@@ -2579,6 +2582,7 @@ function __onTake( err, arg )
 function __handleError( err, competitor )
 {
   let self = this;
+
   err = _._err
   ({
     args : [ err ],
@@ -2589,19 +2593,20 @@ function __handleError( err, competitor )
   if( competitor && self.Diagnostics && self.Stacking )
   err.stack = err.stack + '\n+\n' + competitor.stack;
 
+  // if( !_.errIsAttended( err ) )
+  // _.errAttentionRequest( err );
+
   if( !_.errIsAttended( err ) )
-  _.errAttentionRequest( err );
-
-  if( err.attentionRequested )
   {
-
     _.timeOut( 250, function _unhandledError()
     {
+      debugger;
       if( !_.errIsAttended( err ) )
       {
+        debugger;
         err = _.err( 'Unhandled error caught by Consequence\n', err );
-        // logger.log( err );
-        _.errLog( err ); /* xxx : make working console.log( err ) */
+        logger.log( err );
+        // _.errLog( err ); /* xxx : make working console.log( err ) */
         debugger;
       }
       return null;
