@@ -28,12 +28,12 @@ function clone( test )
   var con2 = con1.clone();
   test.identical( con1.argumentsCount(), 1 );
   test.identical( con1.competitorsCount(), 0 );
-  test.identical( con1.nickName, 'Consequence::con1' );
+  test.identical( con1.qualifiedName, 'Consequence::con1' );
   test.identical( con1.infoExport({ verbosity : 1 }), 'Consequence::con1 1 / 0' );
   test.identical( con1.capacity, 2 );
   test.identical( con2.argumentsCount(), 1 );
   test.identical( con2.competitorsCount(), 0 );
-  test.identical( con2.nickName, 'Consequence::con1' );
+  test.identical( con2.qualifiedName, 'Consequence::con1' );
   test.identical( con2.infoExport({ verbosity : 1 }), 'Consequence::con1 1 / 0' );
   test.identical( con2.capacity, 2 );
   test.is( con1._resources !== con2._resources );
@@ -47,12 +47,12 @@ function clone( test )
   var con2 = con1.clone();
   test.identical( con1.argumentsCount(), 0 );
   test.identical( con1.competitorsCount(), 1 );
-  test.identical( con1.nickName, 'Consequence::con1' );
+  test.identical( con1.qualifiedName, 'Consequence::con1' );
   test.identical( con1.infoExport({ verbosity : 1 }), 'Consequence::con1 0 / 1' );
   test.identical( con1.capacity, 2 );
   test.identical( con2.argumentsCount(), 0 );
   test.identical( con2.competitorsCount(), 0 );
-  test.identical( con2.nickName, 'Consequence::con1' );
+  test.identical( con2.qualifiedName, 'Consequence::con1' );
   test.identical( con2.infoExport({ verbosity : 1 }), 'Consequence::con1 0 / 0' );
   test.identical( con2.capacity, 2 );
   test.is( con1._resources !== con2._resources );
@@ -10047,7 +10047,7 @@ function thenSequenceAsync( test )
 var Self =
 {
 
-  name : 'Tools/base/Consequence',
+  name : 'Tools.base.Consequence',
   silencing : 1,
   routineTimeOut : 30000,
 
