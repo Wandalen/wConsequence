@@ -875,9 +875,18 @@ function _first( src, stack )
     }
 
     if( _.consequenceIs( result ) )
-    result.finally( self );
+    {
+      result.finally( self );
+    }
+    else if( _.promiseLike( result ) )
+    {
+      debugger;
+      result.finally( Self.From( result ) );
+    }
     else
-    self.take( result );
+    {
+      self.take( result );
+    }
 
   }
   else _.assert( 0, 'first expects consequence of routine, but got', _.strType( src ) );
@@ -2526,6 +2535,12 @@ function __take( error, argument )
     argument.finallyGive( self );
     return self;
   }
+  else if( _.promiseLike( argument ) )
+  {
+    debugger;
+    Self.From( argument ).finallyGive( self );
+    return self;
+  }
 
   if( Config.debug )
   {
@@ -2870,6 +2885,10 @@ function __handleResourceNow()
         if( _.consequenceIs( result ) )
         {
           result.finally( self );
+        }
+        else if( _.promiseLike( result ) )
+        {
+          Self.From( result ).finally( self );
         }
         else
         {
@@ -4040,7 +4059,6 @@ _Take.defaults =
   context : null,
   error : null,
   args : null,
-
 }
 
 //
