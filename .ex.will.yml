@@ -32,13 +32,16 @@ about :
 path :
 
   repository : git+https:///github.com/Wandalen/wConsequence.git
+  remotes :
+   - git+https:///github.com/Wandalen/wConsequence.git
+   - npm:///wConsequence
   bugtracker : https:///github.com/Wandalen/wConsequence/issues
 
 step :
 
   proto.export :
     inherit : module.export
-    export : path::proto
+    export : path::export
     tar : 0
     criterion :
       content : 'proto'
