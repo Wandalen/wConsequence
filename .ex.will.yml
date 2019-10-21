@@ -32,7 +32,7 @@ about :
 path :
 
   repository : git+https:///github.com/Wandalen/wConsequence.git
-  remotes :
+  origins :
    - git+https:///github.com/Wandalen/wConsequence.git
    - npm:///wConsequence
   bugtracker : https:///github.com/Wandalen/wConsequence/issues
