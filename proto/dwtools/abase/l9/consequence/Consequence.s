@@ -3733,6 +3733,25 @@ _.routineExtend( infoExport, _infoExport );
 
 //
 
+function callbacksInfoLog()
+{
+  let self = this;
+
+  self._competitorsEarly.forEach( ( competitor ) =>
+  {
+    console.log( competitor.competitorRoutine );
+  });
+
+  self._competitorsLate.forEach( ( competitor ) =>
+  {
+    console.log( competitor.competitorRoutine );
+  });
+
+  return self.infoExport();
+}
+
+//
+
 /**
  * Serializes current wConsequence instance.
  * @example
@@ -4557,6 +4576,7 @@ let Statics =
   Error,
   Try,
 
+  And : AndKeep,
   AndTake,
   AndKeep,
 
@@ -4780,6 +4800,7 @@ let Extend =
 
   _infoExport,
   infoExport,
+  callbacksInfoLog,
   toStr,
   toString,
 
