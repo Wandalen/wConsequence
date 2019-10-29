@@ -1644,7 +1644,6 @@ function _and( o )
   let waiting = o.waiting;
   let procedure = self.procedure( 'and' ).sourcePathFirst( o.stackLevel + 1 );
   let escaped = 0;
-  // let given = !o.waiting ? [] : undefined;
 
   _.assertRoutineOptions( _and, arguments );
 
@@ -1669,8 +1668,6 @@ function _and( o )
   {
     let competitors2 = [];
 
-    // let f = o.waiting ? 0 : 1;
-    // let l = o.waiting ? competitors.length-1 : competitors.length;
     for( let s = first ; s < last ; s++ )
     {
       let competitor = competitors[ s ];
@@ -1714,8 +1711,6 @@ function _and( o )
     else
     self.finallyGive( ( err, arg ) =>
     {
-      // console.log( given );
-      // debugger;
       __got.call( self, err, arg );
     });
 
@@ -1727,8 +1722,6 @@ function _and( o )
   {
     let competitors2 = [];
 
-    // let f = o.waiting ? 0 : 1;
-    // let l = o.waiting ? competitors.length-1 : competitors.length;
     for( let c = first ; c < last ; c++ ) (function( c )
     {
       let competitor = competitors[ c ];
@@ -1742,7 +1735,6 @@ function _and( o )
       }
       catch( err )
       {
-        debugger;
         competitor = competitors[ c ] = new _.Consequence().error( _.err( err ) );
       }
 
@@ -1761,12 +1753,6 @@ function _and( o )
           competitor !== undefined
         , () => `Expects defined value, but got ${_.strType( competitor )}`
       );
-
-      // if( !o.waiting )
-      // {
-      //   console.log( given );
-      //   debugger;
-      // }
 
       if( o.waiting )
       {
@@ -1814,36 +1800,11 @@ function _and( o )
         _.arrayAppendOnceStrictly( self._dependsOf, competitor );
       }
 
-      // if( !o.waiting )
-      // self.thenGive( ( arg ) =>
-      // {
-      //   console.log( given );
-      //   debugger;
-      //   given[ c ] = arg;
-      // });
-
-      // let r = __got;
-
       competitor.procedure( 'and' ).sourcePathFirst( procedure.sourcePath() );
-      if( o.waiting )
       competitor.finallyGive( __got );
-      else
-      competitor.finallyGive( __gotNonWaiting );
 
     })( c );
 
-    // __got.call( self, err, arg );
-
-  }
-
-  /* */
-
-  function __gotNonWaiting( err, arg )
-  {
-    // console.log( given );
-    // debugger;
-    // given[ c ] = arg;
-    return __got.call( this, err, arg );
   }
 
   /* */
@@ -1852,16 +1813,8 @@ function _and( o )
   {
     let firstIndex = -1;
 
-    if( err )
-    debugger;
     if( err && !anyErr )
     anyErr = err;
-
-    // if( !o.waiting )
-    // {
-    //   console.log( given );
-    //   debugger;
-    // }
 
     if( _.numberIs( this ) )
     {
@@ -1874,8 +1827,6 @@ function _and( o )
       account( c );
     }
 
-    // let f = o.waiting ? 0 : 1;
-    // let l = o.waiting ? competitors.length-1 : competitors.length;
     if( Config.debug && self.Diagnostics )
     if( first <= firstIndex && firstIndex < last )
     if( _.consequenceIs( this ) )
@@ -1910,16 +1861,7 @@ function _and( o )
   {
     let competitors2 = [];
 
-    // if( !o.waiting )
-    // {
-    //   console.log( given );
-    //   debugger;
-    // }
-
-    // let f = o.waiting ? 0 : 1;
-    // let l = o.waiting ? competitors.length-1 : competitors.length;
-
-    if( !o.waiting )
+    if( !o.wating )
     debugger;
 
     if( !taking )
@@ -1944,6 +1886,8 @@ function _and( o )
     self.take( args );
 
   }
+
+  /* */
 
 }
 
@@ -2034,21 +1978,27 @@ let andKeep = _.routineFromPreAndBody( and_pre, _and, 'andKeep' );
 var defaults = andKeep.defaults;
 defaults.taking = false;
 
+/* qqq : jsdoc, please */
+
 let andKeepAccumulative = _.routineFromPreAndBody( and_pre, _and, 'andKeepAccumulative' );
 var defaults = andKeepAccumulative.defaults;
 defaults.taking = false;
 defaults.accumulative = true;
 
+/* qqq : jsdoc, please */
+
 let alsoKeep = _.routineFromPreAndBody( and_pre, _and, 'alsoKeep' );
 var defaults = alsoKeep.defaults;
 defaults.taking = false;
-defaults.accumulative = true;
+defaults.accumulative = false;
 defaults.waiting = false;
+
+/* qqq : jsdoc, please */
 
 let alsoTake = _.routineFromPreAndBody( and_pre, _and, 'alsoTake' );
 var defaults = alsoTake.defaults;
-defaults.taking = false;
-defaults.accumulative = true;
+defaults.taking = true;
+defaults.accumulative = false;
 defaults.waiting = false;
 
 // --

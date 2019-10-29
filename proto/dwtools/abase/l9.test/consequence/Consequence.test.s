@@ -5036,131 +5036,194 @@ function alsoKeepThrowingAfterSync( test )
 
 function alsoKeepThrowingBeforeAsync( test )
 {
-  let ready = new _.Consequence();
-  let thenArg;
-  let callbackDone = [];
+  let ready = new _.Consequence().take( null );
 
-  ready.alsoKeep( () =>
-  {
-    callbackDone.push( 'error1' );
-    throw 'error1';
-  });
+  ready.then( () => run( 'alsoKeep', 1 ) );
+  ready.then( () => run( 'alsoKeep', 0 ) );
+  ready.then( () => run( 'alsoTake', 1 ) );
+  ready.then( () => run( 'alsoTake', 0 ) );
 
-  ready.alsoKeep( () =>
+  return ready;
+
+  function run( methodName, syncThrowing )
   {
-    return _.timeOut( 1000, () =>
+    test.case = `${methodName} sync throwing:${syncThrowing}`;
+
+    let ready = new _.Consequence();
+    let thenArg;
+    let callbackDone = [];
+
+    ready[ methodName ]( () =>
     {
-      callbackDone.push( 'a' );
-      return 'a'
+      if( syncThrowing )
+      {
+        callbackDone.push( 'error1' );
+        throw 'error1';
+      }
+      else
+      return _.timeOut( 250, () =>
+      {
+        callbackDone.push( 'error1' );
+        throw 'error1';
+      });
     });
-  });
 
-  ready.alsoKeep( () =>
-  {
-    return _.timeOut( 10, () =>
+    ready[ methodName ]( () =>
+    {
+      return _.timeOut( 1000, () =>
+      {
+        callbackDone.push( 'a' );
+        return 'a'
+      });
+    });
+
+    let b = _.timeOut( 10, () =>
     {
       callbackDone.push( 'b' );
       return 'b'
     });
-  });
+    ready[ methodName ]( () => b );
 
-  ready.alsoKeep( () =>
-  {
-    return _.timeOut( 500, () =>
+    ready[ methodName ]( () =>
     {
-      callbackDone.push( 'c' );
-      return 'c'
+      return _.timeOut( 500, () =>
+      {
+        callbackDone.push( 'c' );
+        return 'c'
+      });
     });
-  });
 
-  ready.alsoKeep( () =>
-  {
-    callbackDone.push( 'd' );
-    return 'd'
-  });
+    ready[ methodName ]( () =>
+    {
+      callbackDone.push( 'd' );
+      return 'd'
+    });
 
-  ready.finally( ( err, arg ) =>
-  {
-    callbackDone.push( '1' );
-    thenArg = err ? err : arg;
-    return 1;
-  });
+    ready.finally( ( err, arg ) =>
+    {
+      callbackDone.push( '1' );
+      thenArg = err ? err : arg;
+      return 1;
+    });
 
-  callbackDone.push( '0' );
-  ready.take( 0 );
-  callbackDone.push( '2' );
+    callbackDone.push( '0' );
+    ready.take( 0 );
+    callbackDone.push( '2' );
 
-  return _.timeOut( 2000, () =>
-  {
-    test.is( _.errIs( thenArg ) );
-    test.identical( callbackDone, [ 'error1', 'd', '0', '2', 'b', 'c', 'a', '1' ] );
-  });
+    return _.timeOut( 2000, () =>
+    {
+      test.is( _.errIs( thenArg ) );
+      if( syncThrowing )
+      test.identical( callbackDone, [ 'error1', 'd', '0', '2', 'b', 'c', 'a', '1' ] );
+      else
+      test.identical( callbackDone, [ 'd', '0', '2', 'b', 'error1', 'c', 'a', '1' ] );
+      test.identical( b.resourcesCount(), methodName === 'alsoKeep' ? 1 : 0 );
+      test.identical( b.errorsCount(), 0 );
+      debugger;
+    });
+
+  }
+
 }
 
 //
 
 function alsoKeepThrowingAfterAsync( test )
 {
-  let ready = new _.Consequence();
-  let thenArg;
-  let callbackDone = [];
+  let ready = new _.Consequence().take( null );
 
-  ready.alsoKeep( () =>
+  ready.then( () => run( 'alsoKeep', 1 ) );
+  ready.then( () => run( 'alsoKeep', 0 ) );
+  ready.then( () => run( 'alsoTake', 1 ) );
+  ready.then( () => run( 'alsoTake', 0 ) );
+
+  return ready;
+
+  function run( methodName, syncThrowing )
   {
-    return _.timeOut( 1000, () =>
+    test.case = `${methodName} sync throwing:${syncThrowing}`;
+
+    let ready = new _.Consequence();
+    let thenArg;
+    let callbackDone = [];
+
+    ready[ methodName ]( () =>
     {
-      callbackDone.push( 'a' );
-      return 'a'
+      return _.timeOut( 1000, () =>
+      {
+        callbackDone.push( 'a' );
+        return 'a'
+      });
     });
-  });
 
-  ready.alsoKeep( () =>
-  {
-    return _.timeOut( 10, () =>
+    let b = _.timeOut( 10, () =>
     {
       callbackDone.push( 'b' );
       return 'b'
     });
-  });
+    ready[ methodName ]( () => b );
 
-  ready.alsoKeep( () =>
-  {
-    return _.timeOut( 500, () =>
+    ready[ methodName ]( () =>
     {
-      callbackDone.push( 'c' );
-      return 'c'
+      return _.timeOut( 500, () =>
+      {
+        callbackDone.push( 'c' );
+        return 'c'
+      });
     });
-  });
 
-  ready.alsoKeep( () =>
-  {
-    callbackDone.push( 'd' );
-    return 'd'
-  });
+    ready[ methodName ]( () =>
+    {
+      callbackDone.push( 'd' );
+      return 'd'
+    });
 
-  ready.alsoKeep( () =>
-  {
-    callbackDone.push( 'error1' );
-    throw 'error1';
-  });
+    ready[ methodName ]( () =>
+    {
+      if( syncThrowing )
+      {
+        callbackDone.push( 'error1' );
+        throw 'error1';
+      }
+      else
+      return _.timeOut( 250, () =>
+      {
+        callbackDone.push( 'error1' );
+        throw 'error1';
+      });
+    });
 
-  ready.finally( ( err, arg ) =>
-  {
-    callbackDone.push( '1' );
-    thenArg = err ? err : arg;
-    return 1;
-  });
+    ready.finally( ( err, arg ) =>
+    {
+      callbackDone.push( '1' );
+      thenArg = err ? err : arg;
+      return 1;
+    });
 
-  callbackDone.push( '0' );
-  ready.take( 0 );
-  callbackDone.push( '2' );
+    callbackDone.push( '0' );
+    ready.take( 0 );
+    callbackDone.push( '2' );
 
-  return _.timeOut( 2000, () =>
-  {
-    test.is( _.errIs( thenArg ) );
-    test.identical( callbackDone, [ 'd', 'error1', '0', '2', 'b', 'c', 'a', '1' ] );
-  });
+    return _.timeOut( 2000, () =>
+    {
+      test.is( _.errIs( thenArg ) );
+      if( syncThrowing )
+      test.identical( callbackDone, [ 'd', 'error1', '0', '2', 'b', 'c', 'a', '1' ] );
+      else
+      test.identical( callbackDone, [ 'd', '0', '2', 'b', 'error1', 'c', 'a', '1' ] );
+      test.identical( b.resourcesCount(), methodName === 'alsoKeep' ? 1 : 0 );
+      test.identical( b.errorsCount(), 0 );
+    });
+
+  }
+
 }
+
+  // return _.timeOut( 2000, () =>
+  // {
+  //   test.is( _.errIs( thenArg ) );
+  //   test.identical( callbackDone, [ 'd', 'error1', '0', '2', 'b', 'c', 'a', '1' ] );
+  // });
 
 //
 
