@@ -1985,7 +1985,19 @@ var defaults = andKeepAccumulative.defaults;
 defaults.taking = false;
 defaults.accumulative = true;
 
-/* qqq : jsdoc, please */
+//
+
+/**
+ * Call passed callback without waiting for resource and collect result of the call into an array.
+ * To convert serial code to parallel replace methods {then}/{finally} by methods {also*}, without need to change structure of the code, what methods {and*} require.
+ * First element of returned array has a resource which the consequence have had before call of ${also} or the first which the consequence will get later.
+ * Returned by callback passed to ${also*} put into returned array in the same sequence as ${also*} were called.
+ *
+ * @see {@link module:Tools/base/Consequence.wConsequence#alsoTake}
+ * @param {Anything} callbacks Single callback or element to put in result array or array of such things.
+ * @method alsoKeep
+ * @memberof module:Tools/base/Consequence.wConsequence#
+ */
 
 let alsoKeep = _.routineFromPreAndBody( and_pre, _and, 'alsoKeep' );
 var defaults = alsoKeep.defaults;
@@ -1993,7 +2005,19 @@ defaults.taking = false;
 defaults.accumulative = true;
 defaults.waiting = false;
 
-/* qqq : jsdoc, please */
+//
+
+/**
+ * Call passed callback without waiting for resource and collect result of the call into an array.
+ * To convert serial code to parallel replace methods {then}/{finally} by methods {also*}, without need to change structure of the code, what methods {and*} require.
+ * First element of returned array has a resource which the consequence have had before call of ${also} or the first which the consequence will get later.
+ * Returned by callback passed to ${also*} put into returned array in the same sequence as ${also*} were called.
+ *
+ * @see {@link module:Tools/base/Consequence.wConsequence#alsoKeep}
+ * @param {Anything} callbacks Single callback or element to put in result array or array of such things.
+ * @method alsoTake
+ * @memberof module:Tools/base/Consequence.wConsequence#
+ */
 
 let alsoTake = _.routineFromPreAndBody( and_pre, _and, 'alsoTake' );
 var defaults = alsoTake.defaults;
