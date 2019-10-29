@@ -1861,8 +1861,8 @@ function _and( o )
   {
     let competitors2 = [];
 
-    if( !o.wating )
-    debugger;
+    // if( !o.wating )
+    // debugger;
 
     if( !taking )
     for( let i = first ; i < last ; i++ )
