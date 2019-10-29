@@ -1990,7 +1990,7 @@ defaults.accumulative = true;
 let alsoKeep = _.routineFromPreAndBody( and_pre, _and, 'alsoKeep' );
 var defaults = alsoKeep.defaults;
 defaults.taking = false;
-defaults.accumulative = false;
+defaults.accumulative = true;
 defaults.waiting = false;
 
 /* qqq : jsdoc, please */
@@ -1998,7 +1998,7 @@ defaults.waiting = false;
 let alsoTake = _.routineFromPreAndBody( and_pre, _and, 'alsoTake' );
 var defaults = alsoTake.defaults;
 defaults.taking = true;
-defaults.accumulative = false;
+defaults.accumulative = true;
 defaults.waiting = false;
 
 // --
