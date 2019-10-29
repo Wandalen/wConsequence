@@ -866,7 +866,9 @@ function _first( src, stack )
     try
     {
       result = src();
-      _.assert( result !== undefined, 'Competitor for consequence.first should return something, not undefined' );
+      if( result === undefined )
+      throw self.ErrNoReturn( src );
+      // _.assert( result !== undefined, 'Competitor for consequence.first should return something, not undefined' );
     }
     catch( err )
     {
@@ -1334,6 +1336,15 @@ function participateKeep( con )
   return con;
 }
 
+//
+
+function ErrNoReturn( routine )
+{
+  let err = _.err( `Callback of then of consequence should return something, but callback::${routine.name} returned undefined` )
+  err = _.err( routine.toString(), '\n', err );
+  return err;
+}
+
 // --
 // put
 // --
@@ -1630,8 +1641,10 @@ function _and( o )
   let competitors = o.competitors;
   let taking = o.taking;
   let accumulative = o.accumulative;
+  let waiting = o.waiting;
   let procedure = self.procedure( 'and' ).sourcePathFirst( o.stackLevel + 1 );
   let escaped = 0;
+  // let given = !o.waiting ? [] : undefined;
 
   _.assertRoutineOptions( _and, arguments );
 
@@ -1641,8 +1654,14 @@ function _and( o )
   competitors = [ competitors ];
   else
   competitors = competitors.slice();
+  if( o.waiting )
   competitors.push( self );
-  let count = competitors.length;
+  else
+  competitors.unshift( self );
+
+  let left = competitors.length;
+  let first = o.waiting ? 0 : 1;
+  let last = o.waiting ? competitors.length-1 : competitors.length;
 
   /* */
 
@@ -1650,10 +1669,16 @@ function _and( o )
   {
     let competitors2 = [];
 
-    for( let s = 0 ; s < competitors.length-1 ; s++ )
+    // let f = o.waiting ? 0 : 1;
+    // let l = o.waiting ? competitors.length-1 : competitors.length;
+    for( let s = first ; s < last ; s++ )
     {
       let competitor = competitors[ s ];
-      _.assert( _.consequenceIs( competitor ) || _.routineIs( competitor ) || competitor === null, () => 'Consequence.and expects consequence, routine or null, but got ' + _.strType( competitor ) );
+      _.assert
+      (
+          _.consequenceIs( competitor ) || _.routineIs( competitor ) || competitor === null
+        , () => 'Consequence.and expects consequence, routine or null, but got ' + _.strType( competitor )
+      );
       if( !_.consequenceIs( competitor ) )
       continue;
       if( _.arrayHas( competitors2, competitor ) )
@@ -1667,7 +1692,10 @@ function _and( o )
 
   /* */
 
+  if( o.waiting )
   self.finallyGive( start );
+  else
+  start();
 
   escaped = 1;
   return self;
@@ -1676,9 +1704,32 @@ function _and( o )
 
   function start( err, arg )
   {
+
+    callbacksStart();
+
+    if( o.waiting )
+    {
+      __got.call( self, err, arg );
+    }
+    else
+    self.finallyGive( ( err, arg ) =>
+    {
+      // console.log( given );
+      // debugger;
+      __got.call( self, err, arg );
+    });
+
+  }
+
+  /* - */
+
+  function callbacksStart()
+  {
     let competitors2 = [];
 
-    for( let c = 0 ; c < competitors.length-1 ; c++ )
+    // let f = o.waiting ? 0 : 1;
+    // let l = o.waiting ? competitors.length-1 : competitors.length;
+    for( let c = first ; c < last ; c++ ) (function( c )
     {
       let competitor = competitors[ c ];
       let wasRoutine = false;
@@ -1691,19 +1742,60 @@ function _and( o )
       }
       catch( err )
       {
-        competitor = new _.Consequence().error( _.err( err ) );
+        debugger;
+        competitor = competitors[ c ] = new _.Consequence().error( _.err( err ) );
       }
 
-      _.assert( _.consequenceIs( competitor ) || competitor === null, () => 'Expects consequence or null, but got ' + _.strType( competitor ) );
+      if( _.promiseLike( competitor ) )
+      competitor = competitors[ c ] = _.Consequence.From( competitor );
 
-      if( competitor === null )
+      if( o.waiting )
+      _.assert
+      (
+          _.consequenceIs( competitor ) || competitor === null
+        , () => `Expects consequence or null, but got ${_.strType( competitor )}`
+      );
+      else
+      _.assert
+      (
+          competitor !== undefined
+        , () => `Expects defined value, but got ${_.strType( competitor )}`
+      );
+
+      // if( !o.waiting )
+      // {
+      //   console.log( given );
+      //   debugger;
+      // }
+
+      if( o.waiting )
       {
-        __got.call( c, undefined, null );
-        continue;
+
+        if( competitor === null )
+        {
+          __got.call( c, undefined, null );
+          return;
+        }
+        else if( _.arrayHas( competitors2, competitor ) )
+        {
+          return;
+        }
+
       }
-      else if( _.arrayHas( competitors2, competitor ) )
+      else
       {
-        continue;
+
+        if( _.consequenceIs( competitor ) )
+        {
+          if( _.arrayHas( competitors2, competitor ) )
+          return;
+        }
+        else
+        {
+          __got.call( c, undefined, competitor );
+          return;
+        }
+
       }
 
       /*
@@ -1722,55 +1814,80 @@ function _and( o )
         _.arrayAppendOnceStrictly( self._dependsOf, competitor );
       }
 
-      let r = __got;
+      // if( !o.waiting )
+      // self.thenGive( ( arg ) =>
+      // {
+      //   console.log( given );
+      //   debugger;
+      //   given[ c ] = arg;
+      // });
+
+      // let r = __got;
 
       competitor.procedure( 'and' ).sourcePathFirst( procedure.sourcePath() );
-      competitor.finallyGive( r );
+      if( o.waiting )
+      competitor.finallyGive( __got );
+      else
+      competitor.finallyGive( __gotNonWaiting );
 
-    }
+    })( c );
 
-    __got.call( self, err, arg );
+    // __got.call( self, err, arg );
 
+  }
+
+  /* */
+
+  function __gotNonWaiting( err, arg )
+  {
+    // console.log( given );
+    // debugger;
+    // given[ c ] = arg;
+    return __got.call( this, err, arg );
   }
 
   /* */
 
   function __got( err, arg )
   {
-    let first = -1;
+    let firstIndex = -1;
 
-    // if( err && !anyErr )
-    // anyErr = _.err( err );
-    // if( err )
-    // debugger;
-    // if( err )
-    // err = _.err( err );
-
+    if( err )
+    debugger;
     if( err && !anyErr )
     anyErr = err;
 
+    // if( !o.waiting )
+    // {
+    //   console.log( given );
+    //   debugger;
+    // }
+
     if( _.numberIs( this ) )
-    account( this )
-    else
-    for( let c = 0 ; c < competitors.length ; c++ )
+    {
+      account( this )
+    }
+    else for( let c = 0 ; c < competitors.length ; c++ )
     {
       let competitor = competitors[ c ];
       if( competitor === this )
       account( c );
     }
 
+    // let f = o.waiting ? 0 : 1;
+    // let l = o.waiting ? competitors.length-1 : competitors.length;
     if( Config.debug && self.Diagnostics )
-    if( first < competitors.length-1 )
+    if( first <= firstIndex && firstIndex < last )
     if( _.consequenceIs( this ) )
     {
       _.arrayRemoveElementOnceStrictly( self._dependsOf, this );
     }
 
-    _.assert( count >= 0 );
+    _.assert( left >= 0 );
 
-    if( count === 0 )
+    if( left === 0 )
     {
-      if( escaped )
+      if( escaped && o.waiting )
       _.timeSoon( __take );
       else
       __take();
@@ -1780,9 +1897,9 @@ function _and( o )
     {
       errs[ c ] = err;
       args[ c ] = arg;
-      count -= 1;
-      if( first === -1 )
-      first = c;
+      left -= 1;
+      if( firstIndex === -1 )
+      firstIndex = c;
     }
 
   }
@@ -1791,14 +1908,28 @@ function _and( o )
 
   function __take()
   {
-
     let competitors2 = [];
+
+    // if( !o.waiting )
+    // {
+    //   console.log( given );
+    //   debugger;
+    // }
+
+    // let f = o.waiting ? 0 : 1;
+    // let l = o.waiting ? competitors.length-1 : competitors.length;
+
+    if( !o.waiting )
+    debugger;
+
     if( !taking )
-    for( let i = 0 ; i < competitors.length-1 ; i++ )
+    for( let i = first ; i < last ; i++ )
     if( competitors[ i ] )
     {
-      let competitor = competitors[ i ]
+      let competitor = competitors[ i ];
       if( _.arrayHas( competitors2, competitor ) )
+      continue;
+      if( !_.consequenceIs( competitor ) )
       continue;
       competitor.take( errs[ i ], args[ i ] );
       competitors2.push( competitor );
@@ -1821,6 +1952,7 @@ _and.defaults =
   competitors : null,
   taking : 1,
   accumulative : 0,
+  waiting : 1,
   stackLevel : 2,
 }
 
@@ -1906,6 +2038,18 @@ let andKeepAccumulative = _.routineFromPreAndBody( and_pre, _and, 'andKeepAccumu
 var defaults = andKeepAccumulative.defaults;
 defaults.taking = false;
 defaults.accumulative = true;
+
+let alsoKeep = _.routineFromPreAndBody( and_pre, _and, 'alsoKeep' );
+var defaults = alsoKeep.defaults;
+defaults.taking = false;
+defaults.accumulative = true;
+defaults.waiting = false;
+
+let alsoTake = _.routineFromPreAndBody( and_pre, _and, 'alsoTake' );
+var defaults = alsoTake.defaults;
+defaults.taking = false;
+defaults.accumulative = true;
+defaults.waiting = false;
 
 // --
 // or
@@ -2866,8 +3010,9 @@ function __handleResourceNow()
       if( competitor.keeping && result === undefined )
       {
         debugger;
-        let err = _.err( `Callback of then of consequence should return something, but callback::${competitor.competitorRoutine.name} returned undefined` )
-        err = _.err( competitor.competitorRoutine.toString(), '\n', err );
+        let err = self.ErrNoReturn( competitor.competitorRoutine );
+        // let err = _.err( `Callback of then of consequence should return something, but callback::${competitor.competitorRoutine.name} returned undefined` )
+        // err = _.err( competitor.competitorRoutine.toString(), '\n', err );
         throwenErr = self.__handleError( err, competitor.competitorRoutine )
       }
 
@@ -4574,6 +4719,7 @@ let Statics =
   From,
   Take,
   Error,
+  ErrNoReturn,
   Try,
 
   And : AndKeep,
@@ -4702,6 +4848,10 @@ let Extend =
   participateGive,
   participateKeep,
 
+  // etc
+
+  ErrNoReturn,
+
   // put
 
   _put,
@@ -4725,7 +4875,11 @@ let Extend =
   andTake,
   andKeep,
   andKeepAccumulative, /* qqq : cover routine andKeepAccumulative */
-  and : andKeepAccumulative,
+  // and : andKeepAccumulative,
+
+  alsoKeep,
+  alsoTake,
+  also : alsoKeep,
 
   // or
 

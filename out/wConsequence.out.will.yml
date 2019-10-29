@@ -15,6 +15,7 @@ module:
   wConsequence.out:
     about:
       name: wConsequence
+      org: noorg
       description: >-
         Advanced synchronization mechanism. Asynchronous routines may use
         Consequence to wrap postponed result, what allows classify callback for
@@ -849,6 +850,7 @@ module:
   ../:
     about:
       name: wConsequence
+      org: noorg
       description: >-
         Advanced synchronization mechanism. Asynchronous routines may use
         Consequence to wrap postponed result, what allows classify callback for
@@ -931,12 +933,8 @@ module:
       bugtracker:
         path: 'https:///github.com/Wandalen/wConsequence/issues'
       in:
-        criterion:
-          predefined: 0
         path: .
       out:
-        criterion:
-          predefined: 0
         path: out
       temp:
         path: 'path::out'
