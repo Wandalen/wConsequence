@@ -1725,6 +1725,7 @@ function _and( o )
     for( let c = first ; c < last ; c++ ) (function( c )
     {
       let competitor = competitors[ c ];
+      let originalCompetitor = competitor;
       let wasRoutine = false;
 
       if( !_.consequenceIs( competitor ) && _.routineIs( competitor ) )
@@ -1752,6 +1753,7 @@ function _and( o )
       (
           competitor !== undefined
         , () => `Expects defined value, but got ${_.strType( competitor )}`
+              + `${ _.routineIs( originalCompetitor ) ? '\n' + originalCompetitor.toString() : ''}`
       );
 
       if( o.waiting )
