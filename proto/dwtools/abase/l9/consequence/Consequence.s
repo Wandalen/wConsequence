@@ -256,7 +256,7 @@ function is( src )
 
 //
 
-function isJoinedWithConsequence( src )
+function isJoinedWithConsequence( src ) /* xxx : deprecate */
 {
   _.assert( arguments.length === 1 );
   debugger;
@@ -666,7 +666,7 @@ thenPromiseKeep.having = Object.create( _promise.having );
 
 //
 
-function exceptPromiseGive()
+function catchPromiseGive()
 {
   let self = this;
   _.assert( arguments.length === 0 );
@@ -677,11 +677,11 @@ function exceptPromiseGive()
   });
 }
 
-exceptPromiseGive.having = Object.create( _promise.having );
+catchPromiseGive.having = Object.create( _promise.having );
 
 //
 
-function exceptPromiseKeep()
+function catchPromiseKeep()
 {
   let self = this;
   _.assert( arguments.length === 0 );
@@ -692,7 +692,7 @@ function exceptPromiseKeep()
   });
 }
 
-exceptPromiseKeep.having = Object.create( _promise.having );
+catchPromiseKeep.having = Object.create( _promise.having );
 
 // --
 // deasync
@@ -817,7 +817,7 @@ finallyDeasyncGive.having = Object.create( _deasync.having );
 
 //
 
-function exceptDeasyncGive()
+function catchDeasyncGive()
 {
   let self = this;
   _.assert( arguments.length === 0 );
@@ -832,7 +832,7 @@ finallyDeasyncGive.having = Object.create( _deasync.having );
 
 //
 
-function exceptDeasyncKeep()
+function catchDeasyncKeep()
 {
   let self = this;
   _.assert( arguments.length === 0 );
@@ -866,7 +866,9 @@ function _first( src, stack )
     try
     {
       result = src();
-      _.assert( result !== undefined, 'Competitor for consequence.first should return something, not undefined' );
+      if( result === undefined )
+      throw self.ErrNoReturn( src );
+      // _.assert( result !== undefined, 'Competitor for consequence.first should return something, not undefined' );
     }
     catch( err )
     {
@@ -875,9 +877,18 @@ function _first( src, stack )
     }
 
     if( _.consequenceIs( result ) )
-    result.finally( self );
+    {
+      result.finally( self );
+    }
+    else if( _.promiseLike( result ) )
+    {
+      debugger;
+      result.finally( Self.From( result ) );
+    }
     else
-    self.take( result );
+    {
+      self.take( result );
+    }
 
   }
   else _.assert( 0, 'first expects consequence of routine, but got', _.strType( src ) );
@@ -1120,15 +1131,17 @@ tap.having =
   consequizing : 1,
 }
 
+//
+
 /**
  * Creates and adds to corespondents sequence error competitor. If handled resource contains error, corespondent logs it.
  * @returns {wConsequence}
  * @throws {Error} If called with any argument.
- * @method exceptLog
+ * @method catchLog
  * @memberof module:Tools/base/Consequence.wConsequence#
  */
 
-function exceptLog()
+function catchLog()
 {
   let self = this;
 
@@ -1136,7 +1149,7 @@ function exceptLog()
 
   self._competitorAppend
   ({
-    competitorRoutine : reportError,
+    competitorRoutine : errorLog,
     keeping : true,
     kindOfResource : Self.KindOfResource.ErrorOnly,
     stackLevel : 2,
@@ -1148,17 +1161,62 @@ function exceptLog()
 
   /* - */
 
-  function reportError( err )
+  function errorLog( err )
   {
     err = _.err( err );
     logger.log( _.errOnce( err ) );
-    throw err;
-    // throw _.errLogOnce( err );
+    // throw err;
+    return null;
   }
 
 }
 
-exceptLog.having =
+catchLog.having =
+{
+  consequizing : 1,
+}
+
+//
+
+/**
+ * Creates and adds to corespondents sequence error competitor. If handled resource contains error, corespondent logs it.
+ * @returns {wConsequence}
+ * @throws {Error} If called with any argument.
+ * @method catchBrief
+ * @memberof module:Tools/base/Consequence.wConsequence#
+ */
+
+function catchBrief()
+{
+  let self = this;
+
+  _.assert( arguments.length === 0 );
+
+  self._competitorAppend
+  ({
+    competitorRoutine : errorLog,
+    keeping : true,
+    kindOfResource : Self.KindOfResource.ErrorOnly,
+    stackLevel : 2,
+  });
+
+  self.__handleResourceSoon( false );
+
+  return self;
+
+  /* - */
+
+  function errorLog( err )
+  {
+    err = _.errBrief( err );
+    logger.log( _.errOnce( err ) );
+    // throw err;
+    return null;
+  }
+
+}
+
+catchBrief.having =
 {
   consequizing : 1,
 }
@@ -1276,6 +1334,15 @@ function participateKeep( con )
   self.finallyKeep( con );
 
   return con;
+}
+
+//
+
+function ErrNoReturn( routine )
+{
+  let err = _.err( `Callback of then of consequence should return something, but callback::${routine.name} returned undefined` )
+  err = _.err( routine.toString(), '\n', err );
+  return err;
 }
 
 // --
@@ -1574,6 +1641,7 @@ function _and( o )
   let competitors = o.competitors;
   let taking = o.taking;
   let accumulative = o.accumulative;
+  let waiting = o.waiting;
   let procedure = self.procedure( 'and' ).sourcePathFirst( o.stackLevel + 1 );
   let escaped = 0;
 
@@ -1585,8 +1653,14 @@ function _and( o )
   competitors = [ competitors ];
   else
   competitors = competitors.slice();
+  if( o.waiting )
   competitors.push( self );
-  let count = competitors.length;
+  else
+  competitors.unshift( self );
+
+  let left = competitors.length;
+  let first = o.waiting ? 0 : 1;
+  let last = o.waiting ? competitors.length-1 : competitors.length;
 
   /* */
 
@@ -1594,10 +1668,14 @@ function _and( o )
   {
     let competitors2 = [];
 
-    for( let s = 0 ; s < competitors.length-1 ; s++ )
+    for( let s = first ; s < last ; s++ )
     {
       let competitor = competitors[ s ];
-      _.assert( _.consequenceIs( competitor ) || _.routineIs( competitor ) || competitor === null, () => 'Consequence.and expects consequence, routine or null, but got ' + _.strType( competitor ) );
+      _.assert
+      (
+          _.consequenceIs( competitor ) || _.routineIs( competitor ) || competitor === null
+        , () => 'Consequence.and expects consequence, routine or null, but got ' + _.strType( competitor )
+      );
       if( !_.consequenceIs( competitor ) )
       continue;
       if( _.arrayHas( competitors2, competitor ) )
@@ -1611,7 +1689,10 @@ function _and( o )
 
   /* */
 
+  if( o.waiting )
   self.finallyGive( start );
+  else
+  start();
 
   escaped = 1;
   return self;
@@ -1620,11 +1701,31 @@ function _and( o )
 
   function start( err, arg )
   {
+
+    callbacksStart();
+
+    if( o.waiting )
+    {
+      __got.call( self, err, arg );
+    }
+    else
+    self.finallyGive( ( err, arg ) =>
+    {
+      __got.call( self, err, arg );
+    });
+
+  }
+
+  /* - */
+
+  function callbacksStart()
+  {
     let competitors2 = [];
 
-    for( let c = 0 ; c < competitors.length-1 ; c++ )
+    for( let c = first ; c < last ; c++ ) (function( c )
     {
       let competitor = competitors[ c ];
+      let originalCompetitor = competitor;
       let wasRoutine = false;
 
       if( !_.consequenceIs( competitor ) && _.routineIs( competitor ) )
@@ -1635,19 +1736,54 @@ function _and( o )
       }
       catch( err )
       {
-        competitor = new _.Consequence().error( _.err( err ) );
+        competitor = competitors[ c ] = new _.Consequence().error( _.err( err ) );
       }
 
-      _.assert( _.consequenceIs( competitor ) || competitor === null, () => 'Expects consequence or null, but got ' + _.strType( competitor ) );
+      if( _.promiseLike( competitor ) )
+      competitor = competitors[ c ] = _.Consequence.From( competitor );
 
-      if( competitor === null )
+      if( o.waiting )
+      _.assert
+      (
+          _.consequenceIs( competitor ) || competitor === null
+        , () => `Expects consequence or null, but got ${_.strType( competitor )}`
+      );
+      else
+      _.assert
+      (
+          competitor !== undefined
+        , () => `Expects defined value, but got ${_.strType( competitor )}`
+              + `${ _.routineIs( originalCompetitor ) ? '\n' + originalCompetitor.toString() : ''}`
+      );
+
+      if( o.waiting )
       {
-        __got.call( c, undefined, null );
-        continue;
+
+        if( competitor === null )
+        {
+          __got.call( c, undefined, null );
+          return;
+        }
+        else if( _.arrayHas( competitors2, competitor ) )
+        {
+          return;
+        }
+
       }
-      else if( _.arrayHas( competitors2, competitor ) )
+      else
       {
-        continue;
+
+        if( _.consequenceIs( competitor ) )
+        {
+          if( _.arrayHas( competitors2, competitor ) )
+          return;
+        }
+        else
+        {
+          __got.call( c, undefined, competitor );
+          return;
+        }
+
       }
 
       /*
@@ -1666,14 +1802,10 @@ function _and( o )
         _.arrayAppendOnceStrictly( self._dependsOf, competitor );
       }
 
-      let r = __got;
-
       competitor.procedure( 'and' ).sourcePathFirst( procedure.sourcePath() );
-      competitor.finallyGive( r );
+      competitor.finallyGive( __got );
 
-    }
-
-    __got.call( self, err, arg );
+    })( c );
 
   }
 
@@ -1681,22 +1813,16 @@ function _and( o )
 
   function __got( err, arg )
   {
-    let first = -1;
-
-    // if( err && !anyErr )
-    // anyErr = _.err( err );
-    // if( err )
-    // debugger;
-    // if( err )
-    // err = _.err( err );
+    let firstIndex = -1;
 
     if( err && !anyErr )
     anyErr = err;
 
     if( _.numberIs( this ) )
-    account( this )
-    else
-    for( let c = 0 ; c < competitors.length ; c++ )
+    {
+      account( this )
+    }
+    else for( let c = 0 ; c < competitors.length ; c++ )
     {
       let competitor = competitors[ c ];
       if( competitor === this )
@@ -1704,17 +1830,17 @@ function _and( o )
     }
 
     if( Config.debug && self.Diagnostics )
-    if( first < competitors.length-1 )
+    if( first <= firstIndex && firstIndex < last )
     if( _.consequenceIs( this ) )
     {
       _.arrayRemoveElementOnceStrictly( self._dependsOf, this );
     }
 
-    _.assert( count >= 0 );
+    _.assert( left >= 0 );
 
-    if( count === 0 )
+    if( left === 0 )
     {
-      if( escaped )
+      if( escaped && o.waiting )
       _.timeSoon( __take );
       else
       __take();
@@ -1724,9 +1850,9 @@ function _and( o )
     {
       errs[ c ] = err;
       args[ c ] = arg;
-      count -= 1;
-      if( first === -1 )
-      first = c;
+      left -= 1;
+      if( firstIndex === -1 )
+      firstIndex = c;
     }
 
   }
@@ -1735,14 +1861,19 @@ function _and( o )
 
   function __take()
   {
-
     let competitors2 = [];
+
+    // if( !o.wating )
+    // debugger;
+
     if( !taking )
-    for( let i = 0 ; i < competitors.length-1 ; i++ )
+    for( let i = first ; i < last ; i++ )
     if( competitors[ i ] )
     {
-      let competitor = competitors[ i ]
+      let competitor = competitors[ i ];
       if( _.arrayHas( competitors2, competitor ) )
+      continue;
+      if( !_.consequenceIs( competitor ) )
       continue;
       competitor.take( errs[ i ], args[ i ] );
       competitors2.push( competitor );
@@ -1758,6 +1889,8 @@ function _and( o )
 
   }
 
+  /* */
+
 }
 
 _and.defaults =
@@ -1765,6 +1898,7 @@ _and.defaults =
   competitors : null,
   taking : 1,
   accumulative : 0,
+  waiting : 1,
   stackLevel : 2,
 }
 
@@ -1846,10 +1980,52 @@ let andKeep = _.routineFromPreAndBody( and_pre, _and, 'andKeep' );
 var defaults = andKeep.defaults;
 defaults.taking = false;
 
+/* qqq : jsdoc, please */
+
 let andKeepAccumulative = _.routineFromPreAndBody( and_pre, _and, 'andKeepAccumulative' );
 var defaults = andKeepAccumulative.defaults;
 defaults.taking = false;
 defaults.accumulative = true;
+
+//
+
+/**
+ * Call passed callback without waiting for resource and collect result of the call into an array.
+ * To convert serial code to parallel replace methods {then}/{finally} by methods {also*}, without need to change structure of the code, what methods {and*} require.
+ * First element of returned array has a resource which the consequence have had before call of ${also} or the first which the consequence will get later.
+ * Returned by callback passed to ${also*} put into returned array in the same sequence as ${also*} were called.
+ *
+ * @see {@link module:Tools/base/Consequence.wConsequence#alsoTake}
+ * @param {Anything} callbacks Single callback or element to put in result array or array of such things.
+ * @method alsoKeep
+ * @memberof module:Tools/base/Consequence.wConsequence#
+ */
+
+let alsoKeep = _.routineFromPreAndBody( and_pre, _and, 'alsoKeep' );
+var defaults = alsoKeep.defaults;
+defaults.taking = false;
+defaults.accumulative = true;
+defaults.waiting = false;
+
+//
+
+/**
+ * Call passed callback without waiting for resource and collect result of the call into an array.
+ * To convert serial code to parallel replace methods {then}/{finally} by methods {also*}, without need to change structure of the code, what methods {and*} require.
+ * First element of returned array has a resource which the consequence have had before call of ${also} or the first which the consequence will get later.
+ * Returned by callback passed to ${also*} put into returned array in the same sequence as ${also*} were called.
+ *
+ * @see {@link module:Tools/base/Consequence.wConsequence#alsoKeep}
+ * @param {Anything} callbacks Single callback or element to put in result array or array of such things.
+ * @method alsoTake
+ * @memberof module:Tools/base/Consequence.wConsequence#
+ */
+
+let alsoTake = _.routineFromPreAndBody( and_pre, _and, 'alsoTake' );
+var defaults = alsoTake.defaults;
+defaults.taking = true;
+defaults.accumulative = true;
+defaults.waiting = false;
 
 // --
 // or
@@ -2087,101 +2263,101 @@ orKeeping.having = Object.create( _or.having );
 
 //
 
-// /* xxx : deprecate */
-// let JoinedWithConsequence = Object.create( null );
-// JoinedWithConsequence.routineJoin = _.routineSeal;
-// JoinedWithConsequence.context = null;
-// JoinedWithConsequence.method = null;
-// JoinedWithConsequence.consequence = null;
-// JoinedWithConsequence.constructor = function JoinedWithConsequence()
-// {
-//   debugger;
-// };
+/* xxx : deprecate */
+let JoinedWithConsequence = Object.create( null );
+JoinedWithConsequence.routineJoin = _.routineSeal;
+JoinedWithConsequence.context = null;
+JoinedWithConsequence.method = null;
+JoinedWithConsequence.consequence = null;
+JoinedWithConsequence.constructor = function JoinedWithConsequence()
+{
+  debugger;
+};
+
 //
-// //
-//
-// function _prepareJoinedWithConsequence()
-// {
-//
-//   for( let r in Self.prototype ) ( function( r )
-//   {
-//     if( Self.prototype._Accessors[ r ] )
-//     return;
-//     let routine = Self.prototype[ r ];
-//     if( !routine.having || !routine.having.consequizing )
-//     return;
-//
-//     if( routine.having.andLike )
-//     JoinedWithConsequence[ r ] = function()
-//     {
-//       let args = arguments;
-//       let method = [];
-//       _.assert( arguments.length === 1, 'Expects single argument' );
-//       _.assert( _.longIs( args[ 0 ] ) );
-//       for( let i = 0 ; i < args[ 0 ].length ; i++ )
-//       {
-//         method.push( this.routineJoin( this.context, this.method, [ args[ 0 ][ i ] ] ) );
-//       }
-//       this.consequence[ r ]( method );
-//       return this;
-//     }
-//     else
-//     JoinedWithConsequence[ r ] = function()
-//     {
-//       let args = arguments;
-//       let method = this.routineJoin( this.context, this.method, args );
-//       this.consequence[ r ]( method );
-//       return this;
-//     }
-//
-//   })( r );
-//
-// }
+
+function _prepareJoinedWithConsequence()
+{
+
+  for( let r in Self.prototype ) ( function( r )
+  {
+    if( Self.prototype._Accessors[ r ] )
+    return;
+    let routine = Self.prototype[ r ];
+    if( !routine.having || !routine.having.consequizing )
+    return;
+
+    if( routine.having.andLike )
+    JoinedWithConsequence[ r ] = function()
+    {
+      let args = arguments;
+      let method = [];
+      _.assert( arguments.length === 1, 'Expects single argument' );
+      _.assert( _.longIs( args[ 0 ] ) );
+      for( let i = 0 ; i < args[ 0 ].length ; i++ )
+      {
+        method.push( this.routineJoin( this.context, this.method, [ args[ 0 ][ i ] ] ) );
+      }
+      this.consequence[ r ]( method );
+      return this;
+    }
+    else
+    JoinedWithConsequence[ r ] = function()
+    {
+      let args = arguments;
+      let method = this.routineJoin( this.context, this.method, args );
+      this.consequence[ r ]( method );
+      return this;
+    }
+
+  })( r );
+
+}
 
 // --
 // adapter
 // --
 
-// function _join( routineJoin, args )
-// {
-//   let self = this;
-//   let result = Object.create( JoinedWithConsequence );
+function _join( routineJoin, args )
+{
+  let self = this;
+  let result = Object.create( JoinedWithConsequence );
+
+  _.assert( arguments.length === 2, 'Expects exactly two arguments' );
+  _.assert( args.length === 1 || args.length === 2 );
+  _.assert( _.consequenceIs( this ) );
+
+  result.routineJoin = routineJoin;
+  result.consequence = self;
+
+  if( args[ 1 ] !== undefined )
+  {
+    result.context = args[ 0 ];
+    result.method = args[ 1 ];
+  }
+  else
+  {
+    result.method = args[ 0 ];
+  }
+
+  return result;
+}
+
 //
-//   _.assert( arguments.length === 2, 'Expects exactly two arguments' );
-//   _.assert( args.length === 1 || args.length === 2 );
-//   _.assert( _.consequenceIs( this ) );
+
+function join( context, method )
+{
+  let self = this;
+  return self._join( _.routineJoin, arguments );
+}
+
 //
-//   result.routineJoin = routineJoin;
-//   result.consequence = self;
-//
-//   if( args[ 1 ] !== undefined )
-//   {
-//     result.context = args[ 0 ];
-//     result.method = args[ 1 ];
-//   }
-//   else
-//   {
-//     result.method = args[ 0 ];
-//   }
-//
-//   return result;
-// }
-//
-// //
-//
-// function join( context, method )
-// {
-//   let self = this;
-//   return self._join( _.routineJoin, arguments );
-// }
-//
-// //
-//
-// function seal( context, method )
-// {
-//   let self = this;
-//   return self._join( _.routineSeal, arguments );
-// }
+
+function seal( context, method )
+{
+  let self = this;
+  return self._join( _.routineSeal, arguments );
+}
 
 //
 
@@ -2479,6 +2655,12 @@ function __take( error, argument )
     argument.finallyGive( self );
     return self;
   }
+  else if( _.promiseLike( argument ) )
+  {
+    debugger;
+    Self.From( argument ).finallyGive( self );
+    return self;
+  }
 
   if( Config.debug )
   {
@@ -2486,7 +2668,7 @@ function __take( error, argument )
     {
       let args =
       [
-        `Resource capacity of ${self.nickName} set to ${self.capacity}, but got more resources.`
+        `Resource capacity of ${self.qualifiedName} set to ${self.capacity}, but got more resources.`
         + `\nConsider resetting : "{ capacity : 0 }"`
       ]
       debugger;
@@ -2600,11 +2782,11 @@ function __handleError( err, competitor )
   {
     _.timeOut( 250, function _unhandledError()
     {
-      debugger;
+      // debugger;
       if( !_.errIsAttended( err ) )
       {
         debugger;
-        err = _.err( 'Unhandled error caught by Consequence\n', err );
+        err = _.err( err, '\nUnhandled error caught by Consequence!' );
         logger.log( err );
         // _.errLog( err ); /* xxx : make working console.log( err ) */
         debugger;
@@ -2804,7 +2986,9 @@ function __handleResourceNow()
       if( competitor.keeping && result === undefined )
       {
         debugger;
-        let err = _.err( `Thenning callback of consequence should return something, but ${competitor.competitorRoutine.name} returned undefined` )
+        let err = self.ErrNoReturn( competitor.competitorRoutine );
+        // let err = _.err( `Callback of then of consequence should return something, but callback::${competitor.competitorRoutine.name} returned undefined` )
+        // err = _.err( competitor.competitorRoutine.toString(), '\n', err );
         throwenErr = self.__handleError( err, competitor.competitorRoutine )
       }
 
@@ -2822,6 +3006,10 @@ function __handleResourceNow()
         if( _.consequenceIs( result ) )
         {
           result.finally( self );
+        }
+        else if( _.promiseLike( result ) )
+        {
+          Self.From( result ).finally( self );
         }
         else
         {
@@ -3087,7 +3275,7 @@ function deadLockReport( competitor )
   {
     if( report )
     report += '\n';
-    report += con.nickName + ' : ' + con.sourcePath;
+    report += con.qualifiedName + ' : ' + con.sourcePath;
     // report += con.id + ' : ' + con.sourcePath;
   });
 
@@ -3622,7 +3810,7 @@ function _infoExport( o )
 
   if( o.verbosity >= 2 )
   {
-    result += self.nickName;
+    result += self.qualifiedName;
 
     let names = _.select( self.competitorsEarlyGet(), '*/tag' );
 
@@ -3640,7 +3828,7 @@ function _infoExport( o )
   else
   {
     if( o.verbosity >= 1 )
-    result += self.nickName + ' ';
+    result += self.qualifiedName + ' ';
 
     result += self.resourcesCount() + ' / ' + self.competitorsCount();
   }
@@ -3663,6 +3851,25 @@ function infoExport( o )
 }
 
 _.routineExtend( infoExport, _infoExport );
+
+//
+
+function callbacksInfoLog()
+{
+  let self = this;
+
+  self._competitorsEarly.forEach( ( competitor ) =>
+  {
+    console.log( competitor.competitorRoutine );
+  });
+
+  self._competitorsLate.forEach( ( competitor ) =>
+  {
+    console.log( competitor.competitorRoutine );
+  });
+
+  return self.infoExport();
+}
 
 //
 
@@ -3767,7 +3974,7 @@ function AsyncModeGet( mode )
 
 //
 
-function nickNameGet()
+function qualifiedNameGet()
 {
   let result = this.shortName;
   if( this.tag )
@@ -3992,7 +4199,6 @@ _Take.defaults =
   context : null,
   error : null,
   args : null,
-
 }
 
 //
@@ -4489,8 +4695,10 @@ let Statics =
   From,
   Take,
   Error,
+  ErrNoReturn,
   Try,
 
+  And : AndKeep,
   AndTake,
   AndKeep,
 
@@ -4581,8 +4789,8 @@ let Extend =
   promise : finallyPromiseKeep,
   thenPromiseGive,
   thenPromiseKeep,
-  exceptPromiseGive,
-  exceptPromiseKeep,
+  catchPromiseGive,
+  catchPromiseKeep,
 
   // deasync // qqq : cover please
 
@@ -4592,8 +4800,8 @@ let Extend =
   deasync : finallyDeasyncKeep,
   thenDeasyncGive,
   thenDeasyncKeep,
-  exceptDeasyncGive,
-  exceptDeasyncKeep,
+  catchDeasyncGive,
+  catchDeasyncKeep,
 
   // advanced
 
@@ -4604,7 +4812,8 @@ let Extend =
   splitKeep,
   splitGive,
   tap,
-  exceptLog,
+  catchLog,
+  catchBrief,
   syncMaybe,
   sync,
 
@@ -4614,6 +4823,10 @@ let Extend =
   wait,
   participateGive,
   participateKeep,
+
+  // etc
+
+  ErrNoReturn,
 
   // put
 
@@ -4638,7 +4851,11 @@ let Extend =
   andTake,
   andKeep,
   andKeepAccumulative, /* qqq : cover routine andKeepAccumulative */
-  and : andKeepAccumulative,
+  // and : andKeepAccumulative,
+
+  alsoKeep,
+  alsoTake,
+  also : alsoKeep,
 
   // or
 
@@ -4652,9 +4869,9 @@ let Extend =
 
   // adapter
 
-  // _join,
-  // join,
-  // seal,
+  _join, // xxx : deprecate
+  join, // xxx : deprecate
+  seal, // xxx : deprecate
   tolerantCallback,
 
   // resource
@@ -4713,6 +4930,7 @@ let Extend =
 
   _infoExport,
   infoExport,
+  callbacksInfoLog,
   toStr,
   toString,
 
@@ -4720,7 +4938,7 @@ let Extend =
 
   AsyncModeSet,
   AsyncModeGet,
-  nickNameGet,
+  qualifiedNameGet,
 
   __call__,
 
@@ -4786,7 +5004,7 @@ _.assert( _.routineIs( wConsequenceProxy.prototype.take ) );
 
 _.assert( wConsequenceProxy.shortName === 'Consequence' );
 
-// _prepareJoinedWithConsequence(); /* xxx : deprecate _prepareJoinedWithConsequence */
+_prepareJoinedWithConsequence(); /* xxx : deprecate _prepareJoinedWithConsequence */
 
 // _.assert( !Self.FieldsOfRelationsGroupsGet );
 // _.assert( !Self.prototype.FieldsOfRelationsGroupsGet );

@@ -25,12 +25,12 @@
   }, 
   "dependencies" : 
   {
-    "wTools" : "beta", 
-    "wProto" : "beta", 
-    "wCopyable" : "beta", 
-    "wprocedure" : "beta"
+    "wTools" : "", 
+    "wProto" : "", 
+    "wCopyable" : "", 
+    "wprocedure" : ""
   }, 
-  "devDependencies" : { "deasync" : "0.1.15", "wTesting" : "beta" }, 
+  "devDependencies" : { "deasync" : "", "wTesting" : "" }, 
   "keywords" : 
   [
     "wTools", 

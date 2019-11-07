@@ -28,12 +28,12 @@ function clone( test )
   var con2 = con1.clone();
   test.identical( con1.argumentsCount(), 1 );
   test.identical( con1.competitorsCount(), 0 );
-  test.identical( con1.nickName, 'Consequence::con1' );
+  test.identical( con1.qualifiedName, 'Consequence::con1' );
   test.identical( con1.infoExport({ verbosity : 1 }), 'Consequence::con1 1 / 0' );
   test.identical( con1.capacity, 2 );
   test.identical( con2.argumentsCount(), 1 );
   test.identical( con2.competitorsCount(), 0 );
-  test.identical( con2.nickName, 'Consequence::con1' );
+  test.identical( con2.qualifiedName, 'Consequence::con1' );
   test.identical( con2.infoExport({ verbosity : 1 }), 'Consequence::con1 1 / 0' );
   test.identical( con2.capacity, 2 );
   test.is( con1._resources !== con2._resources );
@@ -47,12 +47,12 @@ function clone( test )
   var con2 = con1.clone();
   test.identical( con1.argumentsCount(), 0 );
   test.identical( con1.competitorsCount(), 1 );
-  test.identical( con1.nickName, 'Consequence::con1' );
+  test.identical( con1.qualifiedName, 'Consequence::con1' );
   test.identical( con1.infoExport({ verbosity : 1 }), 'Consequence::con1 0 / 1' );
   test.identical( con1.capacity, 2 );
   test.identical( con2.argumentsCount(), 0 );
   test.identical( con2.competitorsCount(), 0 );
-  test.identical( con2.nickName, 'Consequence::con1' );
+  test.identical( con2.qualifiedName, 'Consequence::con1' );
   test.identical( con2.infoExport({ verbosity : 1 }), 'Consequence::con1 0 / 0' );
   test.identical( con2.capacity, 2 );
   test.is( con1._resources !== con2._resources );
@@ -4748,6 +4748,485 @@ function andTake( test )
 
 //
 
+function andKeepAccumulative( test )
+{
+  let ready = new _.Consequence();
+  let thenArg;
+  let callbackDone = [];
+
+  ready.andKeepAccumulative( () =>
+  {
+    return _.timeOut( 1000, () =>
+    {
+      callbackDone.push( 'a' );
+      return 'a'
+    });
+  });
+
+  ready.andKeepAccumulative( () =>
+  {
+    return _.timeOut( 10, () =>
+    {
+      callbackDone.push( 'b' );
+      return 'b'
+    });
+  });
+
+  ready.andKeepAccumulative( () =>
+  {
+    return _.timeOut( 500, () =>
+    {
+      callbackDone.push( 'c' );
+      return 'c'
+    });
+  });
+
+  ready.then( ( arg ) =>
+  {
+    callbackDone.push( '1' );
+    thenArg = arg;
+    return 1;
+  });
+
+  ready.take( 0 );
+  callbackDone.push( '0' );
+
+  return _.timeOut( 2000, () =>
+  {
+    test.identical( thenArg, [ 'c', 'b', 'a', 0 ] );
+    test.identical( callbackDone, [ '0', 'a', 'b', 'c', '1' ] );
+  });
+}
+
+//
+
+function alsoKeepTrivialSyncBefore( test )
+{
+  let ready = new _.Consequence();
+  let thenArg;
+  let callbackDone = [];
+
+  callbackDone.push( '0' );
+  ready.take( 0 );
+  callbackDone.push( '2' );
+
+  ready.alsoKeep( () =>
+  {
+    callbackDone.push( 'x' );
+    return 'x';
+  });
+
+  ready.then( ( arg ) =>
+  {
+    callbackDone.push( '1' );
+    thenArg = arg;
+    return 1;
+  });
+
+  return _.timeOut( 2000, () =>
+  {
+    test.identical( thenArg, [ 0, 'x' ] );
+    test.identical( callbackDone, [ '0', '2', 'x', '1' ] );
+  });
+}
+
+//
+
+function alsoKeepTrivialSyncAfter( test )
+{
+  let ready = new _.Consequence();
+  let thenArg;
+  let callbackDone = [];
+
+  ready.alsoKeep( () =>
+  {
+    callbackDone.push( 'x' );
+    return 'x';
+  });
+
+  ready.then( ( arg ) =>
+  {
+    callbackDone.push( '1' );
+    thenArg = arg;
+    return 1;
+  });
+
+  callbackDone.push( '0' );
+  ready.take( 0 );
+  callbackDone.push( '2' );
+
+  return _.timeOut( 2000, () =>
+  {
+    test.identical( thenArg, [ 0, 'x' ] );
+    test.identical( callbackDone, [ 'x', '0', '1', '2' ] );
+  });
+}
+
+//
+
+function alsoKeepTrivialAsync( test )
+{
+  let ready = new _.Consequence();
+  let thenArg;
+  let callbackDone = [];
+
+  ready.alsoKeep( () =>
+  {
+    return _.timeOut( 500, () =>
+    {
+      callbackDone.push( 'x' );
+      return 'x'
+    });
+  });
+
+  ready.then( ( arg ) =>
+  {
+    callbackDone.push( '1' );
+    thenArg = arg;
+    return 1;
+  });
+
+  callbackDone.push( '0' );
+  ready.take( 0 );
+  callbackDone.push( '2' );
+
+  return _.timeOut( 2000, () =>
+  {
+    test.identical( thenArg, [ 0, 'x' ] );
+    test.identical( callbackDone, [ '0', '2', 'x', '1' ] );
+  });
+}
+
+//
+
+function alsoKeep( test )
+{
+  let ready = new _.Consequence();
+  let thenArg;
+  let callbackDone = [];
+
+  ready.alsoKeep( () =>
+  {
+    return _.timeOut( 1000, () =>
+    {
+      callbackDone.push( 'a' );
+      return 'a'
+    });
+  });
+
+  ready.alsoKeep( () =>
+  {
+    return _.timeOut( 10, () =>
+    {
+      callbackDone.push( 'b' );
+      return 'b'
+    });
+  });
+
+  ready.alsoKeep( () =>
+  {
+    return _.timeOut( 500, () =>
+    {
+      callbackDone.push( 'c' );
+      return 'c'
+    });
+  });
+
+  ready.alsoKeep( () =>
+  {
+    callbackDone.push( 'd' );
+    return 'd'
+  });
+
+  ready.then( ( arg ) =>
+  {
+    callbackDone.push( '1' );
+    thenArg = arg;
+    return 1;
+  });
+
+  callbackDone.push( '0' );
+  ready.take( 0 );
+  callbackDone.push( '2' );
+
+  return _.timeOut( 2000, () =>
+  {
+    test.identical( thenArg, [ 0, 'a', 'b', 'c', 'd' ] );
+    test.identical( callbackDone, [ 'd', '0', '2', 'b', 'c', 'a', '1' ] );
+  });
+}
+
+//
+
+function alsoKeepThrowingBeforeSync( test )
+{
+  let ready = new _.Consequence();
+  let thenArg;
+  let callbackDone = [];
+
+  ready.alsoKeep( () =>
+  {
+    callbackDone.push( 'error1' );
+    throw 'error1';
+  });
+
+  ready.alsoKeep( () =>
+  {
+    callbackDone.push( 'd' );
+    return 'd'
+  });
+
+  ready.finally( ( err, arg ) =>
+  {
+    callbackDone.push( '1' );
+    thenArg = err ? err : arg;
+    return 1;
+  });
+
+  callbackDone.push( '0' );
+  ready.take( 0 );
+  callbackDone.push( '2' );
+
+  return _.timeOut( 2000, () =>
+  {
+    test.is( _.errIs( thenArg ) );
+    test.identical( callbackDone, [ 'error1', 'd', '0', '1', '2' ] );
+  });
+}
+
+//
+
+function alsoKeepThrowingAfterSync( test )
+{
+  let ready = new _.Consequence();
+  let thenArg;
+  let callbackDone = [];
+
+  ready.alsoKeep( () =>
+  {
+    callbackDone.push( 'd' );
+    return 'd'
+  });
+
+  ready.alsoKeep( () =>
+  {
+    callbackDone.push( 'error1' );
+    throw 'error1';
+  });
+
+  ready.finally( ( err, arg ) =>
+  {
+    callbackDone.push( '1' );
+    thenArg = err ? err : arg;
+    return 1;
+  });
+
+  callbackDone.push( '0' );
+  ready.take( 0 );
+  callbackDone.push( '2' );
+
+  return _.timeOut( 2000, () =>
+  {
+    test.is( _.errIs( thenArg ) );
+    test.identical( callbackDone, [ 'd', 'error1', '0', '1', '2' ] );
+  });
+}
+
+//
+
+function alsoKeepThrowingBeforeAsync( test )
+{
+  let ready = new _.Consequence().take( null );
+
+  ready.then( () => run( 'alsoKeep', 1 ) );
+  ready.then( () => run( 'alsoKeep', 0 ) );
+  ready.then( () => run( 'alsoTake', 1 ) );
+  ready.then( () => run( 'alsoTake', 0 ) );
+
+  return ready;
+
+  function run( methodName, syncThrowing )
+  {
+    test.case = `${methodName} sync throwing:${syncThrowing}`;
+
+    let ready = new _.Consequence();
+    let thenArg;
+    let callbackDone = [];
+
+    ready[ methodName ]( () =>
+    {
+      if( syncThrowing )
+      {
+        callbackDone.push( 'error1' );
+        throw 'error1';
+      }
+      else
+      return _.timeOut( 250, () =>
+      {
+        callbackDone.push( 'error1' );
+        throw 'error1';
+      });
+    });
+
+    ready[ methodName ]( () =>
+    {
+      return _.timeOut( 1000, () =>
+      {
+        callbackDone.push( 'a' );
+        return 'a'
+      });
+    });
+
+    let b = _.timeOut( 10, () =>
+    {
+      callbackDone.push( 'b' );
+      return 'b'
+    });
+    ready[ methodName ]( () => b );
+
+    ready[ methodName ]( () =>
+    {
+      return _.timeOut( 500, () =>
+      {
+        callbackDone.push( 'c' );
+        return 'c'
+      });
+    });
+
+    ready[ methodName ]( () =>
+    {
+      callbackDone.push( 'd' );
+      return 'd'
+    });
+
+    ready.finally( ( err, arg ) =>
+    {
+      callbackDone.push( '1' );
+      thenArg = err ? err : arg;
+      return 1;
+    });
+
+    callbackDone.push( '0' );
+    ready.take( 0 );
+    callbackDone.push( '2' );
+
+    return _.timeOut( 2000, () =>
+    {
+      test.is( _.errIs( thenArg ) );
+      if( syncThrowing )
+      test.identical( callbackDone, [ 'error1', 'd', '0', '2', 'b', 'c', 'a', '1' ] );
+      else
+      test.identical( callbackDone, [ 'd', '0', '2', 'b', 'error1', 'c', 'a', '1' ] );
+      test.identical( b.resourcesCount(), methodName === 'alsoKeep' ? 1 : 0 );
+      test.identical( b.errorsCount(), 0 );
+      debugger;
+    });
+
+  }
+
+}
+
+//
+
+function alsoKeepThrowingAfterAsync( test )
+{
+  let ready = new _.Consequence().take( null );
+
+  ready.then( () => run( 'alsoKeep', 1 ) );
+  ready.then( () => run( 'alsoKeep', 0 ) );
+  ready.then( () => run( 'alsoTake', 1 ) );
+  ready.then( () => run( 'alsoTake', 0 ) );
+
+  return ready;
+
+  function run( methodName, syncThrowing )
+  {
+    test.case = `${methodName} sync throwing:${syncThrowing}`;
+
+    let ready = new _.Consequence();
+    let thenArg;
+    let callbackDone = [];
+
+    ready[ methodName ]( () =>
+    {
+      return _.timeOut( 1000, () =>
+      {
+        callbackDone.push( 'a' );
+        return 'a'
+      });
+    });
+
+    let b = _.timeOut( 10, () =>
+    {
+      callbackDone.push( 'b' );
+      return 'b'
+    });
+    ready[ methodName ]( () => b );
+
+    ready[ methodName ]( () =>
+    {
+      return _.timeOut( 500, () =>
+      {
+        callbackDone.push( 'c' );
+        return 'c'
+      });
+    });
+
+    ready[ methodName ]( () =>
+    {
+      callbackDone.push( 'd' );
+      return 'd'
+    });
+
+    ready[ methodName ]( () =>
+    {
+      if( syncThrowing )
+      {
+        callbackDone.push( 'error1' );
+        throw 'error1';
+      }
+      else
+      return _.timeOut( 250, () =>
+      {
+        callbackDone.push( 'error1' );
+        throw 'error1';
+      });
+    });
+
+    ready.finally( ( err, arg ) =>
+    {
+      callbackDone.push( '1' );
+      thenArg = err ? err : arg;
+      return 1;
+    });
+
+    callbackDone.push( '0' );
+    ready.take( 0 );
+    callbackDone.push( '2' );
+
+    return _.timeOut( 2000, () =>
+    {
+      test.is( _.errIs( thenArg ) );
+      if( syncThrowing )
+      test.identical( callbackDone, [ 'd', 'error1', '0', '2', 'b', 'c', 'a', '1' ] );
+      else
+      test.identical( callbackDone, [ 'd', '0', '2', 'b', 'error1', 'c', 'a', '1' ] );
+      test.identical( b.resourcesCount(), methodName === 'alsoKeep' ? 1 : 0 );
+      test.identical( b.errorsCount(), 0 );
+    });
+
+  }
+
+}
+
+  // return _.timeOut( 2000, () =>
+  // {
+  //   test.is( _.errIs( thenArg ) );
+  //   test.identical( callbackDone, [ 'd', 'error1', '0', '2', 'b', 'c', 'a', '1' ] );
+  // });
+
+//
+
 function _and( test )
 {
   var testMsg = 'msg';
@@ -4766,7 +5245,7 @@ function _and( test )
 
     mainCon.take( testMsg );
 
-    mainCon._and({ competitors : [ con1, con2 ], taking : false, accumulative : false, stackLevel : 1 });
+    mainCon._and({ competitors : [ con1, con2 ], taking : false, accumulative : false, waiting : true, stackLevel : 1 });
 
     con1.give( ( err, got ) => { test.identical( got, delay ); return null; });
     con2.give( ( err, got ) => { test.identical( got, delay * 2 ); return null; });
@@ -4800,7 +5279,7 @@ function _and( test )
 
     mainCon.take( testMsg );
 
-    mainCon._and({ competitors : [ con1, con2 ], taking : true, accumulative : false, stackLevel : 1 });
+    mainCon._and({ competitors : [ con1, con2 ], taking : true, accumulative : false, waiting : true, stackLevel : 1 });
 
     con1.give( ( err, got ) => { test.identical( 0, 1 ); return null; });
     con2.give( ( err, got ) => { test.identical( 0, 1 ); return null; });
@@ -10047,7 +10526,7 @@ function thenSequenceAsync( test )
 var Self =
 {
 
-  name : 'Tools/base/Consequence',
+  name : 'Tools.base.Consequence',
   silencing : 1,
   routineTimeOut : 30000,
 
@@ -10105,6 +10584,15 @@ var Self =
     andKeepInstant,
     andKeep,
     andTake,
+    andKeepAccumulative,
+    alsoKeepTrivialSyncBefore,
+    alsoKeepTrivialSyncAfter,
+    alsoKeepTrivialAsync,
+    alsoKeep,
+    alsoKeepThrowingBeforeSync,
+    alsoKeepThrowingAfterSync,
+    alsoKeepThrowingBeforeAsync,
+    alsoKeepThrowingAfterAsync,
     _and,
 
     AndKeep,
