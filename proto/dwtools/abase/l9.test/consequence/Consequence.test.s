@@ -10519,6 +10519,60 @@ function thenSequenceAsync( test )
 
 }
 
+//
+
+function customPromiseFrom( test )
+{
+  class CustomPromise extends Promise {}
+
+  var ready = new _.Consequence().take( null );
+
+  ready.then( () =>
+  {
+    test.case = 'convert custom promise to consequence';
+    return _.Consequence.From( CustomPromise.resolve( 1 ) )
+    .then( ( got ) =>
+    {
+      test.identical( got, 1 )
+      return null;
+    })
+  })
+
+  ready.then( () =>
+  {
+    test.case = 'return custom promise as value';
+    let con = new _.Consequence().take( null );
+    con.then( () =>
+    {
+      return CustomPromise.resolve( 2 )
+    })
+    .then( ( got ) =>
+    {
+      test.identical( got, 2 )
+      return null;
+    })
+    return con;
+  })
+
+  ready.then( () =>
+  {
+    test.case = 'convert custom promise to regular promise and return as value';
+    let con = new _.Consequence().take( null );
+    con.then( () =>
+    {
+      return Promise.resolve( CustomPromise.resolve( 3 ) );
+    })
+    .then( ( got ) =>
+    {
+      test.identical( got, 3 )
+      return null;
+    })
+    return con;
+  })
+
+  return ready;
+}
+
 // --
 // declare
 // --
@@ -10632,6 +10686,8 @@ var Self =
 
     thenSequenceSync,
     // thenSequenceAsync,
+
+    customPromiseFrom
 
   },
 
