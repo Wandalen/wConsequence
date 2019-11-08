@@ -1678,7 +1678,7 @@ function _and( o )
       );
       if( !_.consequenceIs( competitor ) )
       continue;
-      if( _.arrayHas( competitors2, competitor ) )
+      if( _.longHas( competitors2, competitor ) )
       continue;
       competitor.assertNoDeadLockWith( self );
       _.arrayAppendOnceStrictly( self._dependsOf, competitor );
@@ -1764,7 +1764,7 @@ function _and( o )
           __got.call( c, undefined, null );
           return;
         }
-        else if( _.arrayHas( competitors2, competitor ) )
+        else if( _.longHas( competitors2, competitor ) )
         {
           return;
         }
@@ -1775,7 +1775,7 @@ function _and( o )
 
         if( _.consequenceIs( competitor ) )
         {
-          if( _.arrayHas( competitors2, competitor ) )
+          if( _.longHas( competitors2, competitor ) )
           return;
         }
         else
@@ -1798,7 +1798,7 @@ function _and( o )
       if( Config.debug && self.Diagnostics )
       {
         competitor.assertNoDeadLockWith( self );
-        _.assert( !_.arrayHas( self._dependsOf, competitor ) );
+        _.assert( !_.longHas( self._dependsOf, competitor ) );
         _.arrayAppendOnceStrictly( self._dependsOf, competitor );
       }
 
@@ -1871,7 +1871,7 @@ function _and( o )
     if( competitors[ i ] )
     {
       let competitor = competitors[ i ];
-      if( _.arrayHas( competitors2, competitor ) )
+      if( _.longHas( competitors2, competitor ) )
       continue;
       if( !_.consequenceIs( competitor ) )
       continue;
@@ -3174,7 +3174,7 @@ function dependencyChainFor( competitor )
   function look( con1, con2, visited )
   {
 
-    if( _.arrayHas( visited, con1 ) )
+    if( _.longHas( visited, con1 ) )
     return null;
     visited.push( con1 );
 
@@ -3530,25 +3530,25 @@ function competitorsCancel( competitorRoutine )
   else
   {
 
-    let found = _.arrayLeft( self._competitorsEarly, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
+    let found = _.longLeft( self._competitorsEarly, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
     while( found.element )
     {
       _.assert( found.element.competitorRoutine === competitorRoutine );
       if( found.element.procedure )
       _.procedure.end( found.element.procedure );
       self._competitorsEarly.splice( found.index, 1 )
-      found = _.arrayLeft( self._competitorsEarly, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
+      found = _.longLeft( self._competitorsEarly, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
       r += 1;
     }
 
-    found = _.arrayLeft( self._competitorsLate, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
+    found = _.longLeft( self._competitorsLate, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
     while( found.element )
     {
       _.assert( found.element.competitorRoutine === competitorRoutine );
       if( found.element.procedure )
       _.procedure.end( found.element.procedure );
       self._competitorsLate.splice( found.index, 1 )
-      found = _.arrayLeft( self._competitorsLate, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
+      found = _.longLeft( self._competitorsLate, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
       r += 1;
     }
 
@@ -3568,12 +3568,12 @@ function competitorsCancel( competitorRoutine )
 //   _.assert( arguments.length === 1 );
 //   _.assert( _.routineIs( competitorRoutine ) );
 //
-//   let found = _.arrayLeft( self._competitorsEarly, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
+//   let found = _.longLeft( self._competitorsEarly, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
 //   found.container = self._competitorsEarly;
 //
 //   if( !found.element )
 //   {
-//     found = _.arrayLeft( self._competitorsLate, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
+//     found = _.longLeft( self._competitorsLate, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
 //     found.container = self._competitorsLate;
 //   }
 //
@@ -3801,12 +3801,12 @@ function procedureDetach()
 // exporter
 // --
 
-function _infoExport( o )
+function _exportInfo( o )
 {
   let self = this;
   let result = '';
 
-  _.assertRoutineOptions( _infoExport, arguments );
+  _.assertRoutineOptions( _exportInfo, arguments );
 
   if( o.verbosity >= 2 )
   {
@@ -3836,21 +3836,21 @@ function _infoExport( o )
   return result;
 }
 
-_infoExport.defaults =
+_exportInfo.defaults =
 {
   verbosity : 2,
 }
 
 //
 
-function infoExport( o )
+function exportInfo( o )
 {
   let self = this;
-  o = _.routineOptions( infoExport, arguments );
-  return self._infoExport( o );
+  o = _.routineOptions( exportInfo, arguments );
+  return self._exportInfo( o );
 }
 
-_.routineExtend( infoExport, _infoExport );
+_.routineExtend( exportInfo, _exportInfo );
 
 //
 
@@ -3868,7 +3868,7 @@ function callbacksInfoLog()
     console.log( competitor.competitorRoutine );
   });
 
-  return self.infoExport();
+  return self.exportInfo();
 }
 
 //
@@ -3917,7 +3917,7 @@ function callbacksInfoLog()
 function toStr()
 {
   let self = this;
-  return self.infoExport({ verbosity : 9 });
+  return self.exportInfo({ verbosity : 9 });
 }
 
 //
@@ -4928,8 +4928,8 @@ let Extend =
 
   // exporter
 
-  _infoExport,
-  infoExport,
+  _exportInfo,
+  exportInfo,
   callbacksInfoLog,
   toStr,
   toString,

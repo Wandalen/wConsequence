@@ -3,14 +3,14 @@ root:
   - wConsequence.out
 consistency:
   wConsequence.out.will.yml: &ref_0
-    hash: 1342244897f7cee34ba382378d9db2ac
-    size: 41627
+    hash: 18d22182983e3d17afb258771de7ace2
+    size: 41656
   ../.ex.will.yml: &ref_1
     hash: 183da605fc9aefb8999ba3055b54ebd5
     size: 2936
   ../.im.will.yml: &ref_2
-    hash: d9bc063da4cbbce23aea32e897ef78ba
-    size: 5205
+    hash: 21c0618345b1c54553cfe6eeb76b58cd
+    size: 5279
 module:
   wConsequence.out:
     about:
@@ -86,9 +86,6 @@ module:
       download:
         criterion:
           predefined: 1
-      remote:
-        criterion:
-          predefined: 1
       repository:
         path: 'git+https:///github.com/Wandalen/wConsequence.git'
       origins:
@@ -98,15 +95,15 @@ module:
       bugtracker:
         path: 'https:///github.com/Wandalen/wConsequence/issues'
       in:
-        criterion:
-          predefined: 0
         path: .
       out:
-        criterion:
-          predefined: 0
         path: .
       temp:
-        path: 'path::out'
+        path:
+          - 'path::out'
+          - ../package-lock.json
+          - ../package.json
+          - ../node_modules
       proto:
         path: ../proto
       export:
@@ -171,11 +168,13 @@ module:
         path: '{path::out.*=}/source/Index.s'
       exported.dir.proto.export:
         criterion:
+          generated: 1
           content: proto
           export: 1
         path: ../proto
       exported.files.proto.export:
         criterion:
+          generated: 1
           content: proto
           export: 1
         path:
@@ -375,6 +374,7 @@ module:
           prefixPath: ../proto
         mandatory: 1
         criterion:
+          generated: 1
           content: proto
           export: 1
       exported.files.proto.export:
@@ -387,6 +387,7 @@ module:
         recursive: 0
         mandatory: 1
         criterion:
+          generated: 1
           content: proto
           export: 1
     step:
@@ -744,6 +745,7 @@ module:
         opts:
           reflector: 'reflector::exported.proto.export*'
         criterion:
+          generated: 1
           content: proto
           export: 1
         inherit:
@@ -752,6 +754,7 @@ module:
         opts:
           reflector: 'reflector::exported.files.proto.export*'
         criterion:
+          generated: 1
           content: proto
           export: 1
         inherit:
@@ -921,9 +924,6 @@ module:
       download:
         criterion:
           predefined: 1
-      remote:
-        criterion:
-          predefined: 1
       repository:
         path: 'git+https:///github.com/Wandalen/wConsequence.git'
       origins:
@@ -937,13 +937,17 @@ module:
       out:
         path: out
       temp:
-        path: 'path::out'
+        path:
+          - 'path::out'
+          - package-lock.json
+          - package.json
+          - node_modules
       proto:
-        path: ./proto
+        path: proto
       export:
         path: '{path::proto}/**'
       doc:
-        path: ./doc
+        path: doc
       out.raw.debug:
         criterion:
           debug: debug
@@ -1579,6 +1583,6 @@ module:
         hash: 183da605fc9aefb8999ba3055b54ebd5
         size: 2936
       ../.im.will.yml:
-        hash: d9bc063da4cbbce23aea32e897ef78ba
-        size: 5205
+        hash: 21c0618345b1c54553cfe6eeb76b58cd
+        size: 5279
       wConsequence.out.will.yml: *ref_0
