@@ -3342,7 +3342,7 @@ function competitorOwn( competitorRoutine )
 
 //
 
-function competitorHas( competitorRoutine )
+function hasCompetitor( competitorRoutine )
 {
   let self = this;
 
@@ -3354,7 +3354,7 @@ function competitorHas( competitorRoutine )
     if( competitor.competitorRoutine === competitorRoutine )
     return competitor;
     if( _.consequenceIs( cor ) )
-    if( cor.competitorHas( competitorRoutine ) )
+    if( cor.hasCompetitor( competitorRoutine ) )
     return competitor;
   }
 
@@ -3364,7 +3364,7 @@ function competitorHas( competitorRoutine )
     if( competitor.competitorRoutine === competitorRoutine )
     return competitor;
     if( _.consequenceIs( cor ) )
-    if( cor.competitorHas( competitorRoutine ) )
+    if( cor.hasCompetitor( competitorRoutine ) )
     return competitor;
   }
 
@@ -4903,7 +4903,7 @@ let Extend =
   // competitor
 
   competitorOwn,
-  competitorHas,
+  hasCompetitor,
   competitorsCount,
   competitorsEarlyGet,
   competitorsLateGet,
