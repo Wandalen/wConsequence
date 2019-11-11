@@ -10600,6 +10600,31 @@ function customPromiseFrom( test )
   return ready;
 }
 
+//
+
+function consequenceAwait( test )
+{
+  let ready = new _.Consequence().take( null );
+
+  ready.then( () => _consequenceAwait() )
+
+  /* */
+
+  return ready;
+
+  /* */
+
+  async function _consequenceAwait()
+  {
+    let t1 = _.timeNow();
+    let got = await _.timeOut( 3000, () => 1 );
+    let t2 = _.timeNow();
+    test.ge( t2 - t1, 3000 );
+    test.identical( got, 1 );
+    return true;
+  }
+}
+
 // --
 // declare
 // --
@@ -10714,7 +10739,8 @@ var Self =
     thenSequenceSync,
     // thenSequenceAsync,
 
-    customPromiseFrom
+    customPromiseFrom,
+    consequenceAwait
 
   },
 

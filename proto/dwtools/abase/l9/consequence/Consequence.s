@@ -421,7 +421,22 @@ function thenKeep( competitorRoutine )
 {
   let self = this;
 
-  _.assert( arguments.length === 1, 'Expects single argument' );
+  _.assert( arguments.length === 1 || arguments.length === 2, 'Expects single argument' );
+
+  if( arguments.length === 2 )
+  {
+    let resolve = arguments[ 0 ];
+    let reject = arguments[ 1 ];
+    _.assert( _.routineIs( resolve ) && _.routineIs( reject ) );
+    _.assert( resolve.length === 1 && reject.length === 1 );
+    return self.finallyGive( ( err, got ) =>
+    {
+      if( err )
+      reject( err );
+      else
+      resolve( got );
+    })
+  }
 
   self._competitorAppend
   ({
