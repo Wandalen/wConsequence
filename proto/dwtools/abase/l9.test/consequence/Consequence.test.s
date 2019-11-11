@@ -10529,6 +10529,17 @@ function customPromiseFrom( test )
 
   ready.then( () =>
   {
+    test.case = 'convert regular promise to consequence';
+    return _.Consequence.From( Promise.resolve( 1 ) )
+    .then( ( got ) =>
+    {
+      test.identical( got, 1 )
+      return null;
+    })
+  })
+
+  ready.then( () =>
+  {
     test.case = 'convert custom promise to consequence';
     return _.Consequence.From( CustomPromise.resolve( 1 ) )
     .then( ( got ) =>
@@ -10536,6 +10547,22 @@ function customPromiseFrom( test )
       test.identical( got, 1 )
       return null;
     })
+  })
+
+  ready.then( () =>
+  {
+    test.case = 'return regular promise as value';
+    let con = new _.Consequence().take( null );
+    con.then( () =>
+    {
+      return Promise.resolve( 2 )
+    })
+    .then( ( got ) =>
+    {
+      test.identical( got, 2 )
+      return null;
+    })
+    return con;
   })
 
   ready.then( () =>
