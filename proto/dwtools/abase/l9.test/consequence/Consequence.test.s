@@ -10606,7 +10606,9 @@ function consequenceAwait( test )
 {
   let ready = new _.Consequence().take( null );
 
-  ready.then( () => _consequenceAwait() )
+  ready.then( () => case1() )
+  ready.then( () => case2() )
+  ready.then( () => case3() )
 
   /* */
 
@@ -10614,14 +10616,30 @@ function consequenceAwait( test )
 
   /* */
 
-  async function _consequenceAwait()
+  async function case1()
   {
-    let t1 = _.timeNow();
-    let got = await _.timeOut( 3000, () => 1 );
-    let t2 = _.timeNow();
-    test.ge( t2 - t1, 3000 );
+    test.case = 'resolved con'
+    let got = await new _.Consequence().take( 1 );
     test.identical( got, 1 );
     return true;
+  }
+
+  async function case2()
+  {
+    test.case = 'timeout return con resolved after 1sec'
+    let t1 = _.timeNow();
+    let got = await _.timeOut( 1000, () => 1 );
+    let t2 = _.timeNow();
+    test.ge( t2 - t1, 1000 );
+    test.identical( got, 1 );
+    return true;
+  }
+
+  function case3()
+  {
+    test.case = 'con with error, await should return promise with error'
+    let f = async () => await new _.Consequence().error( 'Some error' )
+    return test.shouldThrowErrorAsync( () => _.Consequence.From( f() ) )
   }
 }
 
