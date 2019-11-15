@@ -10519,6 +10519,130 @@ function thenSequenceAsync( test )
 
 }
 
+//
+
+function customPromiseFrom( test )
+{
+  class CustomPromise extends Promise {}
+
+  var ready = new _.Consequence().take( null );
+
+  ready.then( () =>
+  {
+    test.case = 'convert regular promise to consequence';
+    return _.Consequence.From( Promise.resolve( 1 ) )
+    .then( ( got ) =>
+    {
+      test.identical( got, 1 )
+      return null;
+    })
+  })
+
+  ready.then( () =>
+  {
+    test.case = 'convert custom promise to consequence';
+    return _.Consequence.From( CustomPromise.resolve( 1 ) )
+    .then( ( got ) =>
+    {
+      test.identical( got, 1 )
+      return null;
+    })
+  })
+
+  ready.then( () =>
+  {
+    test.case = 'return regular promise as value';
+    let con = new _.Consequence().take( null );
+    con.then( () =>
+    {
+      return Promise.resolve( 2 )
+    })
+    .then( ( got ) =>
+    {
+      test.identical( got, 2 )
+      return null;
+    })
+    return con;
+  })
+
+  ready.then( () =>
+  {
+    test.case = 'return custom promise as value';
+    let con = new _.Consequence().take( null );
+    con.then( () =>
+    {
+      return CustomPromise.resolve( 2 )
+    })
+    .then( ( got ) =>
+    {
+      test.identical( got, 2 )
+      return null;
+    })
+    return con;
+  })
+
+  ready.then( () =>
+  {
+    test.case = 'convert custom promise to regular promise and return as value';
+    let con = new _.Consequence().take( null );
+    con.then( () =>
+    {
+      return Promise.resolve( CustomPromise.resolve( 3 ) );
+    })
+    .then( ( got ) =>
+    {
+      test.identical( got, 3 )
+      return null;
+    })
+    return con;
+  })
+
+  return ready;
+}
+
+//
+
+function consequenceAwait( test )
+{
+  let ready = new _.Consequence().take( null );
+
+  ready.then( () => case1() )
+  ready.then( () => case2() )
+  ready.then( () => case3() )
+
+  /* */
+
+  return ready;
+
+  /* */
+
+  async function case1()
+  {
+    test.case = 'resolved con'
+    let got = await new _.Consequence().take( 1 );
+    test.identical( got, 1 );
+    return true;
+  }
+
+  async function case2()
+  {
+    test.case = 'timeout return con resolved after 1sec'
+    let t1 = _.timeNow();
+    let got = await _.timeOut( 1000, () => 1 );
+    let t2 = _.timeNow();
+    test.ge( t2 - t1, 1000 );
+    test.identical( got, 1 );
+    return true;
+  }
+
+  function case3()
+  {
+    test.case = 'con with error, await should return promise with error'
+    let f = async () => await new _.Consequence().error( 'Some error' )
+    return test.shouldThrowErrorAsync( () => _.Consequence.From( f() ) )
+  }
+}
+
 // --
 // declare
 // --
@@ -10632,6 +10756,9 @@ var Self =
 
     thenSequenceSync,
     // thenSequenceAsync,
+
+    customPromiseFrom,
+    consequenceAwait
 
   },
 
