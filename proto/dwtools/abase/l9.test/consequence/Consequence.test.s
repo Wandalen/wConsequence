@@ -121,7 +121,7 @@ function ordinarResourceAsyncMode00( test )
 {
   var c = this;
   var amode = _.Consequence.AsyncModeGet();
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -224,7 +224,7 @@ function ordinarResourceAsyncMode00( test )
     return arg;
 
   })
-  return que;
+  return ready;
 }
 
 //
@@ -233,7 +233,7 @@ function ordinarResourceAsyncMode10( test )
 {
   var c = this;
   var amode = _.Consequence.AsyncModeGet();
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -354,7 +354,7 @@ function ordinarResourceAsyncMode10( test )
     return arg;
 
   })
-  return que;
+  return ready;
 }
 
 //
@@ -363,7 +363,7 @@ function ordinarResourceAsyncMode01( test )
 {
   var c = this;
   var amode = _.Consequence.AsyncModeGet();
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -502,7 +502,7 @@ function ordinarResourceAsyncMode01( test )
     return arg;
 
   })
-  return que;
+  return ready;
 }
 
 //
@@ -511,7 +511,7 @@ function ordinarResourceAsyncMode11( test )
 {
   var c = this;
   var amode = _.Consequence.AsyncModeGet();
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -630,7 +630,7 @@ function ordinarResourceAsyncMode11( test )
     return arg;
 
   })
-  return que;
+  return ready;
 }
 
 //--
@@ -641,7 +641,7 @@ function finallyPromiseGiveAsyncMode00( test )
 {
   var testMsg = 'testMsg';
   var amode = _.Consequence.AsyncModeGet();
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -770,7 +770,7 @@ function finallyPromiseGiveAsyncMode00( test )
     return arg;
 
   })
-  return que;
+  return ready;
 }
 
 //
@@ -779,7 +779,7 @@ function finallyPromiseGiveAsyncMode10( test )
 {
   var testMsg = 'testMsg';
   var amode = _.Consequence.AsyncModeGet();
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -877,7 +877,7 @@ function finallyPromiseGiveAsyncMode10( test )
     return arg;
 
   })
-  return que;
+  return ready;
 }
 
 //
@@ -886,7 +886,7 @@ function finallyPromiseGiveAsyncMode01( test )
 {
   var testMsg = 'testMsg';
   var amode = _.Consequence.AsyncModeGet();
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -984,7 +984,7 @@ function finallyPromiseGiveAsyncMode01( test )
     return arg;
 
   })
-  return que;
+  return ready;
 }
 
 //
@@ -993,7 +993,7 @@ function finallyPromiseGiveAsyncMode11( test )
 {
   var testMsg = 'testMsg';
   var amode = _.Consequence.AsyncModeGet();
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -1091,7 +1091,7 @@ function finallyPromiseGiveAsyncMode11( test )
     return arg;
 
   })
-  return que;
+  return ready;
 }
 
 //--
@@ -1104,7 +1104,7 @@ function _finallyAsyncMode00( test )
   var amode = _.Consequence.AsyncModeGet();
   var testMsg = 'msg';
   var con;
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -1278,7 +1278,7 @@ function _finallyAsyncMode00( test )
     throw err;
     return arg;
   });
-  return que;
+  return ready;
 }
 
 //
@@ -1289,7 +1289,7 @@ function _finallyAsyncMode10( test )
   var amode = _.Consequence.AsyncModeGet();
   var testMsg = 'msg';
   var con;
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -1487,7 +1487,7 @@ function _finallyAsyncMode10( test )
     throw err;
     return arg;
   });
-  return que;
+  return ready;
 }
 
 //
@@ -1498,7 +1498,7 @@ function _finallyAsyncMode01( test )
   var amode = _.Consequence.AsyncModeGet();
   var testMsg = 'msg';
   var con;
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -1718,7 +1718,7 @@ function _finallyAsyncMode01( test )
     throw err;
     return arg;
   });
-  return que;
+  return ready;
 }
 
 //
@@ -1729,7 +1729,7 @@ function _finallyAsyncMode11( test )
   var amode = _.Consequence.AsyncModeGet();
   var testMsg = 'msg';
   var con;
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -1929,7 +1929,7 @@ function _finallyAsyncMode11( test )
     throw err;
     return arg;
   });
-  return que;
+  return ready;
 }
 
 //--
@@ -1941,7 +1941,7 @@ function finallyPromiseKeepAsyncMode00( test )
   var testMsg = 'testMsg';
   var con;
   var amode = _.Consequence.AsyncModeGet();
-  var que = new _.Consequence({ tag : 'finallyPromiseKeepCon' }).take( null )
+  var ready = new _.Consequence({ tag : 'finallyPromiseKeepCon' }).take( null )
 
   /* */
 
@@ -2053,7 +2053,7 @@ function finallyPromiseKeepAsyncMode00( test )
     throw err;
     return arg;
   })
-  return que;
+  return ready;
 }
 
 //
@@ -2063,7 +2063,7 @@ function finallyPromiseKeepAsyncMode10( test )
   var testMsg = 'testMsg';
   var con;
   var amode = _.Consequence.AsyncModeGet();
-  var que = new _.Consequence({ tag : 'finallyPromiseKeepCon' }).take( null )
+  var ready = new _.Consequence({ tag : 'finallyPromiseKeepCon' }).take( null )
 
   /* */
 
@@ -2163,7 +2163,7 @@ function finallyPromiseKeepAsyncMode10( test )
     throw err;
     return arg;
   })
-  return que;
+  return ready;
 }
 
 //
@@ -2173,7 +2173,7 @@ function finallyPromiseKeepAsyncMode01( test )
   var testMsg = 'testMsg';
   var con;
   var amode = _.Consequence.AsyncModeGet();
-  var que = new _.Consequence({ tag : 'finallyPromiseKeepCon' }).take( null )
+  var ready = new _.Consequence({ tag : 'finallyPromiseKeepCon' }).take( null )
 
   /* */
 
@@ -2273,7 +2273,7 @@ function finallyPromiseKeepAsyncMode01( test )
     throw err;
     return arg;
   })
-  return que;
+  return ready;
 }
 
 //
@@ -2283,7 +2283,7 @@ function finallyPromiseKeepAsyncMode11( test )
   var testMsg = 'testMsg';
   var con;
   var amode = _.Consequence.AsyncModeGet();
-  var que = new _.Consequence({ tag : 'finallyPromiseKeepCon' }).take( null )
+  var ready = new _.Consequence({ tag : 'finallyPromiseKeepCon' }).take( null )
 
   /* */
 
@@ -2383,15 +2383,16 @@ function finallyPromiseKeepAsyncMode11( test )
     throw err;
     return arg;
   })
-  return que;
+  return ready;
 }
 
 //
 
 function split( test )
 {
-  var que = new _.Consequence().take( null );
+  var ready = new _.Consequence().take( null );
 
+  ready
   .thenKeep( function( arg )
   {
     test.case = 'split : run after resolve value';
@@ -2492,7 +2493,7 @@ function split( test )
     return null;
   })
 
-  return que;
+  return ready;
 }
 
 //
@@ -2500,7 +2501,7 @@ function split( test )
 function tap( test )
 {
   var testMsg = 'msg';
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -2562,14 +2563,14 @@ function tap( test )
     return null;
   })
 
-  return que;
+  return ready;
 }
 
 //
 
 function tapHandling( test )
 {
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -2687,7 +2688,7 @@ function tapHandling( test )
 
   /* */
 
-  return que;
+  return ready;
 }
 
 //
@@ -2861,7 +2862,7 @@ function tapHandling( test )
 function catchTestRoutine( test )
 {
   var testMsg = 'msg';
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* common wConsequence corespondent tests. */
 
@@ -2956,7 +2957,7 @@ function catchTestRoutine( test )
     });
   })
 
-  return que;
+  return ready;
 }
 
 //
@@ -3043,7 +3044,7 @@ function ifNoErrorGotThrowing( test )
 function keep( test )
 {
   var testMsg = 'msg';
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* common wConsequence corespondent tests. */
 
@@ -3154,7 +3155,7 @@ function keep( test )
     return null;
   })
 
-  return que;
+  return ready;
 }
 
 //
@@ -3162,7 +3163,7 @@ function keep( test )
 function timeOut( test )
 {
   var testMsg = 'msg';
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* common wConsequence corespondent tests. */
 
@@ -3238,7 +3239,7 @@ function timeOut( test )
     return null;
   })
 
-  return que;
+  return ready;
 }
 
 //
@@ -3389,27 +3390,27 @@ function andConcurrent( test )
   if( !Config.debug )
   return _.dont;
 
-  let que = _.after();
+  let ready = _.after();
 
-  que.then( () =>
+  ready.then( () =>
   {
     test.case = 'serial, sync';
     return act( 0, 1 );
   });
 
-  que.then( () =>
+  ready.then( () =>
   {
     test.case = 'serial, async';
     return act( 0, 0 );
   });
 
-  que.then( () =>
+  ready.then( () =>
   {
     test.case = 'concurrent, sync';
     return act( 0, 1 );
   });
 
-  que.then( () =>
+  ready.then( () =>
   {
     test.case = 'concurrent, async';
     return act( 0, 0 );
@@ -3417,31 +3418,31 @@ function andConcurrent( test )
 
   /* error */
 
-  que.then( () =>
+  ready.then( () =>
   {
     test.case = 'serial, sync, error';
     return act( 0, 1, 'Error!' );
   });
 
-  que.then( () =>
+  ready.then( () =>
   {
     test.case = 'serial, async, error';
     return act( 0, 0, 'Error!' );
   });
 
-  que.then( () =>
+  ready.then( () =>
   {
     test.case = 'concurrent, sync, error';
     return act( 1, 1, 'Error!' );
   });
 
-  que.then( () =>
+  ready.then( () =>
   {
     test.case = 'concurrent, async, error';
     return act( 1, 0, 'Error!' );
   });
 
-  return que;
+  return ready;
 
   function act( concurrent, sync, error )
   {
@@ -3680,7 +3681,7 @@ function andKeepRoutinesDelayed( test )
 function andKeepDuplicates( test )
 {
 
-  let que = _.Consequence().take( null )
+  let ready = _.Consequence().take( null )
 
   /* */
 
@@ -3732,7 +3733,7 @@ function andKeepDuplicates( test )
 
   /* */
 
-  que.then( ( arg ) =>
+  ready.then( ( arg ) =>
   {
     test.case = 'mixed take';
 
@@ -3780,7 +3781,7 @@ function andKeepDuplicates( test )
     return con;
   })
 
-  return que;
+  return ready;
 }
 
 //
@@ -3788,13 +3789,13 @@ function andKeepDuplicates( test )
 function andKeepInstant( test )
 {
   var testMsg = 'msg';
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /*
   instant version should work synchronously, but delayed should work asynchronously
   */
 
-  que
+  ready
   .thenKeep( function( arg )
   {
     test.case = 'instant check, delayed, main takes later';
@@ -3806,7 +3807,7 @@ function andKeepInstant( test )
     return act( 1 );
   })
 
-  return que;
+  return ready;
 
   function act( instant )
   {
@@ -3950,7 +3951,7 @@ function andKeepInstant( test )
 function andKeep( test )
 {
   var testMsg = 'msg';
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -4379,7 +4380,7 @@ function andKeep( test )
 
   /* */
 
-  return que;
+  return ready;
 }
 
 //
@@ -4387,7 +4388,7 @@ function andKeep( test )
 function andTake( test )
 {
   var testMsg = 'msg';
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
    /* */
 
@@ -4743,7 +4744,7 @@ function andTake( test )
     });
   })
 
-  return que;
+  return ready;
 }
 
 //
@@ -5061,7 +5062,7 @@ function alsoKeepThrowingBeforeAsync( test )
         throw 'error1';
       }
       else
-      return _.timeOut( 250, () =>
+      return _.timeOut( 100, () =>
       {
         callbackDone.push( 'error1' );
         throw 'error1';
@@ -5070,14 +5071,14 @@ function alsoKeepThrowingBeforeAsync( test )
 
     ready[ methodName ]( () =>
     {
-      return _.timeOut( 1000, () =>
+      return _.timeOut( 500, () =>
       {
         callbackDone.push( 'a' );
         return 'a'
       });
     });
 
-    let b = _.timeOut( 10, () =>
+    let b = _.timeOut( 5, () =>
     {
       callbackDone.push( 'b' );
       return 'b'
@@ -5086,7 +5087,7 @@ function alsoKeepThrowingBeforeAsync( test )
 
     ready[ methodName ]( () =>
     {
-      return _.timeOut( 500, () =>
+      return _.timeOut( 250, () =>
       {
         callbackDone.push( 'c' );
         return 'c'
@@ -5110,7 +5111,7 @@ function alsoKeepThrowingBeforeAsync( test )
     ready.take( 0 );
     callbackDone.push( '2' );
 
-    return _.timeOut( 2000, () =>
+    return _.timeOut( 1000, () =>
     {
       test.is( _.errIs( thenArg ) );
       if( syncThrowing )
@@ -5149,14 +5150,14 @@ function alsoKeepThrowingAfterAsync( test )
 
     ready[ methodName ]( () =>
     {
-      return _.timeOut( 1000, () =>
+      return _.timeOut( 500, () =>
       {
         callbackDone.push( 'a' );
         return 'a'
       });
     });
 
-    let b = _.timeOut( 10, () =>
+    let b = _.timeOut( 5, () =>
     {
       callbackDone.push( 'b' );
       return 'b'
@@ -5165,7 +5166,7 @@ function alsoKeepThrowingAfterAsync( test )
 
     ready[ methodName ]( () =>
     {
-      return _.timeOut( 500, () =>
+      return _.timeOut( 250, () =>
       {
         callbackDone.push( 'c' );
         return 'c'
@@ -5186,7 +5187,7 @@ function alsoKeepThrowingAfterAsync( test )
         throw 'error1';
       }
       else
-      return _.timeOut( 250, () =>
+      return _.timeOut( 100, () =>
       {
         callbackDone.push( 'error1' );
         throw 'error1';
@@ -5204,7 +5205,7 @@ function alsoKeepThrowingAfterAsync( test )
     ready.take( 0 );
     callbackDone.push( '2' );
 
-    return _.timeOut( 2000, () =>
+    return _.timeOut( 1000, () =>
     {
       test.is( _.errIs( thenArg ) );
       if( syncThrowing )
@@ -5219,19 +5220,13 @@ function alsoKeepThrowingAfterAsync( test )
 
 }
 
-  // return _.timeOut( 2000, () =>
-  // {
-  //   test.is( _.errIs( thenArg ) );
-  //   test.identical( callbackDone, [ 'd', 'error1', '0', '2', 'b', 'c', 'a', '1' ] );
-  // });
-
 //
 
 function _and( test )
 {
   var testMsg = 'msg';
   var delay = 500;
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* common wConsequence corespondent tests. */
 
@@ -5317,14 +5312,14 @@ function _and( test )
     });
   })
 
-  return que;
+  return ready;
 }
 
 //
 
 function AndKeep( test )
 {
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -5365,14 +5360,14 @@ function AndKeep( test )
 
   });
 
-  return que;
+  return ready;
 }
 
 //
 
 function AndTake( test )
 {
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -5412,14 +5407,14 @@ function AndTake( test )
     });
   });
 
-  return que;
+  return ready;
 }
 
 //
 
 function AndKeep( test )
 {
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -5459,7 +5454,7 @@ function AndKeep( test )
     });
   });
 
-  return que;
+  return ready;
 }
 
 //--
@@ -5468,7 +5463,7 @@ function AndKeep( test )
 
 function orKeepingWithSimple( test )
 {
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -5742,14 +5737,14 @@ function orKeepingWithSimple( test )
     });
   })
 
-  return que;
+  return ready;
 }
 
 //
 
 function orKeepingWithLater( test )
 {
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -5999,12 +5994,12 @@ function orKeepingWithLater( test )
     });
   })
 
-  return que;
+  return ready;
 }
 
 function orKeepingWithNow( test )
 {
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -6184,14 +6179,14 @@ function orKeepingWithNow( test )
 
   /* - */
 
-  return que;
+  return ready;
 }
 
 //
 
 function orTakingWithSimple( test )
 {
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -6457,14 +6452,14 @@ function orTakingWithSimple( test )
 
   /* */
 
-  return que;
+  return ready;
 }
 
 //
 
 function orTakingWithLater( test )
 {
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -6715,14 +6710,14 @@ function orTakingWithLater( test )
 
   /* */
 
-  return que;
+  return ready;
 }
 
 //
 
 function orTakingWithNow( test )
 {
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -6901,14 +6896,14 @@ function orTakingWithNow( test )
 
   /* */
 
-  return que;
+  return ready;
 }
 
 //
 
 function thenOrKeepingNotFiring( test )
 {
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -7066,14 +7061,14 @@ function thenOrKeepingNotFiring( test )
 
   /* */
 
-  return que;
+  return ready;
 }
 
 //
 
 function thenOrKeepingWithSimple( test )
 {
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -7323,14 +7318,14 @@ function thenOrKeepingWithSimple( test )
 
   /* */
 
-  return que;
+  return ready;
 }
 
 //
 
 function thenOrKeepingWithLater( test )
 {
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -7567,14 +7562,14 @@ function thenOrKeepingWithLater( test )
 
   /* */
 
-  return que;
+  return ready;
 }
 
 //
 
 function thenOrKeepingWithTwoTake0( test )
 {
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -7752,14 +7747,14 @@ function thenOrKeepingWithTwoTake0( test )
 
   /* */
 
-  return que;
+  return ready;
 }
 
 //
 
 function thenOrTakingWithSimple( test )
 {
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -8008,14 +8003,14 @@ function thenOrTakingWithSimple( test )
 
   /* */
 
-  return que;
+  return ready;
 }
 
 //
 
 function thenOrTakingWithLater( test )
 {
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -8250,14 +8245,14 @@ function thenOrTakingWithLater( test )
 
   /* */
 
-  return que;
+  return ready;
 }
 
 //
 
 function thenOrTakingWithTwoTake0( test )
 {
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -8436,7 +8431,7 @@ function thenOrTakingWithTwoTake0( test )
 
   /* */
 
-  return que;
+  return ready;
 }
 
 //
@@ -8522,7 +8517,7 @@ function inter( test )
 
 function put( test )
 {
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -8555,7 +8550,7 @@ function put( test )
     return c;
   })
 
-  return que;
+  return ready;
 
   /* */
 
@@ -8641,7 +8636,7 @@ function firstAsyncMode00( test )
   var c = this;
   var amode = _.Consequence.AsyncModeGet();
   var testMsg = 'msg';
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   .finally( () =>
   {
@@ -8831,7 +8826,7 @@ function firstAsyncMode00( test )
     return arg;
 
   })
-  return que;
+  return ready;
 }
 
 //
@@ -8841,7 +8836,7 @@ function firstAsyncMode10( test )
   var c = this;
   var amode = _.Consequence.AsyncModeGet();
   var testMsg = 'msg';
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   .finally( () =>
   {
@@ -9068,7 +9063,7 @@ function firstAsyncMode10( test )
     return arg;
 
   })
-  return que;
+  return ready;
 }
 
 //
@@ -9078,7 +9073,7 @@ function firstAsyncMode01( test )
   var c = this;
   var amode = _.Consequence.AsyncModeGet();
   var testMsg = 'msg';
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   .finally( () =>
   {
@@ -9362,7 +9357,7 @@ function firstAsyncMode01( test )
     return arg;
 
   })
-  return que;
+  return ready;
 }
 
 //
@@ -9372,7 +9367,7 @@ function firstAsyncMode11( test )
   var c = this;
   var amode = _.Consequence.AsyncModeGet();
   var testMsg = 'msg';
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   .finally( () =>
   {
@@ -9612,7 +9607,7 @@ function firstAsyncMode11( test )
     return arg;
 
   })
-  return que;
+  return ready;
 }
 
 //
@@ -9621,7 +9616,7 @@ function fromAsyncMode00( test )
 {
   var testMsg = 'value';
   var amode = _.Consequence.AsyncModeGet();
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -9783,7 +9778,7 @@ function fromAsyncMode00( test )
     return arg;
 
   })
-  return que;
+  return ready;
 }
 
 //
@@ -9792,7 +9787,7 @@ function fromAsyncMode10( test )
 {
   var testMsg = 'value';
   var amode = _.Consequence.AsyncModeGet();
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -9913,7 +9908,7 @@ function fromAsyncMode10( test )
     return arg;
 
   })
-  return que;
+  return ready;
 }
 
 //
@@ -9922,7 +9917,7 @@ function fromAsyncMode01( test )
 {
   var testMsg = 'value';
   var amode = _.Consequence.AsyncModeGet();
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -10042,7 +10037,7 @@ function fromAsyncMode01( test )
     return arg;
 
   })
-  return que;
+  return ready;
 }
 
 //
@@ -10051,7 +10046,7 @@ function fromAsyncMode11( test )
 {
   var testMsg = 'value';
   var amode = _.Consequence.AsyncModeGet();
-  var que = new _.Consequence().take( null )
+  var ready = new _.Consequence().take( null )
 
   /* */
 
@@ -10172,7 +10167,7 @@ function fromAsyncMode11( test )
     return arg;
 
   })
-  return que;
+  return ready;
 }
 
 //
@@ -10521,10 +10516,31 @@ function thenSequenceAsync( test )
 
 //
 
-function customPromiseFrom( test )
+function fromPromiseWithUndefined( test )
+{
+  var ready = new _.Consequence().take( null );
+
+  ready.then( () =>
+  {
+
+    test.case = 'convert promise with undefined to consequence';
+    return _.Consequence.From( Promise.resolve( undefined ) )
+    .then( ( got ) =>
+    {
+      test.identical( got, null )
+      return null;
+    })
+
+  });
+
+  return ready;
+}
+
+//
+
+function fromCustomPromise( test )
 {
   class CustomPromise extends Promise {}
-
   var ready = new _.Consequence().take( null );
 
   ready.then( () =>
@@ -10757,7 +10773,8 @@ var Self =
     thenSequenceSync,
     // thenSequenceAsync,
 
-    customPromiseFrom,
+    fromPromiseWithUndefined,
+    fromCustomPromise,
     consequenceAwait
 
   },

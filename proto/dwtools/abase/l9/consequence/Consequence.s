@@ -2790,21 +2790,17 @@ function __handleError( err, competitor )
   if( competitor && self.Diagnostics && self.Stacking )
   err.stack = err.stack + '\n+\n' + competitor.stack;
 
-  // if( !_.errIsAttended( err ) )
-  // _.errAttentionRequest( err );
-
   if( !_.errIsAttended( err ) )
   {
     _.timeOut( 250, function _unhandledError()
     {
-      // debugger;
       if( !_.errIsAttended( err ) )
       {
-        debugger;
-        err = _.err( err, '\nUnhandled error caught by Consequence!' );
+        err = _.err( err, '\nUnhandled asynchronous error caught by Consequence!' );
         logger.log( err );
-        // _.errLog( err ); /* xxx : make working console.log( err ) */
         debugger;
+        // if( _.process )
+        // _.process.exit( -1 );
       }
       return null;
     });
@@ -4064,7 +4060,7 @@ function From( src, timeOut )
   if( _.promiseLike( src ) )
   {
     con = new Self();
-    let onFulfilled = ( finallyGive ) => { con.take( finallyGive ); }
+    let onFulfilled = ( arg ) => { arg === undefined ? con.take( null ) : con.take( arg ); }
     let onRejected = ( err ) => { con.error( err ); }
     src.then( onFulfilled, onRejected );
   }
