@@ -2390,7 +2390,7 @@ function finallyPromiseKeepAsyncMode11( test )
 
 function split( test )
 {
-  var que = new _.Consequence().take( null )
+  var que = new _.Consequence().take( null );
 
   .thenKeep( function( arg )
   {
