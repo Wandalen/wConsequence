@@ -2388,6 +2388,69 @@ function finallyPromiseKeepAsyncMode11( test )
 
 //
 
+function deasync( test )
+{
+  var ready = _.now();
+
+  /* */
+
+  ready.then( () =>
+  {
+    let counter = 0;
+    let after = false;
+    let con;
+
+    _.timeOut( 200, () =>
+    {
+      test.is( after );
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 1 );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( counter, 1 );
+      counter += 1;
+    });
+    _.timeOut( 10, () =>
+    {
+      test.is( !after );
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 2 );
+      test.identical( counter, 0 );
+      counter += 1;
+    });
+
+    con = _.timeOut( 100 );
+
+    test.is( !after );
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 1 );
+    test.identical( counter, 0 );
+
+    con.deasyncWait();
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 1 );
+    test.identical( con.competitorsCount(), 0 );
+    test.identical( counter, 1 );
+    after = 1;
+
+    return _.timeOut( 250, () =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 1 );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( counter, 2 );
+    });
+  })
+
+  /* */
+
+  return ready;
+}
+
+//
+
 function split( test )
 {
   var ready = new _.Consequence().take( null );
@@ -10701,6 +10764,8 @@ var Self =
     finallyPromiseKeepAsyncMode10,
     finallyPromiseKeepAsyncMode01,
     finallyPromiseKeepAsyncMode11,
+
+    deasync,
 
     split,
     tap,

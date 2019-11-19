@@ -60,12 +60,14 @@ let Deasync = null;
 if( _realGlobal_.wTools && _realGlobal_.wConsequence )
 {
   _.assert( _.routineIs( _realGlobal_.wConsequence.After ) );
-  let Tools =
-  {
-    after : _realGlobal_.wConsequence.After,
-    // before : _realGlobal_.wTools.before,
-  }
-  _.mapExtend( _, Tools );
+  // let Tools =
+  // {
+  //   now : _realGlobal_.wConsequence.After,
+  //   after : _realGlobal_.wConsequence.After,
+  //   // before : _realGlobal_.wTools.before,
+  // }
+  _.assert( _.mapIs( _realGlobal_.wConsequence.Tools ) );
+  _.mapExtend( _, _realGlobal_.wConsequence.Tools );
   let Self = _realGlobal_.wConsequence;
   _[ Self.shortName ] = Self;
   if( typeof module !== 'undefined' && module !== null )
@@ -722,6 +724,13 @@ function _deasync( o )
   let ready = false;
 
   _.assertRoutineOptions( _deasync, arguments );
+  _.assert
+  (
+       o.kindOfResource === 0
+    || o.kindOfResource === self.KindOfResource.Both
+    || o.kindOfResource === self.KindOfResource.ArgumentOnly
+    || o.kindOfResource === self.KindOfResource.ErrorOnly
+  );
 
   self._competitorAppend
   ({
@@ -738,15 +747,17 @@ function _deasync( o )
   Deasync.loopWhile( () => !ready )
 
   if( result.err )
-  if( self.KindOfResource.Both || self.KindOfResource.ErrorOnly )
+  if( o.kindOfResource === self.KindOfResource.Both || o.kindOfResource === self.KindOfResource.ErrorOnly )
   throw result.err;
   else
   return new _.Consequence().error( result.err );
 
-  if( self.KindOfResource.Both || self.KindOfResource.ArgumentOnly )
+  if( o.kindOfResource === self.KindOfResource.Both || o.kindOfResource === self.KindOfResource.ArgumentOnly )
   return result.arg;
   else
   return new _.Consequence().take( result.arg );
+
+  return self;
 
   function competitorRoutine( err, arg )
   {
@@ -769,6 +780,21 @@ _deasync.having =
 {
   consequizing : 1,
 }
+
+//
+
+function deasyncWait()
+{
+  let self = this;
+  _.assert( arguments.length === 0 );
+  return self._deasync
+  ({
+    keeping : 1,
+    kindOfResource : 0,
+  });
+}
+
+deasyncWait.having = Object.create( _deasync.having );
 
 //
 
@@ -2278,101 +2304,101 @@ orKeeping.having = Object.create( _or.having );
 
 //
 
-/* xxx : deprecate */
-let JoinedWithConsequence = Object.create( null );
-JoinedWithConsequence.routineJoin = _.routineSeal;
-JoinedWithConsequence.context = null;
-JoinedWithConsequence.method = null;
-JoinedWithConsequence.consequence = null;
-JoinedWithConsequence.constructor = function JoinedWithConsequence()
-{
-  debugger;
-};
+// /* xxx : deprecate */
+// let JoinedWithConsequence = Object.create( null );
+// JoinedWithConsequence.routineJoin = _.routineSeal;
+// JoinedWithConsequence.context = null;
+// JoinedWithConsequence.method = null;
+// JoinedWithConsequence.consequence = null;
+// JoinedWithConsequence.constructor = function JoinedWithConsequence()
+// {
+//   debugger;
+// };
 
+// //
 //
-
-function _prepareJoinedWithConsequence()
-{
-
-  for( let r in Self.prototype ) ( function( r )
-  {
-    if( Self.prototype._Accessors[ r ] )
-    return;
-    let routine = Self.prototype[ r ];
-    if( !routine.having || !routine.having.consequizing )
-    return;
-
-    if( routine.having.andLike )
-    JoinedWithConsequence[ r ] = function()
-    {
-      let args = arguments;
-      let method = [];
-      _.assert( arguments.length === 1, 'Expects single argument' );
-      _.assert( _.longIs( args[ 0 ] ) );
-      for( let i = 0 ; i < args[ 0 ].length ; i++ )
-      {
-        method.push( this.routineJoin( this.context, this.method, [ args[ 0 ][ i ] ] ) );
-      }
-      this.consequence[ r ]( method );
-      return this;
-    }
-    else
-    JoinedWithConsequence[ r ] = function()
-    {
-      let args = arguments;
-      let method = this.routineJoin( this.context, this.method, args );
-      this.consequence[ r ]( method );
-      return this;
-    }
-
-  })( r );
-
-}
+// function _prepareJoinedWithConsequence()
+// {
+//
+//   for( let r in Self.prototype ) ( function( r )
+//   {
+//     if( Self.prototype._Accessors[ r ] )
+//     return;
+//     let routine = Self.prototype[ r ];
+//     if( !routine.having || !routine.having.consequizing )
+//     return;
+//
+//     if( routine.having.andLike )
+//     JoinedWithConsequence[ r ] = function()
+//     {
+//       let args = arguments;
+//       let method = [];
+//       _.assert( arguments.length === 1, 'Expects single argument' );
+//       _.assert( _.longIs( args[ 0 ] ) );
+//       for( let i = 0 ; i < args[ 0 ].length ; i++ )
+//       {
+//         method.push( this.routineJoin( this.context, this.method, [ args[ 0 ][ i ] ] ) );
+//       }
+//       this.consequence[ r ]( method );
+//       return this;
+//     }
+//     else
+//     JoinedWithConsequence[ r ] = function()
+//     {
+//       let args = arguments;
+//       let method = this.routineJoin( this.context, this.method, args );
+//       this.consequence[ r ]( method );
+//       return this;
+//     }
+//
+//   })( r );
+//
+// }
 
 // --
 // adapter
 // --
 
-function _join( routineJoin, args )
-{
-  let self = this;
-  let result = Object.create( JoinedWithConsequence );
-
-  _.assert( arguments.length === 2, 'Expects exactly two arguments' );
-  _.assert( args.length === 1 || args.length === 2 );
-  _.assert( _.consequenceIs( this ) );
-
-  result.routineJoin = routineJoin;
-  result.consequence = self;
-
-  if( args[ 1 ] !== undefined )
-  {
-    result.context = args[ 0 ];
-    result.method = args[ 1 ];
-  }
-  else
-  {
-    result.method = args[ 0 ];
-  }
-
-  return result;
-}
-
+// function _join( routineJoin, args )
+// {
+//   let self = this;
+//   let result = Object.create( JoinedWithConsequence );
 //
-
-function join( context, method )
-{
-  let self = this;
-  return self._join( _.routineJoin, arguments );
-}
-
+//   _.assert( arguments.length === 2, 'Expects exactly two arguments' );
+//   _.assert( args.length === 1 || args.length === 2 );
+//   _.assert( _.consequenceIs( this ) );
 //
-
-function seal( context, method )
-{
-  let self = this;
-  return self._join( _.routineSeal, arguments );
-}
+//   result.routineJoin = routineJoin;
+//   result.consequence = self;
+//
+//   if( args[ 1 ] !== undefined )
+//   {
+//     result.context = args[ 0 ];
+//     result.method = args[ 1 ];
+//   }
+//   else
+//   {
+//     result.method = args[ 0 ];
+//   }
+//
+//   return result;
+// }
+//
+// //
+//
+// function join( context, method )
+// {
+//   let self = this;
+//   return self._join( _.routineJoin, arguments );
+// }
+//
+// //
+//
+// function seal( context, method )
+// {
+//   let self = this;
+//   return self._join( _.routineSeal, arguments );
+// }
 
 //
 
@@ -2799,6 +2825,7 @@ function __handleError( err, competitor )
         err = _.err( err, '\nUnhandled asynchronous error caught by Consequence!' );
         logger.log( err );
         debugger;
+        // xxx : uncomment it
         // if( _.process )
         // _.process.exit( -1 );
       }
@@ -4581,7 +4608,15 @@ function experimentCall()
 
 //
 
-function after( resource )
+function Now()
+{
+  _.assert( arguments.length === 0 );
+  return new _.Consequence().take( null );
+}
+
+//
+
+function After( resource )
 {
   _.assert( arguments.length === 0 || arguments.length === 1 );
   _.assert( arguments.length === 0 || resource !== undefined );
@@ -4595,7 +4630,7 @@ function after( resource )
 
 // //
 //
-// function before( consequence )
+// function Before( consequence )
 // {
 //   _.assert( arguments.length === 1 );
 //   _.assert( arguments.length === 0 || consequence !== undefined );
@@ -4630,34 +4665,12 @@ function after( resource )
 // relations
 // --
 
-/*
-let Composes =
+let Tools =
 {
-  _competitorsEarly : null,
-  _competitorsLate : null,
-  _resources : null,
-  _procedure : null,
-  capacity : 1,
+  now : Now,
+  after : After,
+  // before : Before,
 }
-
-let ComposesDebug =
-{
-  tag : '',
-  _dependsOf : null,
-  sourcePath : null,
-}
-
-if( Config.debug )
-_.mapExtend( Composes, ComposesDebug );
-
-let Associates =
-{
-}
-
-let Restricts =
-{
-}
-*/
 
 let Composes =
 {
@@ -4702,7 +4715,8 @@ let Medials =
 let Statics =
 {
 
-  After : after,
+  Now,
+  After,
   From,
   Take,
   Error,
@@ -4720,7 +4734,9 @@ let Statics =
   AsyncModeSet,
   AsyncModeGet,
 
+  Tools,
   KindOfResource,
+
   Diagnostics : 1,
   Stacking : 0,
   AsyncCompetitorHanding : 0,
@@ -4755,7 +4771,6 @@ let Accessors =
 let DebugAccessors =
 {
   tag : { getter : _defGetter_functor( 'tag', null ) },
-  // id : { getter : _defGetter_functor( 'id', null ) },
   sourcePath : { getter : _defGetter_functor( 'sourcePath', null ) },
   _dependsOf : { getter : _arrayGetter_functor( '_dependsOf' ) },
 }
@@ -4806,9 +4821,12 @@ let Extend =
   // deasync // qqq : cover please
 
   _deasync,
+  deasyncWait,
+
+  /* zzz : below will be removed! */
   finallyDeasyncGive,
   finallyDeasyncKeep,
-  deasync : finallyDeasyncKeep,
+  // deasync : finallyDeasyncKeep,
   thenDeasyncGive,
   thenDeasyncKeep,
   catchDeasyncGive,
@@ -4880,9 +4898,9 @@ let Extend =
 
   // adapter
 
-  _join, // xxx : deprecate
-  join, // xxx : deprecate
-  seal, // xxx : deprecate
+  // _join, // xxx : deprecate
+  // join, // xxx : deprecate
+  // seal, // xxx : deprecate
   tolerantCallback,
 
   // resource
@@ -4973,12 +4991,6 @@ let Supplement =
   Statics,
 }
 
-let Tools =
-{
-  after,
-  // before,
-}
-
 //
 
 _.classDeclare
@@ -5015,7 +5027,7 @@ _.assert( _.routineIs( wConsequenceProxy.prototype.take ) );
 
 _.assert( wConsequenceProxy.shortName === 'Consequence' );
 
-_prepareJoinedWithConsequence(); /* xxx : deprecate _prepareJoinedWithConsequence */
+// _prepareJoinedWithConsequence(); /* xxx : deprecate _prepareJoinedWithConsequence */
 
 // _.assert( !Self.FieldsOfRelationsGroupsGet );
 // _.assert( !Self.prototype.FieldsOfRelationsGroupsGet );
