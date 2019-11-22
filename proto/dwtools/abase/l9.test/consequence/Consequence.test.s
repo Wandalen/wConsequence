@@ -6964,6 +6964,622 @@ function orTakingWithNow( test )
 
 //
 
+function orKeepingSplitCanceled( test )
+{
+  var ready = _.async();
+
+  /* */
+
+  ready
+  .thenKeep( function( arg )
+  {
+    test.case = 'cancel con0';
+
+    let counter = 0;
+    let con0 = new _.Consequence();
+    let con1 = new _.Consequence();
+    let con2 = new _.Consequence();
+    let con00 = con0.orKeepingSplit([ con1, con2 ]);
+
+    _.timeOut( 25, () =>
+    {
+
+      test.identical( con00.errorsCount(), 0 );
+      test.identical( con00.argumentsCount(), 0 );
+      test.identical( con00.competitorsCount(), 0 );
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 0 );
+      test.identical( con0.competitorsCount(), 1 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 1 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 0 );
+      test.identical( con2.competitorsCount(), 1 );
+
+      counter += 1;
+    })
+
+    _.timeOut( 50, () =>
+    {
+      con0.cancel();
+
+      test.identical( con00.errorsCount(), 0 );
+      test.identical( con00.argumentsCount(), 0 );
+      test.identical( con00.competitorsCount(), 0 );
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 0 );
+      test.identical( con0.competitorsCount(), 0 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 1 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 0 );
+      test.identical( con2.competitorsCount(), 1 );
+
+      counter += 1;
+    })
+
+    _.timeOut( 75, () =>
+    {
+      con2.take( 'c' )
+
+      test.identical( con00.errorsCount(), 0 );
+      test.identical( con00.argumentsCount(), 1 );
+      test.identical( con00.competitorsCount(), 0 );
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 0 );
+      test.identical( con0.competitorsCount(), 0 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 0 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 1 );
+      test.identical( con2.competitorsCount(), 0 );
+
+      counter += 1;
+    })
+
+    return _.timeOut( 150, () =>
+    {
+
+      test.identical( con00.errorsCount(), 0 );
+      test.identical( con00.argumentsCount(), 1 );
+      test.identical( con00.competitorsCount(), 0 );
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 0 );
+      test.identical( con0.competitorsCount(), 0 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 0 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 1 );
+      test.identical( con2.competitorsCount(), 0 );
+
+      test.identical( counter, 3 );
+
+    });
+
+  });
+
+  /* */
+
+  ready
+  .thenKeep( function( arg )
+  {
+    test.case = 'cancel con1';
+
+    let counter = 0;
+    let con0 = new _.Consequence();
+    let con1 = new _.Consequence();
+    let con2 = new _.Consequence();
+    let con00 = con0.orKeepingSplit([ con1, con2 ]);
+
+    _.timeOut( 25, () =>
+    {
+
+      test.identical( con00.errorsCount(), 0 );
+      test.identical( con00.argumentsCount(), 0 );
+      test.identical( con00.competitorsCount(), 0 );
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 0 );
+      test.identical( con0.competitorsCount(), 1 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 1 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 0 );
+      test.identical( con2.competitorsCount(), 1 );
+
+      counter += 1;
+    })
+
+    _.timeOut( 50, () =>
+    {
+      con1.cancel();
+
+      test.identical( con00.errorsCount(), 0 );
+      test.identical( con00.argumentsCount(), 0 );
+      test.identical( con00.competitorsCount(), 0 );
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 0 );
+      test.identical( con0.competitorsCount(), 1 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 0 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 0 );
+      test.identical( con2.competitorsCount(), 1 );
+
+      counter += 1;
+    })
+
+    _.timeOut( 75, () =>
+    {
+      con2.take( 'c' )
+
+      test.identical( con00.errorsCount(), 0 );
+      test.identical( con00.argumentsCount(), 1 );
+      test.identical( con00.competitorsCount(), 0 );
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 0 );
+      test.identical( con0.competitorsCount(), 0 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 0 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 1 );
+      test.identical( con2.competitorsCount(), 0 );
+
+      counter += 1;
+    })
+
+    return _.timeOut( 150, () =>
+    {
+
+      test.identical( con00.errorsCount(), 0 );
+      test.identical( con00.argumentsCount(), 1 );
+      test.identical( con00.competitorsCount(), 0 );
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 0 );
+      test.identical( con0.competitorsCount(), 0 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 0 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 1 );
+      test.identical( con2.competitorsCount(), 0 );
+
+      test.identical( counter, 3 );
+
+    });
+
+  });
+
+  /* */
+
+  ready
+  .thenKeep( function( arg )
+  {
+    test.case = 'cancel con2';
+
+    let counter = 0;
+    let con0 = new _.Consequence();
+    let con1 = new _.Consequence();
+    let con2 = new _.Consequence();
+    let con00 = con0.orKeepingSplit([ con1, con2 ]);
+
+    _.timeOut( 25, () =>
+    {
+
+      test.identical( con00.errorsCount(), 0 );
+      test.identical( con00.argumentsCount(), 0 );
+      test.identical( con00.competitorsCount(), 0 );
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 0 );
+      test.identical( con0.competitorsCount(), 1 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 1 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 0 );
+      test.identical( con2.competitorsCount(), 1 );
+
+      counter += 1;
+    })
+
+    _.timeOut( 50, () =>
+    {
+      con2.cancel();
+
+      test.identical( con00.errorsCount(), 0 );
+      test.identical( con00.argumentsCount(), 0 );
+      test.identical( con00.competitorsCount(), 0 );
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 0 );
+      test.identical( con0.competitorsCount(), 1 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 1 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 0 );
+      test.identical( con2.competitorsCount(), 0 );
+
+      counter += 1;
+    })
+
+    _.timeOut( 75, () =>
+    {
+      con2.take( 'c' )
+
+      test.identical( con00.errorsCount(), 0 );
+      test.identical( con00.argumentsCount(), 0 );
+      test.identical( con00.competitorsCount(), 0 );
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 0 );
+      test.identical( con0.competitorsCount(), 1 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 1 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 1 );
+      test.identical( con2.competitorsCount(), 0 );
+
+      counter += 1;
+    })
+
+    return _.timeOut( 150, () =>
+    {
+
+      test.identical( con00.errorsCount(), 0 );
+      test.identical( con00.argumentsCount(), 0 );
+      test.identical( con00.competitorsCount(), 0 );
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 0 );
+      test.identical( con0.competitorsCount(), 1 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 1 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 1 );
+      test.identical( con2.competitorsCount(), 0 );
+
+      test.identical( counter, 3 );
+
+    });
+
+  });
+
+  /* */
+
+  return ready;
+}
+
+//
+
+function orKeepingCanceled( test )
+{
+  var ready = _.async();
+
+  /* */
+
+  ready
+  .thenKeep( function( arg )
+  {
+    test.case = 'cancel con0';
+
+    let counter = 0;
+    let con0 = new _.Consequence();
+    let con1 = new _.Consequence();
+    let con2 = new _.Consequence();
+    let con00 = con0.orKeeping([ con1, con2 ]);
+
+    test.is( con0 === con00 );
+
+    _.timeOut( 25, () =>
+    {
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 0 );
+      test.identical( con0.competitorsCount(), 1 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 1 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 0 );
+      test.identical( con2.competitorsCount(), 1 );
+
+      counter += 1;
+    })
+
+    _.timeOut( 50, () =>
+    {
+      con0.cancel();
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 0 );
+      test.identical( con0.competitorsCount(), 0 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 1 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 0 );
+      test.identical( con2.competitorsCount(), 1 );
+
+      counter += 1;
+    })
+
+    _.timeOut( 75, () =>
+    {
+      con2.take( 'c' )
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 1 );
+      test.identical( con0.competitorsCount(), 0 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 0 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 1 );
+      test.identical( con2.competitorsCount(), 0 );
+
+      counter += 1;
+    })
+
+    return _.timeOut( 150, () =>
+    {
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 1 );
+      test.identical( con0.competitorsCount(), 0 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 0 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 1 );
+      test.identical( con2.competitorsCount(), 0 );
+
+      test.identical( counter, 3 );
+
+    });
+
+  });
+
+  /* */
+
+  ready
+  .thenKeep( function( arg )
+  {
+    test.case = 'cancel con1';
+
+    let counter = 0;
+    let con0 = new _.Consequence();
+    let con1 = new _.Consequence();
+    let con2 = new _.Consequence();
+    let con00 = con0.orKeeping([ con1, con2 ]);
+
+    test.is( con0 === con00 );
+
+    _.timeOut( 25, () =>
+    {
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 0 );
+      test.identical( con0.competitorsCount(), 1 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 1 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 0 );
+      test.identical( con2.competitorsCount(), 1 );
+
+      counter += 1;
+    })
+
+    _.timeOut( 50, () =>
+    {
+      con1.cancel();
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 0 );
+      test.identical( con0.competitorsCount(), 1 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 0 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 0 );
+      test.identical( con2.competitorsCount(), 1 );
+
+      counter += 1;
+    })
+
+    _.timeOut( 75, () =>
+    {
+      con2.take( 'c' )
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 1 );
+      test.identical( con0.competitorsCount(), 0 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 0 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 1 );
+      test.identical( con2.competitorsCount(), 0 );
+
+      counter += 1;
+    })
+
+    return _.timeOut( 150, () =>
+    {
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 1 );
+      test.identical( con0.competitorsCount(), 0 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 0 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 1 );
+      test.identical( con2.competitorsCount(), 0 );
+
+      test.identical( counter, 3 );
+
+    });
+
+  });
+
+  /* */
+
+  ready
+  .thenKeep( function( arg )
+  {
+    test.case = 'cancel con2';
+
+    let counter = 0;
+    let con0 = new _.Consequence();
+    let con1 = new _.Consequence();
+    let con2 = new _.Consequence();
+    let con00 = con0.orKeeping([ con1, con2 ]);
+
+    test.is( con0 === con00 );
+
+    _.timeOut( 25, () =>
+    {
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 0 );
+      test.identical( con0.competitorsCount(), 1 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 1 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 0 );
+      test.identical( con2.competitorsCount(), 1 );
+
+      counter += 1;
+    })
+
+    _.timeOut( 50, () =>
+    {
+      con2.cancel();
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 0 );
+      test.identical( con0.competitorsCount(), 1 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 1 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 0 );
+      test.identical( con2.competitorsCount(), 0 );
+
+      counter += 1;
+    })
+
+    _.timeOut( 75, () =>
+    {
+      con2.take( 'c' )
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 0 );
+      test.identical( con0.competitorsCount(), 1 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 1 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 1 );
+      test.identical( con2.competitorsCount(), 0 );
+
+      counter += 1;
+    })
+
+    return _.timeOut( 150, () =>
+    {
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 0 );
+      test.identical( con0.competitorsCount(), 1 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 1 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 1 );
+      test.identical( con2.competitorsCount(), 0 );
+
+      test.identical( counter, 3 );
+
+    });
+
+  });
+
+  /* */
+
+  return ready;
+}
+
+//
+
 function thenOrKeepingNotFiring( test )
 {
   var ready = new _.Consequence().take( null )
@@ -10809,6 +11425,8 @@ var Self =
     orTakingWithSimple,
     orTakingWithLater,
     orTakingWithNow,
+    orKeepingSplitCanceled,
+    orKeepingCanceled,
 
     thenOrKeepingNotFiring,
     thenOrKeepingWithSimple,

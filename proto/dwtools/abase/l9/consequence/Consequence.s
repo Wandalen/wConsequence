@@ -2155,9 +2155,14 @@ function _or( o )
 
     for( let c = 0 ; c < competitors.length ; c++ )
     {
-      let competitorRoutine = competitors[ c ];
-      if( c !== index && competitorRoutines[ c ] )
-      competitors[ c ].competitorsCancel( competitorRoutines[ c ] );
+      let competitor = competitors[ c ];
+      let competitorRoutine = competitorRoutines[ c ];
+      _.assert( !!competitor );
+      // _.assert( !!competitorRoutine );
+      // if( c !== index && competitorRoutines[ c ] )
+      if( competitorRoutine )
+      if( competitor.competitorOwn( competitorRoutine ) )
+      competitor.competitorsCancel( competitorRoutine );
     }
 
     if( count === 1 )
@@ -2168,6 +2173,8 @@ function _or( o )
     competitors[ index ].take( err, arg );
 
   }
+
+  /* - */
 
 }
 
@@ -2818,6 +2825,8 @@ function __handleError( err, competitor )
 
   if( !_.errIsAttended( err ) )
   {
+    // if( err.id === 1 )
+    // debugger;
     _.timeOut( 250, function _unhandledError()
     {
       if( !_.errIsAttended( err ) )
@@ -2993,6 +3002,7 @@ function __handleResourceNow()
       competitor.competitorRoutine.__handleResourceSoon( true );
       else
       competitor.competitorRoutine.__handleResourceNow();
+      /* xxx : decrease stack depth */
 
     }
     else
@@ -3380,7 +3390,7 @@ function competitorOwn( competitorRoutine )
 
 //
 
-function hasCompetitor( competitorRoutine )
+function competitorHas( competitorRoutine )
 {
   let self = this;
 
@@ -3391,8 +3401,8 @@ function hasCompetitor( competitorRoutine )
     let competitor = self._competitorsEarly[ c ];
     if( competitor.competitorRoutine === competitorRoutine )
     return competitor;
-    if( _.consequenceIs( cor ) )
-    if( cor.hasCompetitor( competitorRoutine ) )
+    if( _.consequenceIs( competitor ) )
+    if( competitor.competitorHas( competitorRoutine ) )
     return competitor;
   }
 
@@ -3401,8 +3411,8 @@ function hasCompetitor( competitorRoutine )
     let competitor = self._competitorsLate[ c ];
     if( competitor.competitorRoutine === competitorRoutine )
     return competitor;
-    if( _.consequenceIs( cor ) )
-    if( cor.hasCompetitor( competitorRoutine ) )
+    if( _.consequenceIs( competitor ) )
+    if( competitor.competitorHas( competitorRoutine ) )
     return competitor;
   }
 
@@ -4668,6 +4678,7 @@ function After( resource )
 let Tools =
 {
   now : Now,
+  async : Now,
   after : After,
   // before : Before,
 }
@@ -4716,6 +4727,7 @@ let Statics =
 {
 
   Now,
+  Async : Now,
   After,
   From,
   Take,
@@ -4932,7 +4944,7 @@ let Extend =
   // competitor
 
   competitorOwn,
-  hasCompetitor,
+  competitorHas,
   competitorsCount,
   competitorsEarlyGet,
   competitorsLateGet,
