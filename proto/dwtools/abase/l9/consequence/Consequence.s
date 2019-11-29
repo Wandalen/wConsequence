@@ -151,11 +151,11 @@ let wConsequenceProxy = new Proxy( wConsequence,
         o = Object.create( null );
         args[ 0 ] = o;
       }
-      if( o.sourcePath === undefined || o.sourcePath === null )
-      o.sourcePath = 1;
-      if( _.numberIs( o.sourcePath ) )
-      o.sourcePath = o.sourcePath += 1;
-      o.sourcePath = _.procedure.sourcePathGet( o.sourcePath );
+      // if( o.sourcePath === undefined || o.sourcePath === null )
+      // o.sourcePath = 1;
+      // if( _.numberIs( o.sourcePath ) )
+      // o.sourcePath = o.sourcePath += 1;
+      // o.sourcePath = _.procedure.sourcePathGet( o.sourcePath );
     }
     return new original( ...args );
   },
@@ -215,7 +215,7 @@ function init( o )
     {
       delete o.tag;
       delete o.capacity;
-      delete o.sourcePath;
+      // delete o.sourcePath;
     }
     if( o instanceof Self )
     {
@@ -237,15 +237,15 @@ function init( o )
 
   if( Config.debug )
   {
-    if( self.sourcePath === undefined || self.sourcePath === null )
-    self.sourcePath = 1;
-    if( _.numberIs( self.sourcePath ) )
-    self.sourcePath = self.sourcePath += 2;
-    self.sourcePath = _.procedure.sourcePathGet( self.sourcePath );
+    // if( self.sourcePath === undefined || self.sourcePath === null )
+    // self.sourcePath = 1;
+    // if( _.numberIs( self.sourcePath ) )
+    // self.sourcePath = self.sourcePath += 2;
+    // self.sourcePath = _.procedure.sourcePathGet( self.sourcePath );
   }
 
   _.assert( arguments.length === 0 || arguments.length === 1 );
-  _.assert( self.sourcePath === undefined || _.strIs( self.sourcePath ) );
+  // _.assert( self.sourcePath === undefined || _.strIs( self.sourcePath ) );
 }
 
 //
@@ -256,17 +256,17 @@ function is( src )
   return _.consequenceIs( src );
 }
 
+// //
 //
-
-function isJoinedWithConsequence( src ) /* xxx : deprecate */
-{
-  _.assert( arguments.length === 1 );
-  debugger;
-  let result = _.isSubPrototypeOf( src, JoinedWithConsequence );
-  if( result )
-  debugger;
-  return result;
-}
+// function isJoinedWithConsequence( src ) /* zzz : deprecate */
+// {
+//   _.assert( arguments.length === 1 );
+//   debugger;
+//   let result = _.isSubPrototypeOf( src, JoinedWithConsequence );
+//   if( result )
+//   debugger;
+//   return result;
+// }
 
 // --
 // basic
@@ -339,7 +339,7 @@ function finallyGive( competitorRoutine )
     keeping : false,
     kindOfResource : Self.KindOfResource.Both,
     times,
-    stackLevel : 2,
+    stack : 2,
   });
 
   self.__handleResourceSoon( false );
@@ -365,7 +365,7 @@ function finallyKeep( competitorRoutine )
     competitorRoutine,
     keeping : true,
     kindOfResource : Self.KindOfResource.Both,
-    stackLevel : 2,
+    stack : 2,
     times : 1,
   });
 
@@ -392,7 +392,7 @@ function thenGive( competitorRoutine )
     competitorRoutine,
     keeping : false,
     kindOfResource : Self.KindOfResource.ArgumentOnly,
-    stackLevel : 2,
+    stack : 2,
   });
 
   self.__handleResourceSoon( false );
@@ -425,6 +425,9 @@ function thenKeep( competitorRoutine )
 
   _.assert( arguments.length === 1 || arguments.length === 2, 'Expects single argument' );
 
+  // if( competitorRoutine && competitorRoutine.name === 'callback2' )
+  // debugger;
+
   if( arguments.length === 2 )
   {
     let resolve = arguments[ 0 ];
@@ -445,7 +448,7 @@ function thenKeep( competitorRoutine )
     competitorRoutine,
     keeping : true,
     kindOfResource : Self.KindOfResource.ArgumentOnly,
-    stackLevel : 2,
+    stack : 2,
   });
 
   self.__handleResourceSoon( false );
@@ -470,7 +473,7 @@ function catchGive( competitorRoutine )
     competitorRoutine,
     keeping : false,
     kindOfResource : Self.KindOfResource.ErrorOnly,
-    stackLevel : 2,
+    stack : 2,
   });
 
   self.__handleResourceSoon( false );
@@ -508,7 +511,7 @@ function catchKeep( competitorRoutine )
     competitorRoutine,
     keeping : true,
     kindOfResource : Self.KindOfResource.ErrorOnly,
-    stackLevel : 2,
+    stack : 2,
     // early : true,
   });
 
@@ -531,7 +534,8 @@ function _promise( o )
   let self = this;
   let keeping = o.keeping;
   let kindOfResource =  o.kindOfResource;
-  let procedure = self.procedure( 'promise' ).sourcePathFirst( 3 );
+  // let procedure = self.procedure( 'promise' ).stackElse( 3 );
+  let procedure = self.procedure( 3 ).nameElse( 'promise' );
   self.procedureDetach();
 
   _.assertRoutineOptions( _promise, arguments );
@@ -546,7 +550,7 @@ function _promise( o )
       competitorRoutine,
       // kindOfResource : o.kindOfResource,
       kindOfResource : self.KindOfResource.Both,
-      stackLevel : 3,
+      stack : 3,
     });
 
     self.__handleResourceSoon( false );
@@ -718,7 +722,8 @@ catchPromiseKeep.having = Object.create( _promise.having );
 function _deasync( o )
 {
   let self = this;
-  let procedure = self.procedure( '_deasync' ).sourcePathFirst( 3 );
+  // let procedure = self.procedure( '_deasync' ).stackElse( 3 );
+  let procedure = self.procedure( 3 ).nameElse( 'deasync' );
   let keeping = o.keeping;
   let result = Object.create( null );
   let ready = false;
@@ -737,7 +742,7 @@ function _deasync( o )
     competitorRoutine,
     kindOfResource : self.KindOfResource.Both,
     keeping : 0,
-    stackLevel : 3,
+    stack : 3,
   });
 
   self.__handleResourceSoon( false );
@@ -1051,7 +1056,8 @@ function splitKeep( first )
 
   _.assert( arguments.length === 0 || arguments.length === 1 );
 
-  let result = new Self({ sourcePath : 2 });
+  // let result = new Self({ sourcePath : 2 });
+  let result = new Self();
 
   if( first ) // xxx : remove, maybe argument?
   {
@@ -1083,7 +1089,8 @@ function splitGive( first )
 
   _.assert( arguments.length === 0 || arguments.length === 1 );
 
-  let result = new Self({ sourcePath : 2 });
+  // let result = new Self({ sourcePath : 2 });
+  let result = new Self();
 
   if( first ) // xxx : remove, maybe argument?
   {
@@ -1159,7 +1166,7 @@ function tap( competitorRoutine )
     keeping : false,
     tapping : true,
     kindOfResource : Self.KindOfResource.Both,
-    stackLevel : 2,
+    stack : 2,
   });
 
   self.__handleResourceSoon( false );
@@ -1193,7 +1200,7 @@ function catchLog()
     competitorRoutine : errorLog,
     keeping : true,
     kindOfResource : Self.KindOfResource.ErrorOnly,
-    stackLevel : 2,
+    stack : 2,
   });
 
   self.__handleResourceSoon( false );
@@ -1206,7 +1213,6 @@ function catchLog()
   {
     err = _.err( err );
     logger.log( _.errOnce( err ) );
-    // throw err;
     return null;
   }
 
@@ -1238,7 +1244,7 @@ function catchBrief()
     competitorRoutine : errorLog,
     keeping : true,
     kindOfResource : Self.KindOfResource.ErrorOnly,
-    stackLevel : 2,
+    stack : 2,
   });
 
   self.__handleResourceSoon( false );
@@ -1273,7 +1279,6 @@ function syncMaybe()
     let resource = self._resources[ 0 ];
     if( resource.error !== undefined )
     {
-      // debugger;
       _.assert( resource.argument === undefined );
       throw _.err( resource.error );
     }
@@ -1314,7 +1319,7 @@ function _competitorFinally( competitorRoutine )
     competitorRoutine,
     keeping : true,
     kindOfResource : Self.KindOfResource.BothWithCompetitor,
-    stackLevel : 2,
+    stack : 2,
   });
 
   self.__handleResourceSoon( false );
@@ -1407,7 +1412,7 @@ function _put( o )
       keeping,
       kindOfResource : o.kindOfResource,
       competitorRoutine : __onPutWithKey,
-      stackLevel : 3,
+      stack : 3,
     });
 
     self.__handleResourceSoon( false );
@@ -1421,7 +1426,7 @@ function _put( o )
       keeping,
       kindOfResource : o.kindOfResource,
       competitorRoutine : __onPutToArray,
-      stackLevel : 3,
+      stack : 3,
     });
     self.__handleResourceSoon( false );
     return self;
@@ -1521,89 +1526,6 @@ defaults.keeping = true;
 // time
 // --
 
-function timeOut_pre( routine, args )
-{
-  let o = { time : args[ 0 ], competitorRoutine : args[ 1 ] };
-  _.routineOptions( routine, o );
-  _.assert( arguments.length === 2 );
-  _.assert( args.length === 1 || args.length === 2 );
-  _.assert( _.numberIs( o.time ) );
-  return o;
-}
-
-//
-
-function _timeOut( o )
-{
-  let self = this;
-  let time = o.time;
-  let competitorRoutine = o.competitorRoutine;
-
-  _.assert( arguments.length === 1 );
-
-  /* */
-
-  if( !competitorRoutine )
-  if( o.kindOfResource === Self.KindOfResource.Both )
-  competitorRoutine = Self.FinallyPass;
-  else if( o.kindOfResource === Self.KindOfResource.ArgumentOnly )
-  competitorRoutine = Self.ThenPass;
-  else if( o.kindOfResource === Self.KindOfResource.ErrorOnly )
-  competitorRoutine = Self.ExceptPass;
-
-  _.assert( _.routineIs( competitorRoutine ) );
-
-  /* */
-
-  let competitor0;
-  if( _.consequenceIs( competitorRoutine ) )
-  competitor0 = function __timeOutThen()
-  {
-    debugger;
-    return _.timeOut( o.time, function onTimeOut( err, arg )
-    {
-      debugger;
-      competitorRoutine.take.apply( competitorRoutine, arguments );
-      if( err )
-      throw _.err( err );
-      return arg;
-    });
-  }
-  else
-  competitor0 = function __timeOutThen()
-  {
-    return _.timeOut( o.time, self, competitorRoutine, arguments );
-  }
-
-  /* */
-
-  self._competitorAppend
-  ({
-    keeping : true,
-    competitorRoutine : competitor0,
-    kindOfResource : o.kindOfResource,
-    stackLevel : 3,
-  });
-
-  self.__handleResourceSoon( false );
-
-  return self;
-}
-
-_timeOut.defaults =
-{
-  time : null,
-  competitorRoutine : null,
-  kindOfResource : null,
-}
-
-_timeOut.having =
-{
-  consequizing : 1,
-}
-
-//
-
 /**
  * Works like finally, but when competitor accepts resource from resources sequence, execution of competitor will be
     delayed. The result of competitor execution will be passed to the competitor that is first in competitor queue
@@ -1641,8 +1563,200 @@ _timeOut.having =
  * @memberof module:Tools/base/Consequence.wConsequence#
  */
 
-let finnallyTimeOut = _.routineFromPreAndBody( timeOut_pre, _timeOut, 'finnallyTimeOut' );
-var defaults = finnallyTimeOut.defaults;
+//
+
+function timeOut_pre( routine, args )
+{
+  // let o = { time : args[ 0 ], callback : args[ 1 ] };
+  let o = { time : args[ 0 ] };
+  _.routineOptions( routine, o );
+  _.assert( arguments.length === 2 );
+  _.assert( args.length === 1, 'Expects single argument' );
+  _.assert( _.numberIs( o.time ) );
+  return o;
+}
+
+//
+
+function _timeOut( o )
+{
+  let self = this;
+  let time = o.time;
+  // let callback = o.callback;
+  // let noCallback = callback === _.nothing;
+  //
+  // debugger;
+  //
+  // if( noCallback )
+  // callback = new _.Consequence().take( null );
+  // else
+  // callback = _.Consequence.From( callback );
+  //
+  // _.assert( arguments.length === 1 );
+
+  /* */
+
+  // if( !competitorRoutine )
+  // if( o.kindOfResource === Self.KindOfResource.Both )
+  // competitorRoutine = Self.FinallyPass;
+  // else if( o.kindOfResource === Self.KindOfResource.ArgumentOnly )
+  // competitorRoutine = Self.ThenPass;
+  // else if( o.kindOfResource === Self.KindOfResource.ErrorOnly )
+  // competitorRoutine = Self.CatchPass;
+  // _.assert( _.routineIs( competitorRoutine ) );
+
+  /* */
+
+  // let competitor0;
+  // if( _.consequenceIs( competitorRoutine ) )
+  // competitor0 = __timeOutThen1;
+  // else
+  // competitor0 = __timeOutThen2;
+  //
+  // if( _.consequenceIs( competitorRoutine ) )
+  // competitor0 = function __timeOutThen()
+  // {
+  //   debugger;
+  //   return _.time.out( o.time, function onTimeOut( err, arg )
+  //   {
+  //     debugger;
+  //     competitorRoutine.take.apply( competitorRoutine, arguments );
+  //     if( err )
+  //     throw _.err( err );
+  //     return arg;
+  //   });
+  // }
+  // else
+  // competitor0 = function __timeOutThen()
+  // {
+  //   con.timeOutError( timeOut );
+  //   return con.orKeeping( _.time.outError( timeOut ) );
+  //   return _.time.out( o.time, self, competitorRoutine, arguments );
+  //   // return _.time.out( o.time, self, competitorRoutine, arguments );
+  // }
+
+  let competitorRoutine;
+  if( o.kindOfResource === Self.KindOfResource.Both )
+  competitorRoutine = __timeOutFinally;
+  else if( o.kindOfResource === Self.KindOfResource.ArgumentOnly )
+  competitorRoutine = __timeOutThen;
+  else if( o.kindOfResource === Self.KindOfResource.ErrorOnly )
+  competitorRoutine = __timeOutCatch;
+  else _.assert( 0 );
+
+  /* */
+
+  self._competitorAppend
+  ({
+    keeping : false,
+    competitorRoutine : competitorRoutine,
+    kindOfResource : o.kindOfResource,
+    stack : 3,
+  });
+
+  self.__handleResourceSoon( false );
+
+  return self;
+
+  /**/
+
+  function __timeOutFinally( err, arg )
+  {
+
+    _.time.out( o.time ).tap( () =>
+    {
+      self.take( err, arg );
+    });
+
+  }
+
+  /**/
+
+  function __timeOutCatch( err )
+  {
+
+    _.time.out( o.time ).tap( () =>
+    {
+      self.take( undefined, err );
+    });
+
+  }
+
+  /**/
+
+  function __timeOutThen( arg )
+  {
+
+    _.time.out( o.time ).tap( () =>
+    {
+      self.take( arg );
+    });
+
+    // debugger;
+    // let done = false;
+    // let timeOutConsequence = _.time.out( o.time ).tap( ( err, arg ) =>
+    // {
+    //   debugger;
+    //   if( done && err )
+    //   _.errAttend( err );
+    // });
+    // debugger;
+    // callback.orKeeping( timeOutConsequence );
+
+    // return _.time.out( o.time, function onTimeOut( err, arg )
+    // {
+    //   debugger;
+    //   competitorRoutine.take.apply( competitorRoutine, arguments );
+    //   if( err )
+    //   throw _.err( err );
+    //   return arg;
+    // });
+
+    // return callback;
+  }
+
+  /**/
+
+  // function __timeOutThen1()
+  // {
+  //   debugger;
+  //   return _.time.out( o.time, function onTimeOut( err, arg )
+  //   {
+  //     debugger;
+  //     competitorRoutine.take.apply( competitorRoutine, arguments );
+  //     if( err )
+  //     throw _.err( err );
+  //     return arg;
+  //   });
+  // }
+  //
+  // /**/
+  //
+  // function __timeOutThen2()
+  // {
+  //   con.timeOutError( timeOut );
+  //   return con.orKeeping( _.time.outError( timeOut ) );
+  //   return _.time.out( o.time, self, competitorRoutine, arguments );
+  //   // return _.time.out( o.time, self, competitorRoutine, arguments );
+  // }
+
+}
+
+_timeOut.defaults =
+{
+  time : null,
+  // callback : null,
+  kindOfResource : null,
+  // throwing : 0,
+}
+
+_timeOut.having =
+{
+  consequizing : 1,
+}
+
+let finallyTimeOut = _.routineFromPreAndBody( timeOut_pre, _timeOut, 'finallyTimeOut' );
+var defaults = finallyTimeOut.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 
 let thenTimeOut = _.routineFromPreAndBody( timeOut_pre, _timeOut, 'thenTimeOut' );
@@ -1652,6 +1766,203 @@ defaults.kindOfResource = KindOfResource.ArgumentOnly;
 let exceptTimeOut = _.routineFromPreAndBody( timeOut_pre, _timeOut, 'exceptTimeOut' );
 var defaults = exceptTimeOut.defaults;
 defaults.kindOfResource = KindOfResource.ErrorOnly;
+
+//
+
+function timeLimit_pre( routine, args )
+{
+  let o = { time : args[ 0 ], callback : args[ 1 ] };
+  if( o.callback === undefined )
+  o.callback = _.nothing;
+  _.routineOptions( routine, o );
+  _.assert( arguments.length === 2 );
+  _.assert( args.length === 1 || args.length === 2 );
+  _.assert( _.numberIs( o.time ) );
+  return o;
+}
+
+//
+
+function _timeLimit( o )
+{
+  let self = this;
+  let time = o.time;
+  let callback = o.callback;
+  let callbackConsequence = callback;
+  let noCallback = callback === _.nothing;
+  let timeOut = o.throwing ? _.time.outError : _.time.out;
+  let throwing = o.throwing;
+  let timeOutConsequence = new _.Consequence();
+  let done = false;
+  let timer;
+
+  _.assert( arguments.length === 1 );
+
+  if( noCallback )
+  {
+
+    callback = self;
+    __timeLimitItself();
+
+  }
+  else
+  {
+
+    if( !_.consequenceIs( callbackConsequence ) )
+    {
+      if( !_.routineIs( callbackConsequence ) )
+      callback = callbackConsequence = _.Consequence.From( callbackConsequence );
+      else
+      callbackConsequence = new _.Consequence();
+    }
+
+    self._competitorAppend
+    ({
+      keeping : false,
+      competitorRoutine : __timeLimitCallback,
+      kindOfResource : o.kindOfResource,
+      stack : 3,
+    });
+
+    // self.__handleResourceSoon( false );
+
+    // logger.log( 'callbackConsequence', callbackConsequence.exportInfo() );
+    // logger.log( 'timeOutConsequence', timeOutConsequence.exportInfo() );
+
+    self.orKeeping([ callbackConsequence, timeOutConsequence ]);
+    self.tap( () =>
+    {
+      // debugger;
+      done = true;
+      if( timer )
+      _.time.cancel( timer );
+      else
+      _.assert( 'not tested' );
+    });
+
+    self.__handleResourceSoon( false );
+
+    // self.afterOrKeeping([ callback, timeOutConsequence ]);
+    // self.tap( () =>
+    // {
+    //   done = true;
+    //   if( timer )
+    //   _.time.cancel( timer );
+    //   else
+    //   _.assert( 'not tested' );
+    // });
+
+  }
+
+  return self;
+
+  /* */
+
+  function __timeLimitCallback()
+  {
+
+    // callback = self.FromCalling( callback );
+    //
+    // let done = false;
+    // let timeOutConsequence = timeOut( o.time ).tap( ( err, arg ) =>
+    // {
+    //   if( done && err )
+    //   _.errAttend( err );
+    // });
+
+    if( !_.consequenceIs( callback ) )
+    callback = _.Consequence.Try( () => callback() ).finally( callbackConsequence );
+
+    // if( !done )
+    timer = _.time.begin( o.time, () =>
+    {
+      if( done )
+      return;
+      if( throwing )
+      timeOutConsequence.error( _.time._errTimeOut() );
+      else
+      timeOutConsequence.take( _.time.out );
+    })
+
+    // self.afterOrKeeping( timeOutConsequence );
+    // self.tap( () =>
+    // {
+    //   done = true;
+    //   _.time.cancel( timer );
+    // });
+    // return callback;
+
+    // self.afterOrKeeping([ callback, timeOutConsequence ]);
+    // self.tap( () =>
+    // {
+    //   // console.log( 'tap', callback, timeOutConsequence, self ); debugger;
+    //   done = true;
+    //   if( timer )
+    //   _.time.cancel( timer );
+    //   // else
+    //   // _.assert( 'not tested' );
+    // });
+
+    return null;
+  }
+
+  /* */
+
+  function __timeLimitItself()
+  {
+    // let done = false;
+    let timeOutConsequence = timeOut( o.time ).tap( ( err, arg ) =>
+    {
+      if( done && err )
+      _.errAttend( err );
+    });
+    callback.orKeeping( timeOutConsequence );
+    callback.tap( () => done = true );
+  }
+
+  /* */
+
+}
+
+_timeLimit.defaults =
+{
+  time : null,
+  callback : null,
+  kindOfResource : null,
+  throwing : 0,
+}
+
+_timeLimit.having =
+{
+  consequizing : 1,
+}
+
+let finallyTimeLimit = _.routineFromPreAndBody( timeLimit_pre, _timeLimit, 'finallyTimeLimit' );
+var defaults = finallyTimeLimit.defaults;
+defaults.kindOfResource = KindOfResource.Both;
+
+let thenTimeLimit = _.routineFromPreAndBody( timeLimit_pre, _timeLimit, 'thenTimeLimit' );
+var defaults = thenTimeLimit.defaults;
+defaults.kindOfResource = KindOfResource.ArgumentOnly;
+
+let exceptTimeLimit = _.routineFromPreAndBody( timeLimit_pre, _timeLimit, 'exceptTimeLimit' );
+var defaults = exceptTimeLimit.defaults;
+defaults.kindOfResource = KindOfResource.ErrorOnly;
+
+let finallyTimeLimitError = _.routineFromPreAndBody( timeLimit_pre, _timeLimit, 'finallyTimeLimitError' );
+var defaults = finallyTimeLimitError.defaults;
+defaults.kindOfResource = KindOfResource.Both;
+defaults.throwing = 1;
+
+let thenTimeLimitError = _.routineFromPreAndBody( timeLimit_pre, _timeLimit, 'thenTimeLimitError' );
+var defaults = thenTimeLimitError.defaults;
+defaults.kindOfResource = KindOfResource.ArgumentOnly;
+defaults.throwing = 1;
+
+let exceptTimeLimitError = _.routineFromPreAndBody( timeLimit_pre, _timeLimit, 'exceptTimeLimitError' );
+var defaults = exceptTimeLimitError.defaults;
+defaults.kindOfResource = KindOfResource.ErrorOnly;
+defaults.throwing = 1;
 
 // --
 // and
@@ -1683,7 +1994,8 @@ function _and( o )
   let taking = o.taking;
   let accumulative = o.accumulative;
   let waiting = o.waiting;
-  let procedure = self.procedure( 'and' ).sourcePathFirst( o.stackLevel + 1 );
+  // let procedure = self.procedure( 'and' ).stackElse( o.stack + 1 );
+  let procedure = self.procedure( o.stack + 1 ).nameElse( 'and' );
   let escaped = 0;
 
   _.assertRoutineOptions( _and, arguments );
@@ -1843,7 +2155,8 @@ function _and( o )
         _.arrayAppendOnceStrictly( self._dependsOf, competitor );
       }
 
-      competitor.procedure( 'and' ).sourcePathFirst( procedure.sourcePath() );
+      competitor.procedure({ _stack : procedure.stack() }).nameElse( 'andVariant' );
+      // competitor.procedure( 'and' ).stackElse( procedure.stack() );
       competitor.finallyGive( __got );
 
     })( c );
@@ -1882,7 +2195,7 @@ function _and( o )
     if( left === 0 )
     {
       if( escaped && o.waiting )
-      _.timeSoon( __take );
+      _.time.soon( __take );
       else
       __take();
     }
@@ -1940,7 +2253,7 @@ _and.defaults =
   taking : 1,
   accumulative : 0,
   waiting : 1,
-  stackLevel : 2,
+  stack : 2,
 }
 
 var having = _and.having = Object.create( null );
@@ -2076,7 +2389,8 @@ function _or( o )
 {
   let self = this;
   let count = 0;
-  let procedure = self.procedure( 'or' ).sourcePathFirst( o.stackLevel + 1 );
+  // let procedure = self.procedure( 'or' ).stackElse( o.stack + 1 );
+  let procedure = self.procedure( o.stack + 1 ).nameElse( 'or' );
   let competitors = o.competitors;
   let competitorRoutines = [];
 
@@ -2100,16 +2414,30 @@ function _or( o )
 
   /* */
 
-  if( o.ready )
-  self.finallyGive( function( err, arg )
+  if( o.gettingReadyFirst )
   {
 
-    if( err )
-    self.error( err );
-    else
-    _take();
+    // if( o.kindOfResource === Self.KindOfResource.Both )
+    // self.finallyGive( function( err, arg )
+    // {
+    //   if( err )
+    //   self.error( err );
+    //   else
+    //   _take();
+    // });
+    // else if( o.kindOfResource === Self.KindOfResource.ArgumentOnly )
+    // self.thenGive( function( arg )
+    // {
+    //   _take();
+    // });
+    // else if( o.kindOfResource === Self.KindOfResource.ArgumentOnly )
 
-  });
+    self.thenGive( function( arg )
+    {
+      _take();
+    });
+
+  }
   else
   {
     competitors.unshift( self );
@@ -2125,16 +2453,14 @@ function _or( o )
 
     for( let c = 0 ; c < competitors.length ; c++ )
     {
-      let competitorRoutine = competitors[ c ];
+      let competitor = competitors[ c ];
 
-      _.assert( _.consequenceIs( competitorRoutine ) );
+      _.assert( _.consequenceIs( competitor ) );
 
-      // if( competitorRoutine === null )
-      // continue;
-
-      competitorRoutines[ c ] = _.routineJoin( undefined, _orGot, [ c ] );
-      competitorRoutine.procedure( 'or' ).sourcePathFirst( procedure.sourcePath() );
-      competitorRoutine.finallyGive( competitorRoutines[ c ] );
+      let competitorRoutine = competitorRoutines[ c ] = _.routineJoin( undefined, _orGot, [ c ] );
+      // competitor.procedure( 'or' ).stackElse( procedure.stack() );
+      competitor.procedure({ _stack : procedure.stack() }).nameElse( 'orVariant' );
+      competitor.finallyGive( competitorRoutine );
 
       if( count )
       break;
@@ -2149,8 +2475,6 @@ function _or( o )
 
     count += 1;
 
-    // logger.log( '_orGot', index, procedure._longName, self.tag );
-
     _.assert( count === 1 );
 
     for( let c = 0 ; c < competitors.length ; c++ )
@@ -2158,8 +2482,6 @@ function _or( o )
       let competitor = competitors[ c ];
       let competitorRoutine = competitorRoutines[ c ];
       _.assert( !!competitor );
-      // _.assert( !!competitorRoutine );
-      // if( c !== index && competitorRoutines[ c ] )
       if( competitorRoutine )
       if( competitor.competitorOwn( competitorRoutine ) )
       competitor.competitorsCancel( competitorRoutine );
@@ -2169,7 +2491,7 @@ function _or( o )
     self.take( err, arg );
 
     if( !o.taking )
-    if( o.ready || index !== 0 )
+    if( o.gettingReadyFirst || index !== 0 )
     competitors[ index ].take( err, arg );
 
   }
@@ -2182,8 +2504,9 @@ _or.defaults =
 {
   competitors : null,
   taking : null,
-  ready : null,
-  stackLevel : 2,
+  gettingReadyFirst : null,
+  stack : 2,
+  // kindOfResource : KindOfResource.Both,
 }
 
 _or.having =
@@ -2194,7 +2517,7 @@ _or.having =
 
 //
 
-function thenOrTaking( competitors )
+function afterOrTaking( competitors )
 {
   let self = this;
   _.assert( arguments.length === 1, 'Expects single argument' );
@@ -2202,16 +2525,16 @@ function thenOrTaking( competitors )
   ({
     competitors,
     taking : true,
-    ready : true,
-    stackLevel : 2,
+    gettingReadyFirst : true,
+    stack : 2,
   });
 }
 
-thenOrTaking.having = Object.create( _or.having );
+afterOrTaking.having = Object.create( _or.having );
 
 //
 
-function thenOrKeeping( competitors )
+function afterOrKeeping( competitors )
 {
   let self = this;
   _.assert( arguments.length === 1, 'Expects single argument' );
@@ -2219,12 +2542,12 @@ function thenOrKeeping( competitors )
   ({
     competitors,
     taking : false,
-    ready : true,
-    stackLevel : 2,
+    gettingReadyFirst : true,
+    stack : 2,
   });
 }
 
-thenOrKeeping.having = Object.create( _or.having );
+afterOrKeeping.having = Object.create( _or.having );
 
 //
 
@@ -2239,12 +2562,12 @@ function orKeepingSplit( competitors )
   competitors = competitors.slice();
   competitors.unshift( self );
 
-  // debugger;
-  let con = new Self({ sourcePath : 2 }).take( null );
-  // debugger;
+  // let con = new Self({ sourcePath : 2 }).take( null );
+  let con = new Self().take( null );
 
-  con.procedure( 'orKeepingSplit' ).sourcePathFirst( 2 );
-  con.thenOrKeeping( competitors );
+  // con.procedure( 'orKeepingSplit' ).stackElse( 2 );
+  con.procedure( 2 ).nameElse( 'orKeepingSplit' );
+  con.afterOrKeeping( competitors );
 
   return con;
 }
@@ -2261,8 +2584,8 @@ function orTaking( competitors )
   ({
     competitors,
     taking : true,
-    ready : false,
-    stackLevel : 2,
+    gettingReadyFirst : false,
+    stack : 2,
   });
 }
 
@@ -2278,8 +2601,8 @@ function orKeeping( competitors )
   ({
     competitors,
     taking : false,
-    ready : false,
-    stackLevel : 2,
+    gettingReadyFirst : false,
+    stack : 2,
   });
 }
 
@@ -2300,8 +2623,8 @@ orKeeping.having = Object.create( _or.having );
 //
 //   let con = new Self().take( null );
 //
-//   con.procedure( 'or' ).sourcePathFirst( 2 );
-//   con.thenOrTaking( competitors );
+//   con.procedure( 'or' ).stackElse( 2 );
+//   con.afterOrTaking( competitors );
 //   con.finally( self );
 //
 //   return self;
@@ -2311,7 +2634,7 @@ orKeeping.having = Object.create( _or.having );
 
 //
 
-// /* xxx : deprecate */
+// /* zzz : deprecate */
 // let JoinedWithConsequence = Object.create( null );
 // JoinedWithConsequence.routineJoin = _.routineSeal;
 // JoinedWithConsequence.context = null;
@@ -2490,7 +2813,7 @@ function takeLater( timeOut, error, argument )
 
   /* */
 
-  _.timeBegin( timeOut, function now()
+  _.time.begin( timeOut, function now()
   {
     self.take( error, argument );
   });
@@ -2521,7 +2844,7 @@ function takeSoon( error, argument )
 
   self.__onTake( error, argument );
 
-  _.timeOut( 1, function timeOut()
+  _.time.out( 1, function timeOut()
   {
     self.take( error, argument );
   });
@@ -2565,9 +2888,6 @@ function take( error, argument )
     argument = error;
     error = undefined;
   }
-
-  // if( error !== undefined )
-  // error = _._err( err );
 
   if( error !== undefined )
   error = self.__handleError( error )
@@ -2720,7 +3040,7 @@ function __take( error, argument )
         + `\nConsider resetting : "{ capacity : 0 }"`
       ]
       debugger;
-      throw _._err({ args : args, stackRemobeBeginExclude : /\bConsequence.s\b/ });
+      throw _._err({ args : args, stackRemovingBeginExcluding : /\bConsequence.s\b/ });
     }
     if( !( error === undefined || argument === undefined ) )
     {
@@ -2732,7 +3052,7 @@ function __take( error, argument )
         + '\n{-argument-} is ' + _.strType( argument )
       ]
       debugger;
-      throw _._err({ args : args, stackRemobeBeginExclude : /\bConsequence.s\b/ });
+      throw _._err({ args : args, stackRemovingBeginExcluding : /\bConsequence.s\b/ });
     }
   }
 
@@ -2813,31 +3133,32 @@ function __handleError( err, competitor )
 {
   let self = this;
 
-  err = _._err
-  ({
-    args : [ err ],
-    level : 3,
-  });
-
-  if( Config.debug )
-  if( competitor && self.Diagnostics && self.Stacking )
-  err.stack = err.stack + '\n+\n' + competitor.stack;
+  if( competitor && Config.debug )
+  {
+    err = _._err
+    ({
+      args : [ err ],
+      level : 3,
+      asyncCallsStack : competitor.procedure ? [ competitor.procedure.stack() ] : null,
+    });
+  }
+  else
+  {
+    if( !_.errIsStandard( err ) )
+    err = _._err
+    ({
+      args : [ err ],
+      level : 3,
+    });
+  }
 
   if( !_.errIsAttended( err ) )
   {
-    // if( err.id === 1 )
-    // debugger;
-    _.timeOut( 250, function _unhandledError()
+    _.time.out( 250, function _unhandledError()
     {
-      if( !_.errIsAttended( err ) )
-      {
-        err = _.err( err, '\nUnhandled asynchronous error caught by Consequence!' );
-        logger.log( err );
-        debugger;
-        // xxx : uncomment it
-        // if( _.process )
-        // _.process.exit( -1 );
-      }
+      if( _.errIsAttended( err ) )
+      return;
+      _.setup._errUnhandledHandler2( err, 'unhandled asynchronous error' );
       return null;
     });
 
@@ -2898,7 +3219,7 @@ function __handleResourceSoon( isResource )
     if( !self._resources.length )
     return;
 
-    _.timeSoon( () => self.__handleResourceNow() );
+    _.time.soon( () => self.__handleResourceNow() );
 
   }
   else
@@ -2914,14 +3235,22 @@ function __handleResourceNow()
 {
   let self = this;
   let counter = 0;
+  let consequences = [];
 
-  while( true )
+  do
+  {
+    while( __iteration() );
+    self = consequences.pop();
+  }
+  while( self );
+
+  function __iteration()
   {
 
     if( !self._resources.length )
-    return;
+    return false;
     if( !self._competitorsEarly.length && !self._competitorsLate.length )
-    return;
+    return false;
 
     /* */
 
@@ -2952,7 +3281,7 @@ function __handleResourceNow()
     {
       if( competitor.procedure )
       _.procedure.end( competitor.procedure );
-      continue;
+      return true;
     }
 
     /* resourceReusing */
@@ -2993,16 +3322,21 @@ function __handleResourceNow()
       //   competitorRoutine : self,
       //   keeping : true,
       //   kindOfResource : Self.KindOfResource.Both,
-      //   stackLevel : 3,
+      //   stack : 3,
       //   instant : 1,
       //   late : 1,
       // });
 
       if( competitor.competitorRoutine.AsyncCompetitorHanding || competitor.competitorRoutine.AsyncResourceAdding )
-      competitor.competitorRoutine.__handleResourceSoon( true );
+      {
+        competitor.competitorRoutine.__handleResourceSoon( true );
+      }
       else
-      competitor.competitorRoutine.__handleResourceNow();
-      /* xxx : decrease stack depth */
+      {
+        consequences.push( self );
+        self = competitor.competitorRoutine;
+        // competitor.competitorRoutine.__handleResourceNow();
+      }
 
     }
     else
@@ -3012,6 +3346,9 @@ function __handleResourceNow()
 
       let throwenErr = 0;
       let result;
+
+      if( competitor.procedure )
+      _.procedure.activate( competitor.procedure, true );
 
       try
       {
@@ -3028,16 +3365,17 @@ function __handleResourceNow()
       }
 
       if( competitor.procedure )
+      _.procedure.activate( competitor.procedure, false );
+      if( competitor.procedure )
       _.procedure.end( competitor.procedure );
 
       if( !throwenErr )
       if( competitor.keeping && result === undefined )
       {
         debugger;
+        // logger.log( 'inspector', require( 'inspector' ) );
         let err = self.ErrNoReturn( competitor.competitorRoutine );
-        // let err = _.err( `Callback of then of consequence should return something, but callback::${competitor.competitorRoutine.name} returned undefined` )
-        // err = _.err( competitor.competitorRoutine.toString(), '\n', err );
-        throwenErr = self.__handleError( err, competitor.competitorRoutine )
+        throwenErr = self.__handleError( err, competitor )
       }
 
       /* keeping */
@@ -3072,6 +3410,7 @@ function __handleResourceNow()
     return self.__handleResourceSoon( true );
 
     counter += 1;
+    return true;
   }
 
 }
@@ -3106,7 +3445,7 @@ function _competitorAppend( o )
   _.assert( _.routineIs( competitorRoutine ) || _.consequenceIs( competitorRoutine ), () => 'Expects routine or consequence, but got ' + _.strType( competitorRoutine ) );
   _.assert( o.kindOfResource >= 1 );
   _.assert( competitorRoutine !== self, 'Consquence cant depend on itself' );
-  _.assert( o.stackLevel >= 0, 'Competitor should have stack level greater or equal to zero' );
+  _.assert( o.stack >= 0, 'Competitor should have stack level greater or equal to zero' );
   _.routineOptions( _competitorAppend, o );
 
   /* */
@@ -3120,10 +3459,10 @@ function _competitorAppend( o )
     return;
   }
 
-  let stackLevel = o.stackLevel;
+  let stack = o.stack;
   let competitorDescriptor = o;
   delete competitorDescriptor.times;
-  delete competitorDescriptor.stackLevel;
+  delete competitorDescriptor.stack;
 
   /* */
 
@@ -3147,10 +3486,10 @@ function _competitorAppend( o )
       competitorRoutine._dependsOf.push( self );
     }
 
-    if( self.Diagnostics && self.Stacking )
-    {
-      competitorDescriptor.stack = _.diagnosticStack([ stackLevel+1, Infinity ]);
-    }
+    // if( self.Diagnostics && self.Stacking )
+    // {
+    //   competitorDescriptor.stack = _.diagnosticStack([ stack, Infinity ]); /* deprecate, procedure has stack! */
+    // }
 
   }
 
@@ -3160,7 +3499,7 @@ function _competitorAppend( o )
   // _.assert( !self._procedure );
 
   if( !self._procedure )
-  self._procedure = new _.Procedure({ _sourcePath : stackLevel+1 });
+  self._procedure = new _.Procedure({ _stack : stack });
 
   _.assert( _.routineIs( o.competitorRoutine ) );
 
@@ -3181,7 +3520,7 @@ function _competitorAppend( o )
   // if( o.late === null )
   // o.late = _.consequenceIs( o.competitorRoutine );
   // if( o.late )
-  // xxx : implement con1.then( con )
+  // zzz : implement con1.then( con )
 
   if( o.late )
   self._competitorsLate.unshift( competitorDescriptor );
@@ -3199,10 +3538,10 @@ _competitorAppend.defaults =
   kindOfResource : null,
   late : false,
   instant : true,
-  // instant : false, // xxx : implement con1.then( con )
+  // instant : false, // zzz : implement con1.then( con )
 
   times : 1,
-  stackLevel : null,
+  stack : null,
 }
 
 // --
@@ -3323,7 +3662,8 @@ function deadLockReport( competitor )
   {
     if( report )
     report += '\n';
-    report += con.qualifiedName + ' : ' + con.sourcePath;
+    report += con.qualifiedName ;
+    // report += con.qualifiedName + ' : ' + con.sourcePath;
     // report += con.id + ' : ' + con.sourcePath;
   });
 
@@ -3808,7 +4148,7 @@ function resourcesCancel( arg )
 // procedure
 // --
 
-function procedure( longName )
+function procedure( arg )
 {
   let self = this;
 
@@ -3817,9 +4157,28 @@ function procedure( longName )
   if( self._procedure )
   return self._procedure;
 
-  self._procedure = _.Procedure( longName );
+  if( _.procedureIs( arg ) )
+  {
+    self._procedure = arg;
+    return arg;
+  }
+  else if( _.numberIs( arg ) )
+  {
+    self._procedure = _.Procedure({ _stack : arg });
+  }
+  else if( _.strIs( arg ) )
+  {
+    self._procedure = _.Procedure({ _name : arg, _stack : 2 });
+  }
+  else if( _.mapIs( arg ) )
+  {
+    _.assert( arg._stack !== undefined );
+    self._procedure = _.Procedure( arg );
+  }
+  else _.assert( 0 );
 
-  // if( self._procedure && self._procedure._sourcePath && _.strHas( self._procedure._sourcePath, '\Consequence.s:' ) )
+  // debugger;
+  // self._procedure = _.Procedure({ _name : name, _stack : 2 });
   // debugger;
 
   return self._procedure;
@@ -4078,21 +4437,13 @@ function __call__()
 // static
 // --
 
-function From( src, timeOut )
+/* xxx : remove second argument */
+function From( src, timeLimit )
 {
   let con = src;
 
   _.assert( arguments.length === 1 || arguments.length === 2 );
-  _.assert( timeOut === undefined || _.numberIs( timeOut ) );
-
-  // if( !_.consequenceIs( src ) )
-  // {
-  //   console.log( '_.promiseLike( src )', _.promiseLike( src ) );
-  //   console.log( 'src.then', src.then );
-  //   console.log( 'src.catch', src.catch );
-  //   // console.log( 'src.reject', src.reject );
-  //   // console.log( 'src.resolve', src.resolve );
-  // }
+  _.assert( timeLimit === undefined || _.numberIs( timeLimit ) );
 
   if( _.promiseLike( src ) )
   {
@@ -4104,15 +4455,32 @@ function From( src, timeOut )
 
   if( _.consequenceIs( con ) )
   {
-    if( timeOut !== undefined )
-    return con.orKeepingSplit( _.timeOutError( timeOut ) );
-    return con;
+    // if( timeLimit !== undefined )
+    // {
+    //   return con.orKeepingSplit( _.time.outError( timeLimit ) );
+    // }
+    // debugger;
+    // con.tag = 'aaa';
+    let con2 = con;
+    if( timeLimit !== undefined )
+    con2 = new _.Consequence().take( null ).timeLimitThrow( timeLimit, con );
+    // con.tag = 'bbb';
+    return con2;
   }
 
   if( _.errIs( src ) )
   return new Self().error( src );
-
   return new Self().take( src );
+}
+
+//
+
+function FromCalling( src )
+{
+  if( !_.consequenceIs( src ) && _.routineIs( src ) )
+  src = src();
+  src = this.From( src );
+  return src;
 }
 
 //
@@ -4194,12 +4562,10 @@ function Take( consequence )
    * @memberof module:Tools/base/Consequence.wConsequence#
    */
 
+/* zzz : deprecate? */
 function _Take( o )
 {
   let context;
-
-  // if( !( _.arrayIs( o.args ) && o.args.length <= 1 ) )
-  // debugger;
 
   _.assert( arguments.length === 1, 'Expects single argument' );
   _.assert( _.objectIs( o ) );
@@ -4486,8 +4852,6 @@ function FinallyPass( err, arg )
   _.assert( err === undefined || arg === undefined, 'Cant take both error and argument, one should be undefined' );
   if( err )
   throw err;
-  // if( err )
-  // throw _.err( err );
   return arg;
 }
 
@@ -4501,10 +4865,11 @@ function ThenPass( err, arg )
 
 //
 
-function ExceptPass( err, arg )
+function CatchPass( err, arg )
 {
   _.assert( err !== undefined, 'Expects non-undefined error' );
-  throw _.err( err );
+  throw err;
+  // throw _.err( err );
 }
 // --
 // experimental
@@ -4573,8 +4938,8 @@ function experimentThereafter()
     console.log( 'done2' );
   }
 
-  _.timeOut( 5000, console.log.thereafter( 'done' ) );
-  _.timeOut( 5000, f.thereafter() );
+  _.time.out( 5000, console.log.thereafter( 'done' ) );
+  _.time.out( 5000, f.thereafter() );
 
   debugger;
 
@@ -4586,7 +4951,7 @@ function experimentWithin()
 {
 
   debugger;
-  let con = _.timeOut( 30000 );
+  let con = _.time.out( 30000 );
   console.log.within( con ).call( console, 'done' );
   con.finally( function()
   {
@@ -4692,7 +5057,7 @@ let Composes =
 let ComposesDebug =
 {
   tag : '',
-  sourcePath : null,
+  // sourcePath : null,
 }
 
 if( Config.debug )
@@ -4720,7 +5085,7 @@ _.mapExtend( Restricts, RestrictsDebug );
 let Medials =
 {
   tag : '',
-  sourcePath : null,
+  // sourcePath : null,
 }
 
 let Statics =
@@ -4730,6 +5095,7 @@ let Statics =
   Async : Now,
   After,
   From,
+  FromCalling,
   Take,
   Error,
   ErrNoReturn,
@@ -4741,7 +5107,7 @@ let Statics =
 
   FinallyPass,
   ThenPass,
-  ExceptPass,
+  CatchPass,
 
   AsyncModeSet,
   AsyncModeGet,
@@ -4750,7 +5116,7 @@ let Statics =
   KindOfResource,
 
   Diagnostics : 1,
-  Stacking : 0,
+  // Stacking : 0,
   AsyncCompetitorHanding : 0,
   AsyncResourceAdding : 0,
 
@@ -4783,7 +5149,7 @@ let Accessors =
 let DebugAccessors =
 {
   tag : { getter : _defGetter_functor( 'tag', null ) },
-  sourcePath : { getter : _defGetter_functor( 'sourcePath', null ) },
+  // sourcePath : { getter : _defGetter_functor( 'sourcePath', null ) },
   _dependsOf : { getter : _arrayGetter_functor( '_dependsOf' ) },
 }
 
@@ -4799,7 +5165,7 @@ let Extend =
 
   init,
   is,
-  isJoinedWithConsequence,
+  // isJoinedWithConsequence,
 
   // basic
 
@@ -4881,10 +5247,20 @@ let Extend =
   // time
 
   _timeOut,
-  finnallyTimeOut,
+  finallyTimeOut,
   thenTimeOut,
   exceptTimeOut,
-  timeOut : finnallyTimeOut,
+  timeOut : finallyTimeOut,
+
+  _timeLimit,
+  finallyTimeLimit,
+  thenTimeLimit,
+  exceptTimeLimit,
+  timeLimit : finallyTimeLimit,
+  finallyTimeLimitError,
+  thenTimeLimitError,
+  exceptTimeLimitError,
+  timeLimitThrow : finallyTimeLimitError,
 
   // and
 
@@ -4901,8 +5277,8 @@ let Extend =
   // or
 
   _or,
-  thenOrTaking,
-  thenOrKeeping,
+  afterOrTaking,
+  afterOrKeeping,
   orKeepingSplit,
   orTaking,
   orKeeping,
@@ -4910,9 +5286,9 @@ let Extend =
 
   // adapter
 
-  // _join, // xxx : deprecate
-  // join, // xxx : deprecate
-  // seal, // xxx : deprecate
+  // _join, // zzz : deprecate
+  // join, // zzz : deprecate
+  // seal, // zzz : deprecate
   tolerantCallback,
 
   // resource
@@ -4950,7 +5326,6 @@ let Extend =
   competitorsLateGet,
   competitorsGet,
   competitorsCancel,
-  // competitorCancel,
 
   // resource
 
@@ -5014,7 +5389,7 @@ _.classDeclare
   usingOriginalPrototype : 1,
 });
 
-_.Copyable.mixin( wConsequence ); /* xxx : try to remove mixin */
+_.Copyable.mixin( wConsequence ); /* zzz : try to remove mixin, maybe */
 
 _.mapExtend( _, Tools );
 _.mapExtend( _realGlobal_.wTools, Tools );
@@ -5039,7 +5414,7 @@ _.assert( _.routineIs( wConsequenceProxy.prototype.take ) );
 
 _.assert( wConsequenceProxy.shortName === 'Consequence' );
 
-// _prepareJoinedWithConsequence(); /* xxx : deprecate _prepareJoinedWithConsequence */
+// _prepareJoinedWithConsequence(); /* zzz : deprecate _prepareJoinedWithConsequence */
 
 // _.assert( !Self.FieldsOfRelationsGroupsGet );
 // _.assert( !Self.prototype.FieldsOfRelationsGroupsGet );
