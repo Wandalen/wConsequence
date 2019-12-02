@@ -7430,7 +7430,7 @@ function orKeepingWithSimple( test )
     test.identical( con2.argumentsCount(), 1 );
     test.identical( con2.competitorsCount(), 0 );
 
-    con.finallyKeep( ( err, arg ) =>
+    con.finally( ( err, arg ) =>
     {
 
       test.identical( con.errorsCount(), 0 );
@@ -8147,7 +8147,7 @@ function orTakingWithSimple( test )
     test.identical( con2.argumentsCount(), 1 );
     test.identical( con2.competitorsCount(), 0 );
 
-    con.finallyKeep( ( err, arg ) =>
+    con.finally( ( err, arg ) =>
     {
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 0 );
@@ -12738,6 +12738,44 @@ function competitorsCancel( test )
 
 //
 
+function competitorsCancel2( test )
+{
+  let con = new _.Consequence();
+  con.finally( end );
+
+  debugger;
+  var competitor = con.competitorHas( end );
+  var procedure = competitor.procedure;
+  // competitor.procedure.end();
+  test.is( !!competitor );
+  test.is( !!competitor.procedure );
+  test.is( procedure.isAlive() );
+
+  test.identical( con.argumentsCount(), 0 );
+  test.identical( con.errorsCount(), 0 );
+  test.identical( con.competitorsCount(), 1 );
+
+  con.competitorsCancel( end );
+
+  test.identical( con.argumentsCount(), 0 );
+  test.identical( con.errorsCount(), 0 );
+  test.identical( con.competitorsCount(), 0 );
+
+  var competitor = con.competitorHas( end );
+  test.is( !competitor );
+  test.is( !procedure.isAlive() );
+
+  return _.time.out( 100 );
+
+  function end( err, got )
+  {
+    console.log( 'end:', got )
+    return got;
+  }
+}
+
+//
+
 function thenSequenceSync( test )
 {
   test.case = 'consequences in then has resources';
@@ -13066,41 +13104,6 @@ function consequenceAwait( test )
   }
 }
 
-//
-
-function procedureEndExperiment( test )
-{
-  let con = someRoutine();
-  con.then( () =>
-  {
-    console.log( 'then:', got )
-    return null();
-  })
-
-  return con;
-
-  /* */
-
-  function someRoutine()
-  {
-    let con = new _.Consequence();
-    con.finallyKeep( end );
-
-    let competitor = con.competitorHas( end );
-    competitor.procedure.end();
-
-    return con;
-
-    function end( err, got )
-    {
-      console.log( 'end:', got )
-      return got;
-    }
-  }
-}
-
-procedureEndExperiment.experimental = 1;
-
 // --
 // declare
 // --
@@ -13221,6 +13224,7 @@ var Self =
 
     competitorsCancelSingle,
     competitorsCancel,
+    competitorsCancel2,
 
     thenSequenceSync,
     // thenSequenceAsync,
@@ -13228,8 +13232,6 @@ var Self =
     fromPromiseWithUndefined,
     fromCustomPromise,
     consequenceAwait,
-
-    procedureEndExperiment
 
   },
 
