@@ -189,33 +189,12 @@ function init( o )
 {
   let self = this;
 
-  // if( o )
-  // if( o.tag === 'openedReady' )
-  // debugger;
-
-  // self._competitorsEarly = [];
-  // self._competitorsLate = [];
-  // self._resources = [];
-  // self._procedure = null;
-  // self.capacity = self.Composes.capacity;
-
-  if( Config.debug )
-  {
-    // self.tag = self.Composes.tag;
-    // self.id = _.procedure.indexAlloc();
-    // self._dependsOf = [];
-    // self.sourcePath = null;
-  }
-
-  // Object.preventExtensions( self );
-
   if( o )
   {
     if( !Config.debug )
     {
       delete o.tag;
       delete o.capacity;
-      // delete o.sourcePath;
     }
     if( o instanceof Self )
     {
@@ -227,25 +206,10 @@ function init( o )
     }
     if( o._resources )
     o._resources = o._resources.slice();
-    // if( o._competitorsEarly )
-    // o._competitorsEarly = o._competitorsEarly.slice();
-    // if( o._competitorsLate )
-    // o._competitorsLate = o._competitorsLate.slice();
     _.mapExtend( self, o );
-    // self.copy( o );
-  }
-
-  if( Config.debug )
-  {
-    // if( self.sourcePath === undefined || self.sourcePath === null )
-    // self.sourcePath = 1;
-    // if( _.numberIs( self.sourcePath ) )
-    // self.sourcePath = self.sourcePath += 2;
-    // self.sourcePath = _.procedure.sourcePathGet( self.sourcePath );
   }
 
   _.assert( arguments.length === 0 || arguments.length === 1 );
-  // _.assert( self.sourcePath === undefined || _.strIs( self.sourcePath ) );
 }
 
 //
@@ -425,23 +389,8 @@ function thenKeep( competitorRoutine )
 
   _.assert( arguments.length === 1 || arguments.length === 2, 'Expects single argument' );
 
-  // if( competitorRoutine && competitorRoutine.name === 'callback2' )
-  // debugger;
-
   if( arguments.length === 2 )
-  {
-    let resolve = arguments[ 0 ];
-    let reject = arguments[ 1 ];
-    _.assert( _.routineIs( resolve ) && _.routineIs( reject ) );
-    _.assert( resolve.length === 1 && reject.length === 1 );
-    return self.finallyGive( ( err, got ) =>
-    {
-      if( err )
-      reject( err );
-      else
-      resolve( got );
-    })
-  }
+  return self._promiseThen( arguments[ 0 ], arguments[ 1 ] );
 
   self._competitorAppend
   ({
@@ -528,6 +477,26 @@ catchKeep.having =
 // --
 // promise
 // --
+
+function _promiseThen( resolve, reject )
+{
+  let self = this;
+
+  _.assert( arguments.length === 2 );
+  _.assert( _.routineIs( resolve ) && _.routineIs( reject ) );
+  _.assert( resolve.length === 1 && reject.length === 1 );
+
+  return self.finallyGive( ( err, got ) =>
+  {
+    if( err )
+    reject( err );
+    else
+    resolve( got );
+  })
+
+}
+
+//
 
 function _promise( o )
 {
@@ -3152,7 +3121,8 @@ function __handleResourceNow()
     if( !executing )
     {
       if( competitor.procedure )
-      _.procedure.end( competitor.procedure );
+      competitor.procedure.end();
+      // _.procedure.end( competitor.procedure );
       return true;
     }
 
@@ -3244,7 +3214,8 @@ function __handleResourceNow()
       {
         competitor.procedure.activate( false );
         if( !competitor.procedure.isActivated() )
-        _.procedure.end( competitor.procedure );
+        competitor.procedure.end();
+        // _.procedure.end( competitor.procedure );
       }
 
       if( !throwenErr )
@@ -3373,10 +3344,8 @@ function _competitorAppend( o )
 
   /* procedure */
 
-  // debugger;
-  // _.assert( !self._procedure );
-
-  if( !self._procedure )
+  /* xxx qqq : cover consequence with _procedure : false */
+  if( self._procedure === null )
   self._procedure = new _.Procedure({ _stack : stack });
 
   _.assert( _.routineIs( o.competitorRoutine ) );
@@ -3391,6 +3360,7 @@ function _competitorAppend( o )
 
   competitorDescriptor.procedure = self._procedure;
 
+  if( self._procedure )
   self._procedure = null;
 
   /* */
@@ -4035,6 +4005,9 @@ function procedure( arg )
   if( self._procedure )
   return self._procedure;
 
+  if( self._procedure === false )
+  return self._procedure;
+
   if( _.routineIs( arg ) )
   arg = arg();
 
@@ -4070,6 +4043,8 @@ function procedureDetach()
   _.assert( arguments.length === 0 );
 
   let procedure = self._procedure;
+
+  if( self._procedure )
   self._procedure = null;
 
   return procedure;
@@ -5058,6 +5033,7 @@ let Extend =
 
   // to promise // qqq : cover please
 
+  _promiseThen,
   _promise,
   finallyPromiseGive,
   finallyPromiseKeep,
