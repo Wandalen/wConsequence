@@ -188,6 +188,7 @@ module:
           - ../proto/dwtools/abase/l9.test
           - ../proto/dwtools/abase/l9.test/consequence
           - ../proto/dwtools/abase/l9.test/consequence/Consequence.test.s
+          - ../proto/dwtools/abase/l9.test/consequence/Ext.test.s
           - ../proto/dwtools/abase/l9.test/consequence/Time.test.s
           - ../proto/dwtools/amid
           - ../proto/dwtools/atop
