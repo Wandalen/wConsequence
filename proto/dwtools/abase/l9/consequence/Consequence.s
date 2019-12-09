@@ -2974,7 +2974,7 @@ function __handleError( err, competitor )
 {
   let self = this;
 
-  if( competitor && Config.debug )
+  if( Config.debug && competitor && err && !err.asyncCallsStack )
   {
     err = _._err
     ({
@@ -2993,17 +2993,16 @@ function __handleError( err, competitor )
     });
   }
 
-  if( !_.errIsAttended( err ) )
-  {
-    _.time.out( 250, function _unhandledError()
-    {
-      if( _.errIsAttended( err ) )
-      return;
-      _.setup._errUnhandledHandler2( err, 'unhandled asynchronous error' );
-      return null;
-    });
+  if( _.errIsAttended( err ) )
+  return err;
 
-  }
+  let timer = _.time.finally( self.UnhandledTimeOut, function _unhandledError()
+  {
+    if( _.errIsAttended( err ) )
+    return;
+    _.setup._errUnhandledHandler2( err, 'unhandled asynchronous error' );
+    return null;
+  });
 
   return err;
 }
@@ -4961,6 +4960,7 @@ let Statics =
   Tools,
   KindOfResource,
 
+  UnhandledTimeOut : 100,
   Diagnostics : 1,
   // Stacking : 0,
   AsyncCompetitorHanding : 0,
@@ -5232,7 +5232,7 @@ _.classDeclare
   usingOriginalPrototype : 1,
 });
 
-_.Copyable.mixin( wConsequence ); /* zzz : try to remove mixin, maybe */
+_.Copyable.mixin( wConsequence ); /* zzz : remove the mixin, maybe */
 
 _.mapExtend( _, Tools );
 _.mapExtend( _realGlobal_.wTools, Tools );

@@ -2458,6 +2458,8 @@ function split( test )
 {
   let ready = new _.Consequence().take( null );
 
+  /* */
+
   ready
   .then( function( arg )
   {
@@ -2558,6 +2560,8 @@ function split( test )
     test.identical( _err, [ undefined ] )
     return null;
   })
+
+  /* */
 
   return ready;
 }
