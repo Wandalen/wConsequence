@@ -57,25 +57,21 @@ let _global = _global_;
 let _ = _global_.wTools;
 let Deasync = null;
 
-if( _realGlobal_.wTools && _realGlobal_.wConsequence )
-{
-  _.assert( _.routineIs( _realGlobal_.wConsequence.After ) );
-  // let Tools =
-  // {
-  //   now : _realGlobal_.wConsequence.After,
-  //   after : _realGlobal_.wConsequence.After,
-  //   // before : _realGlobal_.wTools.before,
-  // }
-  _.assert( _.mapIs( _realGlobal_.wConsequence.Tools ) );
-  _.mapExtend( _, _realGlobal_.wConsequence.Tools );
-  let Self = _realGlobal_.wConsequence;
-  _[ Self.shortName ] = Self;
-  if( typeof module !== 'undefined' && module !== null )
-  module[ 'exports' ] = Self;
-  return;
-}
+// yyy
+// if( _realGlobal_.wTools && _realGlobal_.wConsequence )
+// {
+//   return _Extend( _global, _realGlobal_ );
+//   // _.assert( _.routineIs( _realGlobal_.wConsequence.After ) );
+//   // _.assert( _.mapIs( _realGlobal_.wConsequence.Tools ) );
+//   // _.mapExtend( _, _realGlobal_.wConsequence.Tools );
+//   // let Self = _realGlobal_.wConsequence;
+//   // _[ Self.shortName ] = Self;
+//   // if( typeof module !== 'undefined' && module !== null )
+//   // module[ 'exports' ] = Self;
+//   // return;
+// }
 
-_.assert( !_global_.wConsequence, 'Consequence included several times' );
+// _.assert( !_global_.wConsequence, 'Consequence included several times' );
 _.assert( !_.Consequence, 'Consequence included several times' );
 
 // relations
@@ -4882,6 +4878,22 @@ function After( resource )
 */
 
 // --
+// meta
+// --
+
+function _Extend( dstGlobal, srcGlobal )
+{
+  _.assert( _.routineIs( srcGlobal.wConsequence.After ) );
+  _.assert( _.mapIs( srcGlobal.wConsequence.Tools ) );
+  _.mapExtend( dstGlobal.wTools, srcGlobal.wConsequence.Tools );
+  let Self = srcGlobal.wConsequence;
+  dstGlobal.wTools[ Self.shortName ] = Self;
+  if( typeof module !== 'undefined' && module !== null )
+  module[ 'exports' ] = Self;
+  return;
+}
+
+// --
 // relations
 // --
 
@@ -4959,6 +4971,10 @@ let Statics =
 
   Tools,
   KindOfResource,
+
+  _Extend,
+
+  //
 
   UnhandledTimeOut : 100,
   Diagnostics : 1,

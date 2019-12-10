@@ -100,11 +100,8 @@ function trivial( test )
 
   test.case = 'class test';
   test.is( _.consequenceIs( con1 ) );
-  test.is( con1 instanceof wConsequence );
   test.is( _.consequenceIs( con2 ) );
-  test.is( con2 instanceof wConsequence );
   test.is( _.consequenceIs( con3 ) );
-  test.is( con3 instanceof wConsequence );
 
   con3.take( 3 );
   con3( 4 );
@@ -2394,6 +2391,7 @@ function finallyPromiseKeepAsyncMode11( test )
 function deasync( test )
 {
   let ready = _.now();
+  let t = 25;
 
   /* */
 
@@ -2403,7 +2401,7 @@ function deasync( test )
     let after = false;
     let con;
 
-    _.time.out( 200, () =>
+    _.time.out( t*20, () =>
     {
       test.is( after );
       test.identical( con.errorsCount(), 0 );
@@ -2412,7 +2410,7 @@ function deasync( test )
       test.identical( counter, 1 );
       counter += 1;
     });
-    _.time.out( 10, () =>
+    _.time.out( 1, () =>
     {
       test.is( !after );
       test.identical( con.errorsCount(), 0 );
@@ -2422,7 +2420,7 @@ function deasync( test )
       counter += 1;
     });
 
-    con = _.time.out( 100 );
+    con = _.time.out( t*4 );
 
     test.is( !after );
     test.identical( con.errorsCount(), 0 );
@@ -2438,7 +2436,7 @@ function deasync( test )
     test.identical( counter, 1 );
     after = 1;
 
-    return _.time.out( 250, () =>
+    return _.time.out( t*40, () =>
     {
       test.identical( con.errorsCount(), 0 );
       test.identical( con.argumentsCount(), 1 );
