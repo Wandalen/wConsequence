@@ -6,10 +6,12 @@ os:
   - osx
   - windows
 node_js:
+  - '8'
+  - '9'
   - '10'
   - '12'
-  - '13'
+  - 'lts/*'
 script:
-  - "node sample/Sample.js"
+  - npm test
 cache:
   npm: false
