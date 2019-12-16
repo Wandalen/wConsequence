@@ -3332,7 +3332,7 @@ function _competitorAppend( o )
 
     // if( self.Diagnostics && self.Stacking )
     // {
-    //   competitorDescriptor.stack = _.diagnosticStack([ stack, Infinity ]); /* deprecate, procedure has stack! */
+    //   competitorDescriptor.stack = _.introspector.stack([ stack, Infinity ]); /* deprecate, procedure has stack! */
     // }
 
   }
