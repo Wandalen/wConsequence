@@ -52,7 +52,7 @@ function assetFor( test, ... args )
 // tests
 // --
 
-function unhandledSyncErrorOnExit( test )
+function uncaughtSyncErrorOnExit( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
@@ -63,7 +63,7 @@ function unhandledSyncErrorOnExit( test )
   {
     test.notIdentical( op.exitCode, 0 );
     test.identical( _.strCount( op.output, 'nhandled error' ), 2 );
-    test.identical( _.strCount( op.output, 'unhandled error on termination' ), 2 );
+    test.identical( _.strCount( op.output, 'uncaught error on termination' ), 2 );
     test.identical( _.strCount( op.output, 'error1' ), 1 );
     return null;
   });
@@ -83,14 +83,14 @@ function unhandledSyncErrorOnExit( test )
   }
 }
 
-unhandledSyncErrorOnExit.description =
+uncaughtSyncErrorOnExit.description =
 `
-Unhandled synchronous error on temrination caught and handled
+Uncaught synchronous error on temrination caught and handled
 `
 
 //
 
-function unhandledAsyncErrorOnExit( test )
+function uncaughtAsyncErrorOnExit( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
@@ -100,7 +100,7 @@ function unhandledAsyncErrorOnExit( test )
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
-    test.identical( _.strCount( op.output, 'unhandled asynchronous error' ), 2 );
+    test.identical( _.strCount( op.output, 'uncaught asynchronous error' ), 2 );
     test.identical( _.strCount( op.output, 'error1' ), 1 );
     return null;
   });
@@ -120,9 +120,9 @@ function unhandledAsyncErrorOnExit( test )
   }
 }
 
-unhandledAsyncErrorOnExit.description =
+uncaughtAsyncErrorOnExit.description =
 `
-Unhandled synchronous error on temrination caught and handled
+Uncaught synchronous error on temrination caught and handled
 `
 
 //
@@ -143,7 +143,7 @@ function asyncStackWithTimeOut( test )
     test.identical( _.strCount( op.output, 'Waiting for' ), 0 );
     test.identical( _.strCount( op.output, 'procedure::' ), 0 );
     test.identical( _.strCount( op.output, 'nhandled' ), 2 );
-    test.identical( _.strCount( op.output, 'unhandled error' ), 2 );
+    test.identical( _.strCount( op.output, 'uncaught error' ), 2 );
     test.identical( _.strCount( op.output, /v1(.|\n|\r)*v2(.|\n|\r)*error1(.|\n|\r)*/mg ), 1 );
     test.identical( _.strCount( op.output, 'program.js:10' ), 1 );
     test.identical( _.strCount( op.output, 'program.js:13' ), 2 );
@@ -199,7 +199,7 @@ function asyncStackWithConsequence( test )
     test.identical( _.strCount( op.output, 'Waiting for' ), 0 );
     test.identical( _.strCount( op.output, 'procedure::' ), 0 );
     test.identical( _.strCount( op.output, 'nhandled' ), 2 );
-    test.identical( _.strCount( op.output, 'unhandled asynchronous error' ), 2 );
+    test.identical( _.strCount( op.output, 'uncaught asynchronous error' ), 2 );
     test.identical( _.strCount( op.output, /v1(.|\n|\r)*v2(.|\n|\r)*error1(.|\n|\r)*/mg ), 1 );
     test.identical( _.strCount( op.output, 'program.js:11' ), 1 );
     test.identical( _.strCount( op.output, 'program.js:14' ), 2 );
@@ -253,7 +253,7 @@ function asyncStackInConsequenceTrivial( test )
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
-    test.identical( _.strCount( op.output, '- unhandled error -' ), 2 );
+    test.identical( _.strCount( op.output, '- uncaught error -' ), 2 );
     test.identical( _.strCount( op.output, '= Source code from' ), 1 );
     test.identical( _.strCount( op.output, `program.js:9` ), 1 );
     test.identical( _.strCount( op.output, `at program` ), 1 );
@@ -307,7 +307,7 @@ function asyncStackInConsequenceThen( test )
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
-    test.identical( _.strCount( op.output, '- unhandled asynchronous error -' ), 2 );
+    test.identical( _.strCount( op.output, '- uncaught asynchronous error -' ), 2 );
     test.identical( _.strCount( op.output, '= Source code from' ), 1 );
     return null;
   });
@@ -871,7 +871,7 @@ var Self =
     nameOfFile : 'Ext.test.s',
     suiteTempPath : null,
     assetsOriginalSuitePath : null,
-    defaultJsPath : null,
+    execJsPath : null,
 
     assetFor,
 
@@ -880,8 +880,8 @@ var Self =
   tests :
   {
 
-    unhandledSyncErrorOnExit,
-    unhandledAsyncErrorOnExit,
+    uncaughtSyncErrorOnExit,
+    uncaughtAsyncErrorOnExit,
 
     asyncStackWithTimeOut,
     asyncStackWithConsequence,

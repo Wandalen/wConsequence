@@ -981,7 +981,7 @@ first.having =
 //
 
 /**
- * Returns new _.Consequence instance. If on cloning moment current wConsequence has unhandled resolved values in queue
+ * Returns new _.Consequence instance. If on cloning moment current wConsequence has uncaught resolved values in queue
    the first of them would be handled by new _.Consequence. Else pass accepted
  * @example
    function gotHandler1( error, value )
@@ -2992,11 +2992,11 @@ function __handleError( err, competitor )
   if( _.errIsAttended( err ) )
   return err;
 
-  let timer = _.time.finally( self.UnhandledTimeOut, function _unhandledError()
+  let timer = _.time.finally( self.UncaughtTimeOut, function uncaught()
   {
     if( _.errIsAttended( err ) )
     return;
-    _.setup._errUnhandledHandler2( err, 'unhandled asynchronous error' );
+    _.setup._errUncaughtHandler2( err, 'uncaught asynchronous error' );
     return null;
   });
 
@@ -4976,7 +4976,7 @@ let Statics =
 
   //
 
-  UnhandledTimeOut : 100,
+  UncaughtTimeOut : 100,
   Diagnostics : 1,
   // Stacking : 0,
   AsyncCompetitorHanding : 0,
