@@ -147,19 +147,14 @@ let wConsequenceProxy = new Proxy( wConsequence,
         o = Object.create( null );
         args[ 0 ] = o;
       }
-      // if( o.sourcePath === undefined || o.sourcePath === null )
-      // o.sourcePath = 1;
-      // if( _.numberIs( o.sourcePath ) )
-      // o.sourcePath = o.sourcePath += 1;
-      // o.sourcePath = _.procedure.sourcePathGet( o.sourcePath );
     }
+
     return new original( ...args );
   },
 
   set : function set( original, name, value )
   {
-    debugger;
-    return Reflect.set( ...arguments );
+    return Reflect.set( ... arguments );
   },
 
 });
