@@ -62,8 +62,10 @@ function uncaughtSyncErrorOnExit( test )
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
-    test.identical( _.strCount( op.output, 'nhandled error' ), 2 );
     test.identical( _.strCount( op.output, 'uncaught error on termination' ), 2 );
+    test.identical( _.strCount( op.output, 'uncaught error' ), 2 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 7 );
+    test.identical( _.strCount( op.output, 'nhandled' ), 0 );
     test.identical( _.strCount( op.output, 'error1' ), 1 );
     return null;
   });
@@ -142,7 +144,8 @@ function asyncStackWithTimeOut( test )
     test.notIdentical( op.exitCode, 0 );
     test.identical( _.strCount( op.output, 'Waiting for' ), 0 );
     test.identical( _.strCount( op.output, 'procedure::' ), 0 );
-    test.identical( _.strCount( op.output, 'nhandled' ), 2 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 2 );
+    test.identical( _.strCount( op.output, 'nhandled' ), 0 );
     test.identical( _.strCount( op.output, 'uncaught error' ), 2 );
     test.identical( _.strCount( op.output, /v1(.|\n|\r)*v2(.|\n|\r)*error1(.|\n|\r)*/mg ), 1 );
     test.identical( _.strCount( op.output, 'program.js:10' ), 1 );
@@ -198,7 +201,8 @@ function asyncStackWithConsequence( test )
     test.notIdentical( op.exitCode, 0 );
     test.identical( _.strCount( op.output, 'Waiting for' ), 0 );
     test.identical( _.strCount( op.output, 'procedure::' ), 0 );
-    test.identical( _.strCount( op.output, 'nhandled' ), 2 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 2 );
+    test.identical( _.strCount( op.output, 'nhandled' ), 0 );
     test.identical( _.strCount( op.output, 'uncaught asynchronous error' ), 2 );
     test.identical( _.strCount( op.output, /v1(.|\n|\r)*v2(.|\n|\r)*error1(.|\n|\r)*/mg ), 1 );
     test.identical( _.strCount( op.output, 'program.js:11' ), 1 );
@@ -374,6 +378,7 @@ function tester( test )
     test.identical( op.exitCode, 0 );
     test.identical( _.strCount( op.output, 'Waiting for' ), 0 );
     test.identical( _.strCount( op.output, 'procedure::' ), 0 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 0 );
     test.identical( _.strCount( op.output, 'nhandled' ), 0 );
     test.identical( _.strCount( op.output, 'Passed test suites 1 / 1' ), 1 );
     return null;
@@ -434,6 +439,7 @@ function timeLimit( test )
     test.identical( op.exitCode, 0 );
     test.identical( _.strCount( op.output, 'Waiting for' ), 0 );
     test.identical( _.strCount( op.output, 'procedure::' ), 0 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 0 );
     test.identical( _.strCount( op.output, 'nhandled' ), 0 );
     return null;
   });
@@ -476,6 +482,7 @@ function timeLimitWaitingEnough( test )
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 0 );
     test.identical( _.strCount( op.output, 'nhandled' ), 0 );
     test.identical( _.strCount( op.output, 'Waiting for' ), 1 );
     test.identical( _.strCount( op.output, 'Waiting for 8 procedure(s)' ), 1 );
@@ -545,6 +552,7 @@ function timeLimitWaitingNotEnough( test )
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 0 );
     test.identical( _.strCount( op.output, 'nhandled' ), 0 );
     test.identical( _.strCount( op.output, 'Waiting for' ), 1 );
     test.identical( _.strCount( op.output, 'Waiting for 3 procedure(s)' ), 1 );
@@ -615,6 +623,7 @@ function timeCancelBefore( test )
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 0 );
     test.identical( _.strCount( op.output, 'nhandled' ), 0 );
     test.identical( _.strCount( op.output, 'Waiting for' ), 0 );
     test.identical( _.strCount( op.output, 'procedure::' ), 0 );
@@ -673,6 +682,7 @@ function timeCancelAfter( test )
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 0 );
     test.identical( _.strCount( op.output, 'nhandled' ), 0 );
     test.identical( _.strCount( op.output, 'Waiting for' ), 0 );
     test.identical( _.strCount( op.output, 'procedure::' ), 0 );
@@ -731,6 +741,7 @@ function timeOutExternalMessage( test )
   {
     test.identical( op.exitCode, 0 );
     test.identical( _.strCount( op.output, 'Waiting for' ), 0 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 0 );
     test.identical( _.strCount( op.output, 'nhandled' ), 0 );
 
     test.identical( _.strCount( op.output, 'v1' ), 1 );
@@ -812,6 +823,7 @@ function timeBegin( test )
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 0 );
     test.identical( _.strCount( op.output, 'nhandled' ), 0 );
     test.identical( _.strCount( op.output, 'Waiting for' ), 0 );
     test.identical( _.strCount( op.output, 'procedure::' ), 0 );
