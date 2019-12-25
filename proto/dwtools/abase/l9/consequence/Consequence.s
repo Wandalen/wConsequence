@@ -3112,7 +3112,6 @@ function __handleResourceNow()
     {
       if( competitor.procedure )
       competitor.procedure.end();
-      // _.procedure.end( competitor.procedure );
       return true;
     }
 
@@ -3144,7 +3143,7 @@ function __handleResourceNow()
       competitor.competitorRoutine.__take( resource.error, resource.argument );
 
       if( competitor.procedure )
-      _.procedure.end( competitor.procedure );
+      competitor.procedure.end();
 
       // if( !competitor.instant && competitor.keeping )
       // debugger;
@@ -3178,10 +3177,18 @@ function __handleResourceNow()
 
       let throwenErr = 0;
       let result;
+      // let isActivated = false;
 
       if( competitor.procedure )
       {
-        if( !competitor.procedure.isTopMost() )
+
+        // if( competitor.procedure.id === 30 )
+        // debugger;
+
+        // isActivated = competitor.procedure.isActivated();
+        // if( !competitor.procedure.isTopMost() )
+        // if( !isActivated )
+        if( !competitor.procedure.use() )
         competitor.procedure.activate( true );
         _.assert( competitor.procedure.isActivated() );
       }
@@ -3202,10 +3209,22 @@ function __handleResourceNow()
 
       if( competitor.procedure )
       {
-        competitor.procedure.activate( false );
-        if( !competitor.procedure.isActivated() )
-        competitor.procedure.end();
-        // _.procedure.end( competitor.procedure );
+
+        // if( competitor.procedure.id === 30 )
+        // debugger;
+
+        // if( !isActivated )
+        {
+          competitor.procedure.unuse();
+          if( !competitor.procedure.isUsed() )
+          {
+            competitor.procedure.activate( false );
+            // _.assert( !competitor.procedure.isActivated() );
+            // if( !competitor.procedure.isActivated() )
+            competitor.procedure.end();
+          }
+        }
+        // competitor.procedure.end();
       }
 
       if( !throwenErr )
@@ -3343,8 +3362,12 @@ function _competitorAppend( o )
   if( !self._procedure.name() )
   self._procedure.name( o.competitorRoutine.name || '' );
 
+  _.assert( self._procedure._routine === null || self._procedure._routine === o.competitorRoutine );
+
   if( !self._procedure._routine )
   self._procedure._routine = o.competitorRoutine;
+  if( !self._procedure._object )
+  self._procedure._object = competitorDescriptor;
 
   self._procedure.begin();
 
@@ -3380,6 +3403,7 @@ _competitorAppend.defaults =
 
   times : 1,
   stack : null, /* xxx : use procedure instead */
+  // procedure : null,
 }
 
 // --
@@ -3727,10 +3751,6 @@ function competitorsCancel( competitorRoutine )
   _.assert( arguments.length === 0 || arguments.length === 1 );
   _.assert( arguments.length === 0 || _.routineIs( competitorRoutine ) );
 
-  // logger.log( self.toStr() );
-  // logger.log( 'competitorsCancel', self.id, self._competitorsEarly.length );
-  // debugger;
-
   if( arguments.length === 0 )
   {
 
@@ -3738,7 +3758,7 @@ function competitorsCancel( competitorRoutine )
     {
       let competitorDescriptor = self._competitorsEarly[ c ];
       if( competitorDescriptor.procedure )
-      _.procedure.end( competitorDescriptor.procedure );
+      competitorDescriptor.procedure.end();
       self._competitorsEarly.splice( c, 1 );
       r += 1;
     }
@@ -3747,7 +3767,7 @@ function competitorsCancel( competitorRoutine )
     {
       let competitorDescriptor = self._competitorsLate[ c ];
       if( competitorDescriptor.procedure )
-      _.procedure.end( competitorDescriptor.procedure );
+      competitorDescriptor.procedure.end();
       self._competitorsLate.splice( c, 1 );
       r += 1;
     }
@@ -3761,7 +3781,7 @@ function competitorsCancel( competitorRoutine )
     {
       _.assert( found.element.competitorRoutine === competitorRoutine );
       if( found.element.procedure )
-      _.procedure.end( found.element.procedure );
+      found.element.procedure.end();
       self._competitorsEarly.splice( found.index, 1 )
       found = _.longLeft( self._competitorsEarly, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
       r += 1;
@@ -3772,7 +3792,7 @@ function competitorsCancel( competitorRoutine )
     {
       _.assert( found.element.competitorRoutine === competitorRoutine );
       if( found.element.procedure )
-      _.procedure.end( found.element.procedure );
+      found.element.procedure.end();
       self._competitorsLate.splice( found.index, 1 )
       found = _.longLeft( self._competitorsLate, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
       r += 1;
@@ -3784,41 +3804,6 @@ function competitorsCancel( competitorRoutine )
 
   return self;
 }
-
-// //
-//
-// function competitorCancel( competitorRoutine )
-// {
-//   let self = this;
-//
-//   _.assert( arguments.length === 1 );
-//   _.assert( _.routineIs( competitorRoutine ) );
-//
-//   let found = _.longLeft( self._competitorsEarly, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
-//   found.container = self._competitorsEarly;
-//
-//   if( !found.element )
-//   {
-//     found = _.longLeft( self._competitorsLate, competitorRoutine, ( c ) => c.competitorRoutine, ( c ) => c );
-//     found.container = self._competitorsLate;
-//   }
-//
-//   if( !found.element )
-//   {
-//     debugger;
-//     let procedure = _.procedure.getSingleMaybe( competitorRoutine );
-//     let procedureName = ( procedure ? '\n' + procedure.longName : '' );
-//     throw _.err( 'Competitor', _.toStrShort( competitorRoutine ), 'is not on the queue', procedureName );
-//   }
-//
-//   _.assert( found.element.competitorRoutine === competitorRoutine );
-//
-//   if( found.element.procedure )
-//   _.procedure.end( found.element.procedure );
-//   found.container.splice( found.index, 1 );
-//
-//   return self;
-// }
 
 //
 
