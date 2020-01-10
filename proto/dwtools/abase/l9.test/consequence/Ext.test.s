@@ -129,6 +129,56 @@ Uncaught synchronous error on temrination caught and handled
 
 //
 
+function uncaughtAsyncErrorConcurrentExecution( test )
+{
+  let context = this;
+  let a = context.assetFor( test, false );
+  let programPath = a.program( program );
+
+  a.jsNonThrowing({ execPath : programPath })
+  .then( ( op ) =>
+  {
+    test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, 'uncaught asynchronous error' ), 0 );
+    return null;
+  });
+
+  return a.ready;
+
+  function program()
+  {
+    var _ = require( toolsPath );
+    _.include( 'wConsequence' );
+    
+    var con1 = _.time.out( 500, () => 
+    { 
+      throw 'Test error';
+    })
+    var con2 = _.time.out( 1000, () => 
+    { 
+      return null 
+    })
+    
+    _.Consequence.AndKeep([ con1, con2 ])
+    .catch(( err ) => 
+    {
+      _.errAttend( err );
+      return null;
+    })
+  }
+}
+
+uncaughtAsyncErrorConcurrentExecution.experimental = 1;
+uncaughtAsyncErrorConcurrentExecution.description =
+`
+First consequence gives error message after small delay.
+Second consequence gives regular message after first consequence.
+Third consequence waits until both consequences will be resolved.
+Expected behaviour: Error about uncaught async error will not be thrown. Third consequence will catch error from first consequence.
+`
+
+//
+
 function asyncStackWithTimeOut( test )
 {
   let context = this;
@@ -894,6 +944,7 @@ var Self =
 
     uncaughtSyncErrorOnExit,
     uncaughtAsyncErrorOnExit,
+    uncaughtAsyncErrorConcurrentExecution,
 
     asyncStackWithTimeOut,
     asyncStackWithConsequence,
