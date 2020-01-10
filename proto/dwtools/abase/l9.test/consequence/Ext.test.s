@@ -52,7 +52,7 @@ function assetFor( test, ... args )
 // tests
 // --
 
-function unhandledSyncErrorOnExit( test )
+function uncaughtSyncErrorOnExit( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
@@ -62,7 +62,10 @@ function unhandledSyncErrorOnExit( test )
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
-    test.identical( _.strCount( op.output, 'unhandled error on termination' ), 2 );
+    test.identical( _.strCount( op.output, 'uncaught error on termination' ), 2 );
+    test.identical( _.strCount( op.output, 'uncaught error' ), 2 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 7 );
+    test.identical( _.strCount( op.output, 'nhandled' ), 0 );
     test.identical( _.strCount( op.output, 'error1' ), 1 );
     return null;
   });
@@ -82,14 +85,14 @@ function unhandledSyncErrorOnExit( test )
   }
 }
 
-unhandledSyncErrorOnExit.description =
+uncaughtSyncErrorOnExit.description =
 `
-Unhandled synchronous error on temrination caught and handled
+Uncaught synchronous error on temrination caught and handled
 `
 
 //
 
-function unhandledAsyncErrorOnExit( test )
+function uncaughtAsyncErrorOnExit( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
@@ -99,7 +102,7 @@ function unhandledAsyncErrorOnExit( test )
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
-    test.identical( _.strCount( op.output, 'unhandled asynchronous error' ), 2 );
+    test.identical( _.strCount( op.output, 'uncaught asynchronous error' ), 2 );
     test.identical( _.strCount( op.output, 'error1' ), 1 );
     return null;
   });
@@ -119,9 +122,9 @@ function unhandledAsyncErrorOnExit( test )
   }
 }
 
-unhandledAsyncErrorOnExit.description =
+uncaughtAsyncErrorOnExit.description =
 `
-Unhandled synchronous error on temrination caught and handled
+Uncaught synchronous error on temrination caught and handled
 `
 
 //
@@ -141,9 +144,12 @@ function asyncStackWithTimeOut( test )
     test.notIdentical( op.exitCode, 0 );
     test.identical( _.strCount( op.output, 'Waiting for' ), 0 );
     test.identical( _.strCount( op.output, 'procedure::' ), 0 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 2 );
+    test.identical( _.strCount( op.output, 'nhandled' ), 0 );
+    test.identical( _.strCount( op.output, 'uncaught error' ), 2 );
     test.identical( _.strCount( op.output, /v1(.|\n|\r)*v2(.|\n|\r)*error1(.|\n|\r)*/mg ), 1 );
-    test.identical( _.strCount( op.output, 'Program.js:12' ), 1 );
-    test.identical( _.strCount( op.output, 'Program.js:15' ), 2 );
+    test.identical( _.strCount( op.output, 'program.js:10' ), 1 );
+    test.identical( _.strCount( op.output, 'program.js:13' ), 2 );
     return null;
   });
 
@@ -195,9 +201,12 @@ function asyncStackWithConsequence( test )
     test.notIdentical( op.exitCode, 0 );
     test.identical( _.strCount( op.output, 'Waiting for' ), 0 );
     test.identical( _.strCount( op.output, 'procedure::' ), 0 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 2 );
+    test.identical( _.strCount( op.output, 'nhandled' ), 0 );
+    test.identical( _.strCount( op.output, 'uncaught asynchronous error' ), 2 );
     test.identical( _.strCount( op.output, /v1(.|\n|\r)*v2(.|\n|\r)*error1(.|\n|\r)*/mg ), 1 );
-    test.identical( _.strCount( op.output, 'Program.js:13' ), 1 );
-    test.identical( _.strCount( op.output, 'Program.js:16' ), 2 );
+    test.identical( _.strCount( op.output, 'program.js:11' ), 1 );
+    test.identical( _.strCount( op.output, 'program.js:14' ), 2 );
     return null;
   });
 
@@ -235,6 +244,186 @@ asyncStackWithConsequence.description =
 
 //
 
+function asyncStackInConsequenceTrivial( test )
+{
+  let context = this;
+  let visited = [];
+  let a = test.assetFor( false );
+  let programPath = a.program( program );
+
+  /* */
+
+  a.jsNonThrowing({ execPath : programPath })
+  .then( ( op ) =>
+  {
+    test.notIdentical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, '- uncaught error -' ), 2 );
+    test.identical( _.strCount( op.output, '= Source code from' ), 1 );
+    test.identical( _.strCount( op.output, `program.js:9` ), 1 );
+    test.identical( _.strCount( op.output, `at program` ), 1 );
+    return null;
+  });
+
+  /* */
+
+  return a.ready;
+
+  function program()
+  {
+    let delay = 250;
+    let _ = require( toolsPath );
+    _.include( 'wFiles' );
+    _.include( 'wConsequence' );
+
+    var timeBefore = _.time.now();
+    var t = _.time.outError( delay );
+    t.finally( function( err, got )
+    {
+      if( err )
+      _.errAttend( err );
+      return null;
+    })
+    _.time.out( delay / 2, () => { t.error( _.errAttend( 'stop' ) ); return null; } );
+
+    return t;
+  }
+
+}
+
+asyncStackInConsequenceTrivial.timeOut = 30000;
+asyncStackInConsequenceTrivial.description =
+`
+stack has async substack
+`
+
+//
+
+function asyncStackInConsequenceThen( test )
+{
+  let context = this;
+  let visited = [];
+  let a = test.assetFor( false );
+  let programPath = a.program( program );
+
+  /* */
+
+  a.jsNonThrowing({ execPath : programPath })
+  .then( ( op ) =>
+  {
+    test.notIdentical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, '- uncaught asynchronous error -' ), 2 );
+    test.identical( _.strCount( op.output, '= Source code from' ), 1 );
+    return null;
+  });
+
+  /* */
+
+  return a.ready;
+
+  function program()
+  {
+    let _ = require( toolsPath );
+    _.include( 'wFiles' );
+    _.include( 'wConsequence' );
+
+    var con = _.Consequence()
+    con.then( function callback1( arg )
+    {
+      console.log( 'sourcePath::callback1 ' + _.Procedure.ActiveProcedure._sourcePath );
+      return 'callback1';
+    })
+    con.then( function callback2( arg )
+    {
+      console.log( 'sourcePath::callback2 ' + _.Procedure.ActiveProcedure._sourcePath );
+      throw 'callback2';
+      return 'callback2';
+    })
+
+    console.log( 'sourcePath::program ' + _.Procedure.ActiveProcedure._sourcePath );
+    _.time.out( 100, function timeOut1()
+    {
+      console.log( 'sourcePath::timeout ' + _.Procedure.ActiveProcedure._sourcePath );
+      con.take( 'timeout1' );
+    });
+
+  }
+
+}
+
+asyncStackInConsequenceThen.timeOut = 30000;
+asyncStackInConsequenceThen.description =
+`
+each callback has its own stack
+`
+
+//
+
+function tester( test )
+{
+  let context = this;
+  let visited = [];
+  let a = context.assetFor( test, false );
+
+  let globals = Object.create( null );
+  globals.toolsPath = a.path.nativize( a.path.join( __dirname, '../../../Tools.s' ) );
+  globals.consequencePath = a.path.nativize( a.path.join( __dirname, '../../l9/consequence/Consequence.s' ) );
+
+  let programPath = a.program({ program, globals });
+
+  /* */
+
+  a.jsNonThrowing({ execPath : programPath })
+  .then( ( op ) =>
+  {
+    test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, 'Waiting for' ), 0 );
+    test.identical( _.strCount( op.output, 'procedure::' ), 0 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 0 );
+    test.identical( _.strCount( op.output, 'nhandled' ), 0 );
+    test.identical( _.strCount( op.output, 'Passed test suites 1 / 1' ), 1 );
+    return null;
+  });
+
+  /* */
+
+  return a.ready;
+
+  function program()
+  {
+
+    let _ = require( toolsPath );
+    require( consequencePath );
+    _.include( 'wTesting' );
+
+    function routine1( test )
+    {
+      test.is( true );
+    }
+
+    var Self =
+    {
+      tests :
+      {
+        routine1,
+      }
+    }
+
+    Self = wTestSuite( Self );
+    wTester.test( Self.name );
+
+  }
+
+}
+
+tester.timeOut = 60000;
+tester.description =
+`
+- async stack presents
+- async stack does not have duplicates
+`
+
+//
+
 function timeLimit( test )
 {
   let context = this;
@@ -250,6 +439,8 @@ function timeLimit( test )
     test.identical( op.exitCode, 0 );
     test.identical( _.strCount( op.output, 'Waiting for' ), 0 );
     test.identical( _.strCount( op.output, 'procedure::' ), 0 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 0 );
+    test.identical( _.strCount( op.output, 'nhandled' ), 0 );
     return null;
   });
 
@@ -291,12 +482,14 @@ function timeLimitWaitingEnough( test )
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 0 );
+    test.identical( _.strCount( op.output, 'nhandled' ), 0 );
     test.identical( _.strCount( op.output, 'Waiting for' ), 1 );
     test.identical( _.strCount( op.output, 'Waiting for 8 procedure(s)' ), 1 );
     test.identical( _.strCount( op.output, 'procedure::' ), 8 );
-    test.identical( _.strCount( op.output, 'Program.js:19' ), 0 );
-    test.identical( _.strCount( op.output, 'Program.js:13' ), 6 );
-    test.identical( _.strCount( op.output, 'Program.js:16' ), 2 );
+    test.identical( _.strCount( op.output, 'program.js:11' ), 6 );
+    test.identical( _.strCount( op.output, 'program.js:14' ), 2 );
+    test.identical( _.strCount( op.output, 'program.js:' ), 8 );
     test.identical( _.strCount( op.output, /v0(.|\n|\r)*v1(.|\n|\r)*v2(.|\n|\r)*v3(.|\n|\r)*v4/mg ), 1 );
     return null;
   });
@@ -359,11 +552,14 @@ function timeLimitWaitingNotEnough( test )
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 0 );
+    test.identical( _.strCount( op.output, 'nhandled' ), 0 );
     test.identical( _.strCount( op.output, 'Waiting for' ), 1 );
     test.identical( _.strCount( op.output, 'Waiting for 3 procedure(s)' ), 1 );
     test.identical( _.strCount( op.output, 'procedure::' ), 3 );
-    test.identical( _.strCount( op.output, 'Program.js:17' ), 2 );
-    test.identical( _.strCount( op.output, 'Program.js:14' ), 1 );
+    test.identical( _.strCount( op.output, 'program.js:12' ), 1 );
+    test.identical( _.strCount( op.output, 'program.js:15' ), 2 );
+    test.identical( _.strCount( op.output, 'program.js:' ), 3 );
     test.identical( _.strCount( op.output, /v0(.|\n|\r)*v1(.|\n|\r)*v2(.|\n|\r)*v3(.|\n|\r)*v4/mg ), 1 );
     return null;
   });
@@ -427,6 +623,8 @@ function timeCancelBefore( test )
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 0 );
+    test.identical( _.strCount( op.output, 'nhandled' ), 0 );
     test.identical( _.strCount( op.output, 'Waiting for' ), 0 );
     test.identical( _.strCount( op.output, 'procedure::' ), 0 );
     test.identical( _.strCount( op.output, 'v1' ), 1 );
@@ -484,6 +682,8 @@ function timeCancelAfter( test )
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 0 );
+    test.identical( _.strCount( op.output, 'nhandled' ), 0 );
     test.identical( _.strCount( op.output, 'Waiting for' ), 0 );
     test.identical( _.strCount( op.output, 'procedure::' ), 0 );
     test.identical( _.strCount( op.output, /v1(.|\n|\r)*v2(.|\n|\r)/mg ), 1 );
@@ -541,6 +741,8 @@ function timeOutExternalMessage( test )
   {
     test.identical( op.exitCode, 0 );
     test.identical( _.strCount( op.output, 'Waiting for' ), 0 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 0 );
+    test.identical( _.strCount( op.output, 'nhandled' ), 0 );
 
     test.identical( _.strCount( op.output, 'v1' ), 1 );
     test.identical( _.strCount( op.output, 'v2' ), 1 );
@@ -621,6 +823,8 @@ function timeBegin( test )
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 0 );
+    test.identical( _.strCount( op.output, 'nhandled' ), 0 );
     test.identical( _.strCount( op.output, 'Waiting for' ), 0 );
     test.identical( _.strCount( op.output, 'procedure::' ), 0 );
     test.identical( _.strCount( op.output, /v1(.|\n|\r)*v2(.|\n|\r)/mg ), 1 );
@@ -679,7 +883,7 @@ var Self =
     nameOfFile : 'Ext.test.s',
     suiteTempPath : null,
     assetsOriginalSuitePath : null,
-    defaultJsPath : null,
+    execJsPath : null,
 
     assetFor,
 
@@ -688,10 +892,15 @@ var Self =
   tests :
   {
 
-    unhandledSyncErrorOnExit, /* xxx : move to process */
-    unhandledAsyncErrorOnExit, /* xxx : move to process */ /* xxx : fix later */
+    uncaughtSyncErrorOnExit,
+    uncaughtAsyncErrorOnExit,
+
     asyncStackWithTimeOut,
     asyncStackWithConsequence,
+    asyncStackInConsequenceTrivial,
+    asyncStackInConsequenceThen,
+
+    tester,
 
     timeLimit,
     timeLimitWaitingEnough,

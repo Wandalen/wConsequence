@@ -7,8 +7,8 @@ if( typeof module !== 'undefined' )
 
   var _ = require( '../../../Tools.s' );
   require( '../../l9/consequence/Consequence.s' );
-  _.include( 'wTesting' );
 
+  _.include( 'wTesting' );
   _.include( 'wLogger' );
   _.include( 'wAppBasic' );
 
