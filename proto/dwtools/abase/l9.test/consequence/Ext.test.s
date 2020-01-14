@@ -129,7 +129,7 @@ Uncaught synchronous error on temrination caught and handled
 
 //
 
-function uncaughtAsyncErrorConcurrentExecution( test )
+function AndKeepErrorAttend( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
@@ -140,6 +140,9 @@ function uncaughtAsyncErrorConcurrentExecution( test )
   {
     test.identical( op.exitCode, 0 );
     test.identical( _.strCount( op.output, 'uncaught asynchronous error' ), 0 );
+    test.identical( _.strCount( op.output, 'error' ), 0 );
+    test.identical( _.strCount( op.output, 'Error' ), 0 );
+    test.identical( _.strCount( op.output, /time1(.|\n|\r)*time2(.|\n|\r)*finally/mg ), 1 );
     return null;
   });
 
@@ -149,32 +152,90 @@ function uncaughtAsyncErrorConcurrentExecution( test )
   {
     var _ = require( toolsPath );
     _.include( 'wConsequence' );
-    
-    var con1 = _.time.out( 500, () => 
-    { 
+
+    var con1 = _.time.out( 100, () =>
+    {
+      console.log( 'time1' );
       throw 'Test error';
     })
-    var con2 = _.time.out( 1000, () => 
-    { 
-      return null 
-    })
-    
-    _.Consequence.AndKeep([ con1, con2 ])
-    .catch(( err ) => 
+    var con2 = _.time.out( 250, () =>
     {
+      console.log( 'time2' );
+      return null
+    })
+
+    _.Consequence.AndKeep([ con1, con2 ])
+    .finally( ( err, arg ) =>
+    {
+      console.log( 'finally' );
       _.errAttend( err );
       return null;
     })
   }
 }
 
-uncaughtAsyncErrorConcurrentExecution.experimental = 1;
-uncaughtAsyncErrorConcurrentExecution.description =
+AndKeepErrorAttend.description =
 `
 First consequence gives error message after small delay.
 Second consequence gives regular message after first consequence.
 Third consequence waits until both consequences will be resolved.
-Expected behaviour: Error about uncaught async error will not be thrown. Third consequence will catch error from first consequence.
+Uncaught error will not be throwen because _.errAttend will attend the error.
+Third consequence will catch error from first consequence.
+`
+
+//
+
+function AndKeepErrorNotAttend( test )
+{
+  let context = this;
+  let a = context.assetFor( test, false );
+  let programPath = a.program( program );
+
+  a.jsNonThrowing({ execPath : programPath })
+  .then( ( op ) =>
+  {
+    test.notIdentical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, 'uncaught asynchronous error' ), 2 );
+    test.identical( _.strCount( op.output, 'Test error' ), 1 );
+    test.identical( _.strCount( op.output, /time1(.|\n|\r)*time2(.|\n|\r)*finally/mg ), 1 );
+    return null;
+  });
+
+  return a.ready;
+
+  function program()
+  {
+    var _ = require( toolsPath );
+    _.include( 'wConsequence' );
+
+    var con1 = _.time.out( 100, () =>
+    {
+      console.log( 'time1' );
+      throw 'Test error';
+    })
+    var con2 = _.time.out( 250, () =>
+    {
+      console.log( 'time2' );
+      return null
+    })
+
+    _.Consequence.AndKeep([ con1, con2 ])
+    .finally(( err, arg ) =>
+    {
+      if( err )
+      console.log( 'finally' );
+      return null;
+    })
+  }
+}
+
+AndKeepErrorNotAttend.description =
+`
+First consequence gives error message after small delay.
+Second consequence gives regular message after first consequence.
+Third consequence waits until both consequences will be resolved.
+Uncaught error will be throwen because nothing will attend the error.
+Third consequence will catch error from first consequence.
 `
 
 //
@@ -418,7 +479,7 @@ function tester( test )
   globals.toolsPath = a.path.nativize( a.path.join( __dirname, '../../../Tools.s' ) );
   globals.consequencePath = a.path.nativize( a.path.join( __dirname, '../../l9/consequence/Consequence.s' ) );
 
-  let programPath = a.program({ program, globals });
+  let programPath = a.program({ routine : program, globals });
 
   /* */
 
@@ -944,7 +1005,9 @@ var Self =
 
     uncaughtSyncErrorOnExit,
     uncaughtAsyncErrorOnExit,
-    uncaughtAsyncErrorConcurrentExecution,
+
+    AndKeepErrorAttend,
+    AndKeepErrorNotAttend,
 
     asyncStackWithTimeOut,
     asyncStackWithConsequence,

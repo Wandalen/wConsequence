@@ -1825,9 +1825,9 @@ function _and( o )
   let taking = o.taking;
   let accumulative = o.accumulative;
   let waiting = o.waiting;
-  // let procedure = self.procedure( 'and' ).stackElse( o.stack + 1 );
   let procedure = self.procedure( o.stack + 1 ).nameElse( 'and' );
   let escaped = 0;
+  let errId = {};
 
   _.assertRoutineOptions( _and, arguments );
 
@@ -1987,7 +1987,6 @@ function _and( o )
       }
 
       competitor.procedure({ _stack : procedure.stack() }).nameElse( 'andVariant' );
-      // competitor.procedure( 'and' ).stackElse( procedure.stack() );
       competitor.finallyGive( __got );
 
     })( c );
@@ -2033,6 +2032,12 @@ function _and( o )
 
     function account( c )
     {
+      if( err )
+      {
+        debugger;
+        err = _._errAttend( err, errId );
+        _.assert( err.attended === errId );
+      }
       errs[ c ] = err;
       args[ c ] = arg;
       left -= 1;
@@ -2048,9 +2053,6 @@ function _and( o )
   {
     let competitors2 = [];
 
-    // if( !o.wating )
-    // debugger;
-
     if( !taking )
     for( let i = first ; i < last ; i++ )
     if( competitors[ i ] )
@@ -2060,7 +2062,15 @@ function _and( o )
       continue;
       if( !_.consequenceIs( competitor ) )
       continue;
-      competitor.take( errs[ i ], args[ i ] );
+
+      let err = errs[ i ];
+      if( err && err.attended === errId )
+      {
+        debugger;
+        err = _._errAttend( err, false );
+      }
+
+      competitor.take( err, args[ i ] );
       competitors2.push( competitor );
     }
 
