@@ -7066,10 +7066,12 @@ function AndKeep( test )
     var con1 = new _.Consequence({ tag : 'con1' });
     var con2 = new _.Consequence({ tag : 'con2' });
 
+    debugger;
     let con = _.Consequence.AndKeep([ con1, con2 ]);
 
     con.finally( function( err, got )
     {
+      debugger;
       test.identical( got, [ 1, 2, null ] );
       test.identical( con.resourcesGet(), [] );
       test.identical( con.competitorsCount(), 0 );
@@ -7085,6 +7087,7 @@ function AndKeep( test )
 
     return _.time.out( delay * 4, function()
     {
+      debugger;
       test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : null } ] );
       test.identical( con.competitorsCount(), 0 );
       test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
@@ -7146,52 +7149,52 @@ function AndTake( test )
   return ready;
 }
 
+// //
 //
-
-function AndKeep( test )
-{
-  let ready = new _.Consequence().take( null )
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'andKeep';
-    var delay = 100;
-    var con1 = new _.Consequence({ tag : 'con1' });
-    var con2 = new _.Consequence({ tag : 'con2' });
-
-    let con = _.Consequence.AndKeep([ con1, con2 ]);
-
-    con.finally( function( err, got )
-    {
-      test.identical( got, [ 1, 2 ] );
-      test.identical( con.resourcesGet(), [] );
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
-      test.identical( con1.competitorsEarlyGet().length, 0 );
-      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
-      test.identical( con2.competitorsEarlyGet().length, 0 );
-      return null;
-    });
-
-    _.time.out( delay, () => { con1.take( 1 ) });
-    _.time.out( delay * 2, () => { con2.take( 2 ) });
-
-    return _.time.out( delay * 4, function()
-    {
-      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : null } ] );
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
-      test.identical( con1.competitorsEarlyGet().length, 0 );
-      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
-      test.identical( con2.competitorsEarlyGet().length, 0 );
-      return null;
-    });
-  });
-
-  return ready;
-}
+// function AndKeep( test )
+// {
+//   let ready = new _.Consequence().take( null )
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'andKeep';
+//     var delay = 100;
+//     var con1 = new _.Consequence({ tag : 'con1' });
+//     var con2 = new _.Consequence({ tag : 'con2' });
+//
+//     let con = _.Consequence.AndKeep([ con1, con2 ]);
+//
+//     con.finally( function( err, got )
+//     {
+//       test.identical( got, [ 1, 2 ] );
+//       test.identical( con.resourcesGet(), [] );
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+//       test.identical( con1.competitorsEarlyGet().length, 0 );
+//       test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+//       test.identical( con2.competitorsEarlyGet().length, 0 );
+//       return null;
+//     });
+//
+//     _.time.out( delay, () => { con1.take( 1 ) });
+//     _.time.out( delay * 2, () => { con2.take( 2 ) });
+//
+//     return _.time.out( delay * 4, function()
+//     {
+//       test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : null } ] );
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+//       test.identical( con1.competitorsEarlyGet().length, 0 );
+//       test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+//       test.identical( con2.competitorsEarlyGet().length, 0 );
+//       return null;
+//     });
+//   });
+//
+//   return ready;
+// }
 
 //--
 // orKeeping

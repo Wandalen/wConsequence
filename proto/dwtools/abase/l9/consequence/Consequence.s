@@ -2034,9 +2034,12 @@ function _and( o )
     {
       if( err )
       {
-        debugger;
-        err = _._errAttend( err, errId );
-        _.assert( err.attended === errId );
+        // debugger; // xxx
+        // err = _._errAttend( err, errId );
+        // _.assert( err.attended === errId );
+        err = _.errSuspend( err, errId );
+        _.assert( err.suspended === errId );
+        // console.log( `suspended : true` );
       }
       errs[ c ] = err;
       args[ c ] = arg;
@@ -2051,7 +2054,7 @@ function _and( o )
 
   function __take()
   {
-    let competitors2 = [];
+    let competitors2 = []; debugger;
 
     if( !taking )
     for( let i = first ; i < last ; i++ )
@@ -2064,10 +2067,13 @@ function _and( o )
       continue;
 
       let err = errs[ i ];
-      if( err && err.attended === errId )
+      // if( err && err.attended === errId )
+      if( err && err.suspended === errId )
       {
-        debugger;
-        err = _._errAttend( err, false );
+        // debugger; // xxx
+        // err = _._errAttend( err, false );
+        err = _.errSuspend( err, false );
+        // console.log( `suspended : false` );
       }
 
       competitor.take( err, args[ i ] );
@@ -2999,8 +3005,22 @@ function __handleError( err, competitor )
 
   let timer = _.time.finally( self.UncaughtTimeOut, function uncaught()
   {
+    // debugger;
+    // if( err.id === 2 ) // xxx
+    // debugger;
+
+    // console.log( `err.id : ${err.id}` );
+    // console.log( `timer.state : ${timer.state}` );
+    // console.log( `timerIsCancelBegun : ${_.time.timerIsCancelBegun( timer )}` );
+    // console.log( `errIsSuspended : ${_.errIsSuspended( err )}` );
+    // debugger;
+
+    if( !_.time.timerIsCancelBegun( timer ) && _.errIsSuspended( err ) )
+    return;
+
     if( _.errIsAttended( err ) )
     return;
+
     _.setup._errUncaughtHandler2( err, 'uncaught asynchronous error' );
     return null;
   });
