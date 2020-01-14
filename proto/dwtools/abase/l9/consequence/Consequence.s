@@ -2054,7 +2054,7 @@ function _and( o )
 
   function __take()
   {
-    let competitors2 = []; debugger;
+    let competitors2 = [];
 
     if( !taking )
     for( let i = first ; i < last ; i++ )
@@ -2083,6 +2083,7 @@ function _and( o )
     if( accumulative )
     args = _.arrayFlatten( args );
 
+    // debugger;
     if( anyErr )
     self.error( anyErr );
     else

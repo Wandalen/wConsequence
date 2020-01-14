@@ -7066,13 +7066,14 @@ function AndKeep( test )
     var con1 = new _.Consequence({ tag : 'con1' });
     var con2 = new _.Consequence({ tag : 'con2' });
 
-    debugger;
+    // debugger;
     let con = _.Consequence.AndKeep([ con1, con2 ]);
 
     con.finally( function( err, got )
     {
-      debugger;
-      test.identical( got, [ 1, 2, null ] );
+      // debugger;
+      test.identical( got, [ 1, 2 ] );
+      // test.identical( got, [ 1, 2, null ] );
       test.identical( con.resourcesGet(), [] );
       test.identical( con.competitorsCount(), 0 );
       test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
@@ -7087,7 +7088,7 @@ function AndKeep( test )
 
     return _.time.out( delay * 4, function()
     {
-      debugger;
+      // debugger;
       test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : null } ] );
       test.identical( con.competitorsCount(), 0 );
       test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
