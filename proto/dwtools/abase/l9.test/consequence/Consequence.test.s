@@ -2391,7 +2391,7 @@ function finallyPromiseKeepAsyncMode11( test )
 function deasync( test )
 {
   let ready = _.now();
-  let t = 25;
+  let t = 50;
 
   /* */
 
