@@ -44,7 +44,7 @@ function clone()
 {
   var self = this;
 
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
 
   var elements = _.methodsCall( self.elements,'clone' );
   var result = self.cloneExtending({ elements : elements });
@@ -58,7 +58,7 @@ function cloneEmpty()
 {
   var self = this;
 
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
 
   var result = self.cloneExtending({ elements : [] });
 
@@ -258,7 +258,7 @@ function elementsFinit()
   // return self.Self.elementsDetach( elements );
 
   _.assert( self.instanceIs() );
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
 
   var elements = self.elements.slice();
 

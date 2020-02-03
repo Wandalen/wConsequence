@@ -552,7 +552,7 @@ _promise.having =
 function finallyPromiseGive()
 {
   let self = this;
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
   return self._promise
   ({
     keeping : 0,
@@ -605,7 +605,7 @@ finallyPromiseGive.having = Object.create( _promise.having );
 function finallyPromiseKeep()
 {
   let self = this;
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
   return self._promise
   ({
     keeping : 1,
@@ -620,7 +620,7 @@ finallyPromiseKeep.having = Object.create( _promise.having );
 function thenPromiseGive()
 {
   let self = this;
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
   return self._promise
   ({
     keeping : 0,
@@ -635,7 +635,7 @@ thenPromiseGive.having = Object.create( _promise.having );
 function thenPromiseKeep()
 {
   let self = this;
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
   return self._promise
   ({
     keeping : 1,
@@ -650,7 +650,7 @@ thenPromiseKeep.having = Object.create( _promise.having );
 function catchPromiseGive()
 {
   let self = this;
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
   return self._promise
   ({
     keeping : 0,
@@ -665,7 +665,7 @@ catchPromiseGive.having = Object.create( _promise.having );
 function catchPromiseKeep()
 {
   let self = this;
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
   return self._promise
   ({
     keeping : 1,
@@ -751,7 +751,7 @@ _deasync.having =
 function deasyncWait()
 {
   let self = this;
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
   return self._deasync
   ({
     keeping : 1,
@@ -766,7 +766,7 @@ deasyncWait.having = Object.create( _deasync.having );
 function finallyDeasyncGive()
 {
   let self = this;
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
   return self._deasync
   ({
     keeping : 0,
@@ -781,7 +781,7 @@ finallyDeasyncGive.having = Object.create( _deasync.having );
 function finallyDeasyncKeep()
 {
   let self = this;
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
   return self._deasync
   ({
     keeping : 1,
@@ -796,7 +796,7 @@ finallyDeasyncGive.having = Object.create( _deasync.having );
 function thenDeasyncGive()
 {
   let self = this;
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
   return self._deasync
   ({
     keeping : 0,
@@ -811,7 +811,7 @@ finallyDeasyncGive.having = Object.create( _deasync.having );
 function thenDeasyncKeep()
 {
   let self = this;
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
   return self._deasync
   ({
     keeping : 1,
@@ -826,7 +826,7 @@ finallyDeasyncGive.having = Object.create( _deasync.having );
 function catchDeasyncGive()
 {
   let self = this;
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
   return self._deasync
   ({
     keeping : 0,
@@ -841,7 +841,7 @@ finallyDeasyncGive.having = Object.create( _deasync.having );
 function catchDeasyncKeep()
 {
   let self = this;
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
   return self._deasync
   ({
     keeping : 1,
@@ -1153,7 +1153,7 @@ function catchLog()
 {
   let self = this;
 
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
 
   self._competitorAppend
   ({
@@ -1197,7 +1197,7 @@ function catchBrief()
 {
   let self = this;
 
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
 
   self._competitorAppend
   ({
@@ -1294,7 +1294,7 @@ function wait()
   let self = this;
   let result = new _.Consequence();
 
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
 
   self.finallyGive( function __wait( err, arg )
   {
@@ -2583,7 +2583,7 @@ orKeeping.having = Object.create( _or.having );
 function tolerantCallback()
 {
   let self = this;
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
   return function tolerantCallback( err, arg )
   {
     if( !err )
@@ -3586,7 +3586,7 @@ function isEmpty()
 function cancel()
 {
   let self = this;
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
 
   self.competitorsCancel();
   self.resourcesCancel();
@@ -3657,7 +3657,7 @@ function competitorHas( competitorRoutine )
 function competitorsCount()
 {
   let self = this;
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
   return self._competitorsEarly.length + self._competitorsLate.length;
 }
 
@@ -3710,7 +3710,7 @@ function competitorsCount()
 function competitorsEarlyGet()
 {
   let self = this;
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
   return self._competitorsEarly;
 }
 
@@ -3719,7 +3719,7 @@ function competitorsEarlyGet()
 function competitorsLateGet()
 {
   let self = this;
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
   return self._competitorsLate;
 }
 
@@ -3729,7 +3729,7 @@ function competitorsGet()
 {
   let self = this;
   let r = [];
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
   if( self._competitorsEarly.length )
   _.arrayAppendArray( r, self._competitorsEarly );
   if( self._competitorsLate.length )
@@ -4046,7 +4046,7 @@ function procedureDetach()
 {
   let self = this;
 
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
 
   let procedure = self._procedure;
 
@@ -4837,7 +4837,7 @@ function experimentCall()
 
 function Now()
 {
-  _.assert( arguments.length === 0 );
+  _.assert( arguments.length === 0, 'Expects no arguments' );
   return new _.Consequence().take( null );
 }
 
