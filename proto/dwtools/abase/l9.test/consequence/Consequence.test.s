@@ -21,6 +21,16 @@ var _ = _global_.wTools;
 // test
 // --
 
+function consequenceIs( test ) 
+{
+  test.case = 'instance of Consequence';
+  var src = new _.Consequence().take( 0 );
+  var got = _.consequenceIs( src );
+  test.identical( got, true );
+}
+
+//
+
 function clone( test )
 {
   var self = this;
@@ -13128,6 +13138,8 @@ var Self =
 
   tests :
   {
+
+    consequenceIs,
 
     clone,
 
