@@ -31,6 +31,16 @@ function consequenceIs( test )
 
 //
 
+function consequenceLike( test ) 
+{
+  test.case = 'instance of Consequence';
+  var src = new _.Consequence().take( 0 );
+  var got = _.consequenceLike( src );
+  test.identical( got, true );
+}
+
+//
+
 function clone( test )
 {
   var self = this;
@@ -13139,7 +13149,8 @@ var Self =
   tests :
   {
 
-    consequenceIs,
+    consequenceIs, // Dmytro : the second part of test routine consequenceIs in module wTools
+    consequenceLike, // Dmytro : the second part of test routine consequenceIs in module wTools
 
     clone,
 
