@@ -761,95 +761,95 @@ function deasyncWait()
 
 deasyncWait.having = Object.create( _deasync.having );
 
+// //
 //
-
-function finallyDeasyncGive()
-{
-  let self = this;
-  _.assert( arguments.length === 0, 'Expects no arguments' );
-  return self._deasync
-  ({
-    keeping : 0,
-    kindOfResource : self.KindOfResource.Both,
-  });
-}
-
-finallyDeasyncGive.having = Object.create( _deasync.having );
-
+// function finallyDeasyncGive()
+// {
+//   let self = this;
+//   _.assert( arguments.length === 0, 'Expects no arguments' );
+//   return self._deasync
+//   ({
+//     keeping : 0,
+//     kindOfResource : self.KindOfResource.Both,
+//   });
+// }
 //
-
-function finallyDeasyncKeep()
-{
-  let self = this;
-  _.assert( arguments.length === 0, 'Expects no arguments' );
-  return self._deasync
-  ({
-    keeping : 1,
-    kindOfResource : self.KindOfResource.Both,
-  });
-}
-
-finallyDeasyncGive.having = Object.create( _deasync.having );
-
+// finallyDeasyncGive.having = Object.create( _deasync.having );
 //
-
-function thenDeasyncGive()
-{
-  let self = this;
-  _.assert( arguments.length === 0, 'Expects no arguments' );
-  return self._deasync
-  ({
-    keeping : 0,
-    kindOfResource : self.KindOfResource.ArgumentOnly,
-  });
-}
-
-finallyDeasyncGive.having = Object.create( _deasync.having );
-
+// //
 //
-
-function thenDeasyncKeep()
-{
-  let self = this;
-  _.assert( arguments.length === 0, 'Expects no arguments' );
-  return self._deasync
-  ({
-    keeping : 1,
-    kindOfResource : self.KindOfResource.ArgumentOnly,
-  });
-}
-
-finallyDeasyncGive.having = Object.create( _deasync.having );
-
+// function finallyDeasyncKeep()
+// {
+//   let self = this;
+//   _.assert( arguments.length === 0, 'Expects no arguments' );
+//   return self._deasync
+//   ({
+//     keeping : 1,
+//     kindOfResource : self.KindOfResource.Both,
+//   });
+// }
 //
-
-function catchDeasyncGive()
-{
-  let self = this;
-  _.assert( arguments.length === 0, 'Expects no arguments' );
-  return self._deasync
-  ({
-    keeping : 0,
-    kindOfResource : self.KindOfResource.ErrorOnly,
-  });
-}
-
-finallyDeasyncGive.having = Object.create( _deasync.having );
-
+// finallyDeasyncGive.having = Object.create( _deasync.having );
 //
-
-function catchDeasyncKeep()
-{
-  let self = this;
-  _.assert( arguments.length === 0, 'Expects no arguments' );
-  return self._deasync
-  ({
-    keeping : 1,
-    kindOfResource : self.KindOfResource.ErrorOnly,
-  });
-}
-
-finallyDeasyncGive.having = Object.create( _deasync.having );
+// //
+//
+// function thenDeasyncGive()
+// {
+//   let self = this;
+//   _.assert( arguments.length === 0, 'Expects no arguments' );
+//   return self._deasync
+//   ({
+//     keeping : 0,
+//     kindOfResource : self.KindOfResource.ArgumentOnly,
+//   });
+// }
+//
+// finallyDeasyncGive.having = Object.create( _deasync.having );
+//
+// //
+//
+// function thenDeasyncKeep()
+// {
+//   let self = this;
+//   _.assert( arguments.length === 0, 'Expects no arguments' );
+//   return self._deasync
+//   ({
+//     keeping : 1,
+//     kindOfResource : self.KindOfResource.ArgumentOnly,
+//   });
+// }
+//
+// finallyDeasyncGive.having = Object.create( _deasync.having );
+//
+// //
+//
+// function catchDeasyncGive()
+// {
+//   let self = this;
+//   _.assert( arguments.length === 0, 'Expects no arguments' );
+//   return self._deasync
+//   ({
+//     keeping : 0,
+//     kindOfResource : self.KindOfResource.ErrorOnly,
+//   });
+// }
+//
+// finallyDeasyncGive.having = Object.create( _deasync.having );
+//
+// //
+//
+// function catchDeasyncKeep()
+// {
+//   let self = this;
+//   _.assert( arguments.length === 0, 'Expects no arguments' );
+//   return self._deasync
+//   ({
+//     keeping : 1,
+//     kindOfResource : self.KindOfResource.ErrorOnly,
+//   });
+// }
+//
+// finallyDeasyncGive.having = Object.create( _deasync.having );
 
 // --
 // advanced
@@ -5075,14 +5075,14 @@ let Extend =
   _deasync,
   deasyncWait,
 
-  /* zzz : below will be removed! */
-  finallyDeasyncGive,
-  finallyDeasyncKeep,
-  // deasync : finallyDeasyncKeep,
-  thenDeasyncGive,
-  thenDeasyncKeep,
-  catchDeasyncGive,
-  catchDeasyncKeep,
+  // /* zzz : below will be removed! */
+  // finallyDeasyncGive,
+  // finallyDeasyncKeep,
+  // // deasync : finallyDeasyncKeep,
+  // thenDeasyncGive,
+  // thenDeasyncKeep,
+  // catchDeasyncGive,
+  // catchDeasyncKeep,
 
   // advanced
 
