@@ -475,11 +475,11 @@ function tester( test )
   let visited = [];
   let a = context.assetFor( test, false );
 
-  let globals = Object.create( null );
-  globals.toolsPath = a.path.nativize( a.path.join( __dirname, '../../../Tools.s' ) );
-  globals.consequencePath = a.path.nativize( a.path.join( __dirname, '../../l9/consequence/Consequence.s' ) );
+  let locals = Object.create( null );
+  locals.toolsPath = a.path.nativize( a.path.join( __dirname, '../../../Tools.s' ) );
+  locals.consequencePath = a.path.nativize( a.path.join( __dirname, '../../l9/consequence/Consequence.s' ) );
 
-  let programPath = a.program({ routine : program, globals });
+  let programPath = a.program({ routine : program, locals });
 
   /* */
 
