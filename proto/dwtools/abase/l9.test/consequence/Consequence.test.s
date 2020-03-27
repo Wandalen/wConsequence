@@ -5,7 +5,7 @@
 if( typeof module !== 'undefined' )
 {
 
-  var _ = require( '../../../Tools.s' );
+  var _ = require( '../../../../dwtools/Tools.s' );
   require( '../../l9/consequence/Consequence.s' );
 
   _.include( 'wTesting' );

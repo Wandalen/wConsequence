@@ -46,7 +46,7 @@ Procedure ::
 if( typeof module !== 'undefined' )
 {
 
-  let _ = require( '../../../Tools.s' );
+  let _ = require( '../../../../dwtools/Tools.s' );
   _.include( 'wProto' );
   _.include( 'wCopyable' );
   _.include( 'wProcedure' );

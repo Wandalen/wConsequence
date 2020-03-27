@@ -5,7 +5,7 @@
 if( typeof module !== 'undefined' )
 {
 
-  let _ = require( '../../../Tools.s' );
+  let _ = require( '../../../../dwtools/Tools.s' );
   require( '../../l9/consequence/Consequence.s' );
   _.include( 'wTesting' );
 
@@ -476,7 +476,7 @@ function tester( test )
   let a = context.assetFor( test, false );
 
   let locals = Object.create( null );
-  locals.toolsPath = a.path.nativize( a.path.join( __dirname, '../../../Tools.s' ) );
+  locals.toolsPath = a.path.nativize( a.path.join( __dirname, '../../../../dwtools/Tools.s' ) );
   locals.consequencePath = a.path.nativize( a.path.join( __dirname, '../../l9/consequence/Consequence.s' ) );
 
   let programPath = a.program({ routine : program, locals });
