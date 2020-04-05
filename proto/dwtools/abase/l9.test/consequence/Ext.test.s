@@ -58,7 +58,7 @@ function uncaughtSyncErrorOnExit( test )
   let a = context.assetFor( test, false );
   let programPath = a.program( program );
 
-  a.jsNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
@@ -98,7 +98,7 @@ function uncaughtAsyncErrorOnExit( test )
   let a = context.assetFor( test, false );
   let programPath = a.program( program );
 
-  a.jsNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
@@ -135,7 +135,7 @@ function AndKeepErrorAttend( test )
   let a = context.assetFor( test, false );
   let programPath = a.program( program );
 
-  a.jsNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
@@ -191,7 +191,7 @@ function AndKeepErrorNotAttend( test )
   let a = context.assetFor( test, false );
   let programPath = a.program( program );
 
-  a.jsNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
@@ -249,7 +249,7 @@ function asyncStackWithTimeOut( test )
 
   /* */
 
-  a.jsNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
@@ -306,7 +306,7 @@ function asyncStackWithConsequence( test )
 
   /* */
 
-  a.jsNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
@@ -364,7 +364,7 @@ function asyncStackInConsequenceTrivial( test )
 
   /* */
 
-  a.jsNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
@@ -418,7 +418,7 @@ function asyncStackInConsequenceThen( test )
 
   /* */
 
-  a.jsNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
@@ -483,7 +483,7 @@ function tester( test )
 
   /* */
 
-  a.jsNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
@@ -544,7 +544,7 @@ function timeLimit( test )
 
   /* */
 
-  a.jsNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
@@ -589,7 +589,7 @@ function timeLimitWaitingEnough( test )
 
   /* */
 
-  a.jsNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
@@ -632,7 +632,7 @@ function timeLimitWaitingEnough( test )
     _.time.out( t*2, () =>
     {
       console.log( 'v3' );
-      _.Procedure.TerminationPeriod = 1000;
+      _.procedure.terminationPeriod = 1000;
       _.procedure.terminationBegin();
     });
 
@@ -659,7 +659,7 @@ function timeLimitWaitingNotEnough( test )
 
   /* */
 
-  a.jsNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
@@ -703,7 +703,7 @@ function timeLimitWaitingNotEnough( test )
     _.time.out( t*2, () =>
     {
       console.log( 'v3' );
-      _.Procedure.TerminationPeriod = t*2;
+      _.procedure.terminationPeriod = t*2;
       _.procedure.terminationBegin();
     });
 
@@ -730,7 +730,7 @@ function timeCancelBefore( test )
 
   /* */
 
-  a.jsNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
@@ -764,7 +764,7 @@ function timeCancelBefore( test )
 
     console.log( 'v1' );
 
-    _.Procedure.TerminationPeriod = 1000;
+    _.procedure.terminationPeriod = 1000;
     _.procedure.terminationBegin();
 
     return _.time.out( t*3 );
@@ -789,7 +789,7 @@ function timeCancelAfter( test )
 
   /* */
 
-  a.jsNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
@@ -822,7 +822,7 @@ function timeCancelAfter( test )
 
     console.log( 'v1' );
 
-    _.Procedure.TerminationPeriod = 1000;
+    _.procedure.terminationPeriod = 1000;
     _.procedure.terminationBegin();
 
     return _.time.out( t*3 );
@@ -847,7 +847,7 @@ function timeOutExternalMessage( test )
 
   /* */
 
-  a.jsNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
@@ -930,7 +930,7 @@ function timeBegin( test )
 
   /* */
 
-  a.jsNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
@@ -961,7 +961,7 @@ function timeBegin( test )
 
     console.log( 'v1' );
 
-    _.Procedure.TerminationPeriod = 1000;
+    _.procedure.terminationPeriod = 1000;
     _.procedure.terminationBegin();
 
     _.time.out( t*2 );
@@ -994,7 +994,7 @@ var Self =
     nameOfFile : 'Ext.test.s',
     suiteTempPath : null,
     assetsOriginalSuitePath : null,
-    execJsPath : null,
+    appJsPath : null,
 
     assetFor,
 
