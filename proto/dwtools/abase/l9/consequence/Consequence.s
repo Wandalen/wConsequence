@@ -2249,9 +2249,13 @@ function _or( o )
   else
   competitors = _.longSlice( competitors );
 
+  /* xxx qqq : implement tests: arguments are promises */
+
   for( let c = competitors.length-1 ; c >= 0 ; c-- )
   {
     let competitorRoutine = competitors[ c ];
+    if( _.promiseLike( competitorRoutine ) )
+    competitorRoutine = _.Consequence.From( competitorRoutine );
     _.assert( _.consequenceIs( competitorRoutine ) || competitorRoutine === null );
     if( competitorRoutine === null )
     competitors.splice( c, 1 );
@@ -4368,7 +4372,7 @@ function FromCalling( src )
  * @memberof module:Tools/base/Consequence.wConsequence.
  */
 
-function Take( consequence )
+function Take( consequence ) /* xxx : review */
 {
 
   _.assert( arguments.length === 2 || arguments.length === 3, 'Expects two or three arguments' );
@@ -5152,7 +5156,7 @@ let Extend =
   orKeepingSplit,
   orTaking,
   orKeeping,
-  or : orKeeping,
+  or : orKeeping, /* xxx : introduce static routine Or */
 
   // adapter
 
