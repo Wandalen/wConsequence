@@ -97,7 +97,9 @@ let KindOfResource =
     value no exception occurred, it will be set to null;
    @param {*} value resolved by wConsequence value;
  * @callback Competitor
- * @memberof module:Tools/base/Consequence.wConsequence~
+ * @class wConsequence
+ * @namespace Tools
+ * @module Tools/base/Consequence
  */
 
 /**
@@ -112,7 +114,7 @@ let KindOfResource =
    let con = _.Consequence();
    con.finallyGive( function( err, value) { console.log( value ); } ).take('world'); // world
  * @class wConsequence
- * @memberof module:Tools/base/Consequence
+ * @module Tools/base/Consequence
  * @returns {wConsequence}
  */
 
@@ -173,7 +175,9 @@ wConsequence.shortName = 'Consequence';
  * @param {Object|wConsequence} [o] initialization options
  * @private
  * @method init
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 function init( o )
@@ -272,7 +276,9 @@ function is( src )
  * @see {@link module:Tools/base/Consequence.wConsequence~Competitor} competitor callback
  * @throws {Error} if passed more than one argument.
  * @method finallyGive
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 function finallyGive( competitorRoutine )
@@ -371,7 +377,9 @@ thenGive.having =
  * @throws {Error} if passed more than one arguments
  * @see {@link module:Tools/base/Consequence.wConsequence#finallyGive} finally method
  * @method thenKeep
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 function thenKeep( competitorRoutine )
@@ -437,7 +445,9 @@ catchGive.having =
  * @throws {Error} if passed more than one arguments
  * @see {@link module:Tools/base/Consequence.wConsequence#finallyGive} finally method
  * @method catchKeep
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 function catchKeep( competitorRoutine )
@@ -599,7 +609,9 @@ finallyPromiseGive.having = Object.create( _promise.having );
  * @see {@link module:Tools/base/Consequence.wConsequence~Competitor} competitor callback
  * @see {@link module:Tools/base/Consequence.wConsequence#finallyGive} finallyGive method
  * @method finally
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 function finallyPromiseKeep()
@@ -959,7 +971,9 @@ function _first( src, stack )
  * @returns {wConsequence}
  * @throws {Error} if `src` has unexpected type.
  * @method first
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 function first( src )
@@ -1007,7 +1021,9 @@ first.having =
  * @returns {wConsequence}
  * @throws {Error} if passed any argument.
  * @method splitKeep
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 function splitKeep( first )
@@ -1111,7 +1127,9 @@ splitGive.having =
  * @throws {Error} if passed more than one arguments
  * @see {@link module:Tools/base/Consequence.wConsequence#finallyGive} finallyGive method
  * @method tap
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 function tap( competitorRoutine )
@@ -1146,7 +1164,9 @@ tap.having =
  * @returns {wConsequence}
  * @throws {Error} If called with any argument.
  * @method catchLog
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 function catchLog()
@@ -1190,7 +1210,9 @@ catchLog.having =
  * @returns {wConsequence}
  * @throws {Error} If called with any argument.
  * @method catchBrief
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 function catchBrief()
@@ -1520,7 +1542,9 @@ defaults.keeping = true;
  * @throws {Error} if passed extra arguments.
  * @see {@link module:Tools/base/Consequence.wConsequence#finally} finally method
  * @method timeOut
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 //
@@ -2160,7 +2184,9 @@ having.andLike = 1;
  * @throws {Error} if missed arguments.
  * @throws {Error} if passed extra arguments.
  * @method andTake
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 let andTake = _.routineFromPreAndBody( and_pre, _and, 'andTake' );
@@ -2175,7 +2201,9 @@ defaults.taking = true;
  * @param {wConsequence[]|wConsequence} competitors Array of wConsequence objects
  * @throws {Error} If missed or passed extra argument.
  * @method andKeep
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 let andKeep = _.routineFromPreAndBody( and_pre, _and, 'andKeep' );
@@ -2200,7 +2228,9 @@ defaults.accumulative = true;
  * @see {@link module:Tools/base/Consequence.wConsequence#alsoTake}
  * @param {Anything} callbacks Single callback or element to put in result array or array of such things.
  * @method alsoKeep
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 let alsoKeep = _.routineFromPreAndBody( and_pre, _and, 'alsoKeep' );
@@ -2220,7 +2250,9 @@ defaults.waiting = false;
  * @see {@link module:Tools/base/Consequence.wConsequence#alsoKeep}
  * @param {Anything} callbacks Single callback or element to put in result array or array of such things.
  * @method alsoTake
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 let alsoTake = _.routineFromPreAndBody( and_pre, _and, 'alsoTake' );
@@ -2724,7 +2756,9 @@ function takeSoon( error, argument )
  * @returns {wConsequence} consequence current wConsequence instance.
  * @throws {Error} if passed extra parameters.
  * @method take
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 function take( error, argument )
@@ -2800,7 +2834,9 @@ take.having =
  * @param {*|Error} error error, or value that represent error reason
  * @throws {Error} if passed extra parameters.
  * @method error
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 function error( error )
@@ -2841,7 +2877,9 @@ error.having =
 //  * @private
 //  * @throws {Error} if missed arguments or passed extra arguments
 //  * @method _giveWithError
-//  * @memberof module:Tools/base/Consequence.wConsequence#
+//  * @module Tools/base/Consequence
+// * @namespace Tools
+// * @class wConsequence
 //  */
 //
 // function _giveWithError( error, argument )
@@ -2945,7 +2983,9 @@ function __onTake( err, arg )
 //  * @returns {*} result
 //  * @throws {Error} if missed arguments or passed extra arguments
 //  * @method ping
-//  * @memberof module:Tools/base/Consequence.wConsequence#
+//  * @module Tools/base/Consequence
+// * @namespace Tools
+// * @class wConsequence
 //  */
 //
 // function _ping( error, argument )
@@ -2979,7 +3019,9 @@ function __onTake( err, arg )
  * @returns {wConsequence}
  * @private
  * @method __handleError
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 function __handleError( err, competitor )
@@ -3067,7 +3109,9 @@ function __handleError( err, competitor )
  * @throws {Error} if on invocation moment the _resources queue is empty.
  * @private
  * @method __handleResourceSoon
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 function __handleResourceSoon( isResource )
@@ -3325,7 +3369,9 @@ function __handleResourceNow()
  * @returns {wConsequence}
  * @private
  * @method _competitorAppend
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 function _competitorAppend( o )
@@ -3584,7 +3630,9 @@ function isEmpty()
 /**
  * Clears all resources and corespondents of wConsequence.
  * @method cancel
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 function cancel()
@@ -3708,7 +3756,9 @@ function competitorsCount()
 
  * @returns {_corespondentMap[]}
  * @method competitorsEarlyGet
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 function competitorsEarlyGet()
@@ -3775,7 +3825,9 @@ function competitorsGet()
  // corespondent1 value: bar
  * @param [competitor]
  * @method competitorsCancel
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 function competitorsCancel( competitorRoutine )
@@ -3880,7 +3932,9 @@ function errorsCount()
 
  * @returns {number}
  * @method resourcesCount
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 function resourcesCount()
@@ -3920,7 +3974,9 @@ function resourcesCount()
 
  * @returns {_resourceObject[]}
  * @method resourcesGet
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 function resourcesGet( index )
@@ -3981,7 +4037,9 @@ function errorsGet( index )
  * @param {_resourceObject} arg resource object for removing.
  * @throws {Error} If passed extra arguments.
  * @method competitorsCancel
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 function resourcesCancel( arg )
@@ -4174,7 +4232,9 @@ function callbacksInfoLog()
 
  * @returns {string}
  * @method toStr
- * @memberof module:Tools/base/Consequence.wConsequence#
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
  */
 
 function toStr()
@@ -4200,7 +4260,9 @@ function toString()
 //  value no exception occurred, it will be set to null;
 //  * @param {*} arg resolved by wConsequence value;
 //  * @returns {*}
-//  * @memberof module:Tools/base/Consequence.wConsequence#
+//  * @module Tools/base/Consequence
+// * @namespace Tools
+// * @class wConsequence
 //  */
 //
 // function _onDebug( err, arg )
@@ -4369,7 +4431,8 @@ function FromCalling( src )
  * @returns {*}
  * @static
  * @method take
- * @memberof module:Tools/base/Consequence.wConsequence.
+ * @module Tools/base/Consequence
+ * @namespace wConsequence.
  */
 
 function Take( consequence ) /* xxx : review */
@@ -4415,7 +4478,9 @@ function Take( consequence ) /* xxx : review */
    * @throws {Error} if passed argument is not object.
    * @throws {Error} if o.consequence has unexpected type.
    * @method _Take
-   * @memberof module:Tools/base/Consequence.wConsequence#
+   * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
    */
 
 /* zzz : deprecate? */
@@ -4500,7 +4565,8 @@ _Take.defaults =
    * @returns {*}
    * @static
    * @method error
-   * @memberof module:Tools/base/Consequence.wConsequence.
+   * @module Tools/base/Consequence
+ * @namespace wConsequence.
    */
 
 function Error( consequence, error )
@@ -4581,7 +4647,9 @@ function AndKeep( srcs )
 //  * @param {*} finallyGive arguments
 //  * @returns {*}
 //  * @method GiveWithContextAndError
-//  * @memberof module:Tools/base/Consequence.wConsequence#
+//  * @module Tools/base/Consequence
+// * @namespace Tools
+// * @class wConsequence
 //  */
 //
 // function GiveWithContextAndError( consequence, context, err, finallyGive )
@@ -4618,7 +4686,9 @@ function AndKeep( srcs )
 //  * @static
 //  * @thorws If missed arguments or passed extra ones.
 //  * @method catchKeep
-//  * @memberof module:Tools/base/Consequence.wConsequence#
+//  * @module Tools/base/Consequence
+// * @namespace Tools
+// * @class wConsequence
 //  * @see {@link module:Tools/base/Consequence.wConsequence#catchKeep}
 //  */
 //
@@ -4660,7 +4730,9 @@ function AndKeep( srcs )
 //  * @static
 //  * @throws {Error} If missed arguments or passed extra one;
 //  * @method thenKeep
-//  * @memberof module:Tools/base/Consequence.wConsequence#
+//  * @module Tools/base/Consequence
+// * @namespace Tools
+// * @class wConsequence
 //  */
 //
 // function IfNoErrorThen()
@@ -4699,7 +4771,9 @@ function AndKeep( srcs )
  value no exception occurred, it will be set to null;
  * @param {*} arg resolved by wConsequence value;
  * @returns {*}
- * @memberof module:Tools/base/Consequence.wConsequence~
+ * @class wConsequence
+ * @namespace Tools
+ * @module Tools/base/Consequence
  */
 
 function FinallyPass( err, arg )
@@ -4889,7 +4963,9 @@ function After( resource )
  * @property {Array} _dependsOf=[]
  * @property {Number} capacity=0 Maximal number of resources. Unlimited by default.
  * @property {String} sourcePath Path to source file were wConsequence instance was created.
- * @memberof module:Tools/base/Consequence.wConsequence
+ * @class wConsequence
+ * @namespace Tools
+ * @module Tools/base/Consequence
 */
 
 // --
