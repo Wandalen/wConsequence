@@ -91,8 +91,7 @@ let KindOfResource =
  */
 
 /**
- * Function that accepts result of wConsequence value computation. Used as parameter in methods such as finallyGive(), finally(),
-  etc.
+ * Function that accepts result of wConsequence value computation. Used as parameter in methods such as finallyGive(), finally(), etc.
  * @param {*} err Error object, or any other type, that represent or describe an error reason. If during resolving
     value no exception occurred, it will be set to null;
    @param {*} value resolved by wConsequence value;
@@ -102,10 +101,15 @@ let KindOfResource =
  * @module Tools/base/Consequence
  */
 
-/**
- * Creates instance of wConsequence
+ /**
  * @classdesc Class wConsequence creates objects that used for asynchronous computations. It represent the queue of results that
  * can computation asynchronously, and has a wide range of tools to implement this process.
+ * @class wConsequence
+ * @module Tools/base/Consequence
+ */
+
+/**
+ * Creates instance of wConsequence
  * @param {Object|Function|wConsequence} [o] initialization options
  * @example
    let con = new _.Consequence();
@@ -113,6 +117,7 @@ let KindOfResource =
 
    let con = _.Consequence();
    con.finallyGive( function( err, value) { console.log( value ); } ).take('world'); // world
+ * @constructor wConsequence
  * @class wConsequence
  * @module Tools/base/Consequence
  * @returns {wConsequence}
@@ -271,9 +276,9 @@ function is( src )
      // competitor 1: bar
      // competitor 2: baz
      //
- * @param {module:Tools/base/Consequence.wConsequence~Competitor|wConsequence} [competitor] callback, that accepts resolved value or exception reason.
+ * @param {Competitor|wConsequence} [competitor] callback, that accepts resolved value or exception reason.
  * @returns {wConsequence}
- * @see {@link module:Tools/base/Consequence.wConsequence~Competitor} competitor callback
+ * @see {@link Competitor} competitor callback
  * @throws {Error} if passed more than one argument.
  * @method finallyGive
  * @module Tools/base/Consequence
@@ -440,7 +445,7 @@ catchGive.having =
    trigger only in that case if accepted error parameter will be defined and not null. Else accepted parameters will
    be passed to the next competitor in queue.
 
- * @param {module:Tools/base/Consequence.wConsequence~Competitor|wConsequence} competitor callback, that accepts exception  reason and value .
+ * @param {Competitor|wConsequence} competitor callback, that accepts exception  reason and value .
  * @returns {wConsequence}
  * @throws {Error} if passed more than one arguments
  * @see {@link module:Tools/base/Consequence.wConsequence#finallyGive} finally method
@@ -602,11 +607,11 @@ finallyPromiseGive.having = Object.create( _promise.having );
    // competitor 1: 5
    // competitor 3: 6
 
- * @param {module:Tools/base/Consequence.wConsequence~Competitor|wConsequence} competitor callback, that accepts resolved value or exception reason.
+ * @param {Competitor|wConsequence} competitor callback, that accepts resolved value or exception reason.
  * @returns {wConsequence}
  * @throws {Error} if missed competitor.
  * @throws {Error} if passed more than one argument.
- * @see {@link module:Tools/base/Consequence.wConsequence~Competitor} competitor callback
+ * @see {@link Competitor} competitor callback
  * @see {@link module:Tools/base/Consequence.wConsequence#finallyGive} finallyGive method
  * @method finally
  * @module Tools/base/Consequence
@@ -1121,7 +1126,7 @@ splitGive.having =
    // competitor 2: 1
    // competitor 3: 4
 
- * @param {module:Tools/base/Consequence.wConsequence~Competitor|wConsequence} competitor callback, that accepts resolved value or exception
+ * @param {Competitor|wConsequence} competitor callback, that accepts resolved value or exception
    reason.
  * @returns {wConsequence}
  * @throws {Error} if passed more than one arguments
@@ -1536,7 +1541,7 @@ defaults.keeping = true;
    // competitor 2: 91
 
  * @param {number} time delay in milliseconds
- * @param {module:Tools/base/Consequence.wConsequence~Competitor|wConsequence} competitor callback, that accepts exception reason and value.
+ * @param {Competitor|wConsequence} competitor callback, that accepts exception reason and value.
  * @returns {wConsequence}
  * @throws {Error} if missed arguments.
  * @throws {Error} if passed extra arguments.
@@ -3358,7 +3363,7 @@ function __handleResourceNow()
  * Method created and appends competitor object, based on passed options into wConsequence competitors queue.
  *
  * @param {Object} o options map
- * @param {module:Tools/base/Consequence.wConsequence~Competitor|wConsequence} o.competitorRoutine callback
+ * @param {Competitor|wConsequence} o.competitorRoutine callback
  * @param {Object} [o.context] if defined, it uses as 'this' context in competitor function.
  * @param {Array<*>|ArrayLike} [o.argument] values, that will be used as binding arguments in competitor.
  * @param {boolean} [o.keeping=false] If sets to true, finally result of current competitor will be passed to the next competitor
@@ -3726,6 +3731,9 @@ function competitorsCount()
  * @property {boolean} argumentOnly turn on corespondent only if resource represent no error;
  * @property {boolean} debug enables debugging.
  * @property {string} id corespondent id.
+ * @class wConsequence
+ * @namespace Tools
+ * @module Tools/base/Consequence
  */
 
 /**
@@ -3754,7 +3762,7 @@ function competitorsCount()
 
    console.log( corespondents );
 
- * @returns {_corespondentMap[]}
+ * @returns {_corespondentMap}
  * @method competitorsEarlyGet
  * @module Tools/base/Consequence
  * @namespace Tools
@@ -3823,7 +3831,7 @@ function competitorsGet()
 
  // prints
  // corespondent1 value: bar
- * @param [competitor]
+ * @param {Routine} [competitor]
  * @method competitorsCancel
  * @module Tools/base/Consequence
  * @namespace Tools
@@ -3951,6 +3959,9 @@ function resourcesCount()
  * @typedef {Object} _resourceObject
  * @property {*} error error value
  * @property {*} argument resolved value
+ * @class wConsequence
+ * @namespace Tools
+ * @module Tools/base/Consequence
  */
 
 /**
@@ -4432,7 +4443,7 @@ function FromCalling( src )
  * @static
  * @method take
  * @module Tools/base/Consequence
- * @namespace wConsequence.
+ * @namespace wConsequence
  */
 
 function Take( consequence ) /* xxx : review */
@@ -4538,36 +4549,36 @@ _Take.defaults =
 
 //
 
-  /**
-   * If `consequence` if instance of wConsequence, method error to it's resource sequence.
-   * If `consequence` is routine, method pass error as arguments to it and return result.
-   * @example
-   * function showResult(err, val)
-     {
-       if( err )
-       {
-         console.log( 'handleGot1 error: ' + err );
-       }
-       else
-       {
-         console.log( 'handleGot1 value: ' + val );
-       }
-     };
+/**
+ * If `consequence` if instance of wConsequence, method error to it's resource sequence.
+ * If `consequence` is routine, method pass error as arguments to it and return result.
+ * @example
+ * function showResult(err, val)
+   {
+     if( err )
+      {
+        console.log( 'handleGot1 error: ' + err );
+      }
+      else
+      {
+        console.log( 'handleGot1 value: ' + val );
+      }
+    };
 
-     let con = new  _.Consequence();
+    let con = new  _.Consequence();
 
-     con.finallyGive( showResult );
+    con.finallyGive( showResult );
 
-     wConsequence.error( con, 'something wrong' );
-   // prints: handleGot1 error: something wrong
-   * @param {Function|wConsequence} consequence
-   * @param {*} error error value
-   * @returns {*}
-   * @static
-   * @method error
-   * @module Tools/base/Consequence
- * @namespace wConsequence.
-   */
+    wConsequence.error( con, 'something wrong' );
+  // prints: handleGot1 error: something wrong
+* @param {Function|wConsequence} consequence
+* @param {*} error error value
+* @returns {*}
+* @static
+* @method error
+* @module Tools/base/Consequence
+* @namespace wConsequence
+*/
 
 function Error( consequence, error )
 {
@@ -4955,13 +4966,13 @@ function After( resource )
 
 /**
  * @typedef {Object} Fields
- * @property {Array} _competitorsEarly=[] Queue of competitor that are penging for resource.
- * @property {Array} _resources=[] Queue of messages that are penging for competitor.
- * @property {wProcedure} _procedure=null Instance of wProcedure.
+ * @property {Array} [_competitorsEarly=[]] Queue of competitor that are penging for resource.
+ * @property {Array} [_resources=[]] Queue of messages that are penging for competitor.
+ * @property {wProcedure} [_procedure=null] Instance of wProcedure.
  * @property {String} tag
  * @property {Number} id Id of current instance
- * @property {Array} _dependsOf=[]
- * @property {Number} capacity=0 Maximal number of resources. Unlimited by default.
+ * @property {Array} [_dependsOf=[]]
+ * @property {Number} [capacity=0] Maximal number of resources. Unlimited by default.
  * @property {String} sourcePath Path to source file were wConsequence instance was created.
  * @class wConsequence
  * @namespace Tools
