@@ -5103,18 +5103,18 @@ let Forbids =
 let Accessors =
 {
   competitorNext : 'competitorNext',
-  _competitorsEarly : { getter : _arrayGetter_functor( '_competitorsEarly' ) },
-  _competitorsLate : { getter : _arrayGetter_functor( '_competitorsLate' ) },
-  _resources : { getter : _arrayGetter_functor( '_resources' ) },
-  _procedure : { getter : _defGetter_functor( '_procedure', null ) },
-  capacity : { getter : _defGetter_functor( 'capacity', 1 ) },
+  _competitorsEarly : { get : _arrayGetter_functor( '_competitorsEarly' ) },
+  _competitorsLate : { get : _arrayGetter_functor( '_competitorsLate' ) },
+  _resources : { get : _arrayGetter_functor( '_resources' ) },
+  _procedure : { get : _defGetter_functor( '_procedure', null ) },
+  capacity : { get : _defGetter_functor( 'capacity', 1 ) },
 }
 
 let DebugAccessors =
 {
-  tag : { getter : _defGetter_functor( 'tag', null ) },
-  // sourcePath : { getter : _defGetter_functor( 'sourcePath', null ) },
-  _dependsOf : { getter : _arrayGetter_functor( '_dependsOf' ) },
+  tag : { get : _defGetter_functor( 'tag', null ) },
+  // sourcePath : { get : _defGetter_functor( 'sourcePath', null ) },
+  _dependsOf : { get : _arrayGetter_functor( '_dependsOf' ) },
 }
 
 if( Config.debug )
