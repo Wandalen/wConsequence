@@ -62,7 +62,8 @@ function uncaughtSyncErrorOnExit( test )
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
-    test.identical( _.strCount( op.output, 'uncaught error on termination' ), 2 );
+    // test.identical( _.strCount( op.output, 'uncaught error on termination' ), 2 );
+    test.identical( _.strCount( op.output, 'Error on handing event exit' ), 1 );
     test.identical( _.strCount( op.output, 'uncaught error' ), 2 );
     test.identical( _.strCount( op.output, 'ncaught' ), 7 );
     test.identical( _.strCount( op.output, 'nhandled' ), 0 );

@@ -21,7 +21,7 @@ var _ = _global_.wTools;
 // test
 // --
 
-function consequenceIs( test ) 
+function consequenceIs( test )
 {
   test.case = 'instance of Consequence';
   var src = new _.Consequence().take( 0 );
@@ -31,7 +31,7 @@ function consequenceIs( test )
 
 //
 
-function consequenceLike( test ) 
+function consequenceLike( test )
 {
   test.case = 'instance of Consequence';
   var src = new _.Consequence().take( 0 );
@@ -2448,7 +2448,7 @@ function deasync( test )
     test.identical( con.competitorsCount(), 1 );
     test.identical( counter, 0 );
 
-    con.deasyncWait();
+    con.deasync();
 
     test.identical( con.errorsCount(), 0 );
     test.identical( con.argumentsCount(), 1 );

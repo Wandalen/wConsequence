@@ -765,7 +765,7 @@ _deasync.having =
 
 //
 
-function deasyncWait()
+function deasync()
 {
   let self = this;
   _.assert( arguments.length === 0, 'Expects no arguments' );
@@ -776,7 +776,7 @@ function deasyncWait()
   });
 }
 
-deasyncWait.having = Object.create( _deasync.having );
+deasync.having = Object.create( _deasync.having );
 
 // //
 //
@@ -1602,10 +1602,12 @@ function _timeOut( o )
   function __timeOutFinally( err, arg )
   {
 
-    _.time.out( o.time ).tap( () =>
-    {
-      self.take( err, arg );
-    });
+    _.time.begin( o.time, () => self.take( err, arg ) );
+
+    // _.time.out( o.time ).tap( () =>
+    // {
+    //   self.take( err, arg );
+    // });
 
   }
 
@@ -1614,10 +1616,12 @@ function _timeOut( o )
   function __timeOutCatch( err )
   {
 
-    _.time.out( o.time ).tap( () =>
-    {
-      self.take( undefined, err );
-    });
+    _.time.begin( o.time, () => self.take( undefined, err ) );
+
+    // _.time.out( o.time ).tap( () =>
+    // {
+    //   self.take( undefined, err );
+    // });
 
   }
 
@@ -1626,10 +1630,13 @@ function _timeOut( o )
   function __timeOutThen( arg )
   {
 
-    _.time.out( o.time ).tap( () =>
-    {
-      self.take( arg );
-    });
+    _.time.begin( o.time, () => self.take( arg ) );
+
+    // _.time.out( o.time ).tap( () =>
+    // {
+    //   self.take( arg );
+    // });
+
   }
 
   /**/
@@ -2733,7 +2740,8 @@ function takeSoon( error, argument )
 
   self.__onTake( error, argument );
 
-  _.time.out( 1, function timeOut()
+  // _.time.out( 1, function timeOut()
+  _.time.begin( 1, () =>
   {
     self.take( error, argument );
   });
@@ -4867,60 +4875,60 @@ if( 0 )
   Function.prototype.thereafter = FunctionThereafter;
 }
 
+// //
 //
-
-function experimentThereafter()
-{
-  debugger;
-
-  function f()
-  {
-    debugger;
-    console.log( 'done2' );
-  }
-
-  _.time.out( 5000, console.log.thereafter( 'done' ) );
-  _.time.out( 5000, f.thereafter() );
-
-  debugger;
-
-}
-
+// function experimentThereafter()
+// {
+//   debugger;
 //
-
-function experimentWithin()
-{
-
-  debugger;
-  let con = _.time.out( 30000 );
-  console.log.within( con ).call( console, 'done' );
-  con.finally( function()
-  {
-
-    debugger;
-    console.log( 'done2' );
-
-  });
-
-}
-
+//   function f()
+//   {
+//     debugger;
+//     console.log( 'done2' );
+//   }
 //
-
-function experimentCall()
-{
-
-  let con = new Self();
-  con( 123 );
-  con.finally( function( err, arg )
-  {
-
-    console.log( 'finallyGive :', arg );
-
-  });
-
-  debugger;
-
-}
+//   _.time.out( 5000, console.log.thereafter( 'done' ) );
+//   _.time.out( 5000, f.thereafter() );
+//
+//   debugger;
+//
+// }
+//
+// //
+//
+// function experimentWithin()
+// {
+//
+//   debugger;
+//   let con = _.time.out( 30000 );
+//   console.log.within( con ).call( console, 'done' );
+//   con.finally( function()
+//   {
+//
+//     debugger;
+//     console.log( 'done2' );
+//
+//   });
+//
+// }
+//
+// //
+//
+// function experimentCall()
+// {
+//
+//   let con = new Self();
+//   con( 123 );
+//   con.finally( function( err, arg )
+//   {
+//
+//     console.log( 'finallyGive :', arg );
+//
+//   });
+//
+//   debugger;
+//
+// }
 
 //
 
@@ -5164,7 +5172,7 @@ let Extend =
   // deasync // qqq : cover please
 
   _deasync,
-  deasyncWait,
+  deasync,
 
   // /* zzz : below will be removed! */
   // finallyDeasyncGive,
