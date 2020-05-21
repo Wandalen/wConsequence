@@ -66,7 +66,7 @@ let Deasync = null;
 //   // _.mapExtend( _, _realGlobal_.wConsequence.Tools );
 //   // let Self = _realGlobal_.wConsequence;
 //   // _[ Self.shortName ] = Self;
-//   // if( typeof module !== 'undefined' && module !== null )
+//   // if( typeof module !== 'undefined' )
 //   // module[ 'exports' ] = Self;
 //   // return;
 // }
@@ -4998,7 +4998,7 @@ function _Extend( dstGlobal, srcGlobal )
   _.mapExtend( dstGlobal.wTools, srcGlobal.wConsequence.Tools );
   let Self = srcGlobal.wConsequence;
   dstGlobal.wTools[ Self.shortName ] = Self;
-  if( typeof module !== 'undefined' && module !== null )
+  if( typeof module !== 'undefined' )
   module[ 'exports' ] = Self;
   return;
 }
@@ -5409,7 +5409,7 @@ _realGlobal_[ Self.name ] = Self;
 // export
 // --
 
-if( typeof module !== 'undefined' && module !== null )
+if( typeof module !== 'undefined' )
 module[ 'exports' ] = Self;
 
 })();

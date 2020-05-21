@@ -71,7 +71,7 @@ function _equalAre( original )
 {
 
   if( !original )
-  original = wCopyable._equalAre;
+  original = wCopyable.prototype._equalAre_functor();
 
   _.assert( !!original );
 
