@@ -1,0 +1,28 @@
+name : Test
+
+on :
+  push :
+    branches : [ master ]
+  pull_request :
+    branches : [ master ]
+  pull_request_review :
+    branches : [ master ]
+
+jobs :
+
+  Consequence :
+    if : "!startsWith( github.event.head_commit.message, 'version' )"
+    runs-on : ${{ matrix.os }}
+    strategy :
+      fail-fast  : false
+      matrix :
+        os : [ windows-latest, ubuntu-latest, macos-latest ]
+        node-version : [ 14.x ]
+    steps :
+    - uses : actions/checkout@v2
+    - name : ${{ matrix.node-version }}
+      uses : actions/setup-node@v1
+      with :
+        node-version : ${{ matrix.node-version }}
+    - run : npm i
+    - run : node proto/dwtools/abase/l9.test/consequence/Ext.test.s v:5 s:0 r:timeLimitWaitingNotEnough

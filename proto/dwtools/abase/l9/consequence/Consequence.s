@@ -4607,6 +4607,7 @@ function Error( consequence, error )
 
 function Try( routine )
 {
+
   _.assert( arguments.length === 1 );
   _.assert( _.routineIs( routine ) );
 
@@ -5061,12 +5062,12 @@ let Statics =
   Now,
   Async : Now,
   After,
-  From,
+  From, /* qqq : cover please */
   FromCalling,
   Take,
   Error,
   ErrNoReturn,
-  Try,
+  Try, /* qqq : cover please */
 
   And : AndKeep,
   AndTake,
@@ -5132,7 +5133,7 @@ _.mapExtend( Accessors, DebugAccessors );
 // declare
 // --
 
-let Extend =
+let Extension =
 {
 
   init,
@@ -5353,7 +5354,7 @@ _.classDeclare
 ({
   cls : wConsequence,
   parent : null,
-  extend : Extend,
+  extend : Extension,
   supplement : Supplement,
   usingOriginalPrototype : 1,
 });
