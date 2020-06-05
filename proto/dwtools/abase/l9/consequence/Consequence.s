@@ -4141,12 +4141,12 @@ function procedureDetach()
 // exporter
 // --
 
-function _exportInfo( o )
+function _exportString( o )
 {
   let self = this;
   let result = '';
 
-  _.assertRoutineOptions( _exportInfo, arguments );
+  _.assertRoutineOptions( _exportString, arguments );
 
   if( o.verbosity >= 2 )
   {
@@ -4176,21 +4176,21 @@ function _exportInfo( o )
   return result;
 }
 
-_exportInfo.defaults =
+_exportString.defaults =
 {
   verbosity : 2,
 }
 
 //
 
-function exportInfo( o )
+function exportString( o )
 {
   let self = this;
-  o = _.routineOptions( exportInfo, arguments );
-  return self._exportInfo( o );
+  o = _.routineOptions( exportString, arguments );
+  return self._exportString( o );
 }
 
-_.routineExtend( exportInfo, _exportInfo );
+_.routineExtend( exportString, _exportString );
 
 //
 
@@ -4208,7 +4208,7 @@ function callbacksInfoLog()
     console.log( competitor.competitorRoutine );
   });
 
-  return self.exportInfo();
+  return self.exportString();
 }
 
 //
@@ -4259,7 +4259,7 @@ function callbacksInfoLog()
 function toStr()
 {
   let self = this;
-  return self.exportInfo({ verbosity : 9 });
+  return self.exportString({ verbosity : 9 });
 }
 
 //
@@ -5313,8 +5313,8 @@ let Extend =
 
   // exporter
 
-  _exportInfo,
-  exportInfo,
+  _exportString,
+  exportString,
   callbacksInfoLog,
   toStr,
   toString,

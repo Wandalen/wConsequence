@@ -30,7 +30,7 @@
     "wCopyable" : "",
     "wprocedure" : ""
   },
-  "devDependencies" : { "deasync" : "", "wTesting" : "" },
+  "devDependencies" : { "deasync" : "", "wTesting" : "", "wConsequence" : "file:." },
   "keywords" :
   [
     "wTools",

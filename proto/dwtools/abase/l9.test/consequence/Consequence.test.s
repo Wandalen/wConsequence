@@ -52,12 +52,12 @@ function clone( test )
   test.identical( con1.argumentsCount(), 1 );
   test.identical( con1.competitorsCount(), 0 );
   test.identical( con1.qualifiedName, 'Consequence::con1' );
-  test.identical( con1.exportInfo({ verbosity : 1 }), 'Consequence::con1 1 / 0' );
+  test.identical( con1.exportString({ verbosity : 1 }), 'Consequence::con1 1 / 0' );
   test.identical( con1.capacity, 2 );
   test.identical( con2.argumentsCount(), 1 );
   test.identical( con2.competitorsCount(), 0 );
   test.identical( con2.qualifiedName, 'Consequence::con1' );
-  test.identical( con2.exportInfo({ verbosity : 1 }), 'Consequence::con1 1 / 0' );
+  test.identical( con2.exportString({ verbosity : 1 }), 'Consequence::con1 1 / 0' );
   test.identical( con2.capacity, 2 );
   test.is( con1._resources !== con2._resources );
   test.is( con1._competitorsEarly !== con2._competitorsEarly );
@@ -71,12 +71,12 @@ function clone( test )
   test.identical( con1.argumentsCount(), 0 );
   test.identical( con1.competitorsCount(), 1 );
   test.identical( con1.qualifiedName, 'Consequence::con1' );
-  test.identical( con1.exportInfo({ verbosity : 1 }), 'Consequence::con1 0 / 1' );
+  test.identical( con1.exportString({ verbosity : 1 }), 'Consequence::con1 0 / 1' );
   test.identical( con1.capacity, 2 );
   test.identical( con2.argumentsCount(), 0 );
   test.identical( con2.competitorsCount(), 0 );
   test.identical( con2.qualifiedName, 'Consequence::con1' );
-  test.identical( con2.exportInfo({ verbosity : 1 }), 'Consequence::con1 0 / 0' );
+  test.identical( con2.exportString({ verbosity : 1 }), 'Consequence::con1 0 / 0' );
   test.identical( con2.capacity, 2 );
   test.is( con1._resources !== con2._resources );
   test.is( con1._competitorsEarly !== con2._competitorsEarly );
@@ -5468,9 +5468,9 @@ function andKeepDuplicates( test )
       test.identical( arg, [ 3, 3, 1, 2, 2, 2, 1, null ] );
       if( Config.debug )
       test.identical( con._dependsOf.length, 0 );
-      test.identical( con1.exportInfo({ verbosity : 1 }), 'Consequence::con1 1 / 0' );
-      test.identical( con2.exportInfo({ verbosity : 1 }), 'Consequence::con2 1 / 0' );
-      test.identical( con3.exportInfo({ verbosity : 1 }), 'Consequence::con3 1 / 0' );
+      test.identical( con1.exportString({ verbosity : 1 }), 'Consequence::con1 1 / 0' );
+      test.identical( con2.exportString({ verbosity : 1 }), 'Consequence::con2 1 / 0' );
+      test.identical( con3.exportString({ verbosity : 1 }), 'Consequence::con3 1 / 0' );
       test.identical( con1.argumentsGet(), [ 1 ] );
       test.identical( con2.argumentsGet(), [ 2 ] );
       test.identical( con3.argumentsGet(), [ 3 ] );
@@ -5520,9 +5520,9 @@ function andKeepDuplicates( test )
       if( Config.debug )
       test.identical( con._dependsOf.length, 0 );
 
-      test.identical( con1.exportInfo({ verbosity : 1 }), 'Consequence::con1 1 / 0' );
-      test.identical( con2.exportInfo({ verbosity : 1 }), 'Consequence::con2 1 / 0' );
-      test.identical( con3.exportInfo({ verbosity : 1 }), 'Consequence::con3 1 / 0' );
+      test.identical( con1.exportString({ verbosity : 1 }), 'Consequence::con1 1 / 0' );
+      test.identical( con2.exportString({ verbosity : 1 }), 'Consequence::con2 1 / 0' );
+      test.identical( con3.exportString({ verbosity : 1 }), 'Consequence::con3 1 / 0' );
       test.identical( con1.argumentsGet(), [ 1 ] );
       test.identical( con2.argumentsGet(), [ 2 ] );
       test.identical( con3.argumentsGet(), [ 3 ] );
