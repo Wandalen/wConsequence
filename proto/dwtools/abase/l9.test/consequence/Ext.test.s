@@ -586,9 +586,8 @@ function timeLimitWaitingEnough( test )
   let context = this;
   let visited = [];
   let a = context.assetFor( test, false );
-  // let programPath = a.program( program );
   let toolsPath = a.path.nativize( _.module.toolsPathGet() );
-  let programPath = a.program({ routine : program, locals : { toolsPath, t : context.t2*10 } });
+  let programPath = a.program({ routine : program, locals : { toolsPath, t : context.t2*2 } });
 
   /* */
 
@@ -601,8 +600,8 @@ function timeLimitWaitingEnough( test )
     test.identical( _.strCount( op.output, 'Waiting for' ), 1 );
     test.identical( _.strCount( op.output, 'Waiting for 8 procedure(s)' ), 1 );
     test.identical( _.strCount( op.output, 'procedure::' ), 8 );
-    test.identical( _.strCount( op.output, 'program.js:11' ), 6 );
-    test.identical( _.strCount( op.output, 'program.js:14' ), 2 );
+    test.identical( _.strCount( op.output, 'program.js:10' ), 6 );
+    test.identical( _.strCount( op.output, 'program.js:13' ), 2 );
     test.identical( _.strCount( op.output, 'program.js:' ), 8 );
     test.identical( _.strCount( op.output, /v0(.|\n|\r)*v1(.|\n|\r)*v2(.|\n|\r)*v3(.|\n|\r)*v4/mg ), 1 );
     return null;
@@ -615,31 +614,30 @@ function timeLimitWaitingEnough( test )
   function program()
   {
     let _ = require( toolsPath );
-    // let t = context.t2*10;
     _.include( 'wConsequence' );
     _.include( 'wProcedure' );
-    var con = _.time.out( t*1 );
+    let con = _.time.out( t*1 );
 
-    console.log( 'v0' );
+    console.log( 'v0', _.time.spent( _.setup.startTime ) );
 
     con.timeLimit( t*6, () =>
     {
-      console.log( 'v2' );
-      return _.time.out( t*3, () =>
+      console.log( 'v2', _.time.spent( _.setup.startTime ) );
+      return _.time.out( t*4, () =>
       {
-        console.log( 'v4' );
+        console.log( 'v4', _.time.spent( _.setup.startTime ) );
         return 'a';
       });
     });
 
     _.time.out( t*2, () =>
     {
-      console.log( 'v3' );
-      _.procedure.terminationPeriod = t;
+      console.log( 'v3', _.time.spent( _.setup.startTime ) );
+      _.procedure.terminationPeriod = t*2;
       _.procedure.terminationBegin();
     });
 
-    console.log( 'v1' );
+    console.log( 'v1', _.time.spent( _.setup.startTime ) );
   }
 
 }
