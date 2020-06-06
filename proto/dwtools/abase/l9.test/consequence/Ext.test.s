@@ -609,6 +609,7 @@ function timeLimitWaitingEnough( test )
 
   /* */
 
+
   return a.ready;
 
   function program()
