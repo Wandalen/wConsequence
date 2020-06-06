@@ -702,7 +702,7 @@ function timeLimitWaitingNotEnough( test )
 
     console.log( 'v0', _.time.spent( _.setup.startTime ) );
 
-    con.timeLimit( t2*3, () =>
+    con.timeLimit( t2*2, () =>
     {
       console.log( 'v2', _.time.spent( _.setup.startTime ) );
       return _.time.out( t2*6, () =>
