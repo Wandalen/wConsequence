@@ -13,7 +13,7 @@ jobs :
       fail-fast  : false
       matrix :
         os : [ windows-latest, ubuntu-latest, macos-latest ]
-        node-version : [ 14.x ]
+        node-version : [ 10.x, 12.x, 13.x, 14.x ]
     steps :
     - uses : actions/checkout@v2
     - name : ${{ matrix.node-version }}
@@ -21,4 +21,4 @@ jobs :
       with :
         node-version : ${{ matrix.node-version }}
     - run : npm i
-    - run : node proto/dwtools/abase/l9.test/consequence/Consequence.test.s v:5 s:0 r:timeLimitConsequence
+    - run : node proto/dwtools/abase/l9.test/consequence/Ext.test.s v:5 s:0 r:timeLimitWaitingNotEnough
