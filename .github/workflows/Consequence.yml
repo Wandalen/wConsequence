@@ -21,4 +21,4 @@ jobs :
       with :
         node-version : ${{ matrix.node-version }}
     - run : npm i
-    - run : node proto/dwtools/abase/l9.test/consequence/Ext.test.s v:5 s:0 r:timeLimitWaitingNotEnough
+    - run : node proto/dwtools/abase/l9.test/consequence/Ext.test.s v:5 s:0 r:timeLimitWaitingEnough

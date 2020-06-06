@@ -32,28 +32,28 @@ function gotHandler3( error, value )
 
 console.log( 'case 1' );
 
-var con1 = new wConsequence();
+var con1 = new _.Consequence();
 
 con1.ifErrorThen( gotHandler3 ).got( gotHandler1 ).got( gotHandler2 );
-con1.give( 1 ).give( 4 );
+con1.take( 1 ).take( 4 );
 console.log( con1.toStr() );
 
 /**/
 
 console.log( 'case 2' );
 
-var con1 = new wConsequence();
+var con1 = new _.Consequence();
 
-con1.give( 1 ).give( 4 );
+con1.take( 1 ).take( 4 );
 con1.ifErrorThen( gotHandler3 ).got( gotHandler1 ).got( gotHandler2 );
 console.log( con1.toStr() );
 
 /**/
 
 console.log( 'case 3' );
-var con1 = new wConsequence();
+var con1 = new _.Consequence();
 
-con1.error( 'error msg' ).give( 14 );
+con1.error( 'error msg' ).take( 14 );
 
 con1.ifErrorThen( gotHandler3 ).got( gotHandler1 );
 console.log( con1.toStr() );
