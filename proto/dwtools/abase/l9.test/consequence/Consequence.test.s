@@ -13020,7 +13020,7 @@ function firstAsyncMode01( test )
   {
     test.case = 'passed consequence shares own resource with timeout';
     var con = new _.Consequence({ tag : 'con' });
-    var con2 = _.time.out( context.t1*3, () => testMsg );
+    var con2 = _.time.out( context.t1*1, () => testMsg );
     var timeBefore = _.time.now();
     con.first( con2 );
 
