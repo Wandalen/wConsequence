@@ -50,3 +50,5 @@ con1.got( gotHandler2 );
 con1.got( gotHandler3 );
 
 con1.take( 1 ).take( 4 );
+
+/* qqq : simplify */

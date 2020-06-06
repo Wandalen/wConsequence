@@ -2441,6 +2441,9 @@ function takeLater( timeOut, error, argument )
     error = undefined;
   }
 
+  if( error === null )
+  error = undefined;
+
   _.assert( error !== undefined || argument !== undefined, 'Argument of take should be something, not undefined' );
   _.assert( error === undefined || argument === undefined, 'Cant take both error and argument, one should be undefined' );
 
@@ -2465,15 +2468,18 @@ function takeSoon( error, argument )
 {
   let self = this;
 
-  _.assert( arguments.length === 2 || arguments.length === 1, 'Expects 1 or 2 arguments, but got ' + arguments.length );
-  _.assert( error !== undefined || argument !== undefined, 'Argument of take should be something, not undefined' );
-  _.assert( error === undefined || argument === undefined, 'Cant take both error and argument, one should be undefined' );
-
   if( arguments.length === 1 )
   {
     argument = error;
     error = undefined;
   }
+
+  if( error === null )
+  error = undefined;
+
+  _.assert( arguments.length === 2 || arguments.length === 1, 'Expects 1 or 2 arguments, but got ' + arguments.length );
+  _.assert( error !== undefined || argument !== undefined, 'Argument of take should be something, not undefined' );
+  _.assert( error === undefined || argument === undefined, 'Cant take both error and argument, one should be undefined' );
 
   // self.__onTake( error, argument );
 
@@ -2528,15 +2534,18 @@ function take( error, argument )
 {
   let self = this;
 
-  _.assert( arguments.length === 2 || arguments.length === 1, 'Expects 1 or 2 arguments, but got ' + arguments.length );
-  _.assert( error !== undefined || argument !== undefined, 'Argument of take should be something, not undefined' );
-  _.assert( error === undefined || argument === undefined, 'Cant take both error and argument, one should be undefined' );
-
   if( arguments.length === 1 )
   {
     argument = error;
     error = undefined;
   }
+
+  if( error === null )
+  error = undefined;
+
+  _.assert( arguments.length === 2 || arguments.length === 1, 'Expects 1 or 2 arguments, but got ' + arguments.length );
+  _.assert( error !== undefined || argument !== undefined, 'Argument of take should be something, not undefined' );
+  _.assert( error === undefined || argument === undefined, 'Cant take both error and argument, one should be undefined' );
 
   if( error !== undefined )
   error = self.__handleError( error )
@@ -4759,6 +4768,7 @@ let Extension =
 
   thenGive,
   ifNoErrorGot : thenGive,
+  got : thenGive,
   thenKeep,
   then : thenKeep,
   ifNoErrorThen : thenKeep,

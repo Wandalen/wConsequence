@@ -56,7 +56,9 @@ function uncaughtSyncErrorOnExit( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program( program );
+  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  let programPath = a.program({ routine : program, locals });
 
   a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
@@ -97,7 +99,9 @@ function uncaughtAsyncErrorOnExit( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program( program );
+  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  let programPath = a.program({ routine : program, locals });
 
   a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
@@ -134,7 +138,9 @@ function AndKeepErrorAttend( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program( program );
+  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  let programPath = a.program({ routine : program, locals });
 
   a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
@@ -154,18 +160,18 @@ function AndKeepErrorAttend( test )
     var _ = require( toolsPath );
     _.include( 'wConsequence' );
 
-    var con1 = _.time.out( 100, () =>
+    var con1 = _.time.out( t1*1, () =>
     {
       console.log( 'time1' );
       throw 'Test error';
     })
-    var con2 = _.time.out( 250, () =>
+    var con2 = _.time.out( t1*3, () =>
     {
       console.log( 'time2' );
       return null
     })
 
-    _.Consequence.AndKeep([ con1, con2 ])
+    _.Consequence.AndKeep_( con1, con2 )
     .finally( ( err, arg ) =>
     {
       console.log( 'finally' );
@@ -173,6 +179,7 @@ function AndKeepErrorAttend( test )
       return null;
     })
   }
+
 }
 
 AndKeepErrorAttend.description =
@@ -190,7 +197,9 @@ function AndKeepErrorNotAttend( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program( program );
+  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  let programPath = a.program({ routine : program, locals });
 
   a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
@@ -209,18 +218,18 @@ function AndKeepErrorNotAttend( test )
     var _ = require( toolsPath );
     _.include( 'wConsequence' );
 
-    var con1 = _.time.out( 100, () =>
+    var con1 = _.time.out( t1, () =>
     {
       console.log( 'time1' );
       throw 'Test error';
     })
-    var con2 = _.time.out( 250, () =>
+    var con2 = _.time.out( t1*3, () =>
     {
       console.log( 'time2' );
       return null
     })
 
-    _.Consequence.AndKeep([ con1, con2 ])
+    _.Consequence.AndKeep_( con1, con2 )
     .finally(( err, arg ) =>
     {
       if( err )
@@ -244,9 +253,10 @@ Third consequence will catch error from first consequence.
 function asyncStackWithTimeOut( test )
 {
   let context = this;
-  let visited = [];
   let a = context.assetFor( test, false );
-  let programPath = a.program( program );
+  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  let programPath = a.program({ routine : program, locals });
 
   /* */
 
@@ -301,9 +311,10 @@ asyncStackWithTimeOut.description =
 function asyncStackWithConsequence( test )
 {
   let context = this;
-  let visited = [];
   let a = context.assetFor( test, false );
-  let programPath = a.program( program );
+  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  let programPath = a.program({ routine : program, locals });
 
   /* */
 
@@ -359,9 +370,10 @@ asyncStackWithConsequence.description =
 function asyncStackInConsequenceTrivial( test )
 {
   let context = this;
-  let visited = [];
-  let a = test.assetFor( false );
-  let programPath = a.program( program );
+  let a = context.assetFor( test, false );
+  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  let programPath = a.program({ routine : program, locals });
 
   /* */
 
@@ -382,20 +394,19 @@ function asyncStackInConsequenceTrivial( test )
 
   function program()
   {
-    let delay = 250;
     let _ = require( toolsPath );
     _.include( 'wFiles' );
     _.include( 'wConsequence' );
 
     var timeBefore = _.time.now();
-    var t = _.time.outError( delay );
+    var t = _.time.outError( t1 );
     t.finally( function( err, got )
     {
       if( err )
       _.errAttend( err );
       return null;
     })
-    _.time.out( delay / 2, () => { t.error( _.errAttend( 'stop' ) ); return null; } );
+    _.time.out( t1 / 2, () => { t.error( _.errAttend( 'stop' ) ); return null; } );
 
     return t;
   }
@@ -413,9 +424,10 @@ stack has async substack
 function asyncStackInConsequenceThen( test )
 {
   let context = this;
-  let visited = [];
-  let a = test.assetFor( false );
-  let programPath = a.program( program );
+  let a = context.assetFor( test, false );
+  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  let programPath = a.program({ routine : program, locals });
 
   /* */
 
@@ -473,13 +485,10 @@ each callback has its own stack
 function tester( test )
 {
   let context = this;
-  let visited = [];
   let a = context.assetFor( test, false );
-
-  let locals = Object.create( null );
-  locals.toolsPath = a.path.nativize( a.path.join( __dirname, '../../../../dwtools/Tools.s' ) );
+  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
   locals.consequencePath = a.path.nativize( a.path.join( __dirname, '../../l9/consequence/Consequence.s' ) );
-
   let programPath = a.program({ routine : program, locals });
 
   /* */
@@ -539,9 +548,10 @@ tester.description =
 function timeLimit( test )
 {
   let context = this;
-  let visited = [];
   let a = context.assetFor( test, false );
-  let programPath = a.program( program );
+  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  let programPath = a.program({ routine : program, locals });
 
   /* */
 
@@ -584,10 +594,10 @@ timeLimit.description =
 function timeLimitWaitingEnough( test )
 {
   let context = this;
-  let visited = [];
   let a = context.assetFor( test, false );
   let toolsPath = a.path.nativize( _.module.toolsPathGet() );
-  let programPath = a.program({ routine : program, locals : { toolsPath, t : context.t2*2 } });
+  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  let programPath = a.program({ routine : program, locals });
 
   /* */
 
@@ -617,24 +627,24 @@ function timeLimitWaitingEnough( test )
     let _ = require( toolsPath );
     _.include( 'wConsequence' );
     _.include( 'wProcedure' );
-    let con = _.time.out( t*1 );
+    let con = _.time.out( t2*1 );
 
     console.log( 'v0', _.time.spent( _.setup.startTime ) );
 
-    con.timeLimit( t*6, () =>
+    con.timeLimit( t2*6, () =>
     {
       console.log( 'v2', _.time.spent( _.setup.startTime ) );
-      return _.time.out( t*4, () =>
+      return _.time.out( t2*4, () =>
       {
         console.log( 'v4', _.time.spent( _.setup.startTime ) );
         return 'a';
       });
     });
 
-    _.time.out( t*2, () =>
+    _.time.out( t2*2, () =>
     {
       console.log( 'v3', _.time.spent( _.setup.startTime ) );
-      _.procedure.terminationPeriod = t*2;
+      _.procedure.terminationPeriod = t2*2;
       _.procedure.terminationBegin();
     });
 
@@ -655,9 +665,10 @@ timeLimitWaitingEnough.description =
 function timeLimitWaitingNotEnough( test )
 {
   let context = this;
-  let visited = [];
   let a = context.assetFor( test, false );
-  let programPath = a.program( program );
+  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  let programPath = a.program({ routine : program, locals });
 
   /* */
 
@@ -726,9 +737,10 @@ timeLimitWaitingNotEnough.description =
 function timeCancelBefore( test )
 {
   let context = this;
-  let visited = [];
   let a = context.assetFor( test, false );
-  let programPath = a.program( program );
+  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  let programPath = a.program({ routine : program, locals });
 
   /* */
 
@@ -785,9 +797,10 @@ timeCancelBefore.description =
 function timeCancelAfter( test )
 {
   let context = this;
-  let visited = [];
   let a = context.assetFor( test, false );
-  let programPath = a.program( program );
+  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  let programPath = a.program({ routine : program, locals });
 
   /* */
 
@@ -843,9 +856,10 @@ timeCancelAfter.description =
 function timeOutExternalMessage( test )
 {
   let context = this;
-  let visited = [];
   let a = context.assetFor( test, false );
-  let programPath = a.program( program );
+  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  let programPath = a.program({ routine : program, locals });
 
   /* */
 
@@ -879,12 +893,11 @@ function timeOutExternalMessage( test )
     let _ = require( toolsPath );
     _.include( 'wProcedure' );
     _.include( 'wConsequence' );
-    var t = 100;
 
-    var con1 = _.time.out( t*2, () => 1 );
+    var con1 = _.time.out( t1*2, () => 1 );
 
     console.log( 'v1' );
-    _.time.out( t, function()
+    _.time.out( 1, function()
     {
       console.log( 'v2' );
       con1.take( 2 );
@@ -902,7 +915,7 @@ function timeOutExternalMessage( test )
       });
     })
 
-    return _.time.out( t*5 ).then( () =>
+    return _.time.out( 1*5 ).then( () =>
     {
       console.log( 'v6' );
       console.log( 'argumentsCount', con1.argumentsCount() );
@@ -926,9 +939,10 @@ timeOutExternalMessage.description =
 function timeBegin( test )
 {
   let context = this;
-  let visited = [];
   let a = context.assetFor( test, false );
-  let programPath = a.program( program );
+  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  let programPath = a.program({ routine : program, locals });
 
   /* */
 

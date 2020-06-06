@@ -57,3 +57,5 @@ con1.error( 'error msg' ).take( 14 );
 
 con1.ifErrorThen( gotHandler3 ).got( gotHandler1 );
 console.log( con1.toStr() );
+
+/* qqq : simplify */
