@@ -613,7 +613,7 @@ function timeLimitWaitingEnough( test )
   function program()
   {
     let _ = require( toolsPath );
-    let t = 1000;
+    let t = 3000;
     _.include( 'wConsequence' );
     _.include( 'wProcedure' );
     var con = _.time.out( t*1 );
@@ -633,7 +633,7 @@ function timeLimitWaitingEnough( test )
     _.time.out( t*2, () =>
     {
       console.log( 'v3' );
-      _.procedure.terminationPeriod = 1000;
+      _.procedure.terminationPeriod = t;
       _.procedure.terminationBegin();
     });
 
