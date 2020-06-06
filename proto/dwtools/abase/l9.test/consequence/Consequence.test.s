@@ -12941,7 +12941,7 @@ function firstAsyncMode01( test )
     test.case = 'routine returns consequence that gives resource with timeout';
     var con = new _.Consequence({ tag : 'con' });
     var timeBefore = _.time.now();
-    con.first( () => _.time.out( context.t1*3, () => null ));
+    con.first( () => _.time.out( context.t1*1, () => null ));
 
     test.identical( con.resourcesCount(), 0 );
 
