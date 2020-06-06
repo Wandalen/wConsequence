@@ -383,7 +383,7 @@ function asyncStackInConsequenceTrivial( test )
     test.notIdentical( op.exitCode, 0 );
     test.identical( _.strCount( op.output, '- uncaught error -' ), 2 );
     test.identical( _.strCount( op.output, '= Source code from' ), 1 );
-    test.identical( _.strCount( op.output, `program.js:9` ), 1 );
+    test.identical( _.strCount( op.output, `program.js:8` ), 1 );
     test.identical( _.strCount( op.output, `at program` ), 1 );
     return null;
   });
@@ -399,14 +399,14 @@ function asyncStackInConsequenceTrivial( test )
     _.include( 'wConsequence' );
 
     var timeBefore = _.time.now();
-    var t = _.time.outError( t1 );
+    var t = _.time.outError( t1*3 );
     t.finally( function( err, got )
     {
       if( err )
       _.errAttend( err );
       return null;
     })
-    _.time.out( t1 / 2, () => { t.error( _.errAttend( 'stop' ) ); return null; } );
+    _.time.out( t1*3/2, () => { t.error( _.errAttend( 'stop' ) ); return null; } );
 
     return t;
   }
@@ -915,7 +915,7 @@ function timeOutExternalMessage( test )
       });
     })
 
-    return _.time.out( 1*5 ).then( () =>
+    return _.time.out( t1*5 ).then( () =>
     {
       console.log( 'v6' );
       console.log( 'argumentsCount', con1.argumentsCount() );
