@@ -613,7 +613,7 @@ function timeLimitWaitingEnough( test )
   function program()
   {
     let _ = require( toolsPath );
-    let t = 3000;
+    let t = context.t2*10;
     _.include( 'wConsequence' );
     _.include( 'wProcedure' );
     var con = _.time.out( t*1 );
@@ -996,6 +996,8 @@ var Self =
     suiteTempPath : null,
     assetsOriginalPath : null,
     appJsPath : null,
+    t1 : 100,
+    t2 : 500,
 
     assetFor,
 
