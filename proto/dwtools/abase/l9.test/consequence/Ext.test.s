@@ -586,7 +586,9 @@ function timeLimitWaitingEnough( test )
   let context = this;
   let visited = [];
   let a = context.assetFor( test, false );
-  let programPath = a.program( program );
+  // let programPath = a.program( program );
+  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  let programPath = a.program({ routine : program, locals : { toolsPath, t : context.t2*10 } });
 
   /* */
 
@@ -613,7 +615,7 @@ function timeLimitWaitingEnough( test )
   function program()
   {
     let _ = require( toolsPath );
-    let t = context.t2*10;
+    // let t = context.t2*10;
     _.include( 'wConsequence' );
     _.include( 'wProcedure' );
     var con = _.time.out( t*1 );
