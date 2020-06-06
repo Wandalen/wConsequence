@@ -681,8 +681,8 @@ function timeLimitWaitingNotEnough( test )
     test.identical( _.strCount( op.output, 'Waiting for' ), 1 );
     test.identical( _.strCount( op.output, 'Waiting for 3 procedure(s)' ), 1 );
     test.identical( _.strCount( op.output, 'procedure::' ), 3 );
-    test.identical( _.strCount( op.output, 'program.js:12' ), 1 );
-    test.identical( _.strCount( op.output, 'program.js:15' ), 2 );
+    test.identical( _.strCount( op.output, 'program.js:11' ), 1 );
+    test.identical( _.strCount( op.output, 'program.js:14' ), 2 );
     test.identical( _.strCount( op.output, 'program.js:' ), 3 );
     test.identical( _.strCount( op.output, /v0(.|\n|\r)*v1(.|\n|\r)*v2(.|\n|\r)*v3(.|\n|\r)*v4/mg ), 1 );
     return null;
@@ -698,29 +698,28 @@ function timeLimitWaitingNotEnough( test )
     _.include( 'wConsequence' );
     _.include( 'wProcedure' );
 
-    let t = 250;
-    var con = _.time.out( t*1 );
+    var con = _.time.out( t2*1 );
 
-    console.log( 'v0' );
+    console.log( 'v0', _.time.spent( _.setup.startTime ) );
 
-    con.timeLimit( t*3, () =>
+    con.timeLimit( t2*3, () =>
     {
-      console.log( 'v2' );
-      return _.time.out( t*6, () =>
+      console.log( 'v2', _.time.spent( _.setup.startTime ) );
+      return _.time.out( t2*6, () =>
       {
-        console.log( 'v4' );
+        console.log( 'v4', _.time.spent( _.setup.startTime ) );
         return 'a';
       });
     });
 
-    _.time.out( t*2, () =>
+    _.time.out( t2*2, () =>
     {
-      console.log( 'v3' );
-      _.procedure.terminationPeriod = t*2;
+      console.log( 'v3', _.time.spent( _.setup.startTime ) );
+      _.procedure.terminationPeriod = t2*2;
       _.procedure.terminationBegin();
     });
 
-    console.log( 'v1' );
+    console.log( 'v1', _.time.spent( _.setup.startTime ) );
   }
 
 }
