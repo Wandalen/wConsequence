@@ -13558,7 +13558,7 @@ var Self =
 
     // export
 
-    // toStr,
+    toStr,
     stringify,
 
     // etc
