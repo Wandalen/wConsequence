@@ -63,5 +63,5 @@ function run()
 function clientArrive( client )
 {
   /* clients arrived to barber shop */
-  console.log( 'new client is coming : ' + client.name + _.time.spent( startTime ) ); /* qqq : replace such strings with `-strings */
+  console.log( 'new client is coming : ' + client.name + ' ' + _.time.spent( startTime ) ); /* qqq : replace such strings with `-strings */
 }

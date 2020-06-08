@@ -5,7 +5,7 @@ let uri = 'google.com';
 
 /* with callback */
 
-Dns.resolve4( uri, ( err, addresses ) =>
+Dns.resolve4( uri, ( err, addresses ) => /* qqq : nodejs routine which is synchronous */
 {
   console.log( `Ips of ${uri} are ${JSON.stringify( addresses )}` );
 });
