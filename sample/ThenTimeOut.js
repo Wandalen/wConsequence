@@ -30,15 +30,15 @@ function gotHandler3( error, value )
 
 /* cases */
 
-var t = _.timeOut( 2000, function()
+var t = _.time.out( 2000, function()
 {
 
   console.log( 'case1' );
-  var con = new wConsequence();
+  var con = new _.Consequence();
 
   con.thenTimeOut( 1000, gotHandler1 ).got( gotHandler2 );
 
-  con.give( 90 ).give( 1 );
+  con.take( 90 ).take( 1 );
 
 })
 
@@ -48,11 +48,11 @@ t.thenTimeOut( 2000, function()
 {
 
   console.log( 'case2' );
-  var con = new wConsequence();
+  var con = new _.Consequence();
 
   con.thenTimeOut( 1000, gotHandler1 ).got( gotHandler2 );
 
-  con.give( 90 );
+  con.take( 90 );
 
 });
 
@@ -62,9 +62,9 @@ t.thenTimeOut( 2000, function()
 {
 
   console.log( 'case3' );
-  var con = new wConsequence();
+  var con = new _.Consequence();
 
-  con.give( 90 );
+  con.take( 90 );
 
   con.thenTimeOut( 1000, gotHandler1 ).got( gotHandler2 );
 
@@ -77,16 +77,16 @@ t.thenTimeOut( 2000, function()
 
   console.log( 'case4' );
 
-  var con = new wConsequence();
-  var con2 = new wConsequence();
+  var con = new _.Consequence();
+  var con2 = new _.Consequence();
 
   debugger;
 
-  con.give( 90 );
+  con.take( 90 );
   con.thenTimeOut( 1000, con2 ).got( gotHandler1 );
-  con2.doThen( gotHandler2 );
+  con2.then( gotHandler2 );
 
-  _.timeOut( 1500, function()
+  _.time.out( 1500, function()
   {
 
     console.log( 'con :\n' + con.toStr() );
@@ -97,3 +97,5 @@ t.thenTimeOut( 2000, function()
   debugger;
 
 });
+
+/* qqq : simplify */

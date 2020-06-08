@@ -31,9 +31,9 @@ function gotHandler3( error, value )
 
 console.log( 'case 1' );
 
-var con1 = new wConsequence();
+var con1 = new _.Consequence();
 
-con1.give( 1 ).give( 4 );
+con1.take( 1 ).take( 4 );
 
 con1.tap( gotHandler1 );
 con1.got( gotHandler2 );
@@ -43,10 +43,12 @@ con1.got( gotHandler3 );
 
 console.log( 'case 2' );
 
-var con1 = new wConsequence();
+var con1 = new _.Consequence();
 
 con1.tap( gotHandler1 );
 con1.got( gotHandler2 );
 con1.got( gotHandler3 );
 
-con1.give( 1 ).give( 4 );
+con1.take( 1 ).take( 4 );
+
+/* qqq : simplify */

@@ -1,14 +1,5 @@
-
-if( typeof module !== 'undefined' )
 require( 'wConsequence' );
-var _ = wTools;
-var con = new wConsequence();
-
-con.got( function( err,data )
-{
-
-  console.log( 'got :',data );
-
-});
-
-con.give( 'some data' );
+let _ = wTools;
+let con = new _.Consequence();
+con.finallyGive( ( err, arg ) => console.log( 'Got :', arg ) );
+con.take( 'Some arg' );

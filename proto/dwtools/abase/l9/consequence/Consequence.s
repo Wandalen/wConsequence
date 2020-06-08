@@ -45,34 +45,17 @@ Procedure ::
 
 if( typeof module !== 'undefined' )
 {
-
   let _ = require( '../../../../dwtools/Tools.s' );
   _.include( 'wProto' );
   _.include( 'wCopyable' );
   _.include( 'wProcedure' );
-
 }
 
 let _global = _global_;
 let _ = _global_.wTools;
 let Deasync = null;
 
-// yyy
-// if( _realGlobal_.wTools && _realGlobal_.wConsequence )
-// {
-//   return _Extend( _global, _realGlobal_ );
-//   // _.assert( _.routineIs( _realGlobal_.wConsequence.After ) );
-//   // _.assert( _.mapIs( _realGlobal_.wConsequence.Tools ) );
-//   // _.mapExtend( _, _realGlobal_.wConsequence.Tools );
-//   // let Self = _realGlobal_.wConsequence;
-//   // _[ Self.shortName ] = Self;
-//   // if( typeof module !== 'undefined' )
-//   // module[ 'exports' ] = Self;
-//   // return;
-// }
-
-// _.assert( !_global_.wConsequence, 'Consequence included several times' );
-// _.assert( !_.Consequence, 'Consequence included several times' );
+_.assert( !_.Consequence, 'Consequence included several times' );
 
 // relations
 
@@ -219,18 +202,6 @@ function is( src )
   _.assert( arguments.length === 1 );
   return _.consequenceIs( src );
 }
-
-// //
-//
-// function isJoinedWithConsequence( src ) /* zzz : deprecate */
-// {
-//   _.assert( arguments.length === 1 );
-//   debugger;
-//   let result = _.isSubPrototypeOf( src, JoinedWithConsequence );
-//   if( result )
-//   debugger;
-//   return result;
-// }
 
 // --
 // basic
@@ -699,7 +670,6 @@ catchPromiseKeep.having = Object.create( _promise.having );
 function _deasync( o )
 {
   let self = this;
-  // let procedure = self.procedure( '_deasync' ).stackElse( 3 );
   let procedure = self.procedure( 3 ).nameElse( 'deasync' );
   let keeping = o.keeping;
   let result = Object.create( null );
@@ -778,96 +748,6 @@ function deasync()
 
 deasync.having = Object.create( _deasync.having );
 
-// //
-//
-// function finallyDeasyncGive()
-// {
-//   let self = this;
-//   _.assert( arguments.length === 0, 'Expects no arguments' );
-//   return self._deasync
-//   ({
-//     keeping : 0,
-//     kindOfResource : self.KindOfResource.Both,
-//   });
-// }
-//
-// finallyDeasyncGive.having = Object.create( _deasync.having );
-//
-// //
-//
-// function finallyDeasyncKeep()
-// {
-//   let self = this;
-//   _.assert( arguments.length === 0, 'Expects no arguments' );
-//   return self._deasync
-//   ({
-//     keeping : 1,
-//     kindOfResource : self.KindOfResource.Both,
-//   });
-// }
-//
-// finallyDeasyncGive.having = Object.create( _deasync.having );
-//
-// //
-//
-// function thenDeasyncGive()
-// {
-//   let self = this;
-//   _.assert( arguments.length === 0, 'Expects no arguments' );
-//   return self._deasync
-//   ({
-//     keeping : 0,
-//     kindOfResource : self.KindOfResource.ArgumentOnly,
-//   });
-// }
-//
-// finallyDeasyncGive.having = Object.create( _deasync.having );
-//
-// //
-//
-// function thenDeasyncKeep()
-// {
-//   let self = this;
-//   _.assert( arguments.length === 0, 'Expects no arguments' );
-//   return self._deasync
-//   ({
-//     keeping : 1,
-//     kindOfResource : self.KindOfResource.ArgumentOnly,
-//   });
-// }
-//
-// finallyDeasyncGive.having = Object.create( _deasync.having );
-//
-// //
-//
-// function catchDeasyncGive()
-// {
-//   let self = this;
-//   _.assert( arguments.length === 0, 'Expects no arguments' );
-//   return self._deasync
-//   ({
-//     keeping : 0,
-//     kindOfResource : self.KindOfResource.ErrorOnly,
-//   });
-// }
-//
-// finallyDeasyncGive.having = Object.create( _deasync.having );
-//
-// //
-//
-// function catchDeasyncKeep()
-// {
-//   let self = this;
-//   _.assert( arguments.length === 0, 'Expects no arguments' );
-//   return self._deasync
-//   ({
-//     keeping : 1,
-//     kindOfResource : self.KindOfResource.ErrorOnly,
-//   });
-// }
-//
-// finallyDeasyncGive.having = Object.create( _deasync.having );
-
 // --
 // advanced
 // --
@@ -891,11 +771,9 @@ function _first( src, stack )
       result = src();
       if( result === undefined )
       throw self.ErrNoReturn( src );
-      // _.assert( result !== undefined, 'Competitor for consequence.first should return something, not undefined' );
     }
     catch( err )
     {
-      // result = new _.Consequence().error( err );
       result = new _.Consequence().error( self.__handleError( err ) );
     }
 
@@ -1037,7 +915,6 @@ function splitKeep( first )
 
   _.assert( arguments.length === 0 || arguments.length === 1 );
 
-  // let result = new Self({ sourcePath : 2 });
   let result = new Self();
 
   if( first ) // xxx : remove, maybe argument?
@@ -1070,7 +947,6 @@ function splitGive( first )
 
   _.assert( arguments.length === 0 || arguments.length === 1 );
 
-  // let result = new Self({ sourcePath : 2 });
   let result = new Self();
 
   if( first ) // xxx : remove, maybe argument?
@@ -1405,7 +1281,7 @@ function _put( o )
     self.__handleResourceSoon( false );
     return self;
   }
-  else if( _.arrayIs( o.container ) )
+  else if( _.arrayLike( o.container ) )
   {
     debugger;
     self._competitorAppend
@@ -1858,7 +1734,7 @@ function _and( o )
   let args = [];
   let anyErr;
   let competitors = o.competitors;
-  let taking = o.taking;
+  let keeping = o.keeping;
   let accumulative = o.accumulative;
   let waiting = o.waiting;
   let procedure = self.procedure( o.stack + 1 ).nameElse( 'and' );
@@ -1869,10 +1745,11 @@ function _and( o )
 
   /* */
 
-  if( !_.arrayIs( competitors ) )
-  competitors = [ competitors ];
+  if( _.arrayLike( competitors ) )
+  competitors = _.longSlice( competitors );
   else
-  competitors = competitors.slice();
+  competitors = [ competitors ];
+
   if( o.waiting )
   competitors.push( self );
   else
@@ -2070,12 +1947,8 @@ function _and( o )
     {
       if( err )
       {
-        // debugger; // xxx
-        // err = _._errAttend( err, errId );
-        // _.assert( err.attended === errId );
         err = _.errSuspend( err, errId );
         _.assert( err.suspended === errId );
-        // console.log( `suspended : true` );
       }
       errs[ c ] = err;
       args[ c ] = arg;
@@ -2092,7 +1965,8 @@ function _and( o )
   {
     let competitors2 = [];
 
-    if( !taking )
+    // if( !taking )
+    if( keeping )
     for( let i = first ; i < last ; i++ )
     if( competitors[ i ] )
     {
@@ -2103,13 +1977,9 @@ function _and( o )
       continue;
 
       let err = errs[ i ];
-      // if( err && err.attended === errId )
       if( err && err.suspended === errId )
       {
-        // debugger; // xxx
-        // err = _._errAttend( err, false );
         err = _.errSuspend( err, false );
-        // console.log( `suspended : false` );
       }
 
       competitor.take( err, args[ i ] );
@@ -2119,7 +1989,6 @@ function _and( o )
     if( accumulative )
     args = _.arrayFlatten( args );
 
-    // debugger;
     if( anyErr )
     self.error( anyErr );
     else
@@ -2134,7 +2003,7 @@ function _and( o )
 _and.defaults =
 {
   competitors : null,
-  taking : 1,
+  keeping : 0,
   accumulative : 0,
   waiting : 1,
   stack : 2,
@@ -2203,7 +2072,7 @@ having.andLike = 1;
 
 let andTake = _.routineFromPreAndBody( and_pre, _and, 'andTake' );
 var defaults = andTake.defaults;
-defaults.taking = true;
+defaults.keeping = false;
 
 //
 
@@ -2220,13 +2089,13 @@ defaults.taking = true;
 
 let andKeep = _.routineFromPreAndBody( and_pre, _and, 'andKeep' );
 var defaults = andKeep.defaults;
-defaults.taking = false;
+defaults.keeping = true;
 
 /* qqq : jsdoc, please */
 
 let andKeepAccumulative = _.routineFromPreAndBody( and_pre, _and, 'andKeepAccumulative' );
 var defaults = andKeepAccumulative.defaults;
-defaults.taking = false;
+defaults.keeping = true;
 defaults.accumulative = true;
 
 //
@@ -2247,7 +2116,7 @@ defaults.accumulative = true;
 
 let alsoKeep = _.routineFromPreAndBody( and_pre, _and, 'alsoKeep' );
 var defaults = alsoKeep.defaults;
-defaults.taking = false;
+defaults.keeping = true;
 defaults.accumulative = true;
 defaults.waiting = false;
 
@@ -2269,9 +2138,42 @@ defaults.waiting = false;
 
 let alsoTake = _.routineFromPreAndBody( and_pre, _and, 'alsoTake' );
 var defaults = alsoTake.defaults;
-defaults.taking = true;
+defaults.keeping = false;
 defaults.accumulative = true;
 defaults.waiting = false;
+
+//
+
+function AndTake_()
+{
+  _.assert( !_.instanceIs( this ) )
+  // _.assert( arguments.length === 1 );
+  // srcs = _.arrayFlatten( _.arrayAs( srcs ) );
+
+  return _.Consequence().take( null ).andTake( arguments ).then( ( arg ) =>
+  {
+    _.assert( arg[ arg.length - 1 ] === null );
+    arg.splice( arg.length - 1, 1 );
+    return arg;
+  });
+}
+
+//
+
+// function AndKeep( srcs )
+function AndKeep_()
+{
+  _.assert( !_.instanceIs( this ) )
+  // _.assert( arguments.length === 1 );
+  // srcs = _.arrayFlatten( _.arrayAs( srcs ) );
+
+  return _.Consequence().take( null ).andKeep( arguments ).then( ( arg ) =>
+  {
+    _.assert( arg[ arg.length - 1 ] === null );
+    arg.splice( arg.length - 1, 1 );
+    return arg;
+  });
+}
 
 // --
 // or
@@ -2281,17 +2183,16 @@ function _or( o )
 {
   let self = this;
   let count = 0;
-  // let procedure = self.procedure( 'or' ).stackElse( o.stack + 1 );
   let procedure = self.procedure( o.stack + 1 ).nameElse( 'or' );
   let competitors = o.competitors;
   let competitorRoutines = [];
 
   _.assertRoutineOptions( _or, arguments );
 
-  if( !_.arrayIs( competitors ) )
-  competitors = [ competitors ];
-  else
+  if( _.arrayLike( competitors ) )
   competitors = _.longSlice( competitors );
+  else
+  competitors = [ competitors ];
 
   /* xxx qqq : implement tests: arguments are promises */
 
@@ -2305,34 +2206,14 @@ function _or( o )
     competitors.splice( c, 1 );
   }
 
-  // logger.log( '_or', competitors.length, procedure._longName, self.tag );
-  // debugger;
-
   /* */
 
   if( o.gettingReadyFirst )
   {
-
-    // if( o.kindOfResource === Self.KindOfResource.Both )
-    // self.finallyGive( function( err, arg )
-    // {
-    //   if( err )
-    //   self.error( err );
-    //   else
-    //   _take();
-    // });
-    // else if( o.kindOfResource === Self.KindOfResource.ArgumentOnly )
-    // self.thenGive( function( arg )
-    // {
-    //   _take();
-    // });
-    // else if( o.kindOfResource === Self.KindOfResource.ArgumentOnly )
-
     self.thenGive( function( arg )
     {
       _take();
     });
-
   }
   else
   {
@@ -2353,8 +2234,7 @@ function _or( o )
 
       _.assert( _.consequenceIs( competitor ) );
 
-      let competitorRoutine = competitorRoutines[ c ] = _.routineJoin( undefined, _orGot, [ c ] );
-      // competitor.procedure( 'or' ).stackElse( procedure.stack() );
+      let competitorRoutine = competitorRoutines[ c ] = _.routineJoin( undefined, _got, [ c ] );
       competitor.procedure({ _stack : procedure.stack() }).nameElse( 'orVariant' );
       competitor.finallyGive( competitorRoutine );
 
@@ -2366,7 +2246,7 @@ function _or( o )
 
   /* - */
 
-  function _orGot( index, err, arg )
+  function _got( index, err, arg )
   {
 
     count += 1;
@@ -2383,12 +2263,16 @@ function _or( o )
       competitor.competitorsCancel( competitorRoutine );
     }
 
+    if( o.keeping )
+    if( o.gettingReadyFirst || index !== 0 )
+    competitors[ index ].take( err, arg );
+
     if( count === 1 )
     self.take( err, arg );
 
-    if( !o.taking )
-    if( o.gettingReadyFirst || index !== 0 )
-    competitors[ index ].take( err, arg );
+    // if( o.keeping )
+    // if( o.gettingReadyFirst || index !== 0 )
+    // competitors[ index ].take( err, arg );
 
   }
 
@@ -2399,10 +2283,9 @@ function _or( o )
 _or.defaults =
 {
   competitors : null,
-  taking : null,
+  keeping : null,
   gettingReadyFirst : null,
   stack : 2,
-  // kindOfResource : KindOfResource.Both,
 }
 
 _or.having =
@@ -2420,7 +2303,7 @@ function afterOrTaking( competitors )
   return self._or
   ({
     competitors,
-    taking : true,
+    keeping : false,
     gettingReadyFirst : true,
     stack : 2,
   });
@@ -2437,7 +2320,7 @@ function afterOrKeeping( competitors )
   return self._or
   ({
     competitors,
-    taking : false,
+    keeping : true,
     gettingReadyFirst : true,
     stack : 2,
   });
@@ -2452,16 +2335,15 @@ function orKeepingSplit( competitors )
   let self = this;
   _.assert( arguments.length === 1, 'Expects single argument' );
 
-  if( !_.arrayIs( competitors ) )
-  competitors = [ competitors ];
+  if( _.arrayLike( competitors ) )
+  competitors = _.longSlice( competitors );
   else
-  competitors = competitors.slice();
+  competitors = [ competitors ];
+
   competitors.unshift( self );
 
-  // let con = new Self({ sourcePath : 2 }).take( null );
   let con = new Self().take( null );
 
-  // con.procedure( 'orKeepingSplit' ).stackElse( 2 );
   con.procedure( 2 ).nameElse( 'orKeepingSplit' );
   con.afterOrKeeping( competitors );
 
@@ -2479,7 +2361,7 @@ function orTaking( competitors )
   return self._or
   ({
     competitors,
-    taking : true,
+    keeping : false,
     gettingReadyFirst : false,
     stack : 2,
   });
@@ -2496,7 +2378,7 @@ function orKeeping( competitors )
   return self._or
   ({
     competitors,
-    taking : false,
+    keeping : true,
     gettingReadyFirst : false,
     stack : 2,
   });
@@ -2506,125 +2388,25 @@ orKeeping.having = Object.create( _or.having );
 
 //
 
-// function or( competitors )
-// {
-//   let self = this;
-//   _.assert( arguments.length === 1, 'Expects single argument' );
-//
-//   if( !_.arrayIs( competitors ) )
-//   competitors = [ competitors ];
-//   else
-//   competitors = competitors.slice();
-//   competitors.unshift( self );
-//
-//   let con = new Self().take( null );
-//
-//   con.procedure( 'or' ).stackElse( 2 );
-//   con.afterOrTaking( competitors );
-//   con.finally( self );
-//
-//   return self;
-// }
-//
-// or.having = Object.create( _or.having );
+function OrTake( srcs )
+{
+  _.assert( !_.instanceIs( this ) )
+  return _.Consequence().orTaking( arguments ).then( ( arg ) =>
+  {
+    return arg;
+  });
+}
 
 //
 
-// /* zzz : deprecate */
-// let JoinedWithConsequence = Object.create( null );
-// JoinedWithConsequence.routineJoin = _.routineSeal;
-// JoinedWithConsequence.context = null;
-// JoinedWithConsequence.method = null;
-// JoinedWithConsequence.consequence = null;
-// JoinedWithConsequence.constructor = function JoinedWithConsequence()
-// {
-//   debugger;
-// };
-
-// //
-//
-// function _prepareJoinedWithConsequence()
-// {
-//
-//   for( let r in Self.prototype ) ( function( r )
-//   {
-//     if( Self.prototype._Accessors[ r ] )
-//     return;
-//     let routine = Self.prototype[ r ];
-//     if( !routine.having || !routine.having.consequizing )
-//     return;
-//
-//     if( routine.having.andLike )
-//     JoinedWithConsequence[ r ] = function()
-//     {
-//       let args = arguments;
-//       let method = [];
-//       _.assert( arguments.length === 1, 'Expects single argument' );
-//       _.assert( _.longIs( args[ 0 ] ) );
-//       for( let i = 0 ; i < args[ 0 ].length ; i++ )
-//       {
-//         method.push( this.routineJoin( this.context, this.method, [ args[ 0 ][ i ] ] ) );
-//       }
-//       this.consequence[ r ]( method );
-//       return this;
-//     }
-//     else
-//     JoinedWithConsequence[ r ] = function()
-//     {
-//       let args = arguments;
-//       let method = this.routineJoin( this.context, this.method, args );
-//       this.consequence[ r ]( method );
-//       return this;
-//     }
-//
-//   })( r );
-//
-// }
-
-// --
-// adapter
-// --
-
-// function _join( routineJoin, args )
-// {
-//   let self = this;
-//   let result = Object.create( JoinedWithConsequence );
-//
-//   _.assert( arguments.length === 2, 'Expects exactly two arguments' );
-//   _.assert( args.length === 1 || args.length === 2 );
-//   _.assert( _.consequenceIs( this ) );
-//
-//   result.routineJoin = routineJoin;
-//   result.consequence = self;
-//
-//   if( args[ 1 ] !== undefined )
-//   {
-//     result.context = args[ 0 ];
-//     result.method = args[ 1 ];
-//   }
-//   else
-//   {
-//     result.method = args[ 0 ];
-//   }
-//
-//   return result;
-// }
-//
-// //
-//
-// function join( context, method )
-// {
-//   let self = this;
-//   return self._join( _.routineJoin, arguments );
-// }
-//
-// //
-//
-// function seal( context, method )
-// {
-//   let self = this;
-//   return self._join( _.routineSeal, arguments );
-// }
+function OrKeep( srcs )
+{
+  _.assert( !_.instanceIs( this ) )
+  return _.Consequence().orKeeping( arguments ).then( ( arg ) =>
+  {
+    return arg;
+  });
+}
 
 //
 
@@ -2642,51 +2424,6 @@ function tolerantCallback()
   }
 }
 
-// function seal( context, method )
-// {
-//   let self = this;
-//   let result = Object.create( null );
-//
-//   _.assert( arguments.length === 1 || arguments.length === 2 );
-//   _.assert( _.consequenceIs( this ) );
-//
-//   result.consequence = self;
-//
-//   result.thenKeep = function thenKeep( _method )
-//   {
-//     let args = method ? arguments[ 1 ];
-//     let c = _.routineSeal( context, method || _method, args );
-//     self.thenKeep( c );
-//     return this;
-//   }
-//
-//   result.catchKeep = function catchKeep( _method )
-//   {
-//     let args = method ? arguments[ 1 ];
-//     let c = _.routineSeal( context, method || _method, args );
-//     self.catchKeep( c );
-//     return this;
-//   }
-//
-//   result.finally = function finally( _method )
-//   {
-//     let args = method ? arguments[ 1 ];
-//     let c = _.routineSeal( context, method || _method, args );
-//     self.finally( c );
-//     return this;
-//   }
-//
-//   result.finallyGive = function finallyGive( _method )
-//   {
-//     let args = method ? arguments[ 2 ];
-//     let c = _.routineSeal( context, method || _method, args );
-//     self.finallyGive( c );
-//     return this;
-//   }
-//
-//   return result;
-// }
-
 // --
 // resource
 // --
@@ -2703,6 +2440,9 @@ function takeLater( timeOut, error, argument )
     argument = arguments[ 1 ];
     error = undefined;
   }
+
+  if( error === null )
+  error = undefined;
 
   _.assert( error !== undefined || argument !== undefined, 'Argument of take should be something, not undefined' );
   _.assert( error === undefined || argument === undefined, 'Cant take both error and argument, one should be undefined' );
@@ -2728,19 +2468,21 @@ function takeSoon( error, argument )
 {
   let self = this;
 
-  _.assert( arguments.length === 2 || arguments.length === 1, 'Expects 1 or 2 arguments, but got ' + arguments.length );
-  _.assert( error !== undefined || argument !== undefined, 'Argument of take should be something, not undefined' );
-  _.assert( error === undefined || argument === undefined, 'Cant take both error and argument, one should be undefined' );
-
   if( arguments.length === 1 )
   {
     argument = error;
     error = undefined;
   }
 
-  self.__onTake( error, argument );
+  if( error === null )
+  error = undefined;
 
-  // _.time.out( 1, function timeOut()
+  _.assert( arguments.length === 2 || arguments.length === 1, 'Expects 1 or 2 arguments, but got ' + arguments.length );
+  _.assert( error !== undefined || argument !== undefined, 'Argument of take should be something, not undefined' );
+  _.assert( error === undefined || argument === undefined, 'Cant take both error and argument, one should be undefined' );
+
+  // self.__onTake( error, argument );
+
   _.time.begin( 1, () =>
   {
     self.take( error, argument );
@@ -2748,6 +2490,20 @@ function takeSoon( error, argument )
 
   return self;
 }
+
+//
+
+function takeAll()
+{
+  let self = this;
+
+  for( let a = 0 ; a < arguments.length ; a++ )
+  self.take( arguments[ a ] );
+
+  return self;
+}
+
+//
 
 /**
  * Method pushes `resource` into wConsequence resources queue.
@@ -2778,15 +2534,18 @@ function take( error, argument )
 {
   let self = this;
 
-  _.assert( arguments.length === 2 || arguments.length === 1, 'Expects 1 or 2 arguments, but got ' + arguments.length );
-  _.assert( error !== undefined || argument !== undefined, 'Argument of take should be something, not undefined' );
-  _.assert( error === undefined || argument === undefined, 'Cant take both error and argument, one should be undefined' );
-
   if( arguments.length === 1 )
   {
     argument = error;
     error = undefined;
   }
+
+  if( error === null )
+  error = undefined;
+
+  _.assert( arguments.length === 2 || arguments.length === 1, 'Expects 1 or 2 arguments, but got ' + arguments.length );
+  _.assert( error !== undefined || argument !== undefined, 'Argument of take should be something, not undefined' );
+  _.assert( error === undefined || argument === undefined, 'Cant take both error and argument, one should be undefined' );
 
   if( error !== undefined )
   error = self.__handleError( error )
@@ -2878,31 +2637,6 @@ error.having =
 {
   consequizing : 1,
 }
-
-// //
-//
-// /**
-//  * Method creates and pushes resource object into wConsequence resources sequence.
-//  * Returns current wConsequence instance.
-//  * @param {*} error Error value
-//  * @param {*} argument resolved value
-//  * @returns {_giveWithError}
-//  * @private
-//  * @throws {Error} if missed arguments or passed extra arguments
-//  * @method _giveWithError
-//  * @module Tools/base/Consequence
-// * @namespace Tools
-// * @class wConsequence
-//  */
-//
-// function _giveWithError( error, argument )
-// {
-//   let self = this;
-//
-//   _.assert( arguments.length === 2, 'Expects exactly two arguments' );
-//
-//   return self.__take( error, argument );
-// }
 
 //
 
@@ -3619,8 +3353,6 @@ function deadLockReport( competitor )
     if( report )
     report += '\n';
     report += con.qualifiedName ;
-    // report += con.qualifiedName + ' : ' + con.sourcePath;
-    // report += con.id + ' : ' + con.sourcePath;
   });
 
   return report;
@@ -4141,19 +3873,18 @@ function procedureDetach()
 // exporter
 // --
 
-function _exportInfo( o )
+function _exportString( o )
 {
   let self = this;
   let result = '';
 
-  _.assertRoutineOptions( _exportInfo, arguments );
+  _.assertRoutineOptions( _exportString, arguments );
 
   if( o.verbosity >= 2 )
   {
     result += self.qualifiedName;
 
-    let names = _.select( self.competitorsEarlyGet(), '*/tag' );
-
+    // let names = _.select( self.competitorsEarlyGet(), '*/tag' );
     // if( self.id )
     // result += '\n  id : ' + self.id;
 
@@ -4161,40 +3892,39 @@ function _exportInfo( o )
     result += '\n  error resources : ' + self.errorsCount();
     result += '\n  early competitors : ' + self.competitorsEarlyGet().length;
     result += '\n  late competitors : ' + self.competitorsLateGet().length;
-    result += '\n  AsyncCompetitorHanding : ' + self.AsyncCompetitorHanding;
-    result += '\n  AsyncResourceAdding : ' + self.AsyncResourceAdding;
+    // result += '\n  AsyncCompetitorHanding : ' + self.AsyncCompetitorHanding;
+    // result += '\n  AsyncResourceAdding : ' + self.AsyncResourceAdding;
 
   }
   else
   {
     if( o.verbosity >= 1 )
-    result += self.qualifiedName + ' ';
-
-    result += self.resourcesCount() + ' / ' + self.competitorsCount();
+    result += self.qualifiedName;
+    result += ' ' + self.resourcesCount() + ' / ' + self.competitorsCount();
   }
 
   return result;
 }
 
-_exportInfo.defaults =
+_exportString.defaults =
 {
-  verbosity : 2,
+  verbosity : 1,
 }
 
 //
 
-function exportInfo( o )
+function exportString( o )
 {
   let self = this;
-  o = _.routineOptions( exportInfo, arguments );
-  return self._exportInfo( o );
+  o = _.routineOptions( exportString, arguments );
+  return self._exportString( o );
 }
 
-_.routineExtend( exportInfo, _exportInfo );
+_.routineExtend( exportString, _exportString );
 
 //
 
-function callbacksInfoLog()
+function _callbacksInfoLog()
 {
   let self = this;
 
@@ -4208,7 +3938,7 @@ function callbacksInfoLog()
     console.log( competitor.competitorRoutine );
   });
 
-  return self.exportInfo();
+  return self.exportString();
 }
 
 //
@@ -4256,18 +3986,34 @@ function callbacksInfoLog()
  * @class wConsequence
  */
 
-function toStr()
+function toStr( o )
 {
   let self = this;
-  return self.exportInfo({ verbosity : 9 });
+  return self.exportString( o );
 }
 
 //
 
-function toString()
+function toString( o )
 {
   let self = this;
-  return self.toStr();
+  return self.exportString( o );
+}
+
+//
+
+function _inspectCustom()
+{
+  let self = this;
+  return self.exportString();
+}
+
+//
+
+function _toPrimitive()
+{
+  let self = this;
+  return self.exportString();
 }
 
 //
@@ -4509,12 +4255,12 @@ function _Take( o )
 
   _.assert( arguments.length === 1, 'Expects single argument' );
   _.assert( _.objectIs( o ) );
-  _.assert( _.arrayIs( o.args ) && o.args.length <= 1, 'not tested' );
+  _.assert( _.arrayLike( o.args ) && o.args.length <= 1, 'not tested' );
   _.assertRoutineOptionsPreservingUndefines( _Take, arguments );
 
   /* */
 
-  if( _.arrayIs( o.consequence ) )
+  if( _.arrayLike( o.consequence ) )
   {
 
     for( let i = 0 ; i < o.consequence.length ; i++ )
@@ -4528,7 +4274,7 @@ function _Take( o )
   else if( _.consequenceIs( o.consequence ) )
   {
 
-    _.assert( _.arrayIs( o.args ) && o.args.length <= 1 );
+    _.assert( _.arrayLike( o.args ) && o.args.length <= 1 );
 
     context = o.consequence;
 
@@ -4538,7 +4284,7 @@ function _Take( o )
   else if( _.routineIs( o.consequence ) )
   {
 
-    _.assert( _.arrayIs( o.args ) && o.args.length <= 1 );
+    _.assert( _.arrayLike( o.args ) && o.args.length <= 1 );
 
     return o.consequence.call( context, o.error, o.args[ 0 ] );
 
@@ -4607,6 +4353,7 @@ function Error( consequence, error )
 
 function Try( routine )
 {
+
   _.assert( arguments.length === 1 );
   _.assert( _.routineIs( routine ) );
 
@@ -4622,164 +4369,6 @@ function Try( routine )
   }
 
 }
-
-//
-
-function AndTake( srcs )
-{
-  _.assert( !_.instanceIs( this ) )
-  _.assert( arguments.length === 1 );
-  srcs = _.arrayFlatten( _.arrayAs( srcs ) );
-
-  return _.Consequence().take( null ).andTake( srcs ).then( ( arg ) =>
-  {
-    _.assert( arg[ arg.length - 1 ] === null );
-    arg.splice( arg.length - 1, 1 );
-    return arg;
-  });
-}
-
-//
-
-function AndKeep( srcs )
-{
-  _.assert( !_.instanceIs( this ) )
-  _.assert( arguments.length === 1 );
-  srcs = _.arrayFlatten( _.arrayAs( srcs ) );
-
-  return _.Consequence().take( null ).andKeep( srcs ).then( ( arg ) =>
-  {
-    _.assert( arg[ arg.length - 1 ] === null );
-    arg.splice( arg.length - 1, 1 );
-    return arg;
-  });
-}
-
-// //
-//
-// /**
-//  * Works like [take]{@link _.Consequence.take} but accepts also context, that will be sealed to competitor.
-//  * @see _.Consequence.take
-//  * @param {Function|wConsequence} consequence wConsequence or routine.
-//  * @param {Object} context sealed context
-//  * @param {*} err error reason
-//  * @param {*} finallyGive arguments
-//  * @returns {*}
-//  * @method GiveWithContextAndError
-//  * @module Tools/base/Consequence
-// * @namespace Tools
-// * @class wConsequence
-//  */
-//
-// function GiveWithContextAndError( consequence, context, err, finallyGive )
-// {
-//
-//   if( err === undefined )
-//   err = null;
-//
-//   console.warn( 'deprecated' );
-//   //debugger;
-//
-//   let args = [ finallyGive ];
-//   if( arguments.length > 4 )
-//   args = _.longSlice( arguments, 3 );
-//
-//   return _Take
-//   ({
-//     consequence,
-//     context,
-//     error : err,
-//     args,
-//   });
-//
-// }
-
-// //
-//
-// /**
-//  * Method accepts competitor callback. Returns special competitor that wrap passed one. Passed corespondent will
-//  * be invoked only if handling resource contains error value. Else given resource will be delegate to the next competitor
-//  * in wConsequence, to the which result competitor was added.
-//  * @param {competitor} errHandler competitor for error
-//  * @returns {competitor}
-//  * @static
-//  * @thorws If missed arguments or passed extra ones.
-//  * @method catchKeep
-//  * @module Tools/base/Consequence
-// * @namespace Tools
-// * @class wConsequence
-//  * @see {@link module:Tools/base/Consequence.wConsequence#catchKeep}
-//  */
-//
-// function IfErrorThen()
-// {
-//
-//   let onEnd = arguments[ 0 ];
-//
-//   _.assert( arguments.length === 1, 'Expects single argument' );
-//   _.assert( this === Self );
-//   _.assert( _.routineIs( onEnd ) );
-//
-//   return function catchKeep( err, arg )
-//   {
-//
-//     _.assert( arguments.length === 2, 'Expects exactly two arguments' );
-//
-//     if( err )
-//     {
-//       return onEnd( err, arg );
-//     }
-//     else
-//     {
-//       return new Self().take( arg );
-//     }
-//
-//   }
-//
-// }
-//
-// //
-//
-// /**
-//  * Method accepts competitor callback. Returns special competitor that wrap passed one. Passed corespondent will
-//  * be invoked only if handling resource does not contain error value. Else given resource with error will be delegate to
-//  * the next competitor in wConsequence, to the which result competitor was added.
-//  * @param {competitor} vallueHandler resolved resource competitor
-//  * @returns {corespondent}
-//  * @static
-//  * @throws {Error} If missed arguments or passed extra one;
-//  * @method thenKeep
-//  * @module Tools/base/Consequence
-// * @namespace Tools
-// * @class wConsequence
-//  */
-//
-// function IfNoErrorThen()
-// {
-//
-//   let onEnd = arguments[ 0 ];
-//
-//   _.assert( arguments.length === 1, 'Expects single argument' );
-//   _.assert( this === Self );
-//   _.assert( _.routineIs( onEnd ) );
-//
-//   return function thenKeep( err, arg )
-//   {
-//
-//     _.assert( arguments.length === 2, 'Expects exactly two arguments' );
-//
-//     if( !err )
-//     {
-//       return onEnd( err, arg );
-//     }
-//     else
-//     {
-//       return new Self().error( err );
-//     }
-//
-//   }
-//
-// }
 
 //
 
@@ -4818,62 +4407,94 @@ function CatchPass( err, arg )
 {
   _.assert( err !== undefined, 'Expects non-undefined error' );
   throw err;
-  // throw _.err( err );
 }
+
+// --
+// meta
+// --
+
+function _metaDefine( how, key, value )
+{
+  let opts =
+  {
+    enumerable : false,
+    configurable : false,
+  }
+
+  if( how === 'get' )
+  {
+    opts.get = value;
+    Object.defineProperty( Self.prototype, key, opts );
+  }
+  else if( how === 'field' )
+  {
+    opts.value = value;
+    Object.defineProperty( Self.prototype, key, opts );
+  }
+  else if( how === 'static' )
+  {
+    opts.get = value;
+    Object.defineProperty( Self, key, opts );
+    Object.defineProperty( Self.prototype, key, opts );
+  }
+  else _.assert( 0 );
+
+}
+
 // --
 // experimental
 // --
 
-function FunctionWithin( consequence )
-{
-  let routine = this;
-  let args;
-  let context;
-
-  _.assert( arguments.length === 1, 'Expects single argument' );
-  _.assert( _.consequenceIs( consequence ) );
-
-  consequence.finally( function( err, arg )
-  {
-
-    return routine.apply( context, args );
-
-  });
-
-  return function()
-  {
-    context = this;
-    args = arguments;
-    return consequence;
-  }
-
-}
+// function FunctionWithin( consequence )
+// {
+//   let routine = this;
+//   let args;
+//   let context;
+//
+//   _.assert( arguments.length === 1, 'Expects single argument' );
+//   _.assert( _.consequenceIs( consequence ) );
+//
+//   consequence.finally( function( err, arg )
+//   {
+//
+//     return routine.apply( context, args );
+//
+//   });
+//
+//   return function()
+//   {
+//     context = this;
+//     args = arguments;
+//     return consequence;
+//   }
+//
+// }
+//
+// //
+//
+// function FunctionThereafter()
+// {
+//   let con = new Self();
+//   let routine = this;
+//   let args = arguments
+//
+//   con.finally( function( err, arg )
+//   {
+//
+//     return routine.apply( null, args );
+//
+//   });
+//
+//   return con;
+// }
 
 //
 
-function FunctionThereafter()
-{
-  let con = new Self();
-  let routine = this;
-  let args = arguments
-
-  con.finally( function( err, arg )
-  {
-
-    return routine.apply( null, args );
-
-  });
-
-  return con;
-}
-
-//
-
-if( 0 )
-{
-  Function.prototype.within = FunctionWithin;
-  Function.prototype.thereafter = FunctionThereafter;
-}
+// if( 0 )
+// {
+//   Function.prototype.within = FunctionWithin;
+//   Function.prototype.thereafter = FunctionThereafter;
+// }
 
 // //
 //
@@ -4981,7 +4602,6 @@ function After( resource )
  * @property {Number} id Id of current instance
  * @property {Array} [_dependsOf=[]]
  * @property {Number} [capacity=0] Maximal number of resources. Unlimited by default.
- * @property {String} sourcePath Path to source file were wConsequence instance was created.
  * @class wConsequence
  * @namespace Tools
  * @module Tools/base/Consequence
@@ -5024,7 +4644,6 @@ let Composes =
 let ComposesDebug =
 {
   tag : '',
-  // sourcePath : null,
 }
 
 if( Config.debug )
@@ -5052,7 +4671,6 @@ _.mapExtend( Restricts, RestrictsDebug );
 let Medials =
 {
   tag : '',
-  // sourcePath : null,
 }
 
 let Statics =
@@ -5061,16 +4679,20 @@ let Statics =
   Now,
   Async : Now,
   After,
-  From,
+  From, /* qqq : cover please */
   FromCalling,
   Take,
   Error,
   ErrNoReturn,
-  Try,
+  Try, /* qqq : cover please */
 
-  And : AndKeep,
-  AndTake,
-  AndKeep,
+  AndTake_,
+  AndKeep_,
+  And_ : AndKeep_,
+
+  OrTake,
+  OrKeep,
+  Or : OrKeep,
 
   FinallyPass,
   ThenPass,
@@ -5121,7 +4743,6 @@ let Accessors =
 let DebugAccessors =
 {
   tag : { get : _defGetter_functor( 'tag', null ) },
-  // sourcePath : { get : _defGetter_functor( 'sourcePath', null ) },
   _dependsOf : { get : _arrayGetter_functor( '_dependsOf' ) },
 }
 
@@ -5132,12 +4753,11 @@ _.mapExtend( Accessors, DebugAccessors );
 // declare
 // --
 
-let Extend =
+let Extension =
 {
 
   init,
   is,
-  // isJoinedWithConsequence,
 
   // basic
 
@@ -5148,6 +4768,7 @@ let Extend =
 
   thenGive,
   ifNoErrorGot : thenGive,
+  got : thenGive,
   thenKeep,
   then : thenKeep,
   ifNoErrorThen : thenKeep,
@@ -5173,15 +4794,6 @@ let Extend =
 
   _deasync,
   deasync,
-
-  // /* zzz : below will be removed! */
-  // finallyDeasyncGive,
-  // finallyDeasyncKeep,
-  // // deasync : finallyDeasyncKeep,
-  // thenDeasyncGive,
-  // thenDeasyncKeep,
-  // catchDeasyncGive,
-  // catchDeasyncKeep,
 
   // advanced
 
@@ -5243,6 +4855,10 @@ let Extend =
   alsoTake,
   also : alsoKeep,
 
+  AndTake_,
+  AndKeep_,
+  And_ : AndKeep_,
+
   // or
 
   _or,
@@ -5253,17 +4869,19 @@ let Extend =
   orKeeping,
   or : orKeeping, /* xxx : introduce static routine Or */
 
+  OrTake,
+  OrKeep,
+  Or : OrKeep,
+
   // adapter
 
-  // _join, // zzz : deprecate
-  // join, // zzz : deprecate
-  // seal, // zzz : deprecate
   tolerantCallback,
 
   // resource
 
   takeLater,
   takeSoon,
+  takeAll,
   take,
   error,
   __take,
@@ -5313,11 +4931,13 @@ let Extend =
 
   // exporter
 
-  _exportInfo,
-  exportInfo,
-  callbacksInfoLog,
+  _exportString,
+  exportString,
+  _callbacksInfoLog,
   toStr,
   toString,
+  _inspectCustom,
+  _toPrimitive,
 
   // accessor
 
@@ -5353,12 +4973,15 @@ _.classDeclare
 ({
   cls : wConsequence,
   parent : null,
-  extend : Extend,
+  extend : Extension,
   supplement : Supplement,
   usingOriginalPrototype : 1,
 });
 
 _.Copyable.mixin( wConsequence ); /* zzz : remove the mixin, maybe */
+
+_metaDefine( 'field', Symbol.toPrimitive, _toPrimitive );
+_metaDefine( 'field', Symbol.for( 'nodejs.util.inspect.custom' ), _inspectCustom );
 
 _.mapExtend( _, Tools );
 _.mapExtend( _realGlobal_.wTools, Tools );
@@ -5382,13 +5005,6 @@ _.assert( _.strDefined( wConsequenceProxy.shortName ) );
 _.assert( _.routineIs( wConsequenceProxy.prototype.take ) );
 
 _.assert( wConsequenceProxy.shortName === 'Consequence' );
-
-// _prepareJoinedWithConsequence(); /* zzz : deprecate _prepareJoinedWithConsequence */
-
-// _.assert( !Self.FieldsOfRelationsGroupsGet );
-// _.assert( !Self.prototype.FieldsOfRelationsGroupsGet );
-// _.assert( !Self.FieldsOfRelationsGroups );
-// _.assert( !Self.prototype.FieldsOfRelationsGroups );
 
 _.assert( !!Self.FieldsOfRelationsGroupsGet );
 _.assert( !!Self.prototype.FieldsOfRelationsGroupsGet );

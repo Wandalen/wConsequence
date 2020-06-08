@@ -1,4 +1,4 @@
-# wConsequence [![Build Status](https://travis-ci.org/Wandalen/wConsequence.svg?branch=master)](https://travis-ci.org/Wandalen/wConsequence)
+# wConsequence [![Status](https://github.com/Wandalen/wConsequence/workflows/Test/badge.svg)](https://github.com/Wandalen/wConsequence/actions?query=workflow%3ATest)
 
 Advanced synchronization mechanism. Asynchronous routines may use Consequence to wrap postponed result, what allows classify callback for such routines as output, not input, what improves analyzability of a program. Consequence may be used to make a queue for mutually exclusive access to a resource.
 
@@ -9,49 +9,3 @@ Algorithmically speaking Consequence is 2 queues ( FIFO ) and a customizable arb
 npm install
 node sample/Sample.js
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
