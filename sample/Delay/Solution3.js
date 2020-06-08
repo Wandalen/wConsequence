@@ -13,7 +13,7 @@ function taskWithDelay( delay, task )
 
 taskWithDelay( 1000, function()
 {
-   console.log( 'Message with delay' );
+  console.log( 'Message with delay' );
 })
 
 console.log( 'Message without delay' ); 

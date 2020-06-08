@@ -72,7 +72,7 @@ let Deasync = null;
 // }
 
 // _.assert( !_global_.wConsequence, 'Consequence included several times' );
-_.assert( !_.Consequence, 'Consequence included several times' );
+// _.assert( !_.Consequence, 'Consequence included several times' );
 
 // relations
 
