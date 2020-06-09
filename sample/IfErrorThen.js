@@ -1,5 +1,4 @@
-
-if( typeof module !== 'undefined' )
+var _ = require( 'wTools' );
 require( 'wConsequence' );
 
 
