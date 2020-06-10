@@ -25,4 +25,4 @@ Consequence `conseuqence` will get error if `Dons.resolve4` will fail.
 
 */
 
-/* qqq : use it for tutorial */
+/* aaa Artem : done. use it for tutorial */

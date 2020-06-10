@@ -13,7 +13,7 @@ qqq : write concept "Resource error"
 
 = Tutorials
 
-qqq : write tutorial "Replacing callback by consequence" - use sample
+aaa Artem : done. write tutorial "Replacing callback by consequence" - use sample
 
 qqq : write tutorial "Competitors que" - use samples CompetitorsQue*
 qqq : write tutorial "Two kind of resources" - use samples ThenCatchFinally*
