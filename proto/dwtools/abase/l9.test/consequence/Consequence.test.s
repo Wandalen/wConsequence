@@ -10,7 +10,7 @@ if( typeof module !== 'undefined' )
 
   _.include( 'wTesting' );
   _.include( 'wLogger' );
-  _.include( 'wAppBasic' );
+  _.include( 'wProcess' );
 
 }
 

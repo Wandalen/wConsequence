@@ -10,7 +10,7 @@ if( typeof module !== 'undefined' )
   _.include( 'wTesting' );
 
   _.include( 'wLogger' );
-  _.include( 'wAppBasic' );
+  _.include( 'wProcess' );
 
 }
 
@@ -78,7 +78,7 @@ function uncaughtSyncErrorOnExit( test )
   function program()
   {
     var _ = require( toolsPath );
-    _.include( 'wAppBasic' );
+    _.include( 'wProcess' );
     let con = new _.Consequence();
     _.process.on( 'exit', () =>
     {
@@ -117,7 +117,7 @@ function uncaughtAsyncErrorOnExit( test )
   function program()
   {
     var _ = require( toolsPath );
-    _.include( 'wAppBasic' );
+    _.include( 'wProcess' );
     let con = new _.Consequence();
     _.process.on( 'exit', () =>
     {
