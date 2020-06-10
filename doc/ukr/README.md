@@ -54,7 +54,7 @@
 </details>
 
 <details>
-  <summary><a href="./tutorial/CompetitorsQue.md#черга-конкурентів">
+  <summary><a href="./tutorial/TwoKindOfResources.md#два-види-ресурсів">
     Два види <code>ресурсів</code>
   </a></summary>
     Які бувають види <a href="./concept/Resource.md#ресурс">ресурсів</a>, що передаються у 
