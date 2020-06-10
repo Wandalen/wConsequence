@@ -44,4 +44,4 @@ console.log( con );
 /* log : Consequence:: 2 / 0 */
 
 /* aaa Artem : done. add comments, add log output */
-/* qqq : make tutorial from this */
+/* aaa Artem : done. make tutorial from this */
