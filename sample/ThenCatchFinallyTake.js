@@ -15,4 +15,4 @@ console.log( con );
 /* log : Consequence:: 1 / 0 */
 
 /* qqq : add comments, add log output */
-/* qqq : make tutorial from this */
+/* aaa Artem : done. make tutorial from this */
