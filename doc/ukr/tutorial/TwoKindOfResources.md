@@ -29,35 +29,75 @@ con.thenGive( ( arg ) => console.log( arg ) );
 
 // _.errAttend( message ) - creating a processed error 
 con.take( _.errAttend( 'Error!' ) );
-// logs: error log
+// logs: error log...
 ```
 
 У прикладах вище було розглянено два види ресрусів, але різниця між ними не очевидна. Вони обоє обробляються конкурентом
 `.thenGive()`, а це означає, що необхідно перевіряти вхідний параметр і в залежності від його виду - по-різному обробляти.
-Такий підхід зовсім не зручний. 
-Для перехоплення помилок використовується спеціальний конкурент .catch(), який опрацює ресурс-помилку.
+Такий підхід зовсім не зручний.
+
+Для перехоплення помилок використовується спеціальний конкурент `.catch()`, який опрацює ресурс-помилку.
+Для того, щоб `.catch()` був викликаний для обробки помилки, її необхідно передати у наслідок із допомогою .error( err ).
+В такому разі першим із черги конкурентів опрацює передану помилку `.catch()`, він обов'язково повинен повернути значення,
+яке буде передано конкуренту, наступному в черзі.
 ```js
+var con = new _.Consequence();
 
+con.thenGive( ( arg ) => console.log( 'thenGive1 is invoked with: ', arg ) );
+con.catch( ( arg ) =>
+{
+  console.log( 'catch is invoked with: ', arg );
+  return 'from catch';
+} );
+con.thenGive( ( arg ) => console.log( 'thenGive2 is invoked with: ', arg ) );
+
+con.error( _.errAttend( 'Error!' ) );
+// logs: catch is invoked with:  error log...
+// logs: thenGive2 is invoked with:  from catch
+
+console.log( con ); // logs: Consequence:: 0 / 0
 ```
+Важливо розуміти, що ті конкуренти, котрі були у черзі перед `.catch()` - не викличуються, проте все одно будуть видалені з
+черги, і наступний переданий ресурс нікому буде опрацювати.
 
-Далі наведено приклад, який показує, у якому випадку в наслідок передається відповідний ресурс - `аргумент` або `помилка`, та
-яким чином можна їх по-різному обробити.
+Корисним у використанні є конкурент `.finally()`, який може обробляти як ресурс-помилку так і ресурс-аргумент.
 ```js
 var con = new _.Consequence();
 
 con.then( ( arg ) =>
 {
-  console.log( 'then is invoked with argument: ', arg );
-  return 'new arg from then';
-} );
-con.catch( ( err ) =>
-{
-  console.log( 'catch is invoked with argument: ', err );
-  return 'new arg from catch';
+  console.log( 'then is invoked with: ', arg );
+  return 'from then';
 } );
 con.finally( ( err, arg ) =>
 {
-  console.log( 'finally is invoked with argument: ', err ? err : arg );
+  console.log( 'finally is invoked with: ', err ? err : arg );
   return null;
 } );
+
+con.take( 'my arg' );
+// logs: then is invoked with:  my arg
+// logs: finally is invoked with:  from then
 ```
+
+У випадку передачі `помилки` конкурент `.then()` також, попри те, що не був викликаний - видалиться з черги конкурентів.
+```js
+var con = new _.Consequence();
+
+con.then( ( arg ) =>
+{
+  console.log( 'then is invoked with: ', arg );
+  return 'from then';
+} );
+con.finally( ( err, arg ) =>
+{
+  console.log( 'finally is invoked with: ', err ? err : arg );
+  return null;
+} );
+
+con.error( _.errAttend( 'Error!' ) );
+// logs: finally is invoked with:  error log...
+console.log( con ); // logs: Consequence:: 1 / 0
+```
+
+[Повернутись до змісту](../README.md#туторіали)

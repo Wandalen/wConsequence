@@ -20,12 +20,36 @@ require( 'wConsequence' );
 // con.take( _.errAttend( 'Error!' ) );
 
 /* */
-var con = new _.Consequence();
 
-con.thenGive( ( arg ) => console.log( arg + 1 ) );
-con.catch( ( arg ) => console.log( arg ) );
+// var con = new _.Consequence();
 
-con.take( _.errAttend( 'Error!' ) );
+// con.thenGive( ( arg ) => console.log( 'thenGive1 is invoked with: ', arg ) );
+// con.catch( ( arg ) =>
+// {
+//   console.log( 'catch is invoked with: ', arg );
+//   return null;
+// } );
+// con.thenGive( ( arg ) => console.log( 'thenGive2 is invoked with: ', arg ) );
+
+// con.error( _.errAttend( 'Error!' ) );
+// console.log( con );
+
+/* */
+
+// var con = new _.Consequence();
+
+// con.then( ( arg ) =>
+// {
+//   console.log( 'then is invoked with: ', arg );
+//   return 'from then';
+// } );
+// con.finally( ( err, arg ) =>
+// {
+//   console.log( 'finally is invoked with: ', err ? err : arg );
+//   return null;
+// } );
+
+// con.take( 'my arg' );
 
 /* */
 
@@ -33,24 +57,17 @@ var con = new _.Consequence();
 
 con.then( ( arg ) =>
 {
-  console.log( 'then is invoked with argument: ', arg );
-  return 'new arg from then';
-} );
-con.catch( ( err ) =>
-{
-  console.log( 'catch is invoked with argument: ', err );
-  return 'new arg from catch';
+  console.log( 'then is invoked with: ', arg );
+  return 'from then';
 } );
 con.finally( ( err, arg ) =>
 {
-  console.log( 'finally is invoked with argument: ', err ? err : arg );
+  console.log( 'finally is invoked with: ', err ? err : arg );
   return null;
 } );
 
-// con.take( 'some resource' );
-// console.log( con.argumentsGet() );
 con.error( _.errAttend( 'Error!' ) );
-console.log( con.argumentsGet() );
+console.log( con );
 
 /* */
 
