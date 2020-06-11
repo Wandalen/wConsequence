@@ -13,7 +13,7 @@
   ],
   "main" : "proto/dwtools/abase/l9/consequence/Consequence.s",
   "files" : [ "proto/dwtools/abase/l9", "proto/dwtools/Tools.s", "out" ],
-  "scripts" : { "test" : "wtest .run 'proto/**'", "docgen" : "wdocgen proto" },
+  "scripts" : { "test" : "wtest .run 'proto/**' rapidity:-3", "docgen" : "wdocgen proto" },
   "repository" :
   {
     "type" : "git",
