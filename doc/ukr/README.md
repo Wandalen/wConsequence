@@ -60,3 +60,12 @@
     Які бувають види <a href="./concept/Resource.md#ресурс">ресурсів</a>, що передаються у 
     <a href="./concept/Consequence.md#наслідок">наслідок</a> та як правильно їх обробляти.
 </details>
+
+<details>
+  <summary><a href="./tutorial/InspectingConsequence.md#інспектування-наслідку">
+    Інспектування <code>наслідку</code>
+  </a></summary>
+  Як правильно перевірити стан <a href="./concept/Consequence.md#наслідок">наслідку</a> та взаємодіяти із його
+  вмістом(<a href="./concept/Resource.md#ресурс">ресурсами</a> і <a href="./concept/Competitor.md#конкурент">конкурентами</a>),
+  в ході виконання програми.
+</details>
