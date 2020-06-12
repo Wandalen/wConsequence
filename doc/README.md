@@ -17,7 +17,7 @@ aaa Artem : done. write tutorial "Replacing callback by consequence" - use sampl
 
 aaa Artem : done. write tutorial "Competitors que" - use samples CompetitorsQue*
 aaa Artem : done. write tutorial "Two kind of resources" - use samples ThenCatchFinally*
-qqq : write tutorial "Difference between giving and keeping competitors" - use sample GiveKeepDifference
+aaa Artem : done.write tutorial "Difference between giving and keeping competitors" - use sample GiveKeepDifference
 
 
 aaa Artem : done. write tutorial "Inspecting consequence" - use test routines toStr/stringify - console.log( consequence ); argumentsGet() resourceGet() competitorsGet()
