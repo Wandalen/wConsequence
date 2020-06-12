@@ -69,3 +69,10 @@
   вмістом(<a href="./concept/Resource.md#ресурс">ресурсами</a> і <a href="./concept/Competitor.md#конкурент">конкурентами</a>),
   в ході виконання програми.
 </details>
+
+<details>
+  <summary><a href="./tutorial/GiveKeepDifference.md#різниця-між-give-та-keep-конкурентами">
+  Різниця між `give` та `keep` конкурентами
+  </a></summary>
+  Коли використовувати `give`, а коли `keep` конкурент.
+</details>
