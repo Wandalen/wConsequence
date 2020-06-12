@@ -41,5 +41,5 @@ console.log( con.argumentsGet() );
 // /* log : error */
 /* qqq : explain this in details */
 
-/* qqq : add comments, add log output */
+/* aaa Artem : done. add comments, add log output */
 /* aaa Artem : done. make tutorial from this */

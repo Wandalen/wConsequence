@@ -6,11 +6,11 @@ let uri = 'google.com';
 
 /* with callback */
 
-// Dns.resolve4( uri, ( err, addresses ) =>
-// {
-//   if( err ) console.log( err );
-//   console.log( `Ips of ${uri} are ${JSON.stringify( addresses )}` );
-// } );
+Dns.resolve4( uri, ( err, addresses ) =>
+{
+  if( err ) console.log( err );
+  console.log( `Ips of ${uri} are ${JSON.stringify( addresses )}` );
+} );
 
 /* with consequence */
 
