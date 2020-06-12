@@ -47,3 +47,11 @@ con.take( 'myArg2' );
 // routine .argumentsGet() returns an array of "argument" property values
 // every resource is an object that has "argument" property in which the value of the passed resource is written
 console.log( con.argumentsGet() ); // [ 'myArg1fromThen', 'myArg2' ]
+
+/* */
+
+var con = _.Consequence();
+
+// .toStr and .toString routines take map with "verbosity" property which determines the detail of the output
+console.log( con.toStr({ verbosity : 2 }) );
+console.log( con.toString({ verbosity : 2 }) );

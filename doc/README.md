@@ -20,9 +20,8 @@ aaa Artem : done. write tutorial "Two kind of resources" - use samples ThenCatch
 qqq : write tutorial "Difference between giving and keeping competitors" - use sample GiveKeepDifference
 
 
-qqq : write tutorial "Inspecting consequence" - use test routines toStr/stringify - console.log( consequence ); argumentsGet() resourceGet() competitorsGet()
+aaa Artem : done. write tutorial "Inspecting consequence" - use test routines toStr/stringify - console.log( consequence ); argumentsGet() resourceGet() competitorsGet()
 qqq : write tutorial "Synchronizing consequence" - adjsut and use sample
 qqq : write tutorial "Deasynchronizing consequence" - use sample
-aaa Artem : done. ....
 
 -->
