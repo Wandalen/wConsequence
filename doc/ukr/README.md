@@ -72,7 +72,21 @@
 
 <details>
   <summary><a href="./tutorial/GiveKeepDifference.md#різниця-між-give-та-keep-конкурентами">
-  Різниця між `give` та `keep` конкурентами
+  Різниця між <code>give</code> та <code>keep</code> конкурентами
   </a></summary>
-  Коли використовувати `give`, а коли `keep` конкурент.
+  Коли використовувати <code>give</code>, а коли <code>keep</code> конкурент.
+</details>
+
+<details>
+  <summary><a href="./tutorial/SynchronizingConsequence.md#синхронізація-наслідку">
+  Синхронізація <code>наслідку</code>
+  </a></summary>
+  Як виконати синхронізацію <a href="./concept/Consequence.md#наслідок">наслідку</a> в синхронному коді.
+</details>
+
+<details>
+  <summary><a href="./tutorial/DeasynchronizingConsequence.md#деасинхронізація-наслідку">
+  Деасинхронізація <code>наслідку</code>
+  </a></summary>
+  Як виконати деасинхронізацію <a href="./concept/Consequence.md#наслідок">наслідку</a> в асинхронному коді.
 </details>
