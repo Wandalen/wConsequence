@@ -6,6 +6,7 @@ con.take( 'a' );
 con.take( 'b' );
 console.log( con );
 /* log : Consequence:: 2 / 0 */
+
 console.log( con.argumentsGet() );
 /* log : [ 'a', 'b' ] */
 
@@ -23,6 +24,7 @@ console.log( con.argumentsGet() );
 
 con.thenGive( ( arg ) => console.log( arg ) );
 /* log : 'b3' */
+
 console.log( con.argumentsGet() );
 /* log : [] */
 
