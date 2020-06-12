@@ -36,7 +36,7 @@ module:
       enabled: 1
       version: 0.5.0
       interpreters:
-        - njs >= 8.0.0
+        - njs >= 10.0.0
         - chrome >= 60.0.0
         - firefox >= 60.0.0
       keywords:
@@ -894,7 +894,7 @@ module:
       enabled: 1
       version: 0.5.0
       interpreters:
-        - njs >= 8.0.0
+        - njs >= 10.0.0
         - chrome >= 60.0.0
         - firefox >= 60.0.0
       keywords:
