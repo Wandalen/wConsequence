@@ -6,18 +6,18 @@ let uri = 'google.com';
 
 /* with callback */
 
-Dns.resolve4( uri, ( err, addresses ) =>
-{
-  if( err ) console.log( err );
-  console.log( `Ips of ${uri} are ${JSON.stringify( addresses )}` );
-} );
+// Dns.resolve4( uri, ( err, addresses ) =>
+// {
+//   if( err ) console.log( err );
+//   console.log( `Ips of ${uri} are ${JSON.stringify( addresses )}` );
+// } );
 
 /* with consequence */
 
-let addresses = new _.Consequence();
-Dns.resolve4( uri, addresses );
-addresses.deasync();
-console.log( `Ips of ${uri} are ${JSON.stringify( addresses.sync() )}` );
+let con = new _.Consequence();
+Dns.resolve4( uri, con );
+con.deasync();
+console.log( `Ips of ${uri} are ${JSON.stringify( con.sync() )}` );
 
 /*
 
@@ -27,4 +27,4 @@ In case of error call `sync()` will throw the error synchronously.
 
 */
 
-/* qqq : use it for tutorial */
+/* aaa Artem : done. use it for tutorial */
