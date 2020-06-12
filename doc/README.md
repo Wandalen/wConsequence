@@ -16,7 +16,7 @@ qqq : write concept "Resource error"
 aaa Artem : done. write tutorial "Replacing callback by consequence" - use sample
 
 aaa Artem : done. write tutorial "Competitors que" - use samples CompetitorsQue*
-qqq : write tutorial "Two kind of resources" - use samples ThenCatchFinally*
+aaa Artem : done. write tutorial "Two kind of resources" - use samples ThenCatchFinally*
 qqq : write tutorial "Difference between giving and keeping competitors" - use sample GiveKeepDifference
 
 

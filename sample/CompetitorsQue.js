@@ -1,6 +1,6 @@
 require( 'wConsequence' );
 let _ = wTools;
-// option `capacity` specifies the maximal number of resources, by default is 1
+// option `capacity` specifies the maximal number of resources in resources queue at the same time, by default is 1
 let con = new _.Consequence( { capacity : 0 } );
 
 con.then( ( arg ) => arg + '1' );
