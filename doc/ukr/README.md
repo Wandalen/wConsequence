@@ -36,7 +36,8 @@
   <summary><a href="./concept/ResourceError.md#ресурс-помилка">
     Ресурс-<code>помилка</code>
   </a></summary>
-    short description...
+    Це об'єкт, один із двох видів <a href="./concept/Resource.md#ресурс">ресурсів</a>, що передається у
+    <a href="./concept/Consequence.md#наслідок">наслідок</a>.
 </details>
 
 # Туторіали
