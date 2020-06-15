@@ -46,8 +46,8 @@
   <summary><a href="./tutorial/ReplacingCallbackByConsequence.md#заміна-callback-функції-на-наслідок">
     Заміна callback функції на <code>наслідок</code>
   </a></summary>
-    Як правильно використати <a href="./concept/Consequence.md#наслідок">наслідок</a> у рутинах, що приймають в якості
-    аргументу callback функцію, передавши замість неї об'єкт класу <code>Consequence</code>.
+    Як правильно використати <a href="./concept/Consequence.md#наслідок">наслідок</a> у рутинах, що приймають як
+    аргумент callback функцію, передавши замість неї об'єкт класу <code>Consequence</code>.
 </details>
 
 <details>
