@@ -28,7 +28,8 @@
   <summary><a href="./concept/ResourceArgument.md#ресурс-аргумент">
     <code>Ресурс аргумент</code>
   </a></summary>
-    short description...
+    Це один із двох видів <a href="./concept/Resource.md#ресурс">ресурсів</a>, що передається у
+    <a href="./concept/Consequence.md#наслідок">наслідок</a>.
 </details>
 
 <details>
