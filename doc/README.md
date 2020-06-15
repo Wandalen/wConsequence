@@ -6,10 +6,10 @@
 = Concepts
 
 qqq : write concept "Consequence"
-qqq : write concept "Competitor"
-qqq : write concept "Resource"
-qqq : write concept "Resource argument"
-qqq : write concept "Resource error"
+aaa Artem : done. write concept "Competitor"
+aaa Artem : done. write concept "Resource"
+aaa Artem : done. write concept "Resource argument"
+aaa Artem : done. write concept "Resource error"
 
 = Tutorials
 

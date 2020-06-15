@@ -26,15 +26,15 @@
 
 <details>
   <summary><a href="./concept/ResourceArgument.md#ресурс-аргумент">
-    <code>Ресурс аргумент</code>
+    Ресурс-<code>аргумент</code>
   </a></summary>
-    Це один із двох видів <a href="./concept/Resource.md#ресурс">ресурсів</a>, що передається у
+    Це об'єкт, один із двох видів <a href="./concept/Resource.md#ресурс">ресурсів</a>, що передається у
     <a href="./concept/Consequence.md#наслідок">наслідок</a>.
 </details>
 
 <details>
   <summary><a href="./concept/ResourceError.md#ресурс-помилка">
-    <code>Ресурс помилка</code>
+    Ресурс-<code>помилка</code>
   </a></summary>
     short description...
 </details>
