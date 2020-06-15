@@ -11,7 +11,9 @@
   <summary><a href="./concept/Competitor.md#конкурент">
     <code>Конкурент</code>
   </a></summary>
-    short description...
+    Одним із двох видів данних, що можуть міститись у <a href="./concept/Consequence.md#наслідок">наслідку</a> є
+    <code>конкурент</code> - рутина-обробник <a href="./Consequence.md#наслідок">ресурсу</a>,
+    що передається у <code>наслідок</code>.
 </details>
 
 <details>
