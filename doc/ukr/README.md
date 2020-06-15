@@ -12,7 +12,7 @@
     <code>Конкурент</code>
   </a></summary>
     Одним із двох видів данних, що можуть міститись у <a href="./concept/Consequence.md#наслідок">наслідку</a> є
-    <code>конкурент</code> - рутина-обробник <a href="./Consequence.md#наслідок">ресурсу</a>,
+    <code>конкурент</code> - рутина-обробник <a href="./concept/Resource.md#наслідок">ресурсу</a>,
     що передається у <code>наслідок</code>.
 </details>
 
@@ -20,7 +20,8 @@
   <summary><a href="./concept/Resource.md#ресурс">
     <code>Ресурс</code>
   </a></summary>
-    short description...
+    Одним із двох видів данних, що можуть міститись у <a href="./concept/Consequence.md#наслідок">наслідку</a> є
+    <code>ресурс</code> - дані, що передаються у <code>наслідок</code> для подальшої обробки.
 </details>
 
 <details>
