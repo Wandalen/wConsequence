@@ -20,6 +20,7 @@ function foo()
 
 // here would be the `await foo()` syntax if using Promise
 var result = foo();
+
 // after 1 sec we get result
 console.log( result ); // my resource
 
