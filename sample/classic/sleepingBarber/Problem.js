@@ -12,14 +12,14 @@ let _ = _global_.wTools;
 let startTime = _.time.now();
 let clientsList =
 [
-  { name : 'Jon', arrivedTime : 500 },
-  { name : 'Alfred', arrivedTime : 5000 },
-  { name : 'Jane', arrivedTime : 5000 },
-  { name : 'Derek', arrivedTime : 1500 },
-  { name : 'Bob', arrivedTime : 4500 },
-  { name : 'Sean', arrivedTime : 6500 },
-  { name : 'Martin', arrivedTime : 2500 },
-  { name : 'Joe', arrivedTime : 7000 },
+  { name : 'Jon', hair : 'long', arrivedTime : 500 },
+  { name : 'Alfred', hair : 'short', arrivedTime : 5000 },
+  { name : 'Jane', hair : 'average', arrivedTime : 5000 },
+  { name : 'Derek', hair : 'long', arrivedTime : 1500 },
+  { name : 'Bob', hair : 'average', arrivedTime : 4500 },
+  { name : 'Sean', hair : 'short', arrivedTime : 6500 },
+  { name : 'Martin', hair : 'average', arrivedTime : 2500 },
+  { name : 'Joe', hair : 'long', arrivedTime : 7000 },
 ];
 
 //
@@ -38,30 +38,26 @@ if( typeof module !== 'undefined' )
 }
 
 /* qqq : make sure routines goes after instructions */
+/* qqq : remove all bind in all samples */
+/* aaa Artem : done. simplify maybe */
 
 //
 
 function run()
 {
   let self = this;
-  let i = 0;
-  let len = clientsList.length;
 
-  for( ; i < len; i++ )
+  for( let i = 0; i < clientsList.length; i++ )
   {
-    let client = { name : clientsList[ i ].name };
-    // let time = _.time.now();
+    let client = { name : clientsList[ i ].name, hair : clientsList[ i ].hair }
     _.time.out( clientsList[ i ].arrivedTime, () => self.clientArrive( client ) );
   }
 }
-
-/* qqq : remove all bind in all samples */
-/* qqq : simplify maybe */
 
 //
 
 function clientArrive( client )
 {
   /* clients arrived to barber shop */
-  console.log( 'new client is coming : ' + client.name + ' ' + _.time.spent( startTime ) ); /* qqq : replace such strings with `-strings */
+  console.log( `new client is coming : ${client.name} ${_.time.spent( startTime )}` ); /* aaa Artem : done. replace such strings with `-strings */
 }

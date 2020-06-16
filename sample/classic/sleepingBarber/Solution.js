@@ -4,8 +4,8 @@
  * asynchronous.
  */
 
-let Problem;
-let _;
+let Problem,
+  _;
 
 if( typeof module !== 'undefined' )
 {
@@ -14,12 +14,7 @@ if( typeof module !== 'undefined' )
   Problem = require( './Problem.js' );
 }
 
-/**
- * Class barber simulate work barber in barber shop.
- * @class Barber
- */
-
-let DURATION_OF_WORK_RANGE = [ 500, 3000 ]; /* qqq : remove random from samples */
+let DURATION_OF_WORK = { short : 500, average : 1500, long : 3000 }; /* qqq : remove random from samples */
 let BARBER_NUM_SITS = 3;
 let startTime = _.time.now();
 let barber = _.Consequence().take( null );
@@ -40,7 +35,8 @@ function status()
 function clientCut( client )
 {
   console.log( ` . begins haircut client ${client.name} ${status()}` );
-  return _.time.out( delayGet() ).then( () => console.log( ` - client ${client.name} cutted ${status()}` ) || null );
+  return _.time.out( DURATION_OF_WORK[ client.hair ] )
+  .then( () => console.log( ` - client ${client.name} cutted ${status()}` ) || null );
 }
 
 //
@@ -54,19 +50,9 @@ function clientNext()
 
 //
 
-function delayGet()
-{
-  let max = DURATION_OF_WORK_RANGE[ 0 ];
-  let min = DURATION_OF_WORK_RANGE[ 1 ];
-  return Math.floor( Math.random() * ( max - min + 1 ) ) + min;
-}
-
-//
-
 function clientArrive( client )
 {
   /* clients arrived to barber shop */
-
   console.log( ` + new client is coming ${client.name} ${status()}` );
 
   if( barber.resourcesCount() )
