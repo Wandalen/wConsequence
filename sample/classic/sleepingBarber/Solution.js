@@ -68,5 +68,4 @@ function clientArrive( client )
   {
     console.log( ` - all seats in waiting room are occupied, so client ${client.name} leave shop` );
   }
-
 }

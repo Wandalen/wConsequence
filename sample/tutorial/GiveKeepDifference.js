@@ -1,5 +1,8 @@
 require( 'wConsequence' );
 let _ = wTools;
+
+// The `capacity` option indicates the maximum number of resources in the resource queue at a time, by default 1
+// if `capacity` : 0 - not limited
 var con = new _.Consequence({ capacity : 2 });
 
 con.take( 'a' );
