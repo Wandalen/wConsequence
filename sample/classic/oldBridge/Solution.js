@@ -8,9 +8,12 @@ if( typeof module !== 'undefined' )
   require( 'wConsequence' );
 }
 
+const startTime = _.time.now();
 const MAX_CARS_NUM = 3;
 const carsOnBridge = [];
-const bridge = new _.Consequence({ capacity : 0 });
+const waitingCarsDir0 = [];
+const waitingCarsDir1 = [];
+const bridge = new _.Consequence({ capacity : 0 }).take( null );
 
 const carsList =
 [
@@ -35,21 +38,49 @@ run();
 function run()
 {
   for( let i = 0; i < carsList.length; i++ )
-  _.time.out( carsList[ i ].arrivedTime, () => carArrive( carsList[ i ] ) );
+  _.time.out( carsList[ i ].arrivedTime, () => carArrive( carsList[ i ], i + 1 ) );
 }
 
 //
 
-function carArrive( car )
+function status()
 {
-  console.log( `Car ${car.arrivedTime}` );
+  return `time:${_.time.spent( startTime )}, bridge:${carsOnBridge.length === MAX_CARS_NUM ? 'busy' : 'available'}, on bridge now:${carsOnBridge.length}, waiting cars dir0:${waitingCarsDir0.length}, waiting cars dir1:${waitingCarsDir1.length}`;
+}
+
+//
+
+function carArrive( car, idx )
+{
+  console.log( ` + a car ${idx} is coming: ${status()}` );
+
+  ArriveBridge( car.direction );
 }
 
 //
 
 function ArriveBridge( direction )
 {
+  const waitingCar = new _.Consequence();
 
+  if( carsOnBridge.length )
+  {
+    if( carsOnBridge[ 0 ].direction === direction )
+    {
+      if( carsOnBridge.length === MAX_CARS_NUM )
+      {
+
+      }
+      else
+      {
+
+      }
+    }
+    else
+  }
+
+  waitingCar.deasync();
+  return waitingCar.sync();
 }
 
 function ExitBridge()
