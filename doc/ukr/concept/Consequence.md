@@ -5,6 +5,23 @@
 Клас `wConsequence` створює об'єкти, які використовуються для асинхронних обчислень. Ці об'єкти представляють чергу
 результатів, які можна обчислити асинхронно, і мають широкий спектр інструментів для виконання цього процесу.\
 `Наслідок` є сумісним із нативним об'єктом синхронізації `Promise`.
+```js
+// here would be the `async fynction` syntax if using Promise
+function foo()
+{
+  var con = new _.Consequence();
+
+  _.time.out( 1000, () => con.take( 'my resource' ) );
+
+  con.deasync(); // delay execution of .sync() till resource is passed into consequence
+  return con.sync(); // .sync() retrieving a resource just passed into consequence
+}
+
+// here would be the `await foo()` syntax if using Promise
+var result = foo();
+// after 1 sec we get result
+console.log( result ); // my resource
+```
 
 Структурно `наслідок` складається із двох черг(масивів):
 - [ресурсів](./Resource.md#ресурс);
@@ -90,5 +107,13 @@ console.log( con ); // Consequence:: 1 / 0
 Щоб краще зрозуміти особливості поведінки конкурентів та їх види, рекомендуємо прочитати туторіал -
 [Різниця між 'give' та 'keep' конкурентами](../tutorial/GiveKeepDifference.md).\
 
+Наслідок може використовуватись як заміна функції-callback в синхронних чи асинхронних рутинах.\
+Детальніше з цим можна ознайомитись у туторіалі:
+[Заміна callback функції на наслідок](../tutorial/ReplacingCallbackByConsequence.md).
+
+**Підсумок**
+- `наслідок` це об'єкт синхронізації;
+- `наслідок` є контейнером данних - `ресурсів` та `конкурентів` за ресурси.
+- 
 
 [Повернутись до змісту](../README.md#концепції)
