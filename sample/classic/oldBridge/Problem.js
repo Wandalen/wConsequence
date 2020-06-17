@@ -97,4 +97,4 @@ if( typeof module !== 'undefined' )
     Self.carsArrive();
 }
 
-/* qqq : rewrite */
+/* aaa Artem : done. rewrite */
