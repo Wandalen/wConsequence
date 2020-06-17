@@ -1,4 +1,4 @@
-/* qqq : implement */
+/* aaa Artem : done. implement */
 
 let _;
 
@@ -22,12 +22,12 @@ const carsList =
   { number : 4, arrivedTime : 3500, direction : 0, movingTime : 10000 },
   { number : 5, arrivedTime : 5000, direction : 0, movingTime : 10000 },
   { number : 6, arrivedTime : 5000, direction : 1, movingTime : 10000 },
-  // { number : 7, arrivedTime : 10000, direction : 1, movingTime : 10000 },
-  // { number : 8, arrivedTime : 23000, direction : 1, movingTime : 10000 },
-  // { number : 9, arrivedTime : 25000, direction : 0, movingTime : 10000 },
-  // { number : 11, arrivedTime : 27000, direction : 0, movingTime : 10000 },
-  // { number : 10, arrivedTime : 28000, direction : 1, movingTime : 10000 },
-  // { number : 12, arrivedTime : 30000, direction : 0, movingTime : 10000 },
+  { number : 7, arrivedTime : 10000, direction : 1, movingTime : 10000 },
+  { number : 8, arrivedTime : 23000, direction : 1, movingTime : 10000 },
+  { number : 9, arrivedTime : 25000, direction : 0, movingTime : 10000 },
+  { number : 11, arrivedTime : 27000, direction : 0, movingTime : 10000 },
+  { number : 10, arrivedTime : 28000, direction : 1, movingTime : 10000 },
+  { number : 12, arrivedTime : 30000, direction : 0, movingTime : 10000 },
 ];
 
 run();
@@ -75,6 +75,8 @@ function nextCar( previousCarDirection )
   }
   else
   {
+    /* `previousCarDirection` allows cars to move in a direction different from those that have just finished moving.
+    This makes passing the bridge alternating and more honest. */
     if( previousCarDirection === 0 )
     {
       if( waitingCars[ 1 ].length )
@@ -85,7 +87,6 @@ function nextCar( previousCarDirection )
 
           if( !waitingCars[ 1 ].length )
           return startMoving( next );
-          // return startMoving( next ).then( () => nextCar( next.direction ) ); // ??
 
           bridge.take( null );
           bridge.then( () => startMoving( next ) );
@@ -106,7 +107,6 @@ function nextCar( previousCarDirection )
 
           if( !waitingCars[ 0 ].length )
           return startMoving( next );
-          // return startMoving( next ).then( () => nextCar( next.direction ) ); // ??
 
           bridge.take( null );
           bridge.then( () => startMoving( next ) );
