@@ -16,18 +16,18 @@ const bridge = new _.Consequence({ capacity : 0 }).take( null );
 
 const carsList =
 [
-  { number : 1, arrivedTime : 500, direction : 1, movingTime : 1000 },
-  { number : 2, arrivedTime : 1500, direction : 1, movingTime : 1200 },
-  { number : 3, arrivedTime : 1250, direction : 0, movingTime : 850 },
-  { number : 4, arrivedTime : 3500, direction : 0, movingTime : 1050 },
-  { number : 5, arrivedTime : 5000, direction : 1, movingTime : 1500 },
-  { number : 6, arrivedTime : 2200, direction : 0, movingTime : 750 },
-  { number : 7, arrivedTime : 5000, direction : 0, movingTime : 1000 },
-  { number : 8, arrivedTime : 4700, direction : 1, movingTime : 950 },
-  { number : 9, arrivedTime : 7800, direction : 0, movingTime : 1050 },
-  { number : 10, arrivedTime : 6500, direction : 1, movingTime : 800 },
-  { number : 11, arrivedTime : 3700, direction : 0, movingTime : 1200 },
-  { number : 12, arrivedTime : 4200, direction : 1, movingTime : 950 },
+  { number : 1, arrivedTime : 1000, direction : 1, movingTime : 10000 },
+  { number : 2, arrivedTime : 2000, direction : 0, movingTime : 10000 },
+  { number : 3, arrivedTime : 2500, direction : 1, movingTime : 10000 },
+  { number : 4, arrivedTime : 3500, direction : 0, movingTime : 10000 },
+  { number : 5, arrivedTime : 5000, direction : 0, movingTime : 10000 },
+  { number : 6, arrivedTime : 5000, direction : 1, movingTime : 10000 },
+  // { number : 7, arrivedTime : 10000, direction : 1, movingTime : 10000 },
+  // { number : 8, arrivedTime : 23000, direction : 1, movingTime : 10000 },
+  // { number : 9, arrivedTime : 25000, direction : 0, movingTime : 10000 },
+  // { number : 11, arrivedTime : 27000, direction : 0, movingTime : 10000 },
+  // { number : 10, arrivedTime : 28000, direction : 1, movingTime : 10000 },
+  // { number : 12, arrivedTime : 30000, direction : 0, movingTime : 10000 },
 ];
 
 run();
@@ -44,16 +44,17 @@ function run()
 
 function status()
 {
-  return `time:${_.time.spent( startTime )}, bridge:${carsOnBridge.length === MAX_CARS_NUM ? 'busy' : 'available'}, on bridge now:${carsOnBridge.length}, waiting cars dir0:${waitingCars[ 0 ].length}, waiting cars dir1:${waitingCars[ 1 ].length}`;
+  return `time:${_.time.spent( startTime )}, bridge:${carsOnBridge.length === MAX_CARS_NUM ? 'busy' : 'available'}, on bridge:${carsOnBridge.length}, direction:${carsOnBridge.length ? carsOnBridge[ 0 ].direction : 'any' }, waiting dir0: ${waitingCars[ 0 ].length}, waiting dir1: ${waitingCars[ 1 ].length}`;
 }
 
 //
 
 function startMoving( car )
 {
-  console.log( `the car №${car.number} starts to move: ${status()}` );
-  debugger;
-  return _.time.out( car.movingTime, () => ExitBridge( car ) ).then( nextCar() )
+  carsOnBridge.push( car );
+  console.log( `car №${car.number} starts to move: ${status()}` );
+  return _.time.out( car.movingTime ).then( () => ExitBridge( car ) || null )
+  .then( () => nextCar() );
 }
 
 //
@@ -84,17 +85,30 @@ function nextCar()
 
 function ArriveBridge( car )
 {
-  console.log( `+ the car №${car.number} is coming: ${status()}` );
+  console.log();
+  console.log( `+ car №${car.number} is coming, dir:${car.direction} - ${status()}` );
 
   if( bridge.resourcesCount() )
   {
     bridge.then( () => startMoving( car ) )
     bridge.then( () => nextCar() )
   }
+  else if( carsOnBridge.length < 3 )
+  {
+    if( car.direction === carsOnBridge[ 0 ].direction )
+    {
+      startMoving( car );
+    }
+    else
+    {
+      waitingCars[ car.direction ].push( car );
+      console.log( `direction on the bridge is opposite, the car №${car.number} is waiting: ${status()}` );
+    }
+  }
   else
   {
-    console.log( `the bridge is loaded, the car №${car.number} is waiting: ${status()}` );
     waitingCars[ car.direction ].push( car );
+    console.log( `the bridge is busy, car №${car.number} is waiting: ${status()}` );
   }
 }
 
@@ -103,5 +117,5 @@ function ArriveBridge( car )
 function ExitBridge( car )
 {
   _.arrayRemoveOnce( carsOnBridge, car );
-  console.log( `- the car №${car.number} leaves bridge: ${status()}` );
+  console.log( `- car №${car.number} leaves bridge: ${status()}` );
 }
