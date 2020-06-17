@@ -1,4 +1,4 @@
-/* qqq : implement */
+/* aaa Artem : done. implement */
 let _;
 
 if( typeof module !== 'undefined' )
@@ -46,11 +46,11 @@ function formMolecule()
 
 function run( h, o )
 {
-  for( let i = 0; i < h; i++ )
-  _.time.out( _.intRandom( [ 5000, 10000 ] ), addHyd );
+  for( let i = 1; i <= h; i++ )
+  _.time.out( 1000 * i, addHyd );
 
-  for( let i = 0; i < o; i++ )
-  _.time.out( _.intRandom( [ 5000, 10000 ] ), addOx );
+  for( let i = 1; i <= o; i++ )
+  _.time.out( 500 * i, addOx );
 }
 
 //
