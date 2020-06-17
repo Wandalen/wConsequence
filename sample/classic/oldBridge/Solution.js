@@ -54,30 +54,69 @@ function startMoving( car )
   carsOnBridge.push( car );
   console.log( `car №${car.number} starts to move: ${status()}` );
   return _.time.out( car.movingTime ).then( () => ExitBridge( car ) || null )
-  .then( () => nextCar() );
+  .then( () => nextCar( car.direction ) );
 }
 
 //
 
-function nextCar()
+function nextCar( previousCarDirection )
 {
   if( carsOnBridge.length )
   {
     let direction = carsOnBridge[ 0 ].direction;
 
     if( waitingCars[ direction ].length )
-      return startMoving( waitingCars[ direction ].shift() ).then( nextCar() );
+    {
+      let next = waitingCars[ direction ].shift();
+      return startMoving( next ).then( () => nextCar( next.direction ) );
+    }
     else
       return null;
   }
   else
   {
-    let next = waitingCars[ 0 ].shift() || waitingCars[ 1 ].shift();
+    if( previousCarDirection === 0 )
+    {
+      if( waitingCars[ 1 ].length )
+      {
+        while( waitingCars[ 1 ].length )
+        {
+          let next = waitingCars[ 1 ].shift();
 
-    if( next )
-      return startMoving( next ).then( nextCar() );
+          if( !waitingCars[ 1 ].length )
+          return startMoving( next );
+          // return startMoving( next ).then( () => nextCar( next.direction ) ); // ??
+
+          bridge.take( null );
+          bridge.then( () => startMoving( next ) );
+        }
+      }
+      else
+      {
+        return null;
+      }
+    }
     else
-      return null;
+    {
+      if( waitingCars[ 0 ].length )
+      {
+        while( waitingCars[ 0 ].length )
+        {
+          let next = waitingCars[ 0 ].shift();
+
+          if( !waitingCars[ 0 ].length )
+          return startMoving( next );
+          // return startMoving( next ).then( () => nextCar( next.direction ) ); // ??
+
+          bridge.take( null );
+          bridge.then( () => startMoving( next ) );
+        }
+      }
+      else
+      {
+        return null;
+      }
+    }
   }
 }
 
@@ -90,8 +129,7 @@ function ArriveBridge( car )
 
   if( bridge.resourcesCount() )
   {
-    bridge.then( () => startMoving( car ) )
-    bridge.then( () => nextCar() )
+    bridge.then( () => startMoving( car ) );
   }
   else if( carsOnBridge.length < 3 )
   {
