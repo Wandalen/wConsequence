@@ -10,9 +10,11 @@
 * source : https://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem
 */
 
+let _;
+
 if( typeof module !== 'undefined' )
 {
-  var _ = require( 'wTools' );
+  _ = require( 'wTools' );
 }
 
 //
@@ -51,8 +53,8 @@ var eventList =
 
 function generateEvents()
 {
-  var i = 0,
-    len = eventList.length;
+  var i = 0;
+  var len = eventList.length;
 
   for( ; i < len; i++ )
   {
@@ -67,7 +69,7 @@ function generateEvents()
       {
         this.consume();
       }
-    } ).bind( this, event ),  eventList[ i ].delay );
+    } ).bind( this, event ), eventList[ i ].delay );
   }
 }
 
@@ -76,14 +78,14 @@ function generateEvents()
 
 function produce( item )
 {
-  console.log( 'producer wants to produce item' + _.time.spent( ' at',this.time ) );
+  console.log( 'producer wants to produce item' + _.time.spent( ' at', this.time ) );
 }
 
 //
 
 function consume()
 {
-  console.log( 'consumer wants to consume item' + _.time.spent( ' at',this.time ) );
+  console.log( 'consumer wants to consume item' + _.time.spent( ' at', this.time ) );
 }
 
 //
@@ -99,10 +101,10 @@ function init()
 var Self =
 {
   //buffer : buffer,
-  generateEvents : generateEvents,
-  produce : produce,
-  consume : consume,
-  init : init,
+  generateEvents,
+  produce,
+  consume,
+  init,
 };
 
 //

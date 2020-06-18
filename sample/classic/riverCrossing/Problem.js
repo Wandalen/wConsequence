@@ -23,26 +23,26 @@ if( typeof module !== 'undefined' )
 
 var hackersEmployeesArrive =
   [
-    { name : 'Alfred', fraction: 'employee', delay: 1000 },
-    { name : 'Jane',   fraction: 'hacker',   delay: 1000 },
-    { name : 'Derek',  fraction: 'hacker', delay: 2000 },
-    { name : 'Bob',    fraction: 'hacker',   delay: 2500 },
-    { name : 'Sean',   fraction: 'hacker',   delay: 3000 },
-    { name : 'Martin', fraction: 'employee', delay: 3000 },
-    { name : 'Joe',    fraction: 'employee', delay: 4000 },
-    { name : 'Jon',    fraction: 'hacker',   delay: 4500 },
-    { name : 'Bet',    fraction: 'employee',   delay: 5000 },
-    { name : 'Patric', fraction: 'hacker',   delay: 5000 },
-    { name : 'Lina',   fraction: 'employee', delay: 6000 },
-    { name : 'Tim',    fraction: 'employee', delay: 6000 },
+    { name : 'Alfred', fraction : 'employee', delay : 1000 },
+    { name : 'Jane', fraction : 'hacker', delay : 1000 },
+    { name : 'Derek', fraction : 'hacker', delay : 2000 },
+    { name : 'Bob', fraction : 'hacker', delay : 2500 },
+    { name : 'Sean', fraction : 'hacker', delay : 3000 },
+    { name : 'Martin', fraction : 'employee', delay : 3000 },
+    { name : 'Joe', fraction : 'employee', delay : 4000 },
+    { name : 'Jon', fraction : 'hacker', delay : 4500 },
+    { name : 'Bet', fraction : 'employee', delay : 5000 },
+    { name : 'Patric', fraction : 'hacker', delay : 5000 },
+    { name : 'Lina', fraction : 'employee', delay : 6000 },
+    { name : 'Tim', fraction : 'employee', delay : 6000 },
   ];
 
 var peopleOnBoard = [];
 
 function peopleArrive()
 {
-  var i = 0,
-    len = hackersEmployeesArrive.length;
+  var i = 0;
+  var len = hackersEmployeesArrive.length;
 
   for( ; i < len; i++ )
   {
@@ -58,7 +58,7 @@ function peopleArrive()
       {
         this.employeeArrives( person );
       }
-    }).bind( this, person ),  hackersEmployeesArrive[ i ].delay );
+    } ).bind( this, person ), hackersEmployeesArrive[ i ].delay );
   }
 }
 
@@ -85,14 +85,14 @@ function boardBoat( person )
 
 function rowBoat()
 {
-  var employeers = 0,
-    l = 4;
+  var employeers = 0;
+  var l = 4;
   while( l-- )
   {
-    if ( peopleOnBoard[ l ].fraction === 'employee' )
+    if( peopleOnBoard[ l ].fraction === 'employee' )
       employeers++;
   }
-  if (employeers === 1 || employeers === 3)
+  if( employeers === 1 || employeers === 3 )
   {
     console.log( 'problem: safety not guaranteed' );
   }
@@ -105,11 +105,11 @@ function rowBoat()
 
 var Self =
 {
-  peopleArrive: peopleArrive,
-  hackerArrives: hackerArrives,
-  employeeArrives: employeeArrives,
-  boardBoat: boardBoat,
-  rowBoat: rowBoat
+  peopleArrive,
+  hackerArrives,
+  employeeArrives,
+  boardBoat,
+  rowBoat
 };
 
 //

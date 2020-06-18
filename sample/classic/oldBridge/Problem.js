@@ -9,35 +9,36 @@
  *
  * source: https://inst.eecs.berkeley.edu/~cs162/sp10/hand-outs/synch-problems.html
  */
+let _;
 
 if( typeof module !== 'undefined' )
 {
-  var _ = require( 'wTools' );
+  _ = require( 'wTools' );
 }
 
 var carsArriveList =
   [
-    { direction: 1, delay: 500, duration: 1500 },
-    { direction: 1, delay: 1000, duration: 1000 },
-    { direction: 0, delay: 1000, duration: 500 },
-    { direction: 1, delay: 2000, duration: 1500 },
-    { direction: 0, delay: 2500, duration: 1000 },
-    { direction: 0, delay: 3000, duration: 500 },
-    { direction: 1, delay: 3000, duration: 1500 },
-    { direction: 1, delay: 4000, duration: 1500 },
-    { direction: 0, delay: 4500, duration: 1000 },
-    { direction: 0, delay: 5000, duration: 1500 },
-    { direction: 0, delay: 5000, duration: 1500 },
-    { direction: 1, delay: 6000, duration: 1500 },
+    { direction : 1, delay : 500, duration : 1500 },
+    { direction : 1, delay : 1000, duration : 1000 },
+    { direction : 0, delay : 1000, duration : 500 },
+    { direction : 1, delay : 2000, duration : 1500 },
+    { direction : 0, delay : 2500, duration : 1000 },
+    { direction : 0, delay : 3000, duration : 500 },
+    { direction : 1, delay : 3000, duration : 1500 },
+    { direction : 1, delay : 4000, duration : 1500 },
+    { direction : 0, delay : 4500, duration : 1000 },
+    { direction : 0, delay : 5000, duration : 1500 },
+    { direction : 0, delay : 5000, duration : 1500 },
+    { direction : 1, delay : 6000, duration : 1500 },
   ];
 
 var carsOnBridge = [];
 
 function carsArrive()
 {
-  var i = 0,
-    len = carsArriveList.length,
-    time = _.time.now();
+  var i = 0;
+  var len = carsArriveList.length;
+  var time = _.time.now();
 
 
   for( ; i < len; i++ )
@@ -47,9 +48,9 @@ function carsArrive()
 
     setTimeout( ( function( car )
     {
-      console.log( ' car #' + car.name + ' arrive at ' + _.time.spent( ' ',time ) );
+      console.log( ' car #' + car.name + ' arrive at ' + _.time.spent( ' ', time ) );
       this.arriveBridge( car );
-    }).bind( this, car ),  carsArriveList[ i ].delay );
+    }).bind( this, car ), carsArriveList[ i ].delay );
   }
 }
 
@@ -58,7 +59,7 @@ function arriveBridge( car )
   carsOnBridge.push(car);
 
   var l = carsOnBridge.length;
-  if ( carsOnBridge.length > 3 )
+  if( carsOnBridge.length > 3 )
   {
     console.log( 'max car limit exceeded, bridge COLLAPSED' );
     process.exit();
@@ -82,10 +83,10 @@ function exitBridge( car )
 
 var Self =
 {
-  carsArrive : carsArrive,
-  arriveBridge : arriveBridge,
-  exitBridge : exitBridge,
-  carsOnBridge: carsOnBridge
+  carsArrive,
+  arriveBridge,
+  exitBridge,
+  carsOnBridge
 };
 
 //
