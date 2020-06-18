@@ -100,4 +100,4 @@ if( typeof module !== 'undefined' )
     Self.simulateHungryEvent();
 }
 
-/* qqq : rewrite */
+/* aaa Artem : done. rewrite */
