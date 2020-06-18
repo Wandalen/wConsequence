@@ -62,12 +62,12 @@ function nextBoat()
 {
   crossingRiver = false;
   passOnBoard = [];
-  console.log( `boat finished crossing the river, new landing is starting - ${status()}` );
+  console.log( `- boat finished crossing the river, new landing is starting - ${status()}` );
 
   if( !waitingPass.length )
   return null;
 
-  const deleteIdxs = [];
+  const forDeletingIdx = [];
 
   for( let i = 0; i < waitingPass.length; i++ )
   {
@@ -75,19 +75,23 @@ function nextBoat()
     if( nextPass.fraction === 'hacker' )
     {
       const e = passOnBoard.filter( ( p ) => p.fraction === 'employee' );
-      if( e.length < 3 )
+      const hB = passOnBoard.filter( ( p ) => p.fraction === 'hacker' );
+
+      if( e.length < 3 && hB.length < 2 )
       {
         boardBoat( nextPass );
-        deleteIdxs.push( i )
+        forDeletingIdx.push( i );
       }
     }
     else
     {
       const h = passOnBoard.filter( ( p ) => p.fraction === 'hacker' );
-      if( h.length < 3 )
+      const eB = passOnBoard.filter( ( p ) => p.fraction === 'employee' );
+
+      if( h.length < 3 && eB.length < 2 )
       {
         boardBoat( nextPass );
-        deleteIdxs.push( i )
+        forDeletingIdx.push( i );
       }
     }
 
@@ -97,7 +101,7 @@ function nextBoat()
 
   waitingPass = waitingPass.filter( ( p, idx ) =>
   {
-    return !deleteIdxs.includes( idx );
+    return !forDeletingIdx.includes( idx );
   } )
 
   if( passOnBoard.length === 4 )
@@ -113,9 +117,14 @@ function passengerArrives( p )
   console.log( `+ pass_${p.id} ${p.fraction} arrived - ${status()}` );
 
   if( crossingRiver )
-  waitingPass.push( p )
+  {
+    waitingPass.push( p );
+    console.log( `there is no boat in the dock, pass_${p.id} should wait - ${status()}` );
+  }
   else
-  p.fraction === 'hacker' ? hackerArrives( p ) : employeeArrives( p );
+  {
+    p.fraction === 'hacker' ? hackerArrives( p ) : employeeArrives( p );
+  }
 }
 
 //
@@ -131,7 +140,7 @@ function boardBoat( p )
 function rowBoat()
 {
   crossingRiver = true;
-  console.log( `- boat starts to cross the river - ${status}` );
+  console.log( `- boat starts to cross the river - ${status()}` );
   return _.time.out( riverCrossingTime ).then( nextBoat );
 }
 
@@ -140,13 +149,14 @@ function rowBoat()
 function hackerArrives( h )
 {
   const e = passOnBoard.filter( ( p ) => p.fraction === 'employee' );
+  const hB = passOnBoard.filter( ( p ) => p.fraction === 'hacker' );
 
-  if( e.length < 3 )
+  if( e.length < 3 && hB.length < 2 )
   {
     boardBoat( h );
 
     if( passOnBoard.length === 4 )
-    con.then( () => rowBoat );
+    con.then( () => rowBoat() );
   }
   else
   {
@@ -159,13 +169,14 @@ function hackerArrives( h )
 function employeeArrives( e )
 {
   const h = passOnBoard.filter( ( p ) => p.fraction === 'hacker' );
+  const eB = passOnBoard.filter( ( p ) => p.fraction === 'employee' );
 
-  if( h.length < 3 )
+  if( h.length < 3 && eB.length < 2 )
   {
     boardBoat( e );
 
     if( passOnBoard.length === 4 )
-    con.then( () => rowBoat );
+    con.then( () => rowBoat() );
   }
   else
   {
