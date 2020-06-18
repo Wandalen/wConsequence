@@ -1,4 +1,4 @@
-/* qqq : implement */
+/* aaa Artem : done. implement */
 let _;
 
 if( typeof module !== 'undefined' )
