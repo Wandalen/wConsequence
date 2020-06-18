@@ -9,8 +9,7 @@ if( typeof module !== 'undefined' )
 
 const startTime = _.time.now();
 const con = new _.Consequence().take( null );
-const waitingH = [];
-const waitingE = [];
+let waitingPass = [];
 let passOnBoard = [];
 const riverCrossingTime = 10000;
 let crossingRiver = false;
@@ -54,7 +53,7 @@ function status()
 {
   const h = passOnBoard.filter( ( p ) => p.fraction === 'hacker' );
   const e = passOnBoard.filter( ( p ) => p.fraction === 'employee' );
-  return `${_.time.spent( startTime )}, boatCrossesRiver: ${crossingRiver}, onBoard: h:${h.length} e:${e.length}, waitingH: ${waitingH.length}, waitingE: ${waitingE.length}`;
+  return `${_.time.spent( startTime )}, boatCrossesRiver: ${crossingRiver}, onBoard: h:${h.length} e:${e.length}, waitingPass: ${waitingPass.length}`;
 }
 
 //
@@ -65,28 +64,46 @@ function nextBoat()
   passOnBoard = [];
   console.log( `boat finished crossing the river, new landing is starting - ${status()}` );
 
-  if( !waitingH.length && !waitingE.length )
+  if( !waitingPass.length )
   return null;
 
-  // if( waitingH.length >= 2 && waitingE >= 2 )
-  // {
-  //   passOnBoard.push( ... waitingH.splice( 0, 2 ), ... waitingE.splice( 0, 2 ) );
-  //   return rowBoat();
-  // }
-  // else if( waitingH.length >= 4 )
-  // {
-  //   passOnBoard.push( ... waitingH.splice( 0, 4 ) );
-  //   return rowBoat();
-  // }
-  // else if( waitingE.length >= 4 )
-  // {
-  //   passOnBoard.push( ... waitingE.splice( 0, 4 ) );
-  //   return rowBoat();
-  // }
-  // else
-  // {
-  //   passOnBoard.push( waitingH )
-  // }
+  const deleteIdxs = [];
+
+  for( let i = 0; i < waitingPass.length; i++ )
+  {
+    let nextPass = waitingPass[ i ];
+    if( nextPass.fraction === 'hacker' )
+    {
+      const e = passOnBoard.filter( ( p ) => p.fraction === 'employee' );
+      if( e.length < 3 )
+      {
+        boardBoat( nextPass );
+        deleteIdxs.push( i )
+      }
+    }
+    else
+    {
+      const h = passOnBoard.filter( ( p ) => p.fraction === 'hacker' );
+      if( h.length < 3 )
+      {
+        boardBoat( nextPass );
+        deleteIdxs.push( i )
+      }
+    }
+
+    if( passOnBoard.length === 4 )
+    break;
+  }
+
+  waitingPass = waitingPass.filter( ( p, idx ) =>
+  {
+    return !deleteIdxs.includes( idx );
+  } )
+
+  if( passOnBoard.length === 4 )
+  return rowBoat();
+  else
+  return null;
 }
 
 //
@@ -95,6 +112,9 @@ function passengerArrives( p )
 {
   console.log( `+ pass_${p.id} ${p.fraction} arrived - ${status()}` );
 
+  if( crossingRiver )
+  waitingPass.push( p )
+  else
   p.fraction === 'hacker' ? hackerArrives( p ) : employeeArrives( p );
 }
 
@@ -103,7 +123,7 @@ function passengerArrives( p )
 function boardBoat( p )
 {
   passOnBoard.push( p );
-  console.log( `  pass_${p.id} ${p.fraction} boarded - ${status()}` );
+  console.log( `  pass_${p.id} ${p.fraction} on board - ${status()}` );
 }
 
 //
@@ -119,15 +139,18 @@ function rowBoat()
 
 function hackerArrives( h )
 {
-  if( crossingRiver || waitingH.length )
+  const e = passOnBoard.filter( ( p ) => p.fraction === 'employee' );
+
+  if( e.length < 3 )
   {
-    waitingH.push( h );
+    boardBoat( h );
+
+    if( passOnBoard.length === 4 )
+    con.then( () => rowBoat );
   }
   else
   {
-    boardBoat( h );
-    if( passOnBoard.length === 4 )
-    con.then( () => rowBoat );
+    waitingPass.push( h );
   }
 }
 
@@ -135,14 +158,17 @@ function hackerArrives( h )
 
 function employeeArrives( e )
 {
-  if( crossingRiver || waitingE.length )
+  const h = passOnBoard.filter( ( p ) => p.fraction === 'hacker' );
+
+  if( h.length < 3 )
   {
-    waitingH.push( e );
+    boardBoat( e );
+
+    if( passOnBoard.length === 4 )
+    con.then( () => rowBoat );
   }
   else
   {
-    boardBoat( e );
-    if( passOnBoard.length === 4 )
-    con.then( () => rowBoat );
+    waitingPass.push( e );
   }
 }

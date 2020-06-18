@@ -16,7 +16,7 @@ if( typeof module !== 'undefined' )
   _ = require( 'wTools' );
 }
 
-var carsArriveList =
+let carsArriveList =
   [
     { direction : 1, delay : 500, duration : 1500 },
     { direction : 1, delay : 1000, duration : 1000 },
@@ -32,18 +32,18 @@ var carsArriveList =
     { direction : 1, delay : 6000, duration : 1500 },
   ];
 
-var carsOnBridge = [];
+let carsOnBridge = [];
 
 function carsArrive()
 {
-  var i = 0;
-  var len = carsArriveList.length;
-  var time = _.time.now();
+  let i = 0;
+  let len = carsArriveList.length;
+  let time = _.time.now();
 
 
   for( ; i < len; i++ )
   {
-    var car = carsArriveList[ i ];
+    let car = carsArriveList[ i ];
     car.name = i;
 
     setTimeout( ( function( car )
@@ -58,7 +58,7 @@ function arriveBridge( car )
 {
   carsOnBridge.push(car);
 
-  var l = carsOnBridge.length;
+  let l = carsOnBridge.length;
   if( carsOnBridge.length > 3 )
   {
     console.log( 'max car limit exceeded, bridge COLLAPSED' );
@@ -72,16 +72,16 @@ function arriveBridge( car )
       process.exit();
     }
   }
-  setTimeout( this.exitBridge.bind(this, car ), car.duration );
+  setTimeout( this.exitBridge.bind( this, car ), car.duration );
 }
 
 function exitBridge( car )
 {
-  _.arrayRemoveOnce( this.carsOnBridge, car);
+  _.arrayRemoveOnce( this.carsOnBridge, car );
   console.log( 'car #' + car.name + 'exit from bridge' );
 }
 
-var Self =
+let Self =
 {
   carsArrive,
   arriveBridge,
@@ -98,4 +98,4 @@ if( typeof module !== 'undefined' )
     Self.carsArrive();
 }
 
-/* aaa Artem : done. rewrite */
+/*  qqq : rewrite */

@@ -27,7 +27,7 @@ if( typeof module !== 'undefined' )
   _ = require( 'wTools' ); /* qqq : rid off all `var` */
 }
 
-var philosophers =
+let philosophers =
 [
   { name : 1, delay : 1000, duration : 5000 },
   { name : 3, delay : 2000, duration : 4000 },
@@ -58,16 +58,16 @@ var philosophers =
 
 function simulateHungryEvent()
 {
-  var i = 0;
-  var len = philosophers.length;
-  var time = _.time.now();
+  let i = 0;
+  let len = philosophers.length;
+  let time = _.time.now();
 
   for( ; i < len; i++ )
   {
-    var philosopher = philosophers[ i ];
+    let philosopher = philosophers[ i ];
     setTimeout(( function( philosopher )
     {
-      var context = {};
+      let context = {};
       context.time = time;
       context.philosopher = philosopher;
       this.informAboutHungry( context );
@@ -86,7 +86,7 @@ function informAboutHungry( c )
 
 //
 
-var Self =
+let Self =
 {
   informAboutHungry,
   simulateHungryEvent,
@@ -101,4 +101,4 @@ if( typeof module !== 'undefined' )
     Self.simulateHungryEvent();
 }
 
-/* aaa Artem : done. rewrite */
+/* qqq : rewrite */
