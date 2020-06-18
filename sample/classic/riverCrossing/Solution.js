@@ -11,7 +11,7 @@ const startTime = _.time.now();
 const con = new _.Consequence().take( null );
 const waitingH = [];
 const waitingE = [];
-const passOnBoard = [];
+let passOnBoard = [];
 const riverCrossingTime = 10000;
 let crossingRiver = false;
 
@@ -61,8 +61,32 @@ function status()
 
 function nextBoat()
 {
+  crossingRiver = false;
+  passOnBoard = [];
+  console.log( `boat finished crossing the river, new landing is starting - ${status()}` );
+
   if( !waitingH.length && !waitingE.length )
   return null;
+
+  // if( waitingH.length >= 2 && waitingE >= 2 )
+  // {
+  //   passOnBoard.push( ... waitingH.splice( 0, 2 ), ... waitingE.splice( 0, 2 ) );
+  //   return rowBoat();
+  // }
+  // else if( waitingH.length >= 4 )
+  // {
+  //   passOnBoard.push( ... waitingH.splice( 0, 4 ) );
+  //   return rowBoat();
+  // }
+  // else if( waitingE.length >= 4 )
+  // {
+  //   passOnBoard.push( ... waitingE.splice( 0, 4 ) );
+  //   return rowBoat();
+  // }
+  // else
+  // {
+  //   passOnBoard.push( waitingH )
+  // }
 }
 
 //
@@ -72,9 +96,6 @@ function passengerArrives( p )
   console.log( `+ pass_${p.id} ${p.fraction} arrived - ${status()}` );
 
   p.fraction === 'hacker' ? hackerArrives( p ) : employeeArrives( p );
-
-  if( passOnBoard.length === 4 && !crossingRiver )
-  con.then( () => rowBoat );
 }
 
 //
@@ -91,7 +112,7 @@ function rowBoat()
 {
   crossingRiver = true;
   console.log( `- boat starts to cross the river - ${status}` );
-  return _.time.out( riverCrossingTime ).then( () => nextBoat() || null );
+  return _.time.out( riverCrossingTime ).then( nextBoat );
 }
 
 //
@@ -105,6 +126,8 @@ function hackerArrives( h )
   else
   {
     boardBoat( h );
+    if( passOnBoard.length === 4 )
+    con.then( () => rowBoat );
   }
 }
 
@@ -112,5 +135,14 @@ function hackerArrives( h )
 
 function employeeArrives( e )
 {
-  waitingE.length ? waitingE.push( e ) : boardBoat( e );
+  if( crossingRiver || waitingE.length )
+  {
+    waitingH.push( e );
+  }
+  else
+  {
+    boardBoat( e );
+    if( passOnBoard.length === 4 )
+    con.then( () => rowBoat );
+  }
 }
