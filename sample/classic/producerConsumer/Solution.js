@@ -1,4 +1,4 @@
-/* qqq : implement */
+/* aaa Artem : done. implement */
 let _;
 
 if( typeof module !== 'undefined' )
@@ -12,8 +12,8 @@ const producerSwitcher = new _.Consequence().take( null );
 const consumerSwitcher = new _.Consequence().take( null );
 const bufferSize = 5;
 const buffer = [];
-const producer = { status : 'sleep', speed : 3000 }
-const consumer = { status : 'sleep', speed : 1500 }
+const producer = { status : 'sleep', speed : 1500 }
+const consumer = { status : 'sleep', speed : 3000 }
 let producerTimerId,
   consumerTimerId;
 
@@ -80,6 +80,8 @@ function consumeGoods()
       console.log( `buffer is empty, consumer has stopped consumption - ${status()}` );
       return null;
     } );
+
+    if( producer.status === 'sleep' )
     producerSwitcher.then( () =>
     {
       producer.status = 'awake';
