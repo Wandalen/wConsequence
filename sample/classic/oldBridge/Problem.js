@@ -43,8 +43,6 @@ let Self =
   ArriveBridge,
 };
 
-//
-
 if( typeof module !== 'undefined' )
 {
   module[ 'exports' ] = Self;

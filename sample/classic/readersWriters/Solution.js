@@ -1,10 +1,12 @@
 /* aaa Artem : done. implement */
-let _;
+let _,
+  Problem;
 
 if( typeof module !== 'undefined' )
 {
   _ = require( 'wTools' );
   require( 'wConsequence' );
+  Problem = require( './Problem.js' );
 }
 
 const startTime = _.time.now();
@@ -13,25 +15,8 @@ let isWriting = false;
 let activeWriters = 0;
 let activeReaders = 0;
 let proceduresQueue = [];
-
-const writersReaders =
-[
-  { id : 1, type : 'reader', action : 'read', duration : 2000, delay : 1000 },
-  { id : 2, type : 'writer', action : 'write', duration : 1000, delay : 2000 },
-  { id : 3, type : 'reader', action : 'read', duration : 2000, delay : 2500 },
-  { id : 4, type : 'writer', action : 'write', duration : 1000, delay : 5000 },
-  { id : 5, type : 'reader', action : 'read', duration : 2000, delay : 5000 },
-];
-
-run();
-
-//
-
-function run()
-{
-  for( let i = 0; i < writersReaders.length; i++ )
-  _.time.out( writersReaders[ i ].delay, () => event( writersReaders[ i ] ) );
-}
+Problem.event = event;
+Problem.run();
 
 //
 
