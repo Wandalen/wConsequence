@@ -13,7 +13,7 @@ if( typeof module !== 'undefined' )
   _ = require( 'wTools' );
 }
 
-var resource =
+let resource =
 {
   sharedData : '',
   readers : [],
@@ -40,15 +40,15 @@ function RWSubject( name )
 
 function createRWsubjects()
 {
-  var rwSubjects = [];
-  for( var i = 1; i < 5; i++ )
+  let rwSubjects = [];
+  for( let i = 1; i < 5; i++ )
     rwSubjects.push( new RWSubject( i ) );
   return rwSubjects
 }
 
 //
 
-var rwEventList =
+let rwEventList =
 [
   { subject : '1', operation : 'write', delay : 1000, duration : 1500 },
   { subject : '1', operation : 'read', delay : 3000, duration : 2000 },
@@ -79,19 +79,19 @@ var rwEventList =
 function simulateReadWriteEvent()
 {
 
-  var i = 0;
-  var list = rwEventList;
-  var len = list.length;
-  var time = _.time.now();
+  let i = 0;
+  let list = rwEventList;
+  let len = list.length;
+  let time = _.time.now();
 
 
   for( ; i < len; i++ )
   {
-    var event = list[ i ];
-    var rWSubject = this.rwSubjects[ event.subject - 1 ];
+    let event = list[ i ];
+    let rWSubject = this.rwSubjects[ event.subject - 1 ];
     setTimeout( ( function( rWSubject, event )
     {
-      var context = {};
+      let context = {};
       context.time = time;
       context.rwSubject = rWSubject;
       context.event = event;
@@ -112,7 +112,7 @@ function precessEvent( opt )
     + ' at ' + _.time.spent( ' ', opt.time )
   );
 
-  var resource = this.resource;
+  let resource = this.resource;
 
   if( opt.event.operation === 'read' )
   {
@@ -165,7 +165,7 @@ function init()
 
 //
 
-var Self =
+let Self =
 {
   resource,
   precessEvent,

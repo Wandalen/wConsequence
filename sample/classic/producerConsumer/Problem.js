@@ -19,7 +19,7 @@ if( typeof module !== 'undefined' )
 
 //
 
-var eventList =
+let eventList =
 [
 
   { emitter : 'consumer', delay : 1000 },
@@ -53,12 +53,12 @@ var eventList =
 
 function generateEvents()
 {
-  var i = 0;
-  var len = eventList.length;
+  let i = 0;
+  let len = eventList.length;
 
   for( ; i < len; i++ )
   {
-    var event = eventList[ i ];
+    let event = eventList[ i ];
     setTimeout( ( function( event )
     {
       if( event.emitter === 'producer' )
@@ -98,7 +98,7 @@ function init()
 
 //
 
-var Self =
+let Self =
 {
   //buffer : buffer,
   generateEvents,

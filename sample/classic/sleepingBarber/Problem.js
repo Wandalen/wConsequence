@@ -37,7 +37,7 @@ if( typeof module !== 'undefined' )
   Self.run();
 }
 
-/* qqq : make sure routines goes after instructions */
+/* aaa Artem : done. make sure routines goes after instructions */
 /* aaa Artem : done. remove all bind in all samples */
 /* aaa Artem : done. simplify maybe */
 

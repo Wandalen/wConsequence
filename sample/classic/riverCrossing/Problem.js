@@ -15,13 +15,14 @@
 
   source: https://inst.eecs.berkeley.edu/~cs162/sp10/hand-outs/synch-problems.html
  */
+let _;
 
 if( typeof module !== 'undefined' )
 {
-  var _ = require( 'wTools' );
+  _ = require( 'wTools' );
 }
 
-var hackersEmployeesArrive =
+let hackersEmployeesArrive =
   [
     { name : 'Alfred', fraction : 'employee', delay : 1000 },
     { name : 'Jane', fraction : 'hacker', delay : 1000 },
@@ -37,16 +38,16 @@ var hackersEmployeesArrive =
     { name : 'Tim', fraction : 'employee', delay : 6000 },
   ];
 
-var peopleOnBoard = [];
+let peopleOnBoard = [];
 
 function peopleArrive()
 {
-  var i = 0;
-  var len = hackersEmployeesArrive.length;
+  let i = 0;
+  let len = hackersEmployeesArrive.length;
 
   for( ; i < len; i++ )
   {
-    var person = hackersEmployeesArrive[ i ];
+    let person = hackersEmployeesArrive[ i ];
 
     setTimeout( ( function( person )
     {
@@ -85,8 +86,8 @@ function boardBoat( person )
 
 function rowBoat()
 {
-  var employeers = 0;
-  var l = 4;
+  let employeers = 0;
+  let l = 4;
   while( l-- )
   {
     if( peopleOnBoard[ l ].fraction === 'employee' )
@@ -103,7 +104,7 @@ function rowBoat()
   peopleOnBoard = [];
 }
 
-var Self =
+let Self =
 {
   peopleArrive,
   hackerArrives,
