@@ -38,7 +38,7 @@ if( typeof module !== 'undefined' )
 }
 
 /* qqq : make sure routines goes after instructions */
-/* qqq : remove all bind in all samples */
+/* aaa Artem : done. remove all bind in all samples */
 /* aaa Artem : done. simplify maybe */
 
 //
