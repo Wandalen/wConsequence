@@ -1,10 +1,11 @@
-/* aaa Artem : done. implement */
-let _;
+let _,
+  Problem;
 
 if( typeof module !== 'undefined' )
 {
   _ = require( 'wTools' );
   require( 'wConsequence' );
+  Problem = require( './Problem.js' );
 }
 
 let hydTotal = 20;
@@ -18,7 +19,9 @@ let hyd = new _.Consequence();
 let ox = new _.Consequence();
 let con = new _.Consequence().take( null );
 
-run( hydTotal, oxTotal );
+Problem.addHyd = addHyd;
+Problem.addOx = addOx;
+Problem.run( hydTotal, oxTotal );
 
 let l = hydTotal / 2 < oxTotal ? hydTotal / 2 : oxTotal;
 for( let i = 0; i < l; i++ )
@@ -30,7 +33,7 @@ con.then( () =>
   hyd = new _.Consequence();
   ox = new _.Consequence();
   return null;
-} );
+});
 
 //
 
@@ -48,17 +51,6 @@ function formMolecule()
 
   waitingAtoms.hyd -= 2;
   waitingAtoms.ox -= 1;
-}
-
-//
-
-function run( h, o )
-{
-  for( let i = 1; i <= h; i++ )
-  _.time.out( 1250 * i, addHyd );
-
-  for( let i = 1; i <= o; i++ )
-  _.time.out( 1750 * i, addOx );
 }
 
 //
@@ -98,3 +90,5 @@ function Oxygen()
   ox.deasync();
   return ox.sync();
 }
+
+/* aaa Artem : done. implement */
