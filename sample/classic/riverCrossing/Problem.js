@@ -16,7 +16,6 @@
   source: https://inst.eecs.berkeley.edu/~cs162/sp10/hand-outs/synch-problems.html
  */
 
-/* aaa Artem : done. implement */
 let _;
 
 if( typeof module !== 'undefined' )
@@ -81,6 +80,8 @@ function passengerArrives( p )
 }
 
 /* aaa Artem : done. rewrite */
+
+/* */
 
 // let _;
 

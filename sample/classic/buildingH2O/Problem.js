@@ -47,6 +47,7 @@ function run( h, o )
 
 function addHyd()
 {
+  /* a new hydrogen atom appears */
   console.log( `+ hydrogen - ${_.time.spent( startTime )}` );
 }
 
@@ -54,6 +55,7 @@ function addHyd()
 
 function addOx()
 {
+  /* a new oxygen atom appears */
   console.log( `+ oxygen - ${_.time.spent( startTime )}` );
 }
 

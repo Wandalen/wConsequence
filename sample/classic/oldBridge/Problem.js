@@ -62,10 +62,13 @@ function run()
 
 function ArriveBridge( car )
 {
+  /* a car arrived to the bridge */
   console.log( `+ car №${car.number} is coming, dir:${car.direction}, time: ${_.time.spent( startTime )}` );
 }
 
 /*  aaa Artem : done. rewrite */
+
+/* */
 
 // let carsArriveList =
 //   [

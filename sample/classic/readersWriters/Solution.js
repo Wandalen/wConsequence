@@ -1,4 +1,8 @@
-/* aaa Artem : done. implement */
+/**
+ * @file This sample demonstrates using wConsequence for synchronization the several asynchronous process by example of
+ * 'Readers-Writers' problem. In this example, attempts to write or read a buffer are asynchronous.
+ */
+
 let _,
   Problem;
 
@@ -110,3 +114,5 @@ function read( o )
     return null;
   } );
 }
+
+/* aaa Artem : done. implement */

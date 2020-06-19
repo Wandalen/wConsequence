@@ -51,10 +51,13 @@ function run()
 
 function event( o )
 {
+  /* writer or reader wants to interact with the buffer */
   console.log( `+ op_${o.id}_${o.type} wants to ${o.action} - ${_.time.spent( startTime )}` );
 }
 
 /* aaa Artem : done. rewrtie */
+
+/* */
 
 // let _;
 

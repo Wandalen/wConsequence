@@ -50,10 +50,13 @@ function run()
 
 function produceGoods()
 {
+  /* a producer created the goods */
   console.log( `+ producer added goods - ${_.time.spent( startTime )}` );
 }
 
 /* aaa Artem : done. rewrite */
+
+/* */
 
 // let _;
 

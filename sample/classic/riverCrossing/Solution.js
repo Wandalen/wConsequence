@@ -1,3 +1,8 @@
+/**
+ * @file This sample demonstrates using wConsequence for synchronization the several asynchronous process by example of
+ * 'River Crossing' problem. In this example, hackers and employees arrive on the back of the river asynchronously.
+ */
+
 let _,
   Problem;
 

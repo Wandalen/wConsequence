@@ -1,3 +1,8 @@
+/**
+ * @file This sample demonstrates using wConsequence for synchronization the several asynchronous process by example of
+ * 'BuildingH2O'. In this example the appearance of hydrogen and oxygen is asynchronous.
+*/
+
 let _,
   Problem;
 

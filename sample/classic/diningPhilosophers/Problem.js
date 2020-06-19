@@ -138,10 +138,13 @@ function run( k )
 
 function getHungry( ph )
 {
+  /* a philosopher is hungry */
   console.log( `+ ph_${ph.id} is hungry - ${_.time.spent( startTime )}` );
 }
 
 /* aaa Artem : done. rewrite */
+
+/* */
 
 // let _;
 
