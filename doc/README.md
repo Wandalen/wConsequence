@@ -5,7 +5,7 @@
 
 = Concepts
 
-qqq : write concept "Consequence"
+aaa Artem : done. write concept "Consequence"
 aaa Artem : done. write concept "Competitor"
 aaa Artem : done. write concept "Resource"
 aaa Artem : done. write concept "Resource argument"

@@ -26,4 +26,4 @@ In case of error call `sync()` will throw the error synchronously.
 */
 
 /* qqq : does not work ( demonstratively ) because of asynchronicity. please find synchronous nodejs routine with the same callback signature */
-/* qqq : use it for tutorial */
+/* aaa Artem : done. use it for tutorial */
