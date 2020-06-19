@@ -1,10 +1,15 @@
-/* aaa Artem : done. implement */
-let _;
+/**
+ * @file This sample demonstrates using wConsequence for synchronization the several asynchronous process by example of
+ * 'Producer-Consumer' problem. In this example producing and consuming are asynchronous. Process is endless!
+ */
+let _,
+  Problem;
 
 if( typeof module !== 'undefined' )
 {
   _ = require( 'wTools' );
   require( 'wConsequence' );
+  Problem = require( './Problem.js' );
 }
 
 const startTime = _.time.now();
@@ -17,7 +22,9 @@ const consumer = { status : 'sleep', speed : 3000 }
 let producerTimerId,
   consumerTimerId;
 
-run();
+Problem.produceGoods = produceGoods;
+Problem.run = run;
+Problem.run();
 
 //
 
@@ -91,3 +98,5 @@ function consumeGoods()
     } )
   }
 }
+
+/* aaa Artem : done. implement */
