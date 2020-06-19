@@ -8,10 +8,14 @@ if( typeof module !== 'undefined' )
 }
 
 const startTime = _.time.now();
-const con = new _.Consequence();
+const producerSwitcher = new _.Consequence().take( null );
+const consumerSwitcher = new _.Consequence().take( null );
+const bufferSize = 5;
 const buffer = [];
-const consumerStatus = 'sleep';
-const producerStatus = 'awake';
+const producer = { status : 'sleep', speed : 3000 }
+const consumer = { status : 'sleep', speed : 1500 }
+let producerTimerId,
+  consumerTimerId;
 
 run();
 
@@ -19,33 +23,69 @@ run();
 
 function run()
 {
-  console.log( 'hello world!' );
+  producerSwitcher.then( () =>
+  {
+    producer.status = 'awake';
+    producerTimerId = setInterval( produceGoods, producer.speed );
+    console.log( `producer starts to work - ${status()}` );
+    return null;
+  } );
 }
 
 //
 
 function status()
 {
-
+  return `${_.time.spent( startTime )}, bufferStatus: ${buffer.length}/${bufferSize}, producerStatus: ${producer.status}, consumerStatus: ${consumer.status}`
 }
 
 //
 
-function changeStatus()
+function produceGoods()
 {
-  
+  buffer.push( 'goods' );
+  console.log( `+ producer added goods - ${status()}` );
+
+  if( buffer.length === 1 )
+  consumerSwitcher.then( () =>
+  {
+    consumerTimerId = setInterval( consumeGoods, consumer.speed );
+    consumer.status = 'awake';
+    console.log( `consumer starts consumption - ${status()}` );
+    return null;
+  } );
+  else if( buffer.length === bufferSize )
+  producerSwitcher.then( () =>
+  {
+    clearInterval( producerTimerId );
+    producer.status = 'sleep';
+    console.log( `buffer is full, producer has stopped working - ${status()}` );
+    return null;
+  } );
 }
 
 //
 
-function produce()
+function consumeGoods()
 {
+  buffer.pop();
+  console.log( `- consumer took goods - ${status()}` );
 
-}
-
-//
-
-function consume()
-{
-
+  if( buffer.length === 0 )
+  {
+    consumerSwitcher.then( () =>
+    {
+      clearInterval( consumerTimerId );
+      consumer.status = 'sleep';
+      console.log( `buffer is empty, consumer has stopped consumption - ${status()}` );
+      return null;
+    } );
+    producerSwitcher.then( () =>
+    {
+      producer.status = 'awake';
+      producerTimerId = setInterval( produceGoods, producer.speed );
+      console.log( `producer starts to work - ${status()}` );
+      return null;
+    } )
+  }
 }
