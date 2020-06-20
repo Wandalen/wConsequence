@@ -1770,7 +1770,7 @@ function _and( o )
       let competitor = competitors[ s ];
       _.assert
       (
-          _.consequenceIs( competitor ) || _.routineIs( competitor ) || competitor === null
+          _.consequenceIs( competitor ) || _.routineIs( competitor ) || competitor === null /* yyy */
         , () => 'Consequence.and expects consequence, routine or null, but got ' + _.strType( competitor )
       );
       if( !_.consequenceIs( competitor ) )
@@ -1817,7 +1817,7 @@ function _and( o )
 
   function callbacksStart()
   {
-    let competitors2 = [];
+    let competitors2 = []; /* xxx : renames */
 
     for( let c = first ; c < last ; c++ ) (function( c )
     {
@@ -1842,7 +1842,7 @@ function _and( o )
       if( o.waiting )
       _.assert
       (
-          _.consequenceIs( competitor ) || competitor === null
+          _.consequenceIs( competitor ) /*|| competitor === null*/ /* yyy */
         , () => `Expects consequence or null, but got ${_.strType( competitor )}`
       );
       else
@@ -1856,7 +1856,7 @@ function _and( o )
       if( o.waiting )
       {
 
-        if( competitor === null )
+        if( competitor === null ) /* xxx : teach And to accept non-consequence */
         {
           __got.call( c, undefined, null );
           return;
@@ -1965,7 +1965,6 @@ function _and( o )
   {
     let competitors2 = [];
 
-    // if( !taking )
     if( keeping )
     for( let i = first ; i < last ; i++ )
     if( competitors[ i ] )
@@ -3345,17 +3344,17 @@ function deadLockReport( competitor )
   if( !chain )
   return '';
 
-  let report = '';
+  let log = '';
 
   debugger;
   chain.forEach( ( con ) =>
   {
-    if( report )
-    report += '\n';
-    report += con.qualifiedName ;
+    if( log )
+    log += '\n';
+    log += con.qualifiedName ;
   });
 
-  return report;
+  return log;
 }
 
 //
