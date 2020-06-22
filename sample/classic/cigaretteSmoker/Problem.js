@@ -1,9 +1,12 @@
 /*
-There are four processes in this problem: three smoker processes and an agent process. Each of the smoker processes will
-make a cigarette and smoke it. To make a cigarette requires tobacco, paper, and matches. Each smoker process has one of the
-three items. I.e., one process has tobacco, another has paper, and a third has matches. The agent has an infinite supply of
-all three. The agent places two of the three items on the table, and the smoker that has the third item makes the cigarette.
-Synchronize the processes.
+Assume a cigarette requires three ingredients to make and smoke: tobacco, paper, and matches.
+There are three smokers around a table, each of whom has an infinite supply of one of the three ingredients — one smoker has
+an infinite supply of tobacco, another has paper, and the third has matches.
+
+There is also a non-smoking agent who enables the smokers to make their cigarettes by arbitrarily (non-deterministically)
+selecting two of the supplies to place on the table. The smoker who has the third supply should remove the two items from the
+table, using them (along with their own supply) to make a cigarette, which they smoke for a while. Once the smoker has
+inished his cigarette, the agent places two new random items on the table. This process continues forever.
 
 source : http://www.cs.umd.edu/~hollings/cs412/s96/synch/smokers.html
 */
@@ -21,7 +24,8 @@ const startTime = _.time.now();
 
 let Self =
 {
-  run
+  run,
+  putItems
 }
 
 if( typeof module !== 'undefined' )
@@ -35,10 +39,14 @@ if( typeof module !== 'undefined' )
 
 function run()
 {
-
+  _.time.out( 1000, () => this.putItems() )
 }
 
 //
 
+function putItems()
+{
+  console.log( `+ agent puts items on the table - time: ${_.time.spent( startTime )}` );
+}
 
-/* qqq implement */
+/* aaa Artem : done. implement */

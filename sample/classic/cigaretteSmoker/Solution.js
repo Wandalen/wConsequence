@@ -1,6 +1,6 @@
 /**
  * @file This sample demonstrates using wConsequence for synchronization the several asynchronous process by example of
- * 'Cigarette Smoker'. In this example, the desire to smoke occur synchronously.
+ * 'Cigarette Smoker'. In this example, agent puts items on the table asynchronously.
 */
 
 let _,
@@ -13,5 +13,81 @@ if( typeof module !== 'undefined' )
   Problem = require( './Problem.js' );
 }
 
+const con = new _.Consequence().take( null );
+const startTime = _.time.now();
+const smokers =
+[
+  { id : 1, smokingTime : 3000, item : 'tobacco', justSmoked : false },
+  { id : 2, smokingTime : 3500, item : 'paper' },
+  { id : 3, smokingTime : 2500, item : 'matches' },
+];
+let items = [];
 
-/* qqq implement */
+Problem.putItems = putItems;
+Problem.run();
+
+//
+
+function status()
+{
+  return `time: ${_.time.spent( startTime )}, items on the table: ${items}`;
+}
+
+//
+
+function putItems( justFinishedSmoker )
+{
+  if( !justFinishedSmoker )
+  {
+    con.then( () =>
+    {
+      items.push( smokers[ 1 ].item, smokers[ 2 ].item );
+      console.log( `agent puts items on the table - ${status()}` );
+      return smoke( smokers[ 0 ] );
+    });
+  }
+  else
+  {
+    con.then( () =>
+    {
+      const nextSmokers = smokers.filter( ( s ) => s.id !== justFinishedSmoker.id );
+      if( nextSmokers[ 0 ].id === 1 && nextSmokers[ 1 ].id === 2 )
+      {
+        items.push( justFinishedSmoker.item, nextSmokers[ 1 ].item );
+        console.log( `agent puts items on the table - ${status()}` );
+        return smoke( nextSmokers[ 0 ] );
+      }
+      else if( nextSmokers[ 0 ].id === 1 && nextSmokers[ 1 ].id === 3 )
+      {
+        items.push( justFinishedSmoker.item, nextSmokers[ 0 ].item );
+        console.log( `agent puts items on the table - ${status()}` );
+        return smoke( nextSmokers[ 1 ] );
+      }
+      else
+      {
+        items.push( justFinishedSmoker.item, nextSmokers[ 1 ].item );
+        console.log( `agent puts items on the table - ${status()}` );
+        return smoke( nextSmokers[ 0 ] );
+      }
+    });
+  }
+}
+
+//
+
+function smoke( smoker )
+{
+  items = [];
+  console.log( `+ smoker_${smoker.id} starts to smoke - ${status()}` );
+  return _.time.out( smoker.smokingTime ).then( () => finishSmoking( smoker ) || null );
+}
+
+//
+
+function finishSmoking( smoker )
+{
+  console.log( `- smoker_${smoker.id} finished to smoke - ${status()}` );
+  return putItems( smoker );
+}
+
+/* aaa Artem : done. implement */
