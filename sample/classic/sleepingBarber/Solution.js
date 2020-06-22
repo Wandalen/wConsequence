@@ -14,7 +14,7 @@ if( typeof module !== 'undefined' )
   Problem = require( './Problem.js' );
 }
 
-let DURATION_OF_WORK = { short : 500, average : 1500, long : 3000 }; /* qqq : remove random from samples */
+let DURATION_OF_WORK = { short : 500, average : 1500, long : 3000 }; /* aaa Artem : done. remove random from samples */
 let BARBER_NUM_SITS = 3;
 let startTime = _.time.now();
 let barber = _.Consequence().take( null );

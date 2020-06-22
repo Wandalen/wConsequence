@@ -1,7 +1,7 @@
 require( 'wConsequence' );
 let _ = wTools;
 
-var con = new _.Consequence({ capacity : 0 });
+var con = new _.Consequence();
 
 function isEven( number, showResult )
 {

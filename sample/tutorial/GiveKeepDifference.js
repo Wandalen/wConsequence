@@ -42,7 +42,7 @@ console.log( con.argumentsGet() );
 // /* log : 'b3' */
 // console.log( con.argumentsGet() );
 // /* log : error */
-/* qqq : explain this in details */
 
+/* aaa Artem : done. explain this in details */
 /* aaa Artem : done. add comments, add log output */
 /* aaa Artem : done. make tutorial from this */

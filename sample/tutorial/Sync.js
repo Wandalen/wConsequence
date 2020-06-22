@@ -1,29 +1,37 @@
 let _ = require( 'wTools' );
 require( 'wConsequence' );
-let Dns = require( 'dns' );
 
-let uri = 'google.com';
+/* custom synchronous function with callback */
+
+function isEven( number, showResult )
+{
+  number % 2 ? showResult( _.errAttend( 'Number is not even!' ) ) : showResult( null, 'Іs even' );
+}
 
 /* with callback */
 
-Dns.resolve4( uri, ( err, addresses ) => /* qqq : nodejs routine which is synchronous */
+isEven( 14, ( err, result ) =>
 {
-  if( err ) console.log( err );
-  console.log( `Ips of ${uri} are ${JSON.stringify( addresses )}` );
-} );
+  if( err )
+    console.log( err );
+  else
+    console.log( result ); // Іs even
+});
 
 /* with consequence */
 
-let addresses = new _.Consequence();
-Dns.resolve4( uri, addresses );
-console.log( `Ips of ${uri} are ${JSON.stringify( addresses.sync() )}` );
+var con = new _.Consequence();
+isEven( 14, con );
+console.log( con.sync() ); // logs: Іs even
+
+var con = new _.Consequence();
+isEven( 11, con )
+console.log( con.sync() ); // logs error: Number is not even! and error log...
 
 /*
-
 Method `sync` unwrap consequence, effectively it looks like conversion to the original type.
 In case of error call `sync()` will throw the error synchronously.
-
 */
 
-/* qqq : does not work ( demonstratively ) because of asynchronicity. please find synchronous nodejs routine with the same callback signature */
+/* aaa Artem : done. not found such, wrote my own. does not work ( demonstratively ) because of asynchronicity. please find synchronous nodejs routine with the same callback signature */
 /* aaa Artem : done. use it for tutorial */

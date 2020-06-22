@@ -1,60 +1,52 @@
 var _ = require( 'wTools' );
 require( 'wConsequence' );
 
-
 /* correspondents */
 
-function gotHandler1( error, value )
+function gotHandler1( value )
 {
-  console.log( 'handler 1 : ' + value );
-  value++;
-  return value;
+  console.log( '  gotHandler1 : ' + value );
 }
 
-function gotHandler2( error, value )
+function gotHandler2( value )
 {
-  debugger;
-  console.log( 'handler 2 : ' + value );
-  value++;
-  return value;
+  console.log( '  gotHandler2 : ' + value );
 }
 
-function gotHandler3( error, value )
+function errorHandler( error )
 {
-  console.log( 'handler 3 err : ' + error );
-  console.log( 'handler 3 val : ' + value );
-  value++;
-  return value;
+  console.log( '  errorHandler : ' + error );
 }
 
-/* cases */
+/* the passed resource is an argument(not error) */
 
 console.log( 'case 1' );
 
-var con1 = new _.Consequence();
+var con1 = new _.Consequence({ capacity : 0 });
 
-con1.ifErrorThen( gotHandler3 ).got( gotHandler1 ).got( gotHandler2 );
+// the passed callback in `.ifErrorThen()` is not called with passed argument in `.take()`
+con1.ifErrorThen( errorHandler )
+
+// only one passed callback in `.got()` is called for every argument passing in `.take()`
+.got( gotHandler1 )
+.got( gotHandler2 );
+
 con1.take( 1 ).take( 4 );
-console.log( con1.toStr() );
+console.log( ' ', con1.toStr() );
 
-/**/
+/* the passed resource is an error */
 
 console.log( 'case 2' );
 
-var con1 = new _.Consequence();
+var con1 = new _.Consequence({ capacity : 0 });
 
-con1.take( 1 ).take( 4 );
-con1.ifErrorThen( gotHandler3 ).got( gotHandler1 ).got( gotHandler2 );
-console.log( con1.toStr() );
+con1.error( _.errAttend( 'error msg' ) ).take( 14 );
 
-/**/
+// the passed callback in `.ifErrorThen()` is called with the passed error in `.error()`
+con1.ifErrorThen( errorHandler )
 
-console.log( 'case 3' );
-var con1 = new _.Consequence();
+// the passed callback in `.got()` is called with the passed argument in `.take()`
+.got( gotHandler1 );
+console.log( ' ', con1.toStr() );
 
-con1.error( 'error msg' ).take( 14 );
-
-con1.ifErrorThen( gotHandler3 ).got( gotHandler1 );
-console.log( con1.toStr() );
-
-/* qqq : simplify */
+/* aaa Artem : done. simplify */
