@@ -1,6 +1,6 @@
 /**
  * @file This sample demonstrates using wConsequence for synchronization the several asynchronous process by example of
- * 'River Crossing' problem. In this example, hackers and employees arrive on the back of the river asynchronously.
+ * 'Readers-Writers' problem. In this example, attempts to write or read a buffer are asynchronous.
  */
 
 let _,
@@ -14,149 +14,105 @@ if( typeof module !== 'undefined' )
 }
 
 const startTime = _.time.now();
-const con = new _.Consequence().take( null );
-let waitingPass = [];
-let passOnBoard = [];
-const riverCrossingTime = 10000;
-let crossingRiver = false;
-Problem.passengerArrives = passengerArrives;
+let isReading = false;
+let isWriting = false;
+let activeWriters = 0;
+let activeReaders = 0;
+let proceduresQueue = [];
+Problem.event = event;
 Problem.run();
+
+//
+
+function event( o )
+{
+  console.log( `+ op_${o.id}_${o.type} wants to ${o.action} - ${status()}` );
+
+  if( o.action === 'write' )
+  {
+    if( !isReading && !isWriting )
+    {
+      write( o );
+    }
+    else
+    {
+      console.log( `  op_${o.id}_${o.type} cannot access the buffer, op_${o.id}_${o.type} will try later - ${status()}` );
+      proceduresQueue.push( o );
+    }
+  }
+  else
+  {
+    if( !isWriting )
+    {
+      read( o );
+    }
+    else
+    {
+      console.log( `  op_${o.id}_${o.type} cannot access the buffer, op_${o.id}_${o.type} will try later - ${status()}` );
+      proceduresQueue.push( o );
+    }
+  }
+}
 
 //
 
 function status()
 {
-  const h = passOnBoard.filter( ( p ) => p.fraction === 'hacker' );
-  const e = passOnBoard.filter( ( p ) => p.fraction === 'employee' );
-  return `${_.time.spent( startTime )}, boatCrossesRiver: ${crossingRiver}, onBoard: h:${h.length} e:${e.length}, waitingPass: ${waitingPass.length}`;
+  return `${_.time.spent( startTime )}, isWriting: ${isWriting}, isReading: ${isReading}, writeNow: ${activeWriters}, readNow: ${activeReaders}, inQueue: ${proceduresQueue.length}`;
 }
 
 //
 
-function boardBoat( p )
+function write( o )
 {
-  passOnBoard.push( p );
-  console.log( `  pass_${p.id} ${p.fraction} on board - ${status()}` );
-}
-
-//
-
-function rowBoat()
-{
-  crossingRiver = true;
-  console.log( `- boat starts to cross the river - ${status()}` );
-  return _.time.out( riverCrossingTime ).then( nextBoat );
-}
-
-//
-
-function passengerArrives( p )
-{
-  console.log( `+ pass_${p.id} ${p.fraction} arrived - ${status()}` );
-
-  if( crossingRiver )
+  isWriting = true;
+  activeWriters += 1;
+  console.log( `  op_${o.id}_${o.type} starts ${o.action} - ${status()}` );
+  return _.time.out( o.duration ).then( () =>
   {
-    waitingPass.push( p );
-    console.log( `there is no boat in the dock, pass_${p.id} should wait - ${status()}` );
-  }
-  else
-  {
-    p.fraction === 'hacker' ? hackerArrives( p ) : employeeArrives( p );
-  }
-}
+    activeWriters -= 1;
+    if( !activeWriters )
+    isWriting = false;
 
-//
+    console.log( `  op_${o.id}_${o.type} finished ${o.action} - ${status()}` );
 
-function nextBoat()
-{
-  crossingRiver = false;
-  passOnBoard = [];
-  console.log( `- boat finished crossing the river, new landing is starting - ${status()}` );
-
-  if( !waitingPass.length )
-  return null;
-
-  const forDeletingIdx = [];
-
-  for( let i = 0; i < waitingPass.length; i++ )
-  {
-    let nextPass = waitingPass[ i ];
-    if( nextPass.fraction === 'hacker' )
+    if( !isWriting )
     {
-      const e = passOnBoard.filter( ( p ) => p.fraction === 'employee' );
-      const hB = passOnBoard.filter( ( p ) => p.fraction === 'hacker' );
-
-      if( e.length < 3 && hB.length < 2 )
-      {
-        boardBoat( nextPass );
-        forDeletingIdx.push( i );
-      }
-    }
-    else
-    {
-      const h = passOnBoard.filter( ( p ) => p.fraction === 'hacker' );
-      const eB = passOnBoard.filter( ( p ) => p.fraction === 'employee' );
-
-      if( h.length < 3 && eB.length < 2 )
-      {
-        boardBoat( nextPass );
-        forDeletingIdx.push( i );
-      }
+      const proceduresQueueCopy = [ ... proceduresQueue ];
+      proceduresQueue = [];
+      for( let i = 0; i < proceduresQueueCopy.length; i++ )
+      _.time.out( 0, () => event( proceduresQueueCopy[ i ] ) );
     }
 
-    if( passOnBoard.length === 4 )
-    break;
-  }
-
-  waitingPass = waitingPass.filter( ( p, idx ) =>
-  {
-    return !forDeletingIdx.includes( idx );
-  } )
-
-  if( passOnBoard.length === 4 )
-  return rowBoat();
-  else
-  return null;
+    return null;
+  } );
 }
 
 //
 
-function hackerArrives( h )
+function read( o )
 {
-  const e = passOnBoard.filter( ( p ) => p.fraction === 'employee' );
-  const hB = passOnBoard.filter( ( p ) => p.fraction === 'hacker' );
-
-  if( e.length < 3 && hB.length < 2 )
+  isReading = true;
+  activeReaders += 1;
+  console.log( `  op_${o.id}_${o.type} starts ${o.action} - ${status()}` );
+  return _.time.out( o.duration ).then( () =>
   {
-    boardBoat( h );
+    activeReaders -= 1;
+    if( !activeReaders )
+    isReading = false;
 
-    if( passOnBoard.length === 4 )
-    con.then( () => rowBoat() );
-  }
-  else
-  {
-    waitingPass.push( h );
-  }
-}
+    console.log( `  op_${o.id}_${o.type} finished ${o.action} - ${status()}` );
 
-//
+    if( !isReading )
+    {
+      const proceduresQueueCopy = [ ... proceduresQueue ];
+      proceduresQueue = [];
+      for( let i = 0; i < proceduresQueueCopy.length; i++ )
+      _.time.out( 0, () => event( proceduresQueueCopy[ i ] ) );
+    }
 
-function employeeArrives( e )
-{
-  const h = passOnBoard.filter( ( p ) => p.fraction === 'hacker' );
-  const eB = passOnBoard.filter( ( p ) => p.fraction === 'employee' );
-
-  if( h.length < 3 && eB.length < 2 )
-  {
-    boardBoat( e );
-
-    if( passOnBoard.length === 4 )
-    con.then( () => rowBoat() );
-  }
-  else
-  {
-    waitingPass.push( e );
-  }
+    return null;
+  } );
 }
 
 /* aaa Artem : done. implement */

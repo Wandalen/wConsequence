@@ -1,7 +1,8 @@
 /**
  * @file This sample demonstrates using wConsequence for synchronization the several asynchronous process by example of
- * 'Dining Philosophers' problem. In this example thinking and eating processes are asynchronous.
+ * 'Readers-Writers' problem. In this example, attempts to write or read a buffer are asynchronous.
  */
+
 let _,
   Problem;
 
@@ -13,26 +14,43 @@ if( typeof module !== 'undefined' )
 }
 
 const startTime = _.time.now();
-const con = new _.Consequence({ capacity : 0 });
-Problem.getHungry = getHungry;
-Problem.run( 1 );
+let isReading = false;
+let isWriting = false;
+let activeWriters = 0;
+let activeReaders = 0;
+let proceduresQueue = [];
+Problem.event = event;
+Problem.run();
 
 //
 
-function getHungry( ph )
+function event( o )
 {
-  console.log( `+ ph_${ph.id} is hungry - ${status()}` );
-  ph.isHungry = true;
+  console.log( `+ op_${o.id}_${o.type} wants to ${o.action} - ${status()}` );
 
-  if( ph.leftFork.isAvailable && ph.rightFork.isAvailable )
+  if( o.action === 'write' )
   {
-    con.take( null );
-    con.then( () => startEating( ph ) );
+    if( !isReading && !isWriting )
+    {
+      write( o );
+    }
+    else
+    {
+      console.log( `  op_${o.id}_${o.type} cannot access the buffer, op_${o.id}_${o.type} will try later - ${status()}` );
+      proceduresQueue.push( o );
+    }
   }
   else
   {
-    console.log( `  forks is busy, ph_${ph.id} will try later - ${status()}` );
-    _.time.out( 1000, () => tryLater( ph ) );
+    if( !isWriting )
+    {
+      read( o );
+    }
+    else
+    {
+      console.log( `  op_${o.id}_${o.type} cannot access the buffer, op_${o.id}_${o.type} will try later - ${status()}` );
+      proceduresQueue.push( o );
+    }
   }
 }
 
@@ -40,49 +58,61 @@ function getHungry( ph )
 
 function status()
 {
-  const busyFokrs = Problem.forks.filter( ( fork ) => !fork.isAvailable ).map( ( fork ) => fork.id );
-  const eatingPh = Problem.philosophers.filter( ( ph ) => ph.isEating ).map( ( ph ) => ph.id );
-  const waitingPh = Problem.philosophers.filter( ( ph ) => ph.isHungry ).map( ( ph ) => ph.id );
-  return `time: ${_.time.spent( startTime )}, busyFokrs: ${busyFokrs}, eatingPh: ${eatingPh}, waitingPh: ${waitingPh}`;
+  return `${_.time.spent( startTime )}, isWriting: ${isWriting}, isReading: ${isReading}, writeNow: ${activeWriters}, readNow: ${activeReaders}, inQueue: ${proceduresQueue.length}`;
 }
 
 //
 
-function tryLater( ph )
+function write( o )
 {
-  if( ph.leftFork.isAvailable && ph.rightFork.isAvailable )
+  isWriting = true;
+  activeWriters += 1;
+  console.log( `  op_${o.id}_${o.type} starts ${o.action} - ${status()}` );
+  return _.time.out( o.duration ).then( () =>
   {
-    con.take( null );
-    con.then( () => startEating( ph ) );
-  }
-  else
+    activeWriters -= 1;
+    if( !activeWriters )
+    isWriting = false;
+
+    console.log( `  op_${o.id}_${o.type} finished ${o.action} - ${status()}` );
+
+    if( !isWriting )
+    {
+      const proceduresQueueCopy = [ ... proceduresQueue ];
+      proceduresQueue = [];
+      for( let i = 0; i < proceduresQueueCopy.length; i++ )
+      _.time.out( 0, () => event( proceduresQueueCopy[ i ] ) );
+    }
+
+    return null;
+  } );
+}
+
+//
+
+function read( o )
+{
+  isReading = true;
+  activeReaders += 1;
+  console.log( `  op_${o.id}_${o.type} starts ${o.action} - ${status()}` );
+  return _.time.out( o.duration ).then( () =>
   {
-    console.log( `    ph_${ph.id} tries again, forks is busy, ph_${ph.id} will try later - ${status()}` );
-    _.time.out( 1000, () => tryLater( ph ) );
-  }
-}
+    activeReaders -= 1;
+    if( !activeReaders )
+    isReading = false;
 
-//
+    console.log( `  op_${o.id}_${o.type} finished ${o.action} - ${status()}` );
 
-function startEating( ph )
-{
-  ph.isHungry = false;
-  ph.leftFork.isAvailable = false;
-  ph.rightFork.isAvailable = false;
-  ph.isEating = true;
-  console.log( `  ph_${ph.id} starts eating - ${status()}` );
-  return _.time.out( ph.eatingTime ).then( () => stopEating( ph ) || null );
-}
+    if( !isReading )
+    {
+      const proceduresQueueCopy = [ ... proceduresQueue ];
+      proceduresQueue = [];
+      for( let i = 0; i < proceduresQueueCopy.length; i++ )
+      _.time.out( 0, () => event( proceduresQueueCopy[ i ] ) );
+    }
 
-//
-
-function stopEating( ph )
-{
-  ph.leftFork.isAvailable = true;
-  ph.rightFork.isAvailable = true;
-  ph.isEating = false;
-  ph.isHungry = false;
-  console.log( `- ph_${ph.id} finished eat - ${status()}` );
+    return null;
+  } );
 }
 
 /* aaa Artem : done. implement */

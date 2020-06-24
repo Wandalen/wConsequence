@@ -1,7 +1,7 @@
 /**
  * @file This sample demonstrates using wConsequence for synchronization the several asynchronous process by example of
- * 'BuildingH2O'. In this example the appearance of hydrogen and oxygen is asynchronous.
-*/
+ * 'Readers-Writers' problem. In this example, attempts to write or read a buffer are asynchronous.
+ */
 
 let _,
   Problem;
@@ -13,87 +13,106 @@ if( typeof module !== 'undefined' )
   Problem = require( './Problem.js' );
 }
 
-let hydTotal = 20;
-let oxTotal = 10;
-const formedMolecules = [];
 const startTime = _.time.now();
+let isReading = false;
+let isWriting = false;
+let activeWriters = 0;
+let activeReaders = 0;
+let proceduresQueue = [];
+Problem.event = event;
+Problem.run();
 
-const waitingAtoms = { hyd : 0, ox : 0 }
+//
 
-let hyd = new _.Consequence();
-let ox = new _.Consequence();
-let con = new _.Consequence().take( null );
-
-Problem.addHyd = addHyd;
-Problem.addOx = addOx;
-Problem.run( hydTotal, oxTotal );
-
-let l = hydTotal / 2 < oxTotal ? hydTotal / 2 : oxTotal;
-for( let i = 0; i < l; i++ )
-con.then( () =>
+function event( o )
 {
-  formedMolecules.push( [ Hydrogen(), Hydrogen(), Oxygen() ] );
-  console.log( `+ new molecule was formed - ${status()}` );
-  console.log();
-  hyd = new _.Consequence();
-  ox = new _.Consequence();
-  return null;
-});
+  console.log( `+ op_${o.id}_${o.type} wants to ${o.action} - ${status()}` );
+
+  if( o.action === 'write' )
+  {
+    if( !isReading && !isWriting )
+    {
+      write( o );
+    }
+    else
+    {
+      console.log( `  op_${o.id}_${o.type} cannot access the buffer, op_${o.id}_${o.type} will try later - ${status()}` );
+      proceduresQueue.push( o );
+    }
+  }
+  else
+  {
+    if( !isWriting )
+    {
+      read( o );
+    }
+    else
+    {
+      console.log( `  op_${o.id}_${o.type} cannot access the buffer, op_${o.id}_${o.type} will try later - ${status()}` );
+      proceduresQueue.push( o );
+    }
+  }
+}
 
 //
 
 function status()
 {
-  return `time: ${_.time.spent( startTime )}, molecules: ${formedMolecules.length}, hydrogen: ${waitingAtoms.hyd}, oxygen: ${waitingAtoms.ox}`;
+  return `${_.time.spent( startTime )}, isWriting: ${isWriting}, isReading: ${isReading}, writeNow: ${activeWriters}, readNow: ${activeReaders}, inQueue: ${proceduresQueue.length}`;
 }
 
 //
 
-function formMolecule()
+function write( o )
 {
-  hyd.take( 'h' );
-  ox.take( 'o' );
+  isWriting = true;
+  activeWriters += 1;
+  console.log( `  op_${o.id}_${o.type} starts ${o.action} - ${status()}` );
+  return _.time.out( o.duration ).then( () =>
+  {
+    activeWriters -= 1;
+    if( !activeWriters )
+    isWriting = false;
 
-  waitingAtoms.hyd -= 2;
-  waitingAtoms.ox -= 1;
+    console.log( `  op_${o.id}_${o.type} finished ${o.action} - ${status()}` );
+
+    if( !isWriting )
+    {
+      const proceduresQueueCopy = [ ... proceduresQueue ];
+      proceduresQueue = [];
+      for( let i = 0; i < proceduresQueueCopy.length; i++ )
+      _.time.out( 0, () => event( proceduresQueueCopy[ i ] ) );
+    }
+
+    return null;
+  } );
 }
 
 //
 
-function addHyd()
+function read( o )
 {
-  waitingAtoms.hyd += 1;
-  console.log( `+ hydrogen - ${status()}` );
+  isReading = true;
+  activeReaders += 1;
+  console.log( `  op_${o.id}_${o.type} starts ${o.action} - ${status()}` );
+  return _.time.out( o.duration ).then( () =>
+  {
+    activeReaders -= 1;
+    if( !activeReaders )
+    isReading = false;
 
-  if( waitingAtoms.hyd >= 2 && waitingAtoms.ox )
-  formMolecule();
-}
+    console.log( `  op_${o.id}_${o.type} finished ${o.action} - ${status()}` );
 
-//
+    if( !isReading )
+    {
+      const proceduresQueueCopy = [ ... proceduresQueue ];
+      proceduresQueue = [];
+      for( let i = 0; i < proceduresQueueCopy.length; i++ )
+      _.time.out( 0, () => event( proceduresQueueCopy[ i ] ) );
+    }
 
-function addOx()
-{
-  waitingAtoms.ox += 1;
-  console.log( `+ oxygen - ${status()}` );
-
-  if( waitingAtoms.hyd >= 2 )
-  formMolecule();
-}
-
-//
-
-function Hydrogen()
-{
-  hyd.deasync();
-  return hyd.sync();
-}
-
-//
-
-function Oxygen()
-{
-  ox.deasync();
-  return ox.sync();
+    return null;
+  } );
 }
 
 /* aaa Artem : done. implement */
