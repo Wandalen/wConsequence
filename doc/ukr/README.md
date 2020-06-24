@@ -18,24 +18,21 @@
   <summary><a href="./concept/Resource.md#ресурс">
   Ресурс
   </a></summary>
-  Одним із двох видів данних, що можуть міститись у <a href="./concept/Consequence.md#наслідок">наслідку</a> є
-  <code>ресурс</code> - дані, що передаються у <code>наслідок</code> для подальшої обробки.
+  Це дані, що передаються у <a href="./concept/Consequence.md#наслідок">наслідок</a> для подальшої їх обробки <a href="./concept/Competitor.md#конкурент">конкурентами</a>.
 </details>
 
 <details>
   <summary><a href="./concept/ResourceArgument.md#ресурс-аргумент">
   Ресурс-аргумент
   </a></summary>
-  Це об'єкт, один із двох видів <a href="./concept/Resource.md#ресурс">ресурсів</a>, що передається у
-  <a href="./concept/Consequence.md#наслідок">наслідок</a>.
+  Це один із двох видів <a href="./concept/Resource.md#ресурс">ресурсів</a>, що передається у <a href="./concept/Consequence.md#наслідок">наслідок</a>.
 </details>
 
 <details>
   <summary><a href="./concept/ResourceError.md#ресурс-помилка">
   Ресурс-помилка
   </a></summary>
-  Це об'єкт, один із двох видів <a href="./concept/Resource.md#ресурс">ресурсів</a>, що передається у
-  <a href="./concept/Consequence.md#наслідок">наслідок</a>.
+  Це один із двох видів <a href="./concept/Resource.md#ресурс">ресурсів</a>, що передається у <a href="./concept/Consequence.md#наслідок">наслідок</a>.
 </details>
 
 # Туторіали
