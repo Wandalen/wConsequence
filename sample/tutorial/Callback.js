@@ -1,14 +1,16 @@
 let _ = require( 'wTools' );
 require( 'wConsequence' );
 let Dns = require( 'dns' );
+
 let uri = 'google.com';
 
 /* with callback */
 
 Dns.resolve4( uri, ( err, addresses ) =>
 {
+  if( err ) console.log( err );
   console.log( `Ips of ${uri} are ${JSON.stringify( addresses )}` );
-});
+} );
 
 /* with consequence */
 
@@ -23,4 +25,4 @@ Consequence `conseuqence` will get error if `Dons.resolve4` will fail.
 
 */
 
-/* qqq : use it for tutorial */
+/* aaa Artem : done. use it for tutorial */
