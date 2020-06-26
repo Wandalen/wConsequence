@@ -1,6 +1,6 @@
 /**
  * @file This sample demonstrates using wConsequence for synchronization the several asynchronous process by example of
- * 'Producer-Consumer' problem. In this example producing and consuming are asynchronous. Process is endless!
+ * 'Old Bridge' problem. In this example arriving cars to the bridge and crossing it by them is asynchronous.
  */
 let _,
   Problem;
@@ -13,90 +13,129 @@ if( typeof module !== 'undefined' )
 }
 
 const startTime = _.time.now();
-const producerSwitcher = new _.Consequence().take( null );
-const consumerSwitcher = new _.Consequence().take( null );
-const bufferSize = 5;
-const buffer = [];
-const producer = { status : 'sleep', speed : 1500 }
-const consumer = { status : 'sleep', speed : 3000 }
-let producerTimerId,
-  consumerTimerId;
-
-Problem.produceGoods = produceGoods;
-Problem.run = run;
+const MAX_CARS_NUM = 3;
+const carsOnBridge = [];
+const waitingCars = { 0 : [], 1 : [] }
+const bridge = new _.Consequence({ capacity : 0 }).take( null );
+Problem.ArriveBridge = ArriveBridge;
 Problem.run();
-
-//
-
-function run()
-{
-  producerSwitcher.then( () =>
-  {
-    producer.status = 'awake';
-    producerTimerId = setInterval( produceGoods, producer.speed );
-    console.log( `producer starts to work - ${status()}` );
-    return null;
-  } );
-}
 
 //
 
 function status()
 {
-  return `${_.time.spent( startTime )}, bufferStatus: ${buffer.length}/${bufferSize}, producerStatus: ${producer.status}, consumerStatus: ${consumer.status}`
+  return `time:${_.time.spent( startTime )}, bridge:${carsOnBridge.length === MAX_CARS_NUM ? 'busy' : 'available'}, on bridge:${carsOnBridge.length}, direction:${carsOnBridge.length ? carsOnBridge[ 0 ].direction : 'any' }, waiting dir0: ${waitingCars[ 0 ].length}, waiting dir1: ${waitingCars[ 1 ].length}`;
 }
 
 //
 
-function produceGoods()
+function startMoving( car )
 {
-  buffer.push( 'goods' );
-  console.log( `+ producer added goods - ${status()}` );
-
-  if( buffer.length === 1 )
-  consumerSwitcher.then( () =>
-  {
-    consumerTimerId = setInterval( consumeGoods, consumer.speed );
-    consumer.status = 'awake';
-    console.log( `consumer starts consumption - ${status()}` );
-    return null;
-  } );
-  else if( buffer.length === bufferSize )
-  producerSwitcher.then( () =>
-  {
-    clearInterval( producerTimerId );
-    producer.status = 'sleep';
-    console.log( `buffer is full, producer has stopped working - ${status()}` );
-    return null;
-  } );
+  carsOnBridge.push( car );
+  console.log( `car №${car.number} starts to move: ${status()}` );
+  return _.time.out( car.movingTime ).then( () => ExitBridge( car ) || null )
+  .then( () => nextCar( car.direction ) );
 }
 
 //
 
-function consumeGoods()
+function ArriveBridge( car )
 {
-  buffer.pop();
-  console.log( `- consumer took goods - ${status()}` );
+  console.log();
+  console.log( `+ car №${car.number} is coming, dir:${car.direction} - ${status()}` );
 
-  if( buffer.length === 0 )
+  if( bridge.resourcesCount() )
   {
-    consumerSwitcher.then( () =>
-    {
-      clearInterval( consumerTimerId );
-      consumer.status = 'sleep';
-      console.log( `buffer is empty, consumer has stopped consumption - ${status()}` );
-      return null;
-    } );
-
-    if( producer.status === 'sleep' )
-    producerSwitcher.then( () =>
-    {
-      producer.status = 'awake';
-      producerTimerId = setInterval( produceGoods, producer.speed );
-      console.log( `producer starts to work - ${status()}` );
-      return null;
-    } )
+    bridge.then( () => startMoving( car ) );
   }
+  else if( carsOnBridge.length < 3 )
+  {
+    if( car.direction === carsOnBridge[ 0 ].direction )
+    {
+      startMoving( car );
+    }
+    else
+    {
+      waitingCars[ car.direction ].push( car );
+      console.log( `direction on the bridge is opposite, the car №${car.number} is waiting: ${status()}` );
+    }
+  }
+  else
+  {
+    waitingCars[ car.direction ].push( car );
+    console.log( `the bridge is busy, car №${car.number} is waiting: ${status()}` );
+  }
+}
+
+//
+
+function nextCar( previousCarDirection )
+{
+  if( carsOnBridge.length )
+  {
+    let direction = carsOnBridge[ 0 ].direction;
+
+    if( waitingCars[ direction ].length )
+    {
+      let next = waitingCars[ direction ].shift();
+      return startMoving( next ).then( () => nextCar( next.direction ) );
+    }
+    else
+      return null;
+  }
+  else
+  {
+    /* `previousCarDirection` allows cars to move in a direction different from those that have just finished moving.
+    This makes passing the bridge alternating and more honest. */
+    if( previousCarDirection === 0 )
+    {
+      if( waitingCars[ 1 ].length )
+      {
+        while( waitingCars[ 1 ].length )
+        {
+          let next = waitingCars[ 1 ].shift();
+
+          if( !waitingCars[ 1 ].length )
+          return startMoving( next );
+
+          bridge.take( null );
+          bridge.then( () => startMoving( next ) );
+        }
+      }
+      else
+      {
+        return null;
+      }
+    }
+    else
+    {
+      if( waitingCars[ 0 ].length )
+      {
+        while( waitingCars[ 0 ].length )
+        {
+          let next = waitingCars[ 0 ].shift();
+
+          if( !waitingCars[ 0 ].length )
+          return startMoving( next );
+
+          bridge.take( null );
+          bridge.then( () => startMoving( next ) );
+        }
+      }
+      else
+      {
+        return null;
+      }
+    }
+  }
+}
+
+//
+
+function ExitBridge( car )
+{
+  _.arrayRemoveOnce( carsOnBridge, car );
+  console.log( `- car №${car.number} leaves bridge: ${status()}` );
 }
 
 /* aaa Artem : done. implement */
