@@ -10,7 +10,7 @@ Dns.resolve4( uri, ( err, addresses ) =>
 {
   if( err ) console.log( err );
   console.log( `Ips of ${uri} are ${JSON.stringify( addresses )}` );
-} );
+});
 
 /* with consequence */
 
