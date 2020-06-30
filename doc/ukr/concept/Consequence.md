@@ -95,8 +95,8 @@ con.thenGive( ( arg ) => console.log( 'thenGive logs: ', arg ) );
 
 console.log( con ); // Consequence:: 0 / 2
 
-con.take( 'my resource1' ); // logs: my resource1
-con.take( 'my resource2' ); // logs: new arg from then
+con.take( 'my resource1' ); // then:  my resource1
+con.take( 'my resource2' ); // thenGive:  new arg from then
 
 console.log( con ); // Consequence:: 1 / 0
 ```

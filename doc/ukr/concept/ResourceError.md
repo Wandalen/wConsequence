@@ -17,15 +17,7 @@ console.log( con.resourcesGet().length ); // logs: 1
 console.log( con.resourcesGet()[ 0 ] );
 /* logs:
 [Object: null prototype] {
-  error:  = Message of error#1
-      my error
-
-   = Beautified calls stack
-      ...
-
-   = Throws stack
-      ...
-  ,
+  error: error log... ,
   argument: undefined
 }
 */
@@ -63,14 +55,7 @@ con.thenGive( ( arg ) => console.log( arg ) );
 
 con.error( _.errAttend( 'my error' ) );
 /* logs:
- = Message of error#2
-    my error
-
- = Beautified calls stack
-    ...
-
- = Throws stack
-    ...
+error log...
 
 from error
 from then2
