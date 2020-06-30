@@ -27,10 +27,22 @@ console.log( con.argumentsGet() ); // [ 'a2', 'b3' ]
 con.thenGive( ( arg ) => arg + '4' );
 console.log( con.argumentsGet() ); // [ 'b3' ]
 
+/* with `give` competitor */
+
 con.thenGive( ( arg ) => console.log( arg ) );
-/* log : 'b3' */
+/* logs : 'b3' */
 
 console.log( con.argumentsGet() ); // []
+
+/* with `keep` competitor */
+
+// con.thenKeep( ( arg ) =>
+// {
+//   console.log( arg ); // b3
+//   return arg + '4';
+// });
+
+// console.log( con.argumentsGet() ); // [ 'b34' ]
 ```
 
 З прикладу вище, бачимо, що:

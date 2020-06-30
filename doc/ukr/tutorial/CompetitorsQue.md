@@ -22,16 +22,16 @@ con.then( ( arg ) => arg + '3' );
 
 ```js
 console.log( con.argumentsGet() ); // resources queue
-// []
-console.log( con.competitorsGet() ); // competitors queue
-// [ {}, {}, {} ]
+// logs: []
+console.log( con.competitorsGet().length ); // competitors queue
+// logs: 3
 ```
 
 Дізнатись кількість наявних ресурсів та конкурентів у `наслідку` можна так:
 
 ```js
 console.log( con );
-// Consequence:: 0 / 3
+// logs: Consequence:: 0 / 3
 ```
 
 Формат виводу `Consequence:: resources / competitors`.
@@ -43,10 +43,10 @@ console.log( con );
 ```js
 con.take( 'a' ); // every competitor is executed in turn
 
-console.log( con.argumentsGet() );
-// [ 'a123' ]
+console.log( con.argumentsGet() ); 
+// logs: [ 'a123' ]
 console.log( con );
-// Consequence:: 1 / 0
+// logs: Consequence:: 1 / 0
 ```
 
 Зверніть увагу, що тепер кількість конкурентів у черзі - `0`. Це важливий нюанс у поведінці наслідку. Оскільки при наступній
@@ -57,10 +57,10 @@ con.take( 'b' );
 
 // every passed resource is pushed to the resource queue array
 console.log( con.argumentsGet() );
-// [ 'a123', 'b' ]
+// logs: [ 'a123', 'b' ]
 
 console.log( con );
-// Consequence:: 2 / 0
+// logs: Consequence:: 2 / 0
 ```
 
 Даний приклад є дуже спрощеним. Яскравим прикладом асинхронної передачі ресурсу - є відповідь серверу. Коли дані, що прийшли

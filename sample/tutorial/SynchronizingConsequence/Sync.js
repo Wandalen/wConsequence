@@ -15,7 +15,7 @@ isEven( 14, ( err, result ) =>
   if( err )
     console.log( err );
   else
-    console.log( result ); // Іs even
+    console.log( result ); // logs: Іs even
 });
 
 /* with consequence */
