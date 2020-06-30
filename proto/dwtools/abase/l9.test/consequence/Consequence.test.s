@@ -13522,9 +13522,6 @@ function thenSequenceAsync( test )
 
 function syncMaybeErrorExperiment( test )
 {
-  test.case = 'syncMaybe should throw sync error'
-  var con = _.Consequence().error( 'Test error' );
-  test.shouldThrowErrorSync( () => con.syncMaybe() );
 
   /* */
 
@@ -13534,28 +13531,14 @@ function syncMaybeErrorExperiment( test )
   {
     try
     {
-      con.syncMaybe();
+      con.sync();
     }
-    catch
+    catch()
     {
     }
   });
 
   /* */
-
-  test.case = 'syncMaybe in try/catch block, should not throw error, error is attended'
-  var con = _.Consequence().error( 'Test error' );
-  test.mustNoThrowError( () =>
-  {
-    try
-    {
-      con.syncMaybe();
-    }
-    catch( err )
-    {
-      _.errAttend( err );
-    }
-  });
 
 }
 
@@ -13724,7 +13707,9 @@ var Self =
     thenSequenceSync,
     // thenSequenceAsync,
 
-    syncMaybeErrorExperiment
+    // experiment
+
+    syncMaybeErrorExperiment,
 
   },
 
