@@ -496,6 +496,14 @@ function syncMaybeError( test )
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, '- uncaught error -' ), 2 );
+    test.identical( _.strCount( op.output, 'uncaught error' ), 2 );
+    test.identical( _.strCount( op.output, 'nhandled' ), 0 );
+    test.identical( _.strCount( op.output, `at program` ), 1 );
+    test.identical( _.strCount( op.output, 'Waiting for' ), 0 );
+    test.identical( _.strCount( op.output, 'procedure::' ), 0 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 2 );
+
     return null;
   });
 
@@ -516,9 +524,8 @@ function syncMaybeError( test )
       {
         con.sync();
       }
-      catch()
+      catch( err )
       {
-        console.log();
       }
     });
   }
