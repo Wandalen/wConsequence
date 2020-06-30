@@ -33,17 +33,17 @@ var con = new _.Consequence({ capacity : 0 });
 con.take( 'my resource1' );
 con.take( 'my resource2' );
 
-console.log( con ); // Consequence:: 2 / 0
+console.log( con ); 
 
 con.then( ( arg ) =>
 {
-  console.log( 'then: ', arg ); // then:  my resource1
+  console.log( 'then: ', arg ); 
   return 'new arg from then';
 } );
 
-con.thenGive( ( arg ) => console.log( 'thenGive: ', arg ) ); // thenGive:  my resource2
+con.thenGive( ( arg ) => console.log( 'thenGive: ', arg ) ); 
 
-console.log( con ); // Consequence:: 1 / 0
+console.log( con ); 
 
 /* */
 
@@ -57,9 +57,8 @@ con.then( ( arg ) =>
 
 con.thenGive( ( arg ) => console.log( 'thenGive logs: ', arg ) );
 
-console.log( con ); // Consequence:: 0 / 2
+console.log( con );
+con.take( 'my resource1' );
+con.take( 'my resource2' );
 
-con.take( 'my resource1' ); // logs: my resource1
-con.take( 'my resource2' ); // logs: new arg from then
-
-console.log( con ); // Consequence:: 1 / 0
+console.log( con );
