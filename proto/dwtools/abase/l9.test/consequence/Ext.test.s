@@ -482,6 +482,57 @@ each callback has its own stack
 
 //
 
+function syncMaybeError( test )
+{
+  let context = this;
+  let a = context.assetFor( test, false );
+  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  let programPath = a.program({ routine : program, locals });
+
+  /* */
+
+  a.appStartNonThrowing({ execPath : programPath })
+  .then( ( op ) =>
+  {
+    test.notIdentical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, '- uncaught error -' ), 2 );
+    test.identical( _.strCount( op.output, 'uncaught error' ), 2 );
+    test.identical( _.strCount( op.output, 'nhandled' ), 0 );
+    test.identical( _.strCount( op.output, `at program` ), 1 );
+    test.identical( _.strCount( op.output, 'Waiting for' ), 0 );
+    test.identical( _.strCount( op.output, 'procedure::' ), 0 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 2 );
+
+    return null;
+  });
+
+  /* */
+
+  return a.ready;
+
+  function program()
+  {
+    let _ = require( toolsPath );
+    _.include( 'wConsequence' );
+
+    test.case = 'syncMaybe in try/catch block, must not throw erro, error is not attended'
+    var con = _.Consequence().error( 'Test error' );
+    test.mustNotThrowError( () =>
+    {
+      try
+      {
+        con.sync();
+      }
+      catch( err )
+      {
+      }
+    });
+  }
+}
+
+//
+
 function tester( test )
 {
   let context = this;
@@ -1030,6 +1081,8 @@ var Self =
     asyncStackWithConsequence,
     asyncStackInConsequenceTrivial,
     asyncStackInConsequenceThen,
+
+    syncMaybeError,
 
     tester,
 
