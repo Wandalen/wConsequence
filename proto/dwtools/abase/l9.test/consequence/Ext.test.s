@@ -482,7 +482,7 @@ each callback has its own stack
 
 //
 
-function syncMaybeErrorExperiment( test )
+function syncMaybeError( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
@@ -523,8 +523,6 @@ function syncMaybeErrorExperiment( test )
     });
   }
 }
-
-syncMaybeErrorExperiment.experimental = 1;
 
 //
 
@@ -1077,7 +1075,7 @@ var Self =
     asyncStackInConsequenceTrivial,
     asyncStackInConsequenceThen,
 
-    syncMaybeErrorExperiment,
+    syncMaybeError,
 
     tester,
 
