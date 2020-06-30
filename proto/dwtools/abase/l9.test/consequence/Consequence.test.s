@@ -13518,32 +13518,6 @@ function thenSequenceAsync( test )
 
 }
 
-//
-
-function syncMaybeErrorExperiment( test )
-{
-
-  /* */
-
-  test.case = 'syncMaybe in try/catch block, must not throw erro, error is not attended'
-  var con = _.Consequence().error( 'Test error' );
-  test.mustNotThrowError( () =>
-  {
-    try
-    {
-      con.sync();
-    }
-    catch()
-    {
-    }
-  });
-
-  /* */
-
-}
-
-syncMaybeErrorExperiment.experimental = 1;
-
 // --
 // declare
 // --
@@ -13709,7 +13683,6 @@ var Self =
 
     // experiment
 
-    syncMaybeErrorExperiment,
 
   },
 

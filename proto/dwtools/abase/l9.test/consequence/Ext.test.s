@@ -482,6 +482,33 @@ each callback has its own stack
 
 //
 
+function syncMaybeErrorExperiment( test )
+{
+
+  /* */
+
+  test.case = 'syncMaybe in try/catch block, must not throw erro, error is not attended'
+  var con = _.Consequence().error( 'Test error' );
+  test.mustNotThrowError( () =>
+  {
+    try
+    {
+      con.sync();
+    }
+    catch()
+    {
+      console.log();
+    }
+  });
+
+  /* */
+
+}
+
+syncMaybeErrorExperiment.experimental = 1;
+
+//
+
 function tester( test )
 {
   let context = this;
@@ -1030,6 +1057,8 @@ var Self =
     asyncStackWithConsequence,
     asyncStackInConsequenceTrivial,
     asyncStackInConsequenceThen,
+
+    syncMaybeErrorExperiment,
 
     tester,
 
