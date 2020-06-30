@@ -15,34 +15,7 @@ console.log( con.resourcesGet().length ); // logs: 3
 console.log( con.resourcesGet()[ 0 ] ); // logs: [Object: null prototype] { error: undefined, argument: 'my resource1' }
 console.log( con.resourcesGet()[ 2 ] ); /* logs:
 [Object: null prototype] {
-  error:  = Message of error#1
-      my error
-
-   = Beautified calls stack
-      ...
-
-   = Throws stack
-      ...
-  ,
+  error: error log... ,
   argument: undefined
 }
 */
-
-/* */
-
-var con = new _.Consequence();
-
-// .take() passes the resource to the queue.
-con.take( 'my resource1' );
-console.log( con.resourcesGet().length ); // logs: 1
-
-con.then( ( argument ) =>
-{
-  console.log( argument ); // logs: my resource1
-  return 'from then';
-} )
-
-// right after the resource appears in the queue, the callback function that was passed
-// to .thenGive()is invoked with this resource as a parameter
-con.thenGive( ( argument ) => console.log( argument ) ); // logs: from then
-console.log( con.resourcesGet().length ); // logs: 0

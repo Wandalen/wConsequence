@@ -26,15 +26,7 @@ console.log( con.resourcesGet().length ); // logs: 3
 console.log( con.resourcesGet()[ 0 ] ); // logs: [Object: null prototype] { error: undefined, argument: 'my resource1' }
 console.log( con.resourcesGet()[ 2 ] ); /* logs:
 [Object: null prototype] {
-  error:  = Message of error#1
-      my error
-
-   = Beautified calls stack
-      ...
-
-   = Throws stack
-      ...
-  ,
+  error: error log... ,
   argument: undefined
 }
 */

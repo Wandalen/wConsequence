@@ -25,6 +25,8 @@ con.thenGive( ( resource ) => console.log( resource ) );
 console.log( con.competitorsGet().length ); // logs: 2
 
 con.take( 'my resource' );
+// logs: my resource
+// logs: new resource from then
 
 console.log( con.competitorsGet().length ); // logs: 0
 ```
@@ -45,7 +47,7 @@ console.log( con.competitorsGet().length ); // logs: 0
 var con = new _.Consequence();
 
 con.thenGive( ( resource ) => console.log( resource ) );
-console.log( con.competitorsGet()[ 0 ] ); // logs: { a lot of properties... }
+console.log( con.competitorsGet().length ); // logs: 1
 
 con.competitorsGet()[ 0 ][ 'competitorRoutine' ]( 'from competitorRoutine prop' ); // logs: from competitorRoutine prop
 con.take( 'my resource' ); // logs: my resource

@@ -11,14 +11,14 @@
 ```js
 var con = new _.Consequence();
 
-con.thenGive( ( arg ) => console.log( arg + 1 ) );
-con.take( 'agr' ); // logs: arg1
+con.thenGive( ( arg ) => console.log( arg + 1 ) ); // logs: arg1
+con.take( 'agr' );
 
-con.thenGive( ( arg ) => console.log( arg.name ) );
-con.take({ name : 'user1', age : 20 }); // logs: user1
+con.thenGive( ( arg ) => console.log( arg.name ) ); // logs: user1
+con.take({ name : 'user1', age : 20 });
 
-con.thenGive( ( arg ) => console.log( arg + 1 ) );
-con.take( 123 ); // logs: 124
+con.thenGive( ( arg ) => console.log( arg + 1 ) ); // logs: 124
+con.take( 123 );
 ```
 
 Тепер передамо у наслідок об'єкт помилки:
