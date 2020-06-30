@@ -13518,6 +13518,49 @@ function thenSequenceAsync( test )
 
 }
 
+//
+
+function syncMaybeErrorExperiment( test )
+{
+  test.case = 'syncMaybe should throw sync error'
+  var con = _.Consequence().error( 'Test error' );
+  test.shouldThrowErrorSync( () => con.syncMaybe() );
+
+  /* */
+
+  test.case = 'syncMaybe in try/catch block, must not throw erro, error is not attended'
+  var con = _.Consequence().error( 'Test error' );
+  test.mustNotThrowError( () =>
+  {
+    try
+    {
+      con.syncMaybe();
+    }
+    catch
+    {
+    }
+  });
+
+  /* */
+
+  test.case = 'syncMaybe in try/catch block, should not throw error, error is attended'
+  var con = _.Consequence().error( 'Test error' );
+  test.mustNoThrowError( () =>
+  {
+    try
+    {
+      con.syncMaybe();
+    }
+    catch( err )
+    {
+      _.errAttend( err );
+    }
+  });
+
+}
+
+syncMaybeErrorExperiment.experimental = 1;
+
 // --
 // declare
 // --
@@ -13680,6 +13723,8 @@ var Self =
 
     thenSequenceSync,
     // thenSequenceAsync,
+
+    syncMaybeErrorExperiment
 
   },
 
