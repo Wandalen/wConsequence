@@ -3644,7 +3644,7 @@ function competitorsCancel( competitorRoutine )
 function argumentsCount()
 {
   let self = this;
-  return self._resources.filter( ( e ) => e.argument !== undefined ).length;
+  return self._resources.filter( ( e ) => e.commandArgument !== undefined ).length;
 }
 
 //
