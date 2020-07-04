@@ -26,7 +26,7 @@ function onSuiteBegin()
 {
   let self = this;
 
-  self.suiteTempPath = path.pathDirTempOpen( path.join( __dirname, '../..'  ), 'ConsequenceExternal' );
+  self.suiteTempPath = path.tempOpen( path.join( __dirname, '../..'  ), 'ConsequenceExternal' );
   self.assetsOriginalPath = path.join( __dirname, '_asset' );
 }
 
@@ -36,7 +36,7 @@ function onSuiteEnd()
 {
   let self = this;
   _.assert( _.strHas( self.suiteTempPath, '/ConsequenceExternal-' ) )
-  path.pathDirTempClose( self.suiteTempPath );
+  path.tempClose( self.suiteTempPath );
 }
 
 //
