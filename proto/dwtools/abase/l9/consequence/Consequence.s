@@ -1073,7 +1073,7 @@ function catchLog()
   function errorLog( err )
   {
     err = _.err( err );
-    logger.log( _.errOnce( err ) );
+    logger.error( _.errOnce( err ) );
     return null;
   }
 
@@ -1119,7 +1119,7 @@ function catchBrief()
   function errorLog( err )
   {
     err = _.errBrief( err );
-    logger.log( _.errOnce( err ) );
+    logger.error( _.errOnce( err ) );
     // throw err;
     return null;
   }

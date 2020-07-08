@@ -1,4 +1,4 @@
-# module::Consequence [![Status](https://img.shields.io/circleci/build/github/Wandalen/wConsequence?label=Test&logo=Test)](https://circleci.com/gh/Wandalen/wConsequence) [![Status](https://github.com/Wandalen/wConsequence/workflows/Test/badge.svg)](https://github.com/Wandalen/wConsequence/actions?query=workflow%3ATest) [![experimental](https://img.shields.io/badge/stability-experimental-orange.svg)](https://github.com/emersion/stability-badges#experimental)
+# module::Consequence  [![Status](https://github.com/Wandalen/wConsequence/workflows/Test/badge.svg)](https://github.com/Wandalen/wConsequence/actions?query=workflow%3ATest) [![experimental](https://img.shields.io/badge/stability-experimental-orange.svg)](https://github.com/emersion/stability-badges#experimental)
 
 Advanced synchronization mechanism. Asynchronous routines may use Consequence to wrap postponed result, what allows classify callback for such routines as output, not input, what improves analyzability of a program. Consequence may be used to make a queue for mutually exclusive access to a resource.
 
