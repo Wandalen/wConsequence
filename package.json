@@ -11,8 +11,8 @@
     { "name" : "Volodymyr M.", "email" : "volodymyr.migdal@gmail.com" },
     { "name" : "Ihor O.", "email" : "iostashvxi@gmail.com" }
   ],
-  "main" : "proto/dwtools/abase/l9/consequence/Consequence.s",
-  "files" : [ "proto/dwtools/abase/l9", "proto/dwtools/Tools.s", "out" ],
+  "main" : "proto/wtools/abase/l9/consequence/Consequence.s",
+  "files" : [ "proto/wtools/abase/l9", "proto/wtools/Tools.s", "out" ],
   "scripts" : { "test" : "wtest .run 'proto/**' rapidity:-3", "docgen" : "wdocgen proto" },
   "repository" :
   {
