@@ -1570,6 +1570,4 @@ module:
       ../.im.will.yml:
         hash: 1775bb417659736321c705c7c0039b84
         size: 5276
-      wConsequence.out.will.yml:
-        hash: a000fb9bf933754b8a01c7d25c662fee
-        size: 41542
+      wConsequence.out.will.yml: *ref_0
