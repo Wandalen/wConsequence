@@ -77,7 +77,7 @@ function uncaughtSyncErrorOnExit( test )
 
   function program()
   {
-    var _ = require( toolsPath );
+    let _ = require( toolsPath );
     _.include( 'wProcess' );
     let con = new _.Consequence();
     _.process.on( 'exit', () =>
@@ -116,7 +116,7 @@ function uncaughtAsyncErrorOnExit( test )
 
   function program()
   {
-    var _ = require( toolsPath );
+    let _ = require( toolsPath );
     _.include( 'wProcess' );
     let con = new _.Consequence();
     _.process.on( 'exit', () =>
@@ -157,7 +157,7 @@ function AndKeepErrorAttend( test )
 
   function program()
   {
-    var _ = require( toolsPath );
+    let _ = require( toolsPath );
     _.include( 'wConsequence' );
 
     var con1 = _.time.out( t1*1, () =>
@@ -215,7 +215,7 @@ function AndKeepErrorNotAttend( test )
 
   function program()
   {
-    var _ = require( toolsPath );
+    let _ = require( toolsPath );
     _.include( 'wConsequence' );
 
     var con1 = _.time.out( t1, () =>
@@ -572,7 +572,7 @@ function tester( test )
       test.is( true );
     }
 
-    var Self =
+    let Self =
     {
       tests :
       {
@@ -1045,7 +1045,7 @@ timeBegin.description =
 // declare
 // --
 
-var Self =
+let Self =
 {
 
   name : 'Tools.base.Consequence.Ext',

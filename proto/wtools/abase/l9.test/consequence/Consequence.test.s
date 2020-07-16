@@ -5,7 +5,7 @@
 if( typeof module !== 'undefined' )
 {
 
-  var _ = require( '../../../../wtools/Tools.s' );
+  let _ = require( '../../../../wtools/Tools.s' );
   require( '../../l9/consequence/Consequence.s' );
 
   _.include( 'wTesting' );
@@ -14,8 +14,8 @@ if( typeof module !== 'undefined' )
 
 }
 
-var _global = _global_;
-var _ = _global_.wTools;
+let _global = _global_;
+let _ = _global_.wTools;
 
 // --
 // inter
@@ -13522,7 +13522,7 @@ function thenSequenceAsync( test )
 // declare
 // --
 
-var Self =
+let Self =
 {
 
   name : 'Tools.base.Consequence',
