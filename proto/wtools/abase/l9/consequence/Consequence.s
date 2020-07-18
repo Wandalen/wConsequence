@@ -698,26 +698,26 @@ function _deasync( o )
   Deasync = require( 'deasync' );
   Deasync.loopWhile( () => !ready )
 
-  if( result.err )
+  if( result.error )
   if( o.kindOfResource === self.KindOfResource.Both || o.kindOfResource === self.KindOfResource.ErrorOnly )
-  throw result.err;
+  throw result.error;
   else
-  return new _.Consequence().error( result.err );
+  return new _.Consequence().error( result.error );
 
   if( o.kindOfResource === self.KindOfResource.Both || o.kindOfResource === self.KindOfResource.ArgumentOnly )
-  return result.arg;
+  return result.argument;
   else
-  return new _.Consequence().take( result.arg );
+  return new _.Consequence().take( result.argument );
 
   return self;
 
-  function competitorRoutine( err, arg )
+  function competitorRoutine( error, argument )
   {
-    result.err = err;
-    result.arg = arg;
+    result.error = error;
+    result.argument = argument;
     ready = true;
     if( keeping )
-    self.take( err, arg );
+    self.take( error, argument );
   };
 
 }
@@ -3644,7 +3644,8 @@ function competitorsCancel( competitorRoutine )
 function argumentsCount()
 {
   let self = this;
-  return self._resources.filter( ( e ) => e.commandArgument !== undefined ).length;
+  // self._resources.filter( ( e ) => console.log( e ) );
+  return self._resources.filter( ( e ) => e.argument !== undefined ).length;
 }
 
 //
@@ -3988,7 +3989,7 @@ function _callbacksInfoLog()
 function toStr( o )
 {
   let self = this;
-  return self.exportString( o );
+  return self.exportString( _.mapOnly( o || Object.create( null ), self.exportString.defaults ) );
 }
 
 //
@@ -3996,7 +3997,7 @@ function toStr( o )
 function toString( o )
 {
   let self = this;
-  return self.exportString( o );
+  return self.exportString( _.mapOnly( o || Object.create( null ), self.exportString.defaults ) );
 }
 
 //
@@ -4907,7 +4908,7 @@ let Extension =
 
   competitorOwn,
   competitorHas,
-  competitorsCount,
+  competitorsCount,  /* qqq : cover */
   competitorsEarlyGet,
   competitorsLateGet,
   competitorsGet,
@@ -4915,9 +4916,9 @@ let Extension =
 
   // resource
 
-  argumentsCount,
-  errorsCount,
-  resourcesCount,
+  argumentsCount, /* qqq : cover */
+  errorsCount, /* qqq : cover */
+  resourcesCount, /* qqq : cover */
   resourcesGet,
   argumentsGet,
   errorsGet,

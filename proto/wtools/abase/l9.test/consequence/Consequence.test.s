@@ -4,7 +4,6 @@
 
 if( typeof module !== 'undefined' )
 {
-
   let _ = require( '../../../../wtools/Tools.s' );
   require( '../../l9/consequence/Consequence.s' );
 
@@ -849,6 +848,12 @@ function consequenceAwait( test )
 
 function toStr( test )
 {
+
+  test.case = 'toStrFine';
+  var con1 = _.Consequence();
+  var exp = 'Consequence:: 0 / 0';
+  var got = _.toStrFine( con1 );
+  test.identical( got, exp );
 
   act( 'toStr' );
   act( 'toString' );

@@ -4,8 +4,16 @@ Advanced synchronization mechanism. Asynchronous routines may use Consequence to
 
 Algorithmically speaking Consequence is 2 queues ( FIFO ) and a customizable arbitrating algorithm. The first queue contains available resources, the second queue includes competitors for this resources. At any specific moment, one or another queue may be empty or full. Arbitrating algorithm makes resource available for a competitor as soon as possible. There are 2 kinds of resource: regular and erroneous. Unlike Promise, Consequence is much more customizable and can solve engineering problem which Promise cant. But have in mind with great power great responsibility comes. Consequence can coexist and interact with a Promise, getting fulfillment/rejection of a Promise or fulfilling it. Use Consequence to get more flexibility and improve readability of asynchronous aspect of your application.
 
-### Try out
+### Try out from the repository
 ```
+git clone https://github.com/Wandalen/wConsequence
+cd wConsequence
 npm install
 node sample/Sample.s
 ```
+
+## To add to your project
+```
+npm add 'wConsequence@alpha'
+```
+
