@@ -30,7 +30,8 @@
     "wCopyable" : "",
     "wprocedure" : ""
   },
-  "devDependencies" : { "deasync" : "", "wTesting" : "", "wConsequence" : "file:." },
+  "optionalDependencies" : { "deasync" : "" },
+  "devDependencies" : { "wTesting" : "", "eslint" : "=7.1.0", "wConsequence" : "file:." },
   "keywords" :
   [
     "wTools",
