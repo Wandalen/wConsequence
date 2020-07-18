@@ -1048,7 +1048,7 @@ timeBegin.description =
 let Self =
 {
 
-  name : 'Tools.base.Consequence.Ext',
+  name : 'Tools.Consequence.Ext',
   silencing : 1,
 
   onSuiteBegin,

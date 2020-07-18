@@ -13530,7 +13530,7 @@ function thenSequenceAsync( test )
 let Self =
 {
 
-  name : 'Tools.base.Consequence',
+  name : 'Tools.Consequence',
   silencing : 1,
   routineTimeOut : 30000,
 
