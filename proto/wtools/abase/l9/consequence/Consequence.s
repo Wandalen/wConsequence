@@ -1842,29 +1842,45 @@ function _and( o )
       if( o.waiting )
       _.assert
       (
-          _.consequenceIs( competitor ) /*|| competitor === null*/ /* yyy */
-        , () => `Expects consequence or null, but got ${_.strType( competitor )}`
+        competitor !== undefined
+        , () => `Expects defined value, but got ${_.strType( competitor )}`
+        + `${ _.routineIs( originalCompetitor ) ? '\n' + originalCompetitor.toString() : ''}`
       );
+      // _.assert
+      // (
+      //     _.consequenceIs( competitor ) /*|| competitor === null*/ /* yyy */
+      //   , () => `Expects consequence or null, but got ${_.strType( competitor )}`
+      // );
       else
       _.assert
       (
-          competitor !== undefined
+        competitor !== undefined
         , () => `Expects defined value, but got ${_.strType( competitor )}`
-              + `${ _.routineIs( originalCompetitor ) ? '\n' + originalCompetitor.toString() : ''}`
+        + `${ _.routineIs( originalCompetitor ) ? '\n' + originalCompetitor.toString() : ''}`
       );
 
       if( o.waiting )
       {
 
-        if( competitor === null ) /* xxx : teach And to accept non-consequence */
+        if( !_.consequenceIs( competitor ) ) /* xxx : teach And to accept non-consequence */
         {
-          __got.call( c, undefined, null );
+          __got.call( c, undefined, competitor );
           return;
         }
         else if( _.longHas( competitors2, competitor ) )
         {
           return;
         }
+
+        // if( competitor === null ) /* xxx : teach And to accept non-consequence */
+        // {
+        //   __got.call( c, undefined, null );
+        //   return;
+        // }
+        // else if( _.longHas( competitors2, competitor ) )
+        // {
+        //   return;
+        // }
 
       }
       else

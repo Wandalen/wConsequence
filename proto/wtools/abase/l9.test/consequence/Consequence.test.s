@@ -7525,6 +7525,58 @@ function andKeepAccumulative( test )
 
 //
 
+function andKeepAccumulativeNonConsequence( test )
+{
+  let context = this;
+  let ready = new _.Consequence();
+  let thenArg;
+  let callbackDone = [];
+
+  ready.andKeepAccumulative( () =>
+  {
+    callbackDone.push( 1 );
+    return 1;
+  });
+
+  ready.andKeepAccumulative( () =>
+  {
+    callbackDone.push( null );
+    return null;
+  });
+
+  ready.andKeepAccumulative( () =>
+  {
+    callbackDone.push( 2 );
+    return 2;
+  });
+
+  ready.andKeepAccumulative( () =>
+  {
+    return _.time.out( context.t1*1, () =>
+    {
+      callbackDone.push( 3 );
+      return 3;
+    });
+  });
+
+  ready.then( ( arg ) =>
+  {
+    thenArg = arg;
+    return null;
+  });
+
+  ready.take( 10 );
+  callbackDone.push( 10 );
+
+  return _.time.out( context.t1*20, () =>
+  {
+    test.identical( thenArg, [ 3, 2, null, 1, 10 ] );
+    test.identical( callbackDone, [ 1, 10, null, 2, 3 ] );
+  });
+}
+
+//
+
 function alsoKeepTrivialSyncBefore( test )
 {
   let context = this;
@@ -13630,6 +13682,7 @@ let Self =
     andKeep,
     andTake,
     andKeepAccumulative,
+    andKeepAccumulativeNonConsequence,
     alsoKeepTrivialSyncBefore,
     alsoKeepTrivialSyncAfter,
     alsoKeepTrivialAsync,
