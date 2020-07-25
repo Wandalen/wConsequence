@@ -1,6 +1,5 @@
 /**
- * @file This sample demonstrates using wConsequence for synchronization the several asynchronous process by example of
- * 'Readers-Writers' problem. In this example, attempts to write or read a buffer are asynchronous.
+ *  * 'Readers-Writers' problem. In this example, attempts to write or read a buffer are asynchronous.
  */
 
 let _,

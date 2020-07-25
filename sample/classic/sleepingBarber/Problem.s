@@ -1,6 +1,5 @@
 /**
- * @file This sample demonstrates simulation of visiting barber shop by clients.
- */
+ *  */
 
 if( typeof module !== 'undefined' )
 {

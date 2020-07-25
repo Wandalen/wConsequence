@@ -8,8 +8,7 @@
 */
 
 /**
- * @file Consequence.s.
- */
+ *  */
 
 /*
 

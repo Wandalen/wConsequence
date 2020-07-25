@@ -1,6 +1,5 @@
 /**
- * @file This sample demonstrates using wConsequence for synchronization the several asynchronous process by example of
- * 'Old Bridge' problem. In this example arriving cars to the bridge and crossing it by them is asynchronous.
+ *  * 'Old Bridge' problem. In this example arriving cars to the bridge and crossing it by them is asynchronous.
  */
 let _,
   Problem;

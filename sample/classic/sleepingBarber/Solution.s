@@ -1,6 +1,5 @@
 /**
- * @file This sample demonstrates using wConsequence for synchronization the several asynchronous process by example of
- * sleeping barber problem. In this example appending clients in barber shop and servicing them by barber are
+ *  * sleeping barber problem. In this example appending clients in barber shop and servicing them by barber are
  * asynchronous.
 */
 

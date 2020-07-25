@@ -1,6 +1,5 @@
 /**
- * @file This sample demonstrates using wConsequence for synchronization the several asynchronous process by example of
- * 'Cigarette Smoker'. In this example, agent puts items on the table asynchronously.
+ *  * 'Cigarette Smoker'. In this example, agent puts items on the table asynchronously.
 */
 
 let _,

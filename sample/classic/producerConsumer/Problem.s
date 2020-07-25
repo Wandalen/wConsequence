@@ -10,8 +10,7 @@
 * source : https://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem
 */
 /**
- * @file This sample demonstrates using wConsequence for synchronization the several asynchronous process by example of
- * 'Producer-Consumer' problem. In this example producing and consuming are asynchronous.
+ *  * 'Producer-Consumer' problem. In this example producing and consuming are asynchronous.
  */
 let _;
 
