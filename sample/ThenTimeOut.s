@@ -9,7 +9,7 @@ var t = _.time.out( 2000, function()
   console.log( 'case1' );
   var con = new _.Consequence({ capacity : 0 });
 
-  con.thenTimeOut( 1000, gotHandler1 ).got( gotHandler2 );
+  con.thenTimeOut( 1000 ).got( gotHandler1 ).got( gotHandler2 );
 
   con.take( 90 ).take( 1 );
 
