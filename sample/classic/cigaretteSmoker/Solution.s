@@ -9,7 +9,7 @@ if( typeof module !== 'undefined' )
 {
   _ = require( 'wTools' );
   require( 'wConsequence' );
-  Problem = require( './Problem.js' );
+  Problem = require( './Problem.s' );
 }
 
 const con = new _.Consequence().take( null );
@@ -21,6 +21,7 @@ const smokers =
   { id : 3, smokingTime : 2500, item : 'matches' },
 ];
 let items = [];
+let rounds = 10;
 
 Problem.putItems = putItems;
 Problem.run();
@@ -78,7 +79,15 @@ function smoke( smoker )
 {
   items = [];
   console.log( `+ smoker_${smoker.id} starts to smoke - ${status()}` );
-  return _.time.out( smoker.smokingTime ).then( () => finishSmoking( smoker ) || null );
+  if( rounds > 0 )
+  return _.time.out( smoker.smokingTime )
+  .then( () =>
+  {
+    rounds--;
+    let finished = finishSmoking( smoker );
+    return finished ? finished : null;
+  });
+  return null;
 }
 
 //
