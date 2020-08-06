@@ -9,7 +9,7 @@ if( typeof module !== 'undefined' )
 {
   _ = require( 'wTools' );
   require( 'wConsequence' );
-  Problem = require( './Problem.js' );
+  Problem = require( './Problem.s' );
 }
 
 const startTime = _.time.now();
@@ -18,8 +18,8 @@ let isWriting = false;
 let activeWriters = 0;
 let activeReaders = 0;
 let proceduresQueue = [];
-Problem.event = event;
-Problem.run();
+Problem.getHungry = event;
+Problem.run( 1 );
 
 //
 
@@ -43,6 +43,7 @@ function event( o )
   {
     if( !isWriting )
     {
+      debugger;
       read( o );
     }
     else
