@@ -51,10 +51,6 @@ const philosophers =
     rightHand : null,
     getHungry : 2500,
     eatingTime : 5000,
-
-    duration : 2500,
-    type : 'read',
-    action : 'read',
   },
   {
     id : 2,
@@ -67,10 +63,6 @@ const philosophers =
     rightHand : null,
     getHungry : 4500,
     eatingTime : 5000,
-
-    duration : 4500,
-    type : 'write',
-    action : 'write',
   },
   {
     id : 3,
@@ -83,10 +75,6 @@ const philosophers =
     rightHand : null,
     getHungry : 6500,
     eatingTime : 5000,
-
-    duration : 6500,
-    type : 'read',
-    action : 'read',
   },
   {
     id : 4,
@@ -99,10 +87,6 @@ const philosophers =
     rightHand : null,
     getHungry : 5000,
     eatingTime : 5000,
-
-    duration : 5000,
-    type : 'write',
-    action : 'write',
   },
   {
     id : 5,
@@ -115,10 +99,6 @@ const philosophers =
     rightHand : null,
     getHungry : 3500,
     eatingTime : 5000,
-
-    duration : 3500,
-    type : 'read',
-    action : 'read',
   }
 ];
 
