@@ -9,6 +9,7 @@
 *
 * source : https://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem
 */
+
 /**
  *  * 'Producer-Consumer' problem. In this example producing and consuming are asynchronous.
  */
@@ -21,6 +22,8 @@ if( typeof module !== 'undefined' )
 }
 
 const startTime = _.time.now();
+let rounds = 10;
+let goodsProduce;
 
 //
 
@@ -41,7 +44,7 @@ if( typeof module !== 'undefined' )
 
 function run()
 {
-  setInterval( this.produceGoods, 1500 );
+  goodsProduce = setInterval( this.produceGoods, 1500 );
   console.log( `producer starts to work - ${_.time.spent( startTime )}` );
 }
 
@@ -51,6 +54,10 @@ function produceGoods()
 {
   /* a producer created the goods */
   console.log( `+ producer added goods - ${_.time.spent( startTime )}` );
+  rounds--;
+
+  if( rounds <= 0 )
+  clearInterval( goodsProduce );
 }
 
 /* aaa Artem : done. rewrite */
