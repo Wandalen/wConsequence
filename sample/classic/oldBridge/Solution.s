@@ -8,7 +8,7 @@ if( typeof module !== 'undefined' )
 {
   _ = require( 'wTools' );
   require( 'wConsequence' );
-  Problem = require( './Problem.js' );
+  Problem = require( './Problem.s' );
 }
 
 const startTime = _.time.now();

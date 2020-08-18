@@ -50,7 +50,7 @@ const philosophers =
     leftHand : null,
     rightHand : null,
     getHungry : 2500,
-    eatingTime : 5000
+    eatingTime : 5000,
   },
   {
     id : 2,
@@ -62,7 +62,7 @@ const philosophers =
     leftHand : null,
     rightHand : null,
     getHungry : 4500,
-    eatingTime : 5000
+    eatingTime : 5000,
   },
   {
     id : 3,
@@ -74,7 +74,7 @@ const philosophers =
     leftHand : null,
     rightHand : null,
     getHungry : 6500,
-    eatingTime : 5000
+    eatingTime : 5000,
   },
   {
     id : 4,
@@ -86,7 +86,7 @@ const philosophers =
     leftHand : null,
     rightHand : null,
     getHungry : 5000,
-    eatingTime : 5000
+    eatingTime : 5000,
   },
   {
     id : 5,
@@ -98,7 +98,7 @@ const philosophers =
     leftHand : null,
     rightHand : null,
     getHungry : 3500,
-    eatingTime : 5000
+    eatingTime : 5000,
   }
 ];
 
@@ -127,7 +127,7 @@ function run( k )
   for( let i = 0; i < philosophers.length; i++ )
   {
     const ph = philosophers[ i ];
-    _.time.out( ph.id === 1 || ph.id === 3 ? ph.getHungry * k : ph.getHungry, () => this.getHungry( ph ) );
+    _.time.out( ( ph.id === 1 || ph.id === 3 ) ? ph.getHungry * k : ph.getHungry, () => this.getHungry( ph ) );
   }
 
   if( k === 1 )

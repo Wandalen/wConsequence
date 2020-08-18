@@ -10,7 +10,7 @@ if( typeof module !== 'undefined' )
 {
   _ = require( 'wTools' );
   require( 'wConsequence' );
-  Problem = require( './Problem.js' );
+  Problem = require( './Problem.s' );
 }
 
 let DURATION_OF_WORK = { short : 500, average : 1500, long : 3000 }; /* aaa Artem : done. remove random from samples */
