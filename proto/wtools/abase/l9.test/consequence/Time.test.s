@@ -1,4 +1,5 @@
-( function _Time_test_s_( ) {
+( function _Time_test_s_()
+{
 
 'use strict';
 
@@ -3137,7 +3138,7 @@ function timeOutCancelOutsideOfCallback( test )
   let context = this;
   let visited = [];
 
-  var timer = _.time.begin( context.dt2*1, () =>
+  var timer = _.time.begin( context.dt2, () =>
   {
     visited.push( 'v1' );
   });
@@ -3219,6 +3220,7 @@ function timeOut( test )
       var elapsedTime = _.time.now() - timeBefore;
       test.ge( elapsedTime, c.dt5-c.timeAccuracy );
       test.is( _.routineIs( got ) );
+      test.identical( err, undefined );
       return null;
     });
   })
@@ -3415,7 +3417,7 @@ function timeOut( test )
     test.case = 'delay + consequence + error';
     var timeBefore = _.time.now();
 
-    return _.time.out( c.dt5, _.time.out( c.dt5 * 2, () => { throw 'err' } ) )
+    return _.time.out( c.dt5, _.time.out( c.dt5 * 2, () => { throw _.err( 'err' ) } ) )
     .finally( function( err, got )
     {
       if( err )
@@ -3534,12 +3536,18 @@ function timeOut( test )
     return _.time.out( c.dt5 / 2, function()
     {
       t.take( msg );
-      t.give( ( err, got ) => test.identical( got, msg ) );
+      t.give( ( err, got ) =>
+      {
+        test.identical( got, msg );
+        test.identical( err, undefined );
+        return 1;
+      });
       t.give( ( err, got ) =>
       {
         var elapsedTime = _.time.now() - timeBefore;
         test.ge( elapsedTime, c.dt5-c.timeAccuracy );
         test.identical( got, returnValue );
+        test.identical( err, undefined );
 
       })
       return null;
@@ -3589,15 +3597,33 @@ function timeOut( test )
 
     test.case = 'could have the second argument';
 
-    let f = function(){ return 'a' };
+    let f = () => 'a';
 
     test.mustNotThrowError( () => _.time.out( 0, 'x' ) );
     test.mustNotThrowError( () => _.time.out( 0, 13 ) );
     test.mustNotThrowError( () => _.time.out( 0, f ) );
 
-    _.time.out( 0, 'x' ).finally( ( err, arg ) => test.identical( arg, 'x' ) );
-    _.time.out( 0, 13 ).finally( ( err, arg ) => test.identical( arg, 13 ) );
-    _.time.out( 0, f ).finally( ( err, arg ) => test.identical( arg, 'a' ) );
+    _.time.out( 0, 'x' )
+    .finally( ( err, arg ) =>
+    {
+      test.identical( arg, 'x' );
+      test.identical( err, undefined );
+      return null;
+    });
+    _.time.out( 0, 13 )
+    .finally( ( err, arg ) =>
+    {
+      test.identical( arg, 13 );
+      test.identical( err, undefined );
+      return null;
+    });
+    _.time.out( 0, f )
+    .finally( ( err, arg ) =>
+    {
+      test.identical( arg, 'a' );
+      test.identical( err, undefined );
+      return null;
+    });
 
     return _.time.out( 50 );
   })
@@ -3621,11 +3647,6 @@ function timeOut( test )
 
     return null;
   })
-
-  ready.tap( ( err, arg ) =>
-  {
-    debugger;
-  });
 
   return ready;
 }
@@ -3662,6 +3683,7 @@ function timeOutMode01( test )
         var elapsedTime = _.time.now() - timeBefore;
         test.ge( elapsedTime, c.dt5 - c.timeAccuracy );
         test.is( _.routineIs( got ) );
+        test.is( err === undefined );
       });
       test.identical( t.resourcesGet().length, 0 );
       test.identical( t.competitorsEarlyGet().length, 0 );
@@ -3689,7 +3711,7 @@ function timeOutMode01( test )
       {
         var elapsedTime = _.time.now() - timeBefore;
         test.ge( elapsedTime, c.dt5-c.timeAccuracy );
-        test.identical( got , null );
+        test.identical( got, null );
         test.is( err === undefined );
       });
       test.identical( t.resourcesGet().length, 0 );
@@ -3848,8 +3870,8 @@ function timeOutMode01( test )
       t.give( function( err, got )
       {
         var elapsedTime = _.time.now() - timeBefore;
-        test.ge( elapsedTime , c.dt5 / 2 );
-        // test.identical( got , undefined );
+        test.ge( elapsedTime, c.dt5 / 2 );
+        // test.identical( got, undefined );
         // test.identical( _.strHas( _.err( err ).message, 'stop' ), true );
         test.identical( err, undefined );
         test.identical( got, _.dont );
@@ -3888,7 +3910,7 @@ function timeOutMode01( test )
       t.give( function( err, got )
       {
         var elapsedTime = _.time.now() - timeBefore;
-        test.ge( elapsedTime , c.dt5 / 2 );
+        test.ge( elapsedTime, c.dt5 / 2 );
         // test.identical( got, undefined );
         // test.identical( _.strHas( _.err( err ).message, 'stop' ), true );
         test.identical( err, undefined );
@@ -3996,6 +4018,7 @@ function timeOutMode10( test )
         var elapsedTime = _.time.now() - timeBefore;
         test.ge( elapsedTime, c.dt5-c.timeAccuracy );
         test.is( _.routineIs( got ) );
+        test.is( err === undefined );
       });
       test.identical( t.resourcesGet().length, 1 );
       test.identical( t.competitorsEarlyGet().length, 1 );
@@ -4024,8 +4047,8 @@ function timeOutMode10( test )
       {
         var elapsedTime = _.time.now() - timeBefore;
         test.ge( elapsedTime, c.dt5-c.timeAccuracy );
-        test.identical( got , null );
-        test.identical( err , undefined );
+        test.identical( got, null );
+        test.identical( err, undefined );
       });
       test.identical( t.resourcesGet().length, 1 );
       test.identical( t.competitorsEarlyGet().length, 1 );
@@ -4056,7 +4079,7 @@ function timeOutMode10( test )
         var elapsedTime = _.time.now() - timeBefore;
         test.ge( elapsedTime, c.dt5-c.timeAccuracy );
         test.is( got === value );
-        test.identical( err , undefined );
+        test.identical( err, undefined );
       });
       test.identical( t.resourcesGet().length, 1 );
       test.identical( t.competitorsEarlyGet().length, 1 );
@@ -4086,7 +4109,7 @@ function timeOutMode10( test )
         var elapsedTime = _.time.now() - timeBefore;
         test.ge( elapsedTime, c.dt5-c.timeAccuracy );
         test.is( _.routineIs( got ));
-        test.identical( err , undefined );
+        test.identical( err, undefined );
       });
       test.identical( t.resourcesGet().length, 1 );
       test.identical( t.competitorsEarlyGet().length, 1 );
@@ -4115,8 +4138,8 @@ function timeOutMode10( test )
       {
         var elapsedTime = _.time.now() - timeBefore;
         test.ge( elapsedTime, c.dt5-c.timeAccuracy );
-        test.identical( got , null );
-        test.identical( err , undefined );
+        test.identical( got, null );
+        test.identical( err, undefined );
       });
       test.identical( t.resourcesGet().length, 1 );
       test.identical( t.competitorsEarlyGet().length, 1 );
@@ -4150,7 +4173,7 @@ function timeOutMode10( test )
         var elapsedTime = _.time.now() - timeBefore;
         test.ge( elapsedTime, c.dt5-c.timeAccuracy );
         test.is( got === c.dt5 / 2 );
-        test.identical( err , undefined );
+        test.identical( err, undefined );
       });
       test.identical( t.resourcesGet().length, 1 );
       test.identical( t.competitorsEarlyGet().length, 1 );
@@ -4192,8 +4215,8 @@ function timeOutMode10( test )
       t.give( function( err, got )
       {
         var elapsedTime = _.time.now() - timeBefore;
-        test.ge( elapsedTime , c.dt5 / 2 );
-        // test.identical( got , undefined );
+        test.ge( elapsedTime, c.dt5 / 2 );
+        // test.identical( got, undefined );
         // test.identical( _.strHas( _.err( err ).message, 'stop' ), true );;
         test.identical( err, undefined );
         test.identical( got, _.dont );
@@ -4230,7 +4253,7 @@ function timeOutMode10( test )
       t.give( function( err, got )
       {
         var elapsedTime = _.time.now() - timeBefore;
-        test.ge( elapsedTime , c.dt5 / 2 );
+        test.ge( elapsedTime, c.dt5 / 2 );
         // test.identical( got, undefined );
         // test.identical( _.strHas( _.err( err ).message, 'stop' ), true );
         test.identical( err, undefined );
@@ -4336,6 +4359,7 @@ function timeOutMode11( test )
         var elapsedTime = _.time.now() - timeBefore;
         test.ge( elapsedTime, c.dt5-c.timeAccuracy );
         test.is( _.routineIs( got ) );
+        test.is( err === undefined );
       });
       test.identical( t.resourcesGet().length, 1 );
       test.identical( t.competitorsEarlyGet().length, 1 );
@@ -4364,8 +4388,8 @@ function timeOutMode11( test )
       {
         var elapsedTime = _.time.now() - timeBefore;
         test.ge( elapsedTime, c.dt5-c.timeAccuracy );
-        test.identical( got , null );
-        test.identical( err , undefined );
+        test.identical( got, null );
+        test.identical( err, undefined );
       });
       test.identical( t.resourcesGet().length, 1 );
       test.identical( t.competitorsEarlyGet().length, 1 );
@@ -4396,7 +4420,7 @@ function timeOutMode11( test )
         var elapsedTime = _.time.now() - timeBefore;
         test.ge( elapsedTime, c.dt5-c.timeAccuracy );
         test.is( got === value );
-        test.identical( err , undefined );
+        test.identical( err, undefined );
       });
       test.identical( t.resourcesGet().length, 1 );
       test.identical( t.competitorsEarlyGet().length, 1 );
@@ -4426,7 +4450,7 @@ function timeOutMode11( test )
         var elapsedTime = _.time.now() - timeBefore;
         test.ge( elapsedTime, c.dt5-c.timeAccuracy );
         test.is( _.routineIs( got ));
-        test.identical( err , undefined );
+        test.identical( err, undefined );
       });
       test.identical( t.resourcesGet().length, 1 );
       test.identical( t.competitorsEarlyGet().length, 1 );
@@ -4455,8 +4479,8 @@ function timeOutMode11( test )
       {
         var elapsedTime = _.time.now() - timeBefore;
         test.ge( elapsedTime, c.dt5-c.timeAccuracy );
-        test.identical( got , null );
-        test.identical( err , undefined );
+        test.identical( got, null );
+        test.identical( err, undefined );
       });
       test.identical( t.resourcesGet().length, 1 );
       test.identical( t.competitorsEarlyGet().length, 1 );
@@ -4490,7 +4514,7 @@ function timeOutMode11( test )
         var elapsedTime = _.time.now() - timeBefore;
         test.ge( elapsedTime, c.dt5-c.timeAccuracy );
         test.is( got === c.dt5 / 2 );
-        test.identical( err , undefined );
+        test.identical( err, undefined );
       });
       test.identical( t.resourcesGet().length, 1 );
       test.identical( t.competitorsEarlyGet().length, 1 );
@@ -4526,8 +4550,8 @@ function timeOutMode11( test )
       t.give( function( err, got )
       {
         var elapsedTime = _.time.now() - timeBefore;
-        test.ge( elapsedTime , c.dt5 / 2 );
-        // test.identical( got , undefined );
+        test.ge( elapsedTime, c.dt5 / 2 );
+        // test.identical( got, undefined );
         // test.identical( _.strHas( _.err( err ).message, 'stop' ), true );;
         test.identical( err, undefined );
         test.identical( got, _.dont );
@@ -4567,7 +4591,7 @@ function timeOutMode11( test )
       t.give( function( err, got )
       {
         var elapsedTime = _.time.now() - timeBefore;
-        test.ge( elapsedTime , c.dt5 / 2 );
+        test.ge( elapsedTime, c.dt5 / 2 );
         // test.identical( got, undefined );
         // test.identical( _.strHas( _.err( err ).message, 'stop' ), true )
         test.identical( err, undefined );
@@ -4915,12 +4939,12 @@ function asyncStackTimeOut( test )
     let con = _.time.out( 1 )
     .then( ( arg ) =>
     {
-      throw 'Error';
+      throw _.err( 'Error' );
     })
     .finally( ( err, arg ) =>
     {
       logger.log( err );
-      test.identical( _.strCount( String( err ), 'Time.test.s' ), 2 );
+      test.identical( _.strCount( String( err ), 'Time.test.s' ), 5 );
       test.identical( _.strCount( err.asyncCallsStack.join( '' ), 'Time.test.s' ), 2 );
       test.identical( err.asyncCallsStack.length, 1 );
       return null;
@@ -4967,7 +4991,7 @@ let Self =
     begin,
     beginTimerInsideOfCallback,
     finally : finally_,
-    // periodic,
+    periodic,
     timeOutCancelInsideOfCallback,
     timeOutCancelOutsideOfCallback,
     timeOutCancelZeroDelayInsideOfCallback,
