@@ -1,4 +1,5 @@
-( function _Consequence_s_() {
+( function _Consequence_s_()
+{
 
 'use strict';
 
@@ -6,9 +7,6 @@
  * Advanced synchronization mechanism. Asynchronous routines may use Consequence to wrap postponed result, what allows classify callback for such routines as output, not input, what improves analyzability of a program. Consequence may be used to make a queue for mutually exclusive access to a resource. Algorithmically speaking Consequence is 2 queues ( FIFO ) and a customizable arbitrating algorithm. The first queue contains available resources, the second queue includes competitors for this resources. At any specific moment, one or another queue may be empty or full. Arbitrating algorithm makes resource available for a competitor as soon as possible. There are 2 kinds of resource: regular and erroneous. Unlike Promise, Consequence is much more customizable and can solve engineering problem which Promise cant. But have in mind with great power great responsibility comes. Consequence can coexist and interact with a Promise, getting fulfillment/rejection of a Promise or fulfilling it. Use Consequence to get more flexibility and improve readability of asynchronous aspect of your application.
   @module Tools/base/Consequence
 */
-
-/**
- *  */
 
 /*
 
@@ -83,7 +81,7 @@ let KindOfResource =
  * @module Tools/base/Consequence
  */
 
- /**
+/**
  * @classdesc Class wConsequence creates objects that used for asynchronous computations. It represent the queue of results that
  * can computation asynchronously, and has a wide range of tools to implement this process.
  * @class wConsequence
@@ -113,40 +111,42 @@ class wConsequence extends _.CallableObject
   {
     let self = super();
     Self.prototype.init.apply( self, arguments );
-    return self;
+    return self; /* Dmytro : eslint rule mark it as error. The removing of the line does not affect the behavior of module */
   }
 }
 
-let wConsequenceProxy = new Proxy( wConsequence,
-{
-  apply : function apply( original, context, args )
+let wConsequenceProxy = new Proxy
+(
+  wConsequence,
   {
-    let o = args[ 0 ];
-
-    if( o )
-    if( o instanceof Self )
+    apply : function apply( original, context, args )
     {
-      o = _.mapOnly( o, Self.Composes );
-    }
+      let o = args[ 0 ];
 
-    if( Config.debug )
-    {
-      if( o === undefined )
+      if( o )
+      if( o instanceof Self )
       {
-        o = Object.create( null );
-        args[ 0 ] = o;
+        o = _.mapOnly( o, Self.Composes );
       }
-    }
 
-    return new original( ...args );
-  },
+      if( Config.debug )
+      {
+        if( o === undefined )
+        {
+          o = Object.create( null );
+          args[ 0 ] = o;
+        }
+      }
 
-  set : function set( original, name, value )
-  {
-    return Reflect.set( ... arguments );
-  },
+      return new original( ... args );
+    },
 
-});
+    set : function set( original, name, value )
+    {
+      return Reflect.set( ... arguments );
+    },
+  }
+);
 
 let Parent = null;
 let Self = wConsequenceProxy;
@@ -677,7 +677,7 @@ function _deasync( o )
   _.assertRoutineOptions( _deasync, arguments );
   _.assert
   (
-       o.kindOfResource === 0
+    o.kindOfResource === 0
     || o.kindOfResource === self.KindOfResource.Both
     || o.kindOfResource === self.KindOfResource.ArgumentOnly
     || o.kindOfResource === self.KindOfResource.ErrorOnly
@@ -1463,7 +1463,7 @@ function _timeOut( o )
   self._competitorAppend
   ({
     keeping : false,
-    competitorRoutine : competitorRoutine,
+    competitorRoutine,
     kindOfResource : o.kindOfResource,
     stack : 3,
   });
@@ -1769,8 +1769,8 @@ function _and( o )
       let competitor = competitors[ s ];
       _.assert
       (
-          _.consequenceIs( competitor ) || _.routineIs( competitor ) || competitor === null /* yyy */
-        , () => 'Consequence.and expects consequence, routine or null, but got ' + _.strType( competitor )
+        _.consequenceIs( competitor ) || _.routineIs( competitor ) || competitor === null, /* yyy */
+        () => 'Consequence.and expects consequence, routine or null, but got ' + _.strType( competitor )
       );
       if( !_.consequenceIs( competitor ) )
       continue;
@@ -2164,7 +2164,9 @@ function AndTake_()
   // _.assert( arguments.length === 1 );
   // srcs = _.arrayFlatten( _.arrayAs( srcs ) );
 
-  return _.Consequence().take( null ).andTake( arguments ).then( ( arg ) =>
+  return _.Consequence().take( null )
+  .andTake( arguments )
+  .then( ( arg ) =>
   {
     _.assert( arg[ arg.length - 1 ] === null );
     arg.splice( arg.length - 1, 1 );
@@ -2181,7 +2183,9 @@ function AndKeep_()
   // _.assert( arguments.length === 1 );
   // srcs = _.arrayFlatten( _.arrayAs( srcs ) );
 
-  return _.Consequence().take( null ).andKeep( arguments ).then( ( arg ) =>
+  return _.Consequence().take( null )
+  .andKeep( arguments )
+  .then( ( arg ) =>
   {
     _.assert( arg[ arg.length - 1 ] === null );
     arg.splice( arg.length - 1, 1 );
@@ -2405,7 +2409,8 @@ orKeeping.having = Object.create( _or.having );
 function OrTake( srcs )
 {
   _.assert( !_.instanceIs( this ) )
-  return _.Consequence().orTaking( arguments ).then( ( arg ) =>
+  return _.Consequence().orTaking( arguments )
+  .then( ( arg ) =>
   {
     return arg;
   });
@@ -2416,7 +2421,8 @@ function OrTake( srcs )
 function OrKeep( srcs )
 {
   _.assert( !_.instanceIs( this ) )
-  return _.Consequence().orKeeping( arguments ).then( ( arg ) =>
+  return _.Consequence().orKeeping( arguments )
+  .then( ( arg ) =>
   {
     return arg;
   });
@@ -2692,7 +2698,7 @@ function __take( error, argument )
         + `\nConsider resetting : "{ capacity : 0 }"`
       ]
       debugger;
-      throw _._err({ args : args, stackRemovingBeginExcluding : /\bConsequence.s\b/ });
+      throw _._err({ args, stackRemovingBeginExcluding : /\bConsequence.s\b/ });
     }
     if( !( error === undefined || argument === undefined ) )
     {
@@ -2704,7 +2710,7 @@ function __take( error, argument )
         + '\n{-argument-} is ' + _.strType( argument )
       ]
       debugger;
-      throw _._err({ args : args, stackRemovingBeginExcluding : /\bConsequence.s\b/ });
+      throw _._err({ args, stackRemovingBeginExcluding : /\bConsequence.s\b/ });
     }
   }
 
@@ -2715,7 +2721,7 @@ function __take( error, argument )
 
 //
 
-function __onTake( err, arg )
+function __onTake( err, arg ) /* Dmytro : why the routine does not do any action? */
 {
   let self = this;
 
@@ -2926,8 +2932,7 @@ function __handleResourceNow()
     /* */
 
     let resource = self._resources[ 0 ];
-    let competitor;
-    let isEarly;
+    let competitor, isEarly;
 
     if( self._competitorsEarly.length > 0 )
     {
@@ -3054,16 +3059,16 @@ function __handleResourceNow()
         // debugger;
 
         // if( !isActivated )
+        // {
+        competitor.procedure.unuse();
+        if( !competitor.procedure.isUsed() )
         {
-          competitor.procedure.unuse();
-          if( !competitor.procedure.isUsed() )
-          {
-            competitor.procedure.activate( false );
-            // _.assert( !competitor.procedure.isActivated() );
-            // if( !competitor.procedure.isActivated() )
-            competitor.procedure.end();
-          }
+          competitor.procedure.activate( false );
+          // _.assert( !competitor.procedure.isActivated() );
+          // if( !competitor.procedure.isActivated() )
+          competitor.procedure.end();
         }
+        // }
         // competitor.procedure.end();
       }
 
@@ -4161,7 +4166,8 @@ function From( src, timeLimit )
     // con.tag = 'aaa';
     let con2 = con;
     if( timeLimit !== undefined )
-    con2 = new _.Consequence().take( null ).timeLimitThrowing( timeLimit, con );
+    con2 = new _.Consequence().take( null )
+    .timeLimitThrowing( timeLimit, con );
     // con.tag = 'bbb';
     return con2;
   }
@@ -4245,23 +4251,23 @@ function Take( consequence ) /* xxx : review */
 
 //
 
-  /**
-   * If `o.consequence` is instance of wConsequence, method pass o.args and o.error if defined, to it's resource sequence.
-   * If `o.consequence` is routine, method pass o.args as arguments to it and return result.
-   * @param {Object} o parameters object.
-   * @param {Function|wConsequence} o.consequence wConsequence or routine.
-   * @param {Array} o.args values for wConsequence resources queue or arguments for routine.
-   * @param {*|Error} o.error error value.
-   * @returns {*}
-   * @private
-   * @throws {Error} if missed arguments.
-   * @throws {Error} if passed argument is not object.
-   * @throws {Error} if o.consequence has unexpected type.
-   * @method _Take
-   * @module Tools/base/Consequence
+/**
+ * If `o.consequence` is instance of wConsequence, method pass o.args and o.error if defined, to it's resource sequence.
+ * If `o.consequence` is routine, method pass o.args as arguments to it and return result.
+ * @param {Object} o parameters object.
+ * @param {Function|wConsequence} o.consequence wConsequence or routine.
+ * @param {Array} o.args values for wConsequence resources queue or arguments for routine.
+ * @param {*|Error} o.error error value.
+ * @returns {*}
+ * @private
+ * @throws {Error} if missed arguments.
+ * @throws {Error} if passed argument is not object.
+ * @throws {Error} if o.consequence has unexpected type.
+ * @method _Take
+ * @module Tools/base/Consequence
  * @namespace Tools
  * @class wConsequence
-   */
+ */
 
 /* zzz : deprecate? */
 function _Take( o )
@@ -4323,31 +4329,31 @@ _Take.defaults =
  * If `consequence` is routine, method pass error as arguments to it and return result.
  * @example
  * function showResult(err, val)
-   {
-     if( err )
-      {
-        console.log( 'handleGot1 error: ' + err );
-      }
-      else
-      {
-        console.log( 'handleGot1 value: ' + val );
-      }
-    };
-
-    let con = new  _.Consequence();
-
-    con.finallyGive( showResult );
-
-    wConsequence.error( con, 'something wrong' );
-  // prints: handleGot1 error: something wrong
-* @param {Function|wConsequence} consequence
-* @param {*} error error value
-* @returns {*}
-* @static
-* @method error
-* @module Tools/base/Consequence
-* @namespace wConsequence
-*/
+ * {
+ *   if( err )
+ *    {
+ *      console.log( 'handleGot1 error: ' + err );
+ *    }
+ *    else
+ *    {
+ *      console.log( 'handleGot1 value: ' + val );
+ *    }
+ *  };
+ *
+ *  let con = new  _.Consequence();
+ *
+ *  con.finallyGive( showResult );
+ *
+ *  wConsequence.error( con, 'something wrong' );
+ * // prints: handleGot1 error: something wrong
+ * @param {Function|wConsequence} consequence
+ * @param {*} error error value
+ * @returns {*}
+ * @static
+ * @method error
+ * @module Tools/base/Consequence
+ * @namespace wConsequence
+ */
 
 function Error( consequence, error )
 {
@@ -4379,8 +4385,8 @@ function Try( routine )
   }
   catch( err )
   {
-    err = _.err( err );
-    return new Self().error( err );
+    let error = _.err( err );
+    return new Self().error( error );
   }
 
 }
@@ -4410,7 +4416,7 @@ function FinallyPass( err, arg )
 
 //
 
-function ThenPass( err, arg )
+function ThenPass( err, arg ) /* Dmytro : how the err should be handled ? */
 {
   _.assert( arg !== undefined, 'Expects non-undefined argument' );
   return arg;
