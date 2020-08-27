@@ -7,7 +7,11 @@ con.then( ( arg ) => arg + '1' );
 console.log( con ); // Consequence:: 0 / 1
 
 // competitor .catch handles resource-error that was passed with .error( error object ), should return smth
-con.catch( ( err ) => 'catch : was error' );
+con.catch( ( err ) =>
+{
+  _.errAttend( err );
+  return 'catch : was error';
+});
 console.log( con ); // Consequence:: 0 / 2
 
 // competitor .finally can handles both the resource argument and the resource error, should return smth

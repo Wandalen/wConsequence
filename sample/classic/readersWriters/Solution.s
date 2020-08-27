@@ -57,7 +57,8 @@ function event( o )
 
 function status()
 {
-  return `${_.time.spent( startTime )}, isWriting: ${isWriting}, isReading: ${isReading}, writeNow: ${activeWriters}, readNow: ${activeReaders}, inQueue: ${proceduresQueue.length}`;
+  return `${_.time.spent( startTime )}, isWriting: ${isWriting}, isReading: ${isReading}, writeNow: ${activeWriters}, `
+  + `readNow: ${activeReaders}, inQueue: ${proceduresQueue.length}`;
 }
 
 //

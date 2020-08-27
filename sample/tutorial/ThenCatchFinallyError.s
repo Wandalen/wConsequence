@@ -7,7 +7,11 @@ con.then( ( arg ) => arg + '1' );
 console.log( con ); // Consequence:: 0 / 1
 
 // .catch recieves err passed with .error routine, then returns new error object that falls into .finally
-con.catch( ( err ) => { throw _.errAttend( 'catch : was error' ) } );
+con.catch( ( err ) =>
+{
+  _.errAttend( err );
+  throw _.errBrief( 'catch : was error' )
+});
 console.log( con ); // Consequence:: 0 / 2
 
 
