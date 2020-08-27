@@ -3296,6 +3296,7 @@ function finallyWithProcedure( test )
 
   /* - */
 
+  debugger;
   ready.finally( () =>
   {
     test.open( 'delay - Infinity' );
@@ -3971,6 +3972,7 @@ function periodic( test )
     test.close( 'delay - 0' );
     return null;
   });
+
   /* - */
 
   ready.finally( () =>
@@ -4059,6 +4061,381 @@ function periodic( test )
     return _testerGlobal_.wTools.time.out( context.dt4*2, () => timer )
     .then( ( got ) =>
     {
+      test.identical( got.onTime, onTime );
+      test.identical( got.onCancel, onCancel );
+      test.is( got.state === -2 );
+      test.identical( got.result, -1 );
+      test.identical( times, 0 );
+      test.identical( result, [ 1, 1, 1, 1, 1 ] );
+
+      return null;
+    });
+  })
+
+  /* - */
+
+  ready.finally( ( err, arg ) =>
+  {
+    test.close( 'delay > 0' );
+
+    if( err )
+    throw err;
+    return arg;
+  });
+
+  /* - */
+
+  ready.then( () =>
+  {
+    test.case = 'without arguments';
+    return _testerGlobal_.wTools.time.out( 0, () => _.time.periodic() )
+    .finally( ( err, arg ) =>
+    {
+      if( arg )
+      {
+        test.is( false );
+      }
+      else
+      {
+        _.errAttend( err );
+        test.is( true );
+      }
+      return null;
+    });
+  });
+
+  ready.then( () =>
+  {
+    test.case = 'not enough arguments';
+    return _testerGlobal_.wTools.time.out( 0, () => _.time.periodic( 0 ) )
+    .finally( ( err, arg ) =>
+    {
+      if( arg )
+      {
+        test.is( false );
+      }
+      else
+      {
+        _.errAttend( err );
+        test.is( true );
+      }
+      return null;
+    });
+  });
+
+  ready.then( () =>
+  {
+    test.case = 'wrong type of onTime';
+    return _testerGlobal_.wTools.time.out( 0, () => _.time.periodic( 0, [] ) )
+    .finally( ( err, arg ) =>
+    {
+      if( arg )
+      {
+        test.is( false );
+      }
+      else
+      {
+        _.errAttend( err );
+        test.is( true );
+      }
+      return null;
+    });
+  });
+
+  ready.then( () =>
+  {
+    test.case = 'wrong type of onCancel';
+    return _testerGlobal_.wTools.time.out( 0, () => _.time.periodic( 0, () => 1, [] ) )
+    .finally( ( err, arg ) =>
+    {
+      if( arg )
+      {
+        test.is( false );
+      }
+      else
+      {
+        _.errAttend( err );
+        test.is( true );
+      }
+      return null;
+    });
+  });
+
+  ready.then( () =>
+  {
+    test.case = 'executes method cancel twice, should throw error';
+    var timer = _.time.periodic( 1000, () => 1, () => -1 );
+    timer.cancel();
+
+    return _testerGlobal_.wTools.time.out( context.dt1, () => timer.cancel() )
+    .finally( ( err, arg ) =>
+    {
+      if( arg )
+      {
+        test.is( false );
+      }
+      else
+      {
+        _.errAttend( err );
+        test.is( true );
+      }
+      return null;
+    });
+  });
+
+  ready.then( () =>
+  {
+    test.case = 'executes method time inside of method cancel, should throw error';
+    var timer = _.time.periodic( 1000, () => 1, onCancel );
+    function onCancel()
+    {
+      timer.time();
+      return -1;
+    };
+
+    return _testerGlobal_.wTools.time.out( context.dt1, () => timer.cancel() )
+    .finally( ( err, arg ) =>
+    {
+      if( arg )
+      {
+        test.is( false );
+      }
+      else
+      {
+        _.errAttend( err );
+        test.is( true );
+      }
+      return null;
+    });
+  });
+
+  /* */
+
+  return ready;
+}
+
+//
+
+function periodicWithProcedure( test )
+{
+  let context = this;
+
+  var onCancel = () => -1;
+  var ready = new _testerGlobal_.wTools.Consequence().take( null );
+
+  /* - */
+
+  ready.finally( () =>
+  {
+    test.open( 'delay - 0' );
+    return null;
+  })
+
+  .then( function()
+  {
+    test.case = 'onTime';
+    var times = 5;
+    var result = [];
+    var onTime = () =>
+    {
+      if( times > 0 )
+      {
+        result.push( 1 );
+        times--;
+        return true;
+      }
+      return undefined;
+    };
+
+    var procedure = _.Procedure( 5 );
+    var timer = _.time.periodic( 0, procedure, onTime );
+    return _testerGlobal_.wTools.time.out( context.dt4, () => timer )
+    .then( ( got ) =>
+    {
+      test.identical( got.procedure, procedure );
+      test.is( procedure.isFinited() );
+      test.identical( got.onTime, onTime );
+      test.identical( got.onCancel, null );
+      test.identical( got.state, -2 );
+      test.identical( got.result, undefined );
+      test.identical( times, 0 );
+      test.identical( result, [ 1, 1, 1, 1, 1 ] );
+
+      return null;
+    });
+  })
+
+  .then( function()
+  {
+    test.case = 'onTime, execute onTime';
+    var times = 5;
+    var result = [];
+    var onTime = () =>
+    {
+      if( times > 0 )
+      {
+        result.push( 1 );
+        times--;
+        return true;
+      }
+      return _.dont;
+    };
+
+    var procedure = _.Procedure( 5 );
+    var timer = _.time.periodic( 0, procedure, onTime );
+    return _testerGlobal_.wTools.time.out( context.dt4, () => timer )
+    .then( ( got ) =>
+    {
+      test.identical( got.procedure, procedure );
+      test.is( procedure.isFinited() );
+      test.identical( got.onTime, onTime );
+      test.identical( got.onCancel, null );
+      test.identical( got.state, -2 );
+      test.identical( got.result, _.dont );
+      test.identical( times, 0 );
+      test.identical( result, [ 1, 1, 1, 1, 1 ] );
+
+      return null;
+    });
+  })
+
+  .then( function()
+  {
+    test.case = 'onTime, onCancel';
+    var times = 5;
+    var result = [];
+    var onTime = () =>
+    {
+      if( times > 0 )
+      {
+        result.push( 1 );
+        times--;
+        return true;
+      }
+      return undefined;
+    };
+
+    var procedure = _.Procedure( 5 );
+    var timer = _.time.periodic( 0, procedure, onTime, onCancel );
+    return _testerGlobal_.wTools.time.out( context.dt4, () => timer )
+    .then( ( got ) =>
+    {
+      test.identical( got.procedure, procedure );
+      test.is( procedure.isFinited() );
+      test.identical( got.onTime, onTime );
+      test.identical( got.onCancel, onCancel );
+      test.identical( got.state, -2 );
+      test.identical( got.result, -1 );
+      test.identical( times, 0 );
+      test.identical( result, [ 1, 1, 1, 1, 1 ] );
+
+      return null;
+    });
+  })
+
+  .finally( () =>
+  {
+    test.close( 'delay - 0' );
+    return null;
+  });
+
+  /* - */
+
+  ready.finally( () =>
+  {
+    test.open( 'delay > 0' );
+    return null;
+  })
+
+  .then( function()
+  {
+    test.case = 'onTime';
+    var times = 5;
+    var result = [];
+    var onTime = () =>
+    {
+      if( times > 0 )
+      {
+        result.push( 1 );
+        times--;
+        return true;
+      }
+    };
+
+    var procedure = _.Procedure( 5 );
+    var timer = _.time.periodic( context.dt1/2, procedure, onTime );
+    return _testerGlobal_.wTools.time.out( context.dt4*2, () => timer )
+    .then( ( got ) =>
+    {
+      test.identical( got.procedure, procedure );
+      test.is( procedure.isFinited() );
+      test.identical( got.onTime, onTime );
+      test.identical( got.onCancel, null );
+      test.is( got.state === -2 );
+      test.identical( got.result, undefined );
+      test.identical( times, 0 );
+      test.identical( result, [ 1, 1, 1, 1, 1 ] );
+
+      return null;
+    });
+  })
+
+  .then( function()
+  {
+    test.case = 'onTime, execute onTime';
+    var times = 5;
+    var result = [];
+    var onTime = () =>
+    {
+      if( times > 0 )
+      {
+        result.push( 1 );
+        times--;
+        return true;
+      }
+      return _.dont;
+    };
+
+    var procedure = _.Procedure( 5 );
+    var timer = _.time.periodic( context.dt1/2, procedure, onTime );
+    return _testerGlobal_.wTools.time.out( context.dt4*2, () => timer )
+    .then( ( got ) =>
+    {
+      test.identical( got.procedure, procedure );
+      test.is( procedure.isFinited() );
+      test.identical( got.onTime, onTime );
+      test.identical( got.onCancel, null );
+      test.identical( got.state, -2 );
+      test.identical( got.result, _.dont );
+      test.identical( times, 0 );
+      test.identical( result, [ 1, 1, 1, 1, 1 ] );
+
+      return null;
+    });
+  })
+
+  .then( function()
+  {
+    test.case = 'onTime, onCancel';
+    var times = 5;
+    var result = [];
+    var onTime = () =>
+    {
+      if( times > 0 )
+      {
+        result.push( 1 );
+        times--;
+        return true;
+      }
+    };
+
+    var procedure = _.Procedure( 5 );
+    var timer = _.time.periodic( context.dt1/2, procedure, onTime, onCancel );
+    return _testerGlobal_.wTools.time.out( context.dt4*2, () => timer )
+    .then( ( got ) =>
+    {
+      test.identical( got.procedure, procedure );
+      test.is( procedure.isFinited() );
       test.identical( got.onTime, onTime );
       test.identical( got.onCancel, onCancel );
       test.is( got.state === -2 );
@@ -6194,6 +6571,7 @@ let Self =
     finally : finally_,
     finallyWithProcedure,
     periodic,
+    periodicWithProcedure,
     timeOutCancelInsideOfCallback,
     timeOutCancelOutsideOfCallback,
     timeOutCancelZeroDelayInsideOfCallback,
