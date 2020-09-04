@@ -2672,7 +2672,7 @@ function __take( error, argument )
   _.assert( error === undefined || argument === undefined, 'Cant take both error and argument, one should be undefined' );
   _.assert( arguments.length === 2 );
 
-  self.__onTake( error, argument );
+  // self.__onTake( error, argument ); /*  aaa : Dmytro : commented due to task. Maybe, need to remove */
 
   if( _.consequenceIs( argument ) )
   {
@@ -2719,15 +2719,15 @@ function __take( error, argument )
   return self;
 }
 
+// //
 //
-
-function __onTake( err, arg ) /* Dmytro : why the routine does not do any action? */
-{
-  let self = this;
-
-}
-
+// function __onTake( err, arg ) /*  aaa : Dmytro : commented due to task. Maybe, need to remove */
+// {
+//   let self = this;
 //
+// }
+//
+// //
 
 // /**
 //  * Creates and pushes resource object into wConsequence resources sequence, and trying to get and return result of
@@ -4416,19 +4416,19 @@ function FinallyPass( err, arg )
 
 //
 
-function ThenPass( err, arg ) /* Dmytro : how the err should be handled ? */
-{
-  _.assert( arg !== undefined, 'Expects non-undefined argument' );
-  return arg;
-}
-
+// function ThenPass( err, arg ) /*  aaa : Dmytro : commented due to task. Maybe, need to remove */
+// {
+//   _.assert( arg !== undefined, 'Expects non-undefined argument' );
+//   return arg;
+// }
 //
-
-function CatchPass( err, arg )
-{
-  _.assert( err !== undefined, 'Expects non-undefined error' );
-  throw err;
-}
+// //
+//
+// function CatchPass( err, arg )
+// {
+//   _.assert( err !== undefined, 'Expects non-undefined error' );
+//   throw err;
+// }
 
 // --
 // meta
@@ -4716,8 +4716,8 @@ let Statics =
   Or : OrKeep,
 
   FinallyPass,
-  ThenPass,
-  CatchPass,
+  // ThenPass, /*  aaa : Dmytro : commented due to task. Maybe, need to remove */
+  // CatchPass, /*  aaa : Dmytro : commented due to task. Maybe, need to remove */
 
   AsyncModeSet,
   AsyncModeGet,
@@ -4906,7 +4906,7 @@ let Extension =
   take,
   error,
   __take,
-  __onTake,
+  // __onTake, /*  aaa : Dmytro : commented due to task. Maybe, need to remove */
 
   // handling mechanism
 
@@ -5050,3 +5050,4 @@ if( typeof module !== 'undefined' )
 module[ 'exports' ] = Self;
 
 })();
+
