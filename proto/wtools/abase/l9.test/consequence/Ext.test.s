@@ -1,4 +1,5 @@
-( function _Ext_test_s_( ) {
+( function _Ext_test_s_()
+{
 
 'use strict';
 
@@ -159,10 +160,10 @@ function AndKeepErrorAttend( test )
     let _ = require( toolsPath );
     _.include( 'wConsequence' );
 
-    var con1 = _.time.out( t1*1, () =>
+    var con1 = _.time.out( t1, () =>
     {
       console.log( 'time1' );
-      throw 'Test error';
+      throw _.err( 'Test error' );
     })
     var con2 = _.time.out( t1*3, () =>
     {
@@ -220,7 +221,7 @@ function AndKeepErrorNotAttend( test )
     var con1 = _.time.out( t1, () =>
     {
       console.log( 'time1' );
-      throw 'Test error';
+      throw _.err( 'Test error' );
     })
     var con2 = _.time.out( t1*3, () =>
     {
@@ -458,7 +459,7 @@ function asyncStackInConsequenceThen( test )
     con.then( function callback2( arg )
     {
       console.log( 'sourcePath::callback2 ' + _.Procedure.ActiveProcedure._sourcePath );
-      throw 'callback2';
+      throw _.err( 'callback2' );
       return 'callback2';
     })
 
@@ -626,7 +627,7 @@ function timeLimit( test )
     let t = 25;
     _.include( 'wConsequence' );
     _.include( 'wProcedure' );
-    var con = _.time.out( t*1 );
+    var con = _.time.out( t );
     con.timeLimit( t*6, () => _.time.out( t*3, 'a' ) );
     // _.procedure.terminationBegin();
   }
@@ -677,7 +678,7 @@ function timeLimitWaitingEnough( test )
     let _ = require( toolsPath );
     _.include( 'wConsequence' );
     _.include( 'wProcedure' );
-    let con = _.time.out( t2*1 );
+    let con = _.time.out( t2 );
 
     console.log( 'v0', _.time.spent( _.setup.startTime ) );
 
@@ -748,7 +749,7 @@ function timeLimitWaitingNotEnough( test )
     _.include( 'wConsequence' );
     _.include( 'wProcedure' );
 
-    var con = _.time.out( t2*1 );
+    var con = _.time.out( t2 );
 
     console.log( 'v0', _.time.spent( _.setup.startTime ) );
 
@@ -952,14 +953,17 @@ function timeOutExternalMessage( test )
       con1.take( 2 );
       con1.give( ( err, got ) =>
       {
+        console.log( err === undefined );
         console.log( 'v3' );
       });
       con1.give( ( err, got ) =>
       {
+        console.log( err === undefined );
         console.log( 'v4' );
       });
       con1.give( ( err, got ) =>
       {
+        console.log( err === undefined );
         console.log( 'v5' );
       });
     })
