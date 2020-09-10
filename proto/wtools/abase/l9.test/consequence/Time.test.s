@@ -621,7 +621,7 @@ function _beginTimerInsideOfCallback( test )
     };
     var timer = _.time._begin( context.dt1, onTime );
 
-    return _testerGlobal_.wTools.time.out( context.dt4, () => timer )
+    return _testerGlobal_.wTools.time.out( context.dt5, () => timer )
     .then( ( got ) =>
     {
       test.identical( got.onTime, onTime );
@@ -653,7 +653,7 @@ function _beginTimerInsideOfCallback( test )
       return -1;
     }
 
-    return _testerGlobal_.wTools.time.out( context.dt4, () => timer )
+    return _testerGlobal_.wTools.time.out( context.dt5, () => timer )
     .then( ( got ) =>
     {
       test.identical( got.onTime, onTime );
@@ -2722,7 +2722,7 @@ function beginTimerInsideOfCallback( test )
     };
     var timer = _.time.begin( context.dt1, onTime );
 
-    return _testerGlobal_.wTools.time.out( context.dt4, () => timer )
+    return _testerGlobal_.wTools.time.out( context.dt5, () => timer )
     .then( ( got ) =>
     {
       test.identical( got.onTime, onTime );
@@ -2754,7 +2754,7 @@ function beginTimerInsideOfCallback( test )
       return -1;
     }
 
-    return _testerGlobal_.wTools.time.out( context.dt4, () => timer )
+    return _testerGlobal_.wTools.time.out( context.dt5, () => timer )
     .then( ( got ) =>
     {
       test.identical( got.onTime, onTime );
