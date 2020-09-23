@@ -9854,7 +9854,7 @@ function orKeepingSplitCanceled( test )
       counter += 1;
     })
 
-    _.time.out( context.t1*3/4, () =>
+    _.time.out( context.t1, () =>
     {
       con2.take( 'context' )
 
@@ -9877,7 +9877,7 @@ function orKeepingSplitCanceled( test )
       counter += 1;
     })
 
-    return _.time.out( context.t1*3/2, () =>
+    return _.time.out( context.t1*2, () =>
     {
 
       test.identical( con00.errorsCount(), 0 );
@@ -9937,7 +9937,7 @@ function orKeepingSplitCanceled( test )
       counter += 1;
     })
 
-    _.time.out( context.t1/4, () =>
+    _.time.out( context.t1/2, () =>
     {
       con1.cancel();
 
@@ -9960,7 +9960,7 @@ function orKeepingSplitCanceled( test )
       counter += 1;
     })
 
-    _.time.out( context.t1*3/4, () =>
+    _.time.out( context.t1, () =>
     {
       con2.take( 'context' )
 
@@ -9983,7 +9983,7 @@ function orKeepingSplitCanceled( test )
       counter += 1;
     })
 
-    return _.time.out( context.t1*3/2, () =>
+    return _.time.out( context.t1*2, () =>
     {
 
       test.identical( con00.errorsCount(), 0 );
@@ -10066,7 +10066,7 @@ function orKeepingSplitCanceled( test )
       counter += 1;
     })
 
-    _.time.out( context.t1*3/4, () =>
+    _.time.out( context.t1, () =>
     {
       con2.take( 'context' )
 
@@ -10089,7 +10089,7 @@ function orKeepingSplitCanceled( test )
       counter += 1;
     })
 
-    return _.time.out( context.t1*3/2, () =>
+    return _.time.out( context.t1*2, () =>
     {
 
       test.identical( con00.errorsCount(), 0 );
