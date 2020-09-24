@@ -1543,10 +1543,11 @@ defaults.kindOfResource = KindOfResource.ErrorOnly;
 
 //
 
-function sleep( delay )
+function sleep( delay, procedure )
 {
 
-  _.assert( arguments.length === 1 );
+  _.assert( arguments.length === 1 || arguments.length === 2 );
+  _.assert( _.procedureIs( procedure ) || !procedure, 'Should be passed a Procedure {-procedure-} or undefined.' );
   _.assert( _.numberIs( delay ) && delay >= 0, 'Specify valid value {-delay-}.' );
   _.assert( _.numberIsFinite( delay ), 'Delay should have finite value.' );
 
