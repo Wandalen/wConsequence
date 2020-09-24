@@ -1543,6 +1543,18 @@ defaults.kindOfResource = KindOfResource.ErrorOnly;
 
 //
 
+function sleep( delay )
+{
+  let sleepConsequence = new _.Consequence().take( null );
+  sleepConsequence.then( () =>
+  {
+    _.time.sleep( delay );
+  });
+  return sleepConsequence.deasync();
+}
+
+//
+
 function timeLimit_pre( routine, args )
 {
   let o = { time : args[ 0 ], callback : args[ 1 ] };
@@ -4857,6 +4869,8 @@ let Extension =
   thenTimeOut,
   exceptTimeOut,
   timeOut : finallyTimeOut,
+
+  sleep,
 
   _timeLimit,
   timeLimit,
