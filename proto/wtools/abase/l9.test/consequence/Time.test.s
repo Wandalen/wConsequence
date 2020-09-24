@@ -6626,6 +6626,7 @@ let Self =
     finallyWithProcedure,
     periodic,
     periodicWithProcedure,
+    cancel,
     sleep,
     timeOutCancelInsideOfCallback,
     timeOutCancelOutsideOfCallback,
