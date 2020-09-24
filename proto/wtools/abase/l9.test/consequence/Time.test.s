@@ -4591,6 +4591,58 @@ function periodicWithProcedure( test )
 
 //
 
+function sleep( test )
+{
+  test.case = 'delay - 0';
+  var start = _.time.now();
+  _.time.sleep( 0 );
+  var got = _.time.now() - start;
+  test.is( 0 <= got && got <= 3 );
+
+  test.case = 'delay - 1';
+  var start = _.time.now();
+  _.time.sleep( 1 );
+  var got = _.time.now() - start;
+  test.is( 1 <= got && got <= 4 );
+
+  test.case = 'delay - 100';
+  var start = _.time.now();
+  _.time.sleep( 100 );
+  var got = _.time.now() - start;
+  test.is( 100 <= got && got <= 103 );
+
+  test.case = 'delay - 2000';
+  var start = _.time.now();
+  _.time.sleep( 2000 );
+  var got = _.time.now() - start;
+  test.is( 2000 <= got && got <= 2004 );
+
+  /* - */
+
+  if( !Config.debug )
+  return;
+
+  test.case = 'without arguments';
+  test.shouldThrowErrorSync( () => _.time.sleep() );
+
+  test.case = 'extra arguments';
+  test.shouldThrowErrorSync( () => _.time.sleep( 10, new _.Procedure(), 10 ) );
+
+  test.case = 'wrong type of delay';
+  test.shouldThrowErrorSync( () => _.time.sleep( '10' ) );
+
+  test.case = 'negative value of delay';
+  test.shouldThrowErrorSync( () => _.time.sleep( -1 ) );
+
+  test.case = 'Infinity value of delay';
+  test.shouldThrowErrorSync( () => _.time.sleep( Infinity ) );
+
+  test.case = 'delay has NaN value';
+  test.shouldThrowErrorSync( () => _.time.sleep( NaN ) );
+}
+
+//
+
 function cancel( test )
 {
   let context = this;
@@ -6572,6 +6624,7 @@ let Self =
     finallyWithProcedure,
     periodic,
     periodicWithProcedure,
+    sleep,
     timeOutCancelInsideOfCallback,
     timeOutCancelOutsideOfCallback,
     timeOutCancelZeroDelayInsideOfCallback,
