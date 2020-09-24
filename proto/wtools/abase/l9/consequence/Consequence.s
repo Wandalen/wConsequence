@@ -1545,12 +1545,13 @@ defaults.kindOfResource = KindOfResource.ErrorOnly;
 
 function sleep( delay )
 {
-  let sleepConsequence = new _.Consequence().take( null );
-  sleepConsequence.then( () =>
-  {
-    _.time.sleep( delay );
-  });
-  return sleepConsequence.deasync();
+
+  _.assert( arguments.length === 1 );
+  _.assert( _.numberIs( delay ) && delay >= 0, 'Specify valid value {-delay-}.' );
+  _.assert( _.numberIsFinite( delay ), 'Delay should have finite value.' );
+
+  let con = new _.Consequence().take( null );
+  con.timeOut( delay ).deasync();
 }
 
 //
@@ -4870,8 +4871,6 @@ let Extension =
   exceptTimeOut,
   timeOut : finallyTimeOut,
 
-  sleep,
-
   _timeLimit,
   timeLimit,
   timeLimitThrowing,
@@ -5020,6 +5019,14 @@ _metaDefine( 'field', Symbol.for( 'nodejs.util.inspect.custom' ), _inspectCustom
 
 _.mapExtend( _, Tools );
 _.mapExtend( _realGlobal_.wTools, Tools );
+
+
+let TimeExtension =
+{
+  sleep,
+};
+
+Object.assign( _.time, TimeExtension );
 
 //
 
