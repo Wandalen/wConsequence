@@ -4692,25 +4692,25 @@ function sleep( test )
   var start = _.time.now();
   _.time.sleep( 0 );
   var got = _.time.now() - start;
-  test.is( 0 <= got && got <= 100 );
+  test.is( 0 <= got && got <= 200 );
 
   test.case = 'delay - 2';
   var start = _.time.now();
   _.time.sleep( 2 );
   var got = _.time.now() - start;
-  test.is( 2 <= got && got <= 100 );
+  test.is( 2 <= got && got <= 200 );
 
   test.case = 'delay - 100';
   var start = _.time.now();
   _.time.sleep( 100 );
   var got = _.time.now() - start;
-  test.is( 100 <= got && got <= 200 );
+  test.is( 100 <= got && got <= 400 );
 
   test.case = 'delay - 2000';
   var start = _.time.now();
   _.time.sleep( 2000 );
   var got = _.time.now() - start;
-  test.is( 2000 <= got && got <= 4000 );
+  test.is( 2000 <= got && got <= 8000 );
 
   /* - */
 
