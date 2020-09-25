@@ -111,7 +111,7 @@ class wConsequence extends _.CallableObject
   {
     let self = super();
     Self.prototype.init.apply( self, arguments );
-    return self; /* Dmytro : eslint rule mark it as error. The removing of the line does not affect the behavior of module */
+    // return self; /* Dmytro : eslint rule mark it as error. The removing of the line does not affect the behavior of module */
   }
 }
 
