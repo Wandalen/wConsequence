@@ -111,7 +111,7 @@ class wConsequence extends _.CallableObject
   {
     let self = super();
     Self.prototype.init.apply( self, arguments );
-    return self; /* Dmytro : eslint rule mark it as error. The removing of the line does not affect the behavior of module */
+    // return self; /* Dmytro : eslint rule mark it as error. The removing of the line does not affect the behavior of module */
   }
 }
 
@@ -1540,6 +1540,20 @@ defaults.kindOfResource = KindOfResource.ArgumentOnly;
 let exceptTimeOut = _.routineFromPreAndBody( timeOut_pre, _timeOut, 'exceptTimeOut' );
 var defaults = exceptTimeOut.defaults;
 defaults.kindOfResource = KindOfResource.ErrorOnly;
+
+//
+
+function sleep( delay, procedure )
+{
+
+  _.assert( arguments.length === 1 || arguments.length === 2 );
+  _.assert( _.procedureIs( procedure ) || !procedure, 'Should be passed a Procedure {-procedure-} or undefined.' );
+  _.assert( _.numberIs( delay ) && delay >= 0, 'Specify valid value {-delay-}.' );
+  _.assert( _.numberIsFinite( delay ), 'Delay should have finite value.' );
+
+  let con = new _.Consequence().take( null );
+  con.timeOut( delay ).deasync();
+}
 
 //
 
@@ -5006,6 +5020,14 @@ _metaDefine( 'field', Symbol.for( 'nodejs.util.inspect.custom' ), _inspectCustom
 
 _.mapExtend( _, Tools );
 _.mapExtend( _realGlobal_.wTools, Tools );
+
+
+let TimeExtension =
+{
+  sleep,
+};
+
+Object.assign( _.time, TimeExtension );
 
 //
 
