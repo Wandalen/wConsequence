@@ -2254,7 +2254,7 @@ function _or( o )
 
     count += 1;
 
-    _.assert( count === 1 ); debugger;
+    _.assert( count === 1 );
 
     for( let c = 0 ; c < competitors.length ; c++ )
     {
@@ -2272,10 +2272,6 @@ function _or( o )
 
     if( count === 1 )
     self.take( err, arg );
-
-    // if( o.keeping )
-    // if( o.gettingReadyFirst || index !== 0 )
-    // competitors[ index ].take( err, arg );
 
   }
 
@@ -3799,7 +3795,7 @@ function procedure( arg )
   if( self._procedure )
   return self._procedure;
 
-  if( self._procedure === false )
+  if( self._procedure === false && arg !== true )
   return self._procedure;
 
   if( _.routineIs( arg ) )
@@ -3827,7 +3823,11 @@ function procedure( arg )
   {
     self._procedure = false;
   }
-  else if( arg === false )
+  else if( arg === true )
+  {
+    self._procedure = null;
+  }
+  else if( arg === null )
   {
     self._procedure = _.Procedure();
   }

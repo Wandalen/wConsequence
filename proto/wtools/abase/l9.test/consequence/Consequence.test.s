@@ -6430,6 +6430,79 @@ function procedureOff( test )
 procedureOff.description =
 `
  - no procedures are created if _procedure is false
+ - consequence.procedure( false ) switch off generating of procedures
+`
+
+//
+
+function procedureOffOn( test )
+{
+  let pcounter = _.Procedure.Counter;
+  let counter = 0;
+  let con1 = new _.Consequence({ tag : 'con1' });
+
+  test.case = 'off';
+  test.identical( con1._procedure, null );
+  con1.procedure( false );
+  test.identical( con1._procedure, false );
+  test.identical( _.Procedure.Counter - pcounter, 0 );
+  con1.thenKeep( counterInc );
+  test.identical( _.Procedure.Counter - pcounter, 0 );
+  pcounter = _.Procedure.Counter;
+  var competitor1 = con1.competitorHas( counterInc );
+  test.identical( competitor1.procedure, null );
+  test.identical( con1._procedure, false );
+
+  test.case = 'on first';
+  test.identical( con1._procedure, false );
+  con1.procedure( true );
+  test.identical( con1._procedure, null );
+  test.identical( _.Procedure.Counter - pcounter, 0 );
+  con1.thenKeep( counterInc );
+  test.identical( _.Procedure.Counter - pcounter, 1 );
+  pcounter = _.Procedure.Counter;
+  var competitor2 = con1.competitorsGet()[ 1 ];
+  test.identical( competitor2.procedure._counter, 0 );
+  test.identical( competitor2.procedure._name, 'counterInc' );
+  test.identical( competitor2.procedure.isActivated(), false );
+  test.identical( competitor2.procedure.isAlive(), true );
+  test.identical( competitor2.procedure.isFinited(), false );
+  test.identical( competitor2.procedure.isUsed(), false );
+
+  test.case = 'on second';
+  test.identical( con1._procedure, null );
+  test.identical( _.Procedure.Counter - pcounter, 0 );
+  con1.thenKeep( counterInc );
+  test.identical( _.Procedure.Counter - pcounter, 1 );
+  pcounter = _.Procedure.Counter;
+  var competitor3 = con1.competitorsGet()[ 2 ];
+  test.identical( competitor3.procedure._counter, 0 );
+  test.identical( competitor3.procedure._name, 'counterInc' );
+  test.identical( competitor3.procedure.isActivated(), false );
+  test.identical( competitor3.procedure.isAlive(), true );
+  test.identical( competitor3.procedure.isFinited(), false );
+  test.identical( competitor3.procedure.isUsed(), false );
+
+  con1.take( null );
+  test.identical( con1.competitorHas( counterInc ), false );
+  test.is( competitor1.procedure === null );
+  test.is( !!competitor2.procedure );
+  test.is( !!competitor3.procedure );
+
+  con1.cancel();
+  test.identical( counter, 3 );
+
+  function counterInc()
+  {
+    counter += 1;
+    return counter;
+  }
+}
+
+procedureOffOn.description =
+`
+ - no procedures are created if _procedure is false
+ - consequence.procedure( false ) switch off generating of procedures
 `
 
 // --
@@ -14342,6 +14415,7 @@ let Self =
     procedureStatesThenKeep,
     procedureStatesTap,
     procedureOff,
+    procedureOffOn,
 
     // and
 
