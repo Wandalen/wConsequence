@@ -306,7 +306,6 @@ function finallyKeep( competitorRoutine )
   });
 
   self.__handleResourceSoon( false );
-
   return self;
 }
 
@@ -332,7 +331,6 @@ function thenGive( competitorRoutine )
   });
 
   self.__handleResourceSoon( false );
-
   return self;
 }
 
@@ -437,7 +435,6 @@ function catchKeep( competitorRoutine )
     keeping : true,
     kindOfResource : Self.KindOfResource.ErrorOnly,
     stack : 2,
-    // early : true,
   });
 
   self.__handleResourceSoon( false );
@@ -479,7 +476,6 @@ function _promise( o )
   let self = this;
   let keeping = o.keeping;
   let kindOfResource =  o.kindOfResource;
-  // let procedure = self.procedure( 'promise' ).stackElse( 3 );
   let procedure = self.procedure( 3 ).nameElse( 'promise' );
   self.procedureDetach();
 
@@ -493,7 +489,6 @@ function _promise( o )
     ({
       keeping : 0,
       competitorRoutine,
-      // kindOfResource : o.kindOfResource,
       kindOfResource : self.KindOfResource.Both,
       stack : 3,
     });
@@ -1028,7 +1023,6 @@ function tap( competitorRoutine )
   });
 
   self.__handleResourceSoon( false );
-
   return self;
 }
 
@@ -1064,7 +1058,6 @@ function catchLog()
   });
 
   self.__handleResourceSoon( false );
-
   return self;
 
   /* - */
@@ -1110,7 +1103,6 @@ function catchBrief()
   });
 
   self.__handleResourceSoon( false );
-
   return self;
 
   /* - */
@@ -1119,7 +1111,6 @@ function catchBrief()
   {
     err = _.errBrief( err );
     logger.error( _.errOnce( err ) );
-    // throw err;
     return null;
   }
 
@@ -1185,7 +1176,6 @@ function _competitorFinally( competitorRoutine )
   });
 
   self.__handleResourceSoon( false );
-
   return self;
 }
 
@@ -1276,7 +1266,6 @@ function _put( o )
       competitorRoutine : __onPutWithKey,
       stack : 3,
     });
-
     self.__handleResourceSoon( false );
     return self;
   }
@@ -1476,42 +1465,21 @@ function _timeOut( o )
 
   function __timeOutFinally( err, arg )
   {
-
     _.time.begin( o.time, () => self.take( err, arg ) );
-
-    // _.time.out( o.time ).tap( () =>
-    // {
-    //   self.take( err, arg );
-    // });
-
   }
 
   /**/
 
   function __timeOutCatch( err )
   {
-
     _.time.begin( o.time, () => self.take( undefined, err ) );
-
-    // _.time.out( o.time ).tap( () =>
-    // {
-    //   self.take( undefined, err );
-    // });
-
   }
 
   /**/
 
   function __timeOutThen( arg )
   {
-
     _.time.begin( o.time, () => self.take( arg ) );
-
-    // _.time.out( o.time ).tap( () =>
-    // {
-    //   self.take( arg );
-    // });
-
   }
 
   /**/
@@ -1720,6 +1688,24 @@ function timeLimitThrowingSplit( time )
   return result;
 }
 
+// TimeLimit,
+// TimeLimitThrowing,
+// TimeLimitSplit,
+
+//
+
+function TimeLimit( timeLimit, consequence )
+{
+  return new _.Consequence().take( null ).timeLimit( timeLimit, consequence );
+}
+
+//
+
+function TimeLimitThrowing( timeLimit, consequence )
+{
+  return new _.Consequence().take( null ).timeLimitThrowing( timeLimit, consequence );
+}
+
 // --
 // and
 // --
@@ -1830,7 +1816,7 @@ function _and( o )
 
   function callbacksStart()
   {
-    let competitors2 = []; /* xxx : renames */
+    let competitors2 = [];
 
     for( let c = first ; c < last ; c++ ) (function( c )
     {
@@ -1859,11 +1845,6 @@ function _and( o )
         , () => `Expects defined value, but got ${_.strType( competitor )}`
         + `${ _.routineIs( originalCompetitor ) ? '\n' + originalCompetitor.toString() : ''}`
       );
-      // _.assert
-      // (
-      //     _.consequenceIs( competitor ) /*|| competitor === null*/ /* yyy */
-      //   , () => `Expects consequence or null, but got ${_.strType( competitor )}`
-      // );
       else
       _.assert
       (
@@ -1875,7 +1856,7 @@ function _and( o )
       if( o.waiting )
       {
 
-        if( !_.consequenceIs( competitor ) ) /* xxx : teach And to accept non-consequence */
+        if( !_.consequenceIs( competitor ) ) /* qqq : teach And to accept non-consequence and cover */
         {
           __got.call( c, undefined, competitor );
           return;
@@ -1884,16 +1865,6 @@ function _and( o )
         {
           return;
         }
-
-        // if( competitor === null ) /* xxx : teach And to accept non-consequence */
-        // {
-        //   __got.call( c, undefined, null );
-        //   return;
-        // }
-        // else if( _.longHas( competitors2, competitor ) )
-        // {
-        //   return;
-        // }
 
       }
       else
@@ -2226,7 +2197,7 @@ function _or( o )
   else
   competitors = [ competitors ];
 
-  /* xxx qqq : implement tests: arguments are promises */
+  /* qqq : implement tests : arguments are promises */
 
   for( let c = competitors.length-1 ; c >= 0 ; c-- )
   {
@@ -2283,7 +2254,7 @@ function _or( o )
 
     count += 1;
 
-    _.assert( count === 1 );
+    _.assert( count === 1 ); debugger;
 
     for( let c = 0 ; c < competitors.length ; c++ )
     {
@@ -2833,15 +2804,6 @@ function __handleError( err, competitor )
 
   let timer = _.time.finally( self.UncaughtTimeOut, function uncaught()
   {
-    // debugger;
-    // if( err.id === 2 ) // xxx
-    // debugger;
-
-    // console.log( `err.id : ${err.id}` );
-    // console.log( `timer.state : ${timer.state}` );
-    // console.log( `timerIsCancelBegun : ${_.time.timerIsCancelBegun( timer )}` );
-    // console.log( `errIsSuspended : ${_.errIsSuspended( err )}` );
-    // debugger;
 
     if( !_.time.timerIsCancelBegun( timer ) && _.errIsSuspended( err ) )
     return;
@@ -3025,7 +2987,6 @@ function __handleResourceNow()
       {
         consequences.push( self );
         self = competitor.competitorRoutine;
-        // competitor.competitorRoutine.__handleResourceNow();
       }
 
     }
@@ -3036,17 +2997,9 @@ function __handleResourceNow()
 
       let throwenErr = 0;
       let result;
-      // let isActivated = false;
 
       if( competitor.procedure )
       {
-
-        // if( competitor.procedure.id === 30 )
-        // debugger;
-
-        // isActivated = competitor.procedure.isActivated();
-        // if( !competitor.procedure.isTopMost() )
-        // if( !isActivated )
         if( !competitor.procedure.use() )
         competitor.procedure.activate( true );
         _.assert( competitor.procedure.isActivated() );
@@ -3068,29 +3021,18 @@ function __handleResourceNow()
 
       if( competitor.procedure )
       {
-
-        // if( competitor.procedure.id === 30 )
-        // debugger;
-
-        // if( !isActivated )
-        // {
         competitor.procedure.unuse();
         if( !competitor.procedure.isUsed() )
         {
           competitor.procedure.activate( false );
-          // _.assert( !competitor.procedure.isActivated() );
-          // if( !competitor.procedure.isActivated() )
           competitor.procedure.end();
         }
-        // }
-        // competitor.procedure.end();
       }
 
       if( !throwenErr )
       if( competitor.keeping && result === undefined )
       {
         debugger;
-        // logger.log( 'inspector', require( 'inspector' ) );
         let err = self.ErrNoReturn( competitor.competitorRoutine );
         throwenErr = self.__handleError( err, competitor )
       }
@@ -3099,9 +3041,7 @@ function __handleResourceNow()
 
       if( throwenErr )
       {
-
         self.__take( throwenErr, undefined );
-
       }
       else if( competitor.keeping )
       {
@@ -3205,37 +3145,39 @@ function _competitorAppend( o )
       competitorRoutine._dependsOf.push( self );
     }
 
-    // if( self.Diagnostics && self.Stacking )
-    // {
-    //   competitorDescriptor.stack = _.introspector.stack([ stack, Infinity ]); /* deprecate, procedure has stack! */
-    // }
-
   }
 
   /* procedure */
 
-  /* xxx qqq : cover consequence with _procedure : false */
-  if( self._procedure === null )
-  self._procedure = new _.Procedure({ _stack : stack });
-
   _.assert( _.routineIs( o.competitorRoutine ) );
 
-  if( !self._procedure.name() )
-  self._procedure.name( o.competitorRoutine.name || '' );
+  if( competitorDescriptor.procedure === null && !_.consequenceIs( o.competitorRoutine ) )
+  {
+    if( self._procedure )
+    {
+      competitorDescriptor.procedure = self._procedure;
+      self._procedure = null
+    }
+    else
+    {
+      if( self._procedure !== false )
+      competitorDescriptor.procedure = new _.Procedure({ _stack : stack });
+    }
+  }
 
-  _.assert( self._procedure._routine === null || self._procedure._routine === o.competitorRoutine );
+  if( competitorDescriptor.procedure )
+  {
+    if( !competitorDescriptor.procedure.name() )
+    competitorDescriptor.procedure.name( o.competitorRoutine.name || '' );
 
-  if( !self._procedure._routine )
-  self._procedure._routine = o.competitorRoutine;
-  if( !self._procedure._object )
-  self._procedure._object = competitorDescriptor;
+    _.assert( competitorDescriptor.procedure._routine === null || competitorDescriptor.procedure._routine === o.competitorRoutine );
 
-  self._procedure.begin();
-
-  competitorDescriptor.procedure = self._procedure;
-
-  if( self._procedure )
-  self._procedure = null;
+    if( !competitorDescriptor.procedure._routine )
+    competitorDescriptor.procedure._routine = o.competitorRoutine;
+    if( !competitorDescriptor.procedure._object )
+    competitorDescriptor.procedure._object = competitorDescriptor;
+    competitorDescriptor.procedure.begin();
+  }
 
   /* */
 
@@ -3261,10 +3203,9 @@ _competitorAppend.defaults =
   late : false,
   instant : true,
   // instant : false, // zzz : implement con1.then( con )
-
   times : 1,
-  stack : null, /* xxx : use procedure instead */
-  // procedure : null,
+  stack : null,
+  procedure : null,
 }
 
 // --
@@ -3882,6 +3823,14 @@ function procedure( arg )
     _.assert( arg._stack !== undefined );
     self._procedure = _.Procedure( arg );
   }
+  else if( arg === false )
+  {
+    self._procedure = false;
+  }
+  else if( arg === false )
+  {
+    self._procedure = _.Procedure();
+  }
   else _.assert( 0 );
 
   return self._procedure;
@@ -4154,13 +4103,15 @@ function __call__()
 // static
 // --
 
-/* xxx : remove second argument */
-function From( src, timeLimit )
+/* aaa : remove second argument */
+// function From( src, timeLimit )
+function From( src ) /* qqq : cover */
 {
   let con = src;
 
-  _.assert( arguments.length === 1 || arguments.length === 2 );
-  _.assert( timeLimit === undefined || _.numberIs( timeLimit ) );
+  // _.assert( arguments.length === 1 || arguments.length === 2 );
+  _.assert( arguments.length === 1 );
+  // _.assert( timeLimit === undefined || _.numberIs( timeLimit ) );
 
   if( _.promiseLike( src ) )
   {
@@ -4172,18 +4123,11 @@ function From( src, timeLimit )
 
   if( _.consequenceIs( con ) )
   {
+    // let con2 = con;
     // if( timeLimit !== undefined )
-    // {
-    //   return con.orKeepingSplit( _.time.outError( timeLimit ) );
-    // }
-    // debugger;
-    // con.tag = 'aaa';
-    let con2 = con;
-    if( timeLimit !== undefined )
-    con2 = new _.Consequence().take( null )
-    .timeLimitThrowing( timeLimit, con );
-    // con.tag = 'bbb';
-    return con2;
+    // con2 = new _.Consequence().take( null ).timeLimitThrowing( timeLimit, con );
+    // return con2;
+    return con;
   }
 
   if( _.errIs( src ) )
@@ -4235,23 +4179,23 @@ function FromCalling( src )
  * @namespace wConsequence
  */
 
-function Take( consequence ) /* xxx : review */
+function Take( consequence )
 {
 
   _.assert( arguments.length === 2 || arguments.length === 3, 'Expects two or three arguments' );
 
-  let err, finallyGive;
+  let err, arg;
   if( arguments.length === 2 )
   {
-    finallyGive = arguments[ 1 ];
+    arg = arguments[ 1 ];
   }
   else if( arguments.length === 3 )
   {
     err = arguments[ 1 ];
-    finallyGive = arguments[ 2 ];
+    arg = arguments[ 2 ];
   }
 
-  let args = [ finallyGive ];
+  let args = [ arg ];
 
   return _Take
   ({
@@ -4721,6 +4665,9 @@ let Statics =
   ErrNoReturn,
   Try, /* qqq : cover please */
 
+  TimeLimit,
+  TimeLimitThrowing,
+
   AndTake_,
   AndKeep_,
   And_ : AndKeep_,
@@ -4745,7 +4692,6 @@ let Statics =
 
   UncaughtTimeOut : 100,
   Diagnostics : 1,
-  // Stacking : 0,
   AsyncCompetitorHanding : 0,
   AsyncResourceAdding : 0,
 
@@ -4877,14 +4823,15 @@ let Extension =
   timeLimitThrowing,
   timeLimitSplit,
   timeLimitThrowingSplit,
+  TimeLimit, /* qqq : cover please */
+  TimeLimitThrowing, /* qqq : cover please */
 
   // and
 
   _and,
   andTake,
   andKeep,
-  andKeepAccumulative, /* qqq : cover routine andKeepAccumulative */
-  // and : andKeepAccumulative,
+  andKeepAccumulative,
 
   alsoKeep,
   alsoTake,
@@ -4902,7 +4849,7 @@ let Extension =
   orKeepingSplit,
   orTaking,
   orKeeping,
-  or : orKeeping, /* xxx : introduce static routine Or */
+  or : orKeeping,
 
   OrTake,
   OrKeep,
@@ -4941,9 +4888,9 @@ let Extension =
 
   // competitor
 
-  competitorOwn,
+  competitorOwn, /* qqq2 : cover */
   competitorHas,
-  competitorsCount,  /* qqq : cover */
+  competitorsCount,  /* qqq2 : cover */
   competitorsEarlyGet,
   competitorsLateGet,
   competitorsGet,
@@ -4951,9 +4898,9 @@ let Extension =
 
   // resource
 
-  argumentsCount, /* qqq : cover */
-  errorsCount, /* qqq : cover */
-  resourcesCount, /* qqq : cover */
+  argumentsCount, /* qqq2 : cover */
+  errorsCount, /* qqq2 : cover */
+  resourcesCount, /* qqq2 : cover */
   resourcesGet,
   argumentsGet,
   errorsGet,
@@ -5072,4 +5019,3 @@ if( typeof module !== 'undefined' )
 module[ 'exports' ] = Self;
 
 })();
-

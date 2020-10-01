@@ -200,7 +200,8 @@ function fromAsyncMode00( test )
   {
     test.case = 'sync, resolved promise, timeout';
     var src = Promise.resolve( testMsg );
-    var con = _.Consequence.From( src, context.t1*5 );
+    // var con = _.Consequence.From( src, context.t1*5 );
+    var con = _.Consequence.TimeLimitThrowing( context.t1*5, src );
     con.give( ( err, got ) =>
     {
       test.identical( got, testMsg );
@@ -228,7 +229,8 @@ function fromAsyncMode00( test )
     {
       setTimeout( () => resolve( testMsg ), context.t1*2 );
     })
-    var con = _.Consequence.From( src, context.t1 );
+    // var con = _.Consequence.From( src, context.t1 );
+    var con = _.Consequence.TimeLimitThrowing( context.t1, src );
     con.finally( ( err, got ) =>
     {
       test.is( _.errIs( err ) );
@@ -255,7 +257,8 @@ function fromAsyncMode00( test )
   {
     test.case = 'sync, timeout, src is a consequence';
     var con = new _.Consequence({ tag : 'con' }).take( testMsg );
-    con = _.Consequence.From( con, context.t1 );
+    // con = _.Consequence.From( con, context.t1 );
+    con = _.Consequence.TimeLimitThrowing( context.t1, con );
     con.give( ( err, got ) =>
     {
       test.identical( got, testMsg );
@@ -274,7 +277,9 @@ function fromAsyncMode00( test )
     test.case = 'sync, timeout, src is a consequence';
     var con = _.time.out( context.t1*2, () => testMsg );
     con.tag = 'con1';
-    con = _.Consequence.From( con, context.t1 );
+    // con = _.Consequence.From( con, context.t1 );
+    // con = _.Consequence.TimeLimitThrowing( context.t1, con );
+    con = con.timeLimitThrowingSplit( context.t1 );
     con.tag = 'con2';
     con.give( ( err, got ) =>
     {
@@ -1088,136 +1093,6 @@ function stringify( test )
   test.identical( got, exp );
 
   /* */
-
-}
-
-// --
-// etc
-// --
-
-function trivial( test )
-{
-  var context = this;
-
-  /* */
-
-  test.case = 'class checks';
-  test.is( _.routineIs( wConsequence.prototype.FinallyPass ) );
-  test.is( _.routineIs( wConsequence.FinallyPass ) );
-  test.is( _.objectIs( wConsequence.prototype.KindOfResource ) );
-  test.is( _.objectIs( wConsequence.KindOfResource ) );
-  test.is( wConsequence.name === 'wConsequence' );
-  test.is( wConsequence.shortName === 'Consequence' );
-
-  /* */
-
-  test.case = 'construction';
-  var con1 = new _.Consequence({ tag : 'con1' }).take( 1 );
-  var con2 = _.Consequence({ capacity : 0 }).take( 2 );
-  var con3 = con2.clone();
-  test.identical( con1.resourcesCount(), 1 );
-  test.identical( con2.resourcesCount(), 1 );
-  test.identical( con3.resourcesCount(), 1 );
-
-  /* */
-
-  test.case = 'class test';
-  test.is( _.consequenceIs( con1 ) );
-  test.is( _.consequenceIs( con2 ) );
-  test.is( _.consequenceIs( con3 ) );
-
-  con3.take( 3 );
-  con3( 4 );
-  con3( 5 );
-
-  con3.give( ( err, arg ) => test.identical( arg, 2 ) && test.identical( err, undefined ) );
-  con3.give( ( err, arg ) => test.identical( arg, 3 ) && test.identical( err, undefined ) );
-  con3.give( ( err, arg ) => test.identical( arg, 4 ) && test.identical( err, undefined ) );
-  con3.finally( ( err, arg ) =>
-  {
-    test.identical( con3.resourcesCount(), 0 );
-    test.identical( err, undefined );
-    return null;
-  });
-
-  return con3;
-}
-
-//
-
-function fields( test )
-{
-
-  test.case = 'got';
-  var con1 = new _.Consequence({ tag : 'con1' }).take( 1 );
-  var con2 = new _.Consequence({ tag : 'con2' });
-
-  con1.give( con2 );
-
-  test.identical( con1._resources.length, 0 );
-  test.identical( con1._competitorsEarly.length, 0 );
-  // test.identical( con1._competitorsLate.length, 0 );
-  test.identical( con2._resources.length, 1 );
-  test.identical( con2._competitorsEarly.length, 0 );
-  // test.identical( con2._competitorsLate.length, 0 );
-
-  /* */
-
-  test.case = 'done';
-  var con1 = new _.Consequence({ tag : 'con1' }).take( 1 );
-  var con2 = new _.Consequence({ tag : 'con2' });
-
-  con1.give( con2 );
-
-  test.identical( con1._resources.length, 0 );
-  test.identical( con1._competitorsEarly.length, 0 );
-  // test.identical( con1._competitorsLate.length, 0 );
-  test.identical( con2._resources.length, 1 );
-  test.identical( con2._competitorsEarly.length, 0 );
-  // test.identical( con2._competitorsLate.length, 0 );
-
-  /* */
-
-  test.case = 'finally';
-  var con1 = new _.Consequence({ tag : 'con1' }).take( 1 );
-  var con2 = new _.Consequence({ tag : 'con2' });
-
-  con1.finally( con2 );
-
-  test.identical( con1._resources.length, 1 );
-  test.identical( con1._competitorsEarly.length, 0 );
-  // test.identical( con1._competitorsLate.length, 0 );
-  test.identical( con2._resources.length, 1 );
-  test.identical( con2._competitorsEarly.length, 0 );
-  // test.identical( con2._competitorsLate.length, 0 );
-
-  /* */
-
-  test.case = 'finally';
-  var con1 = new _.Consequence({ tag : 'con1' }).take( 1 );
-  var con2 = new _.Consequence({ tag : 'con2' });
-
-  con1.finally( con2 );
-
-  test.identical( con1._resources.length, 1 );
-  test.identical( con1._competitorsEarly.length, 0 );
-  // test.identical( con1._competitorsLate.length, 0 );
-  test.identical( con2._resources.length, 1 );
-  test.identical( con2._competitorsEarly.length, 0 );
-  // test.identical( con2._competitorsLate.length, 0 );
-
-  /* */
-
-  test.case = 'take';
-  var con1 = new _.Consequence({ tag : 'con1' }).take( 1 );
-  var con2 = new _.Consequence({ tag : 'con2' });
-
-  con2.take( con1 );
-
-  test.identical( con1._resources.length, 0 );
-  test.identical( con1._competitorsEarly.length, 0 );
-  test.identical( con2._resources.length, 1 );
-  test.identical( con2._competitorsEarly.length, 0 );
 
 }
 
@@ -3508,7 +3383,6 @@ function finallyPromiseKeepAsyncMode11( test )
     test.identical( con.competitorsCount(), 1 );
     return _.time.out( 1, function()
     {
-      // test.identical( con.resourcesGet(), [ { error : testMsg, argument : undefined } ] );
       test.identical( con.argumentsGet(), [] );
       test.identical( con.errorsGet().length, 1 );
       test.identical( con.competitorsCount(), 0 );
@@ -3555,6 +3429,136 @@ function finallyPromiseKeepAsyncMode11( test )
     return arg;
   })
   return ready;
+}
+
+// --
+// etc
+// --
+
+function trivial( test )
+{
+  var context = this;
+
+  /* */
+
+  test.case = 'class checks';
+  test.is( _.routineIs( wConsequence.prototype.FinallyPass ) );
+  test.is( _.routineIs( wConsequence.FinallyPass ) );
+  test.is( _.objectIs( wConsequence.prototype.KindOfResource ) );
+  test.is( _.objectIs( wConsequence.KindOfResource ) );
+  test.is( wConsequence.name === 'wConsequence' );
+  test.is( wConsequence.shortName === 'Consequence' );
+
+  /* */
+
+  test.case = 'construction';
+  var con1 = new _.Consequence({ tag : 'con1' }).take( 1 );
+  var con2 = _.Consequence({ capacity : 0 }).take( 2 );
+  var con3 = con2.clone();
+  test.identical( con1.resourcesCount(), 1 );
+  test.identical( con2.resourcesCount(), 1 );
+  test.identical( con3.resourcesCount(), 1 );
+
+  /* */
+
+  test.case = 'class test';
+  test.is( _.consequenceIs( con1 ) );
+  test.is( _.consequenceIs( con2 ) );
+  test.is( _.consequenceIs( con3 ) );
+
+  con3.take( 3 );
+  con3( 4 );
+  con3( 5 );
+
+  con3.give( ( err, arg ) => test.identical( arg, 2 ) && test.identical( err, undefined ) );
+  con3.give( ( err, arg ) => test.identical( arg, 3 ) && test.identical( err, undefined ) );
+  con3.give( ( err, arg ) => test.identical( arg, 4 ) && test.identical( err, undefined ) );
+  con3.finally( ( err, arg ) =>
+  {
+    test.identical( con3.resourcesCount(), 0 );
+    test.identical( err, undefined );
+    return null;
+  });
+
+  return con3;
+}
+
+//
+
+function fields( test )
+{
+
+  test.case = 'got';
+  var con1 = new _.Consequence({ tag : 'con1' }).take( 1 );
+  var con2 = new _.Consequence({ tag : 'con2' });
+
+  con1.give( con2 );
+
+  test.identical( con1._resources.length, 0 );
+  test.identical( con1._competitorsEarly.length, 0 );
+  // test.identical( con1._competitorsLate.length, 0 );
+  test.identical( con2._resources.length, 1 );
+  test.identical( con2._competitorsEarly.length, 0 );
+  // test.identical( con2._competitorsLate.length, 0 );
+
+  /* */
+
+  test.case = 'done';
+  var con1 = new _.Consequence({ tag : 'con1' }).take( 1 );
+  var con2 = new _.Consequence({ tag : 'con2' });
+
+  con1.give( con2 );
+
+  test.identical( con1._resources.length, 0 );
+  test.identical( con1._competitorsEarly.length, 0 );
+  // test.identical( con1._competitorsLate.length, 0 );
+  test.identical( con2._resources.length, 1 );
+  test.identical( con2._competitorsEarly.length, 0 );
+  // test.identical( con2._competitorsLate.length, 0 );
+
+  /* */
+
+  test.case = 'finally';
+  var con1 = new _.Consequence({ tag : 'con1' }).take( 1 );
+  var con2 = new _.Consequence({ tag : 'con2' });
+
+  con1.finally( con2 );
+
+  test.identical( con1._resources.length, 1 );
+  test.identical( con1._competitorsEarly.length, 0 );
+  // test.identical( con1._competitorsLate.length, 0 );
+  test.identical( con2._resources.length, 1 );
+  test.identical( con2._competitorsEarly.length, 0 );
+  // test.identical( con2._competitorsLate.length, 0 );
+
+  /* */
+
+  test.case = 'finally';
+  var con1 = new _.Consequence({ tag : 'con1' }).take( 1 );
+  var con2 = new _.Consequence({ tag : 'con2' });
+
+  con1.finally( con2 );
+
+  test.identical( con1._resources.length, 1 );
+  test.identical( con1._competitorsEarly.length, 0 );
+  // test.identical( con1._competitorsLate.length, 0 );
+  test.identical( con2._resources.length, 1 );
+  test.identical( con2._competitorsEarly.length, 0 );
+  // test.identical( con2._competitorsLate.length, 0 );
+
+  /* */
+
+  test.case = 'take';
+  var con1 = new _.Consequence({ tag : 'con1' }).take( 1 );
+  var con2 = new _.Consequence({ tag : 'con2' });
+
+  con2.take( con1 );
+
+  test.identical( con1._resources.length, 0 );
+  test.identical( con1._competitorsEarly.length, 0 );
+  test.identical( con2._resources.length, 1 );
+  test.identical( con2._competitorsEarly.length, 0 );
+
 }
 
 //
@@ -4229,6 +4233,87 @@ function keep( test )
 }
 
 //
+
+function notDeadLock1( test )
+{
+  let con1 =  new _.Consequence({ capacity : 0 });
+  let con2 =  new _.Consequence({ capacity : 0 });
+
+  if( !Config.debug )
+  return _.dont;
+
+  test.case = 'take argument later';
+  var got = [];
+  test.identical( con1._dependsOf, [] );
+  test.identical( con2._dependsOf, [] );
+  con1.then( con2 );
+
+  test.identical( con1._dependsOf, [] );
+  test.identical( con2._dependsOf, [ con1 ] );
+  con2.then( con1 );
+
+  con1.then( ( arg ) => got.push( arg+1 ) );
+  con2.then( ( arg ) => got.push( arg+2 ) );
+  con1.take( 0 );
+
+  test.identical( con1.resourcesGet(), [ { error : undefined, argument : 0 }, { error : undefined, argument : 1 } ] );
+  test.identical( con1.competitorsEarlyGet().length, 0 );
+  test.identical( con2.resourcesGet(), [ { error : undefined, argument : 2 } ] );
+  test.identical( con2.competitorsEarlyGet().length, 0 );
+  test.identical( got, [ 1, 2 ] );
+
+  /* */
+
+  test.case = 'take argument early';
+  var got = [];
+  con1.cancel();
+  con2.cancel();
+
+  test.identical( con1._dependsOf, [] );
+  test.identical( con2._dependsOf, [] );
+
+  con2.take( 0 );
+  con1.then( con2 );
+  con2.then( con1 );
+  con1.then( ( arg ) => got.push( arg+3 ) );
+  con2.then( ( arg ) => got.push( arg+4 ) );
+
+  test.identical( con1.resourcesGet(), [ { error : undefined, argument : 1 } ] );
+  test.identical( con1.competitorsEarlyGet().length, 0 );
+  test.identical( con2.resourcesGet(), [ { error : undefined, argument : 0 }, { error : undefined, argument : 2 } ] );
+  test.identical( con2.competitorsEarlyGet().length, 0 );
+  test.identical( got, [ 3, 4 ] );
+
+  /* */
+
+  test.case = 'thenGive';
+  var got = [];
+  con1.cancel();
+  con2.cancel();
+
+  test.identical( con1._dependsOf, [] );
+  test.identical( con2._dependsOf, [] );
+  con1.thenGive( con2 );
+
+  test.identical( con1._dependsOf, [] );
+  test.identical( con2._dependsOf, [ con1 ] );
+  con2.then( con1 );
+
+  con1.thenGive( ( arg ) => got.push( arg+1 ) );
+  con2.thenGive( ( arg ) => got.push( arg+2 ) );
+
+  con1.take( 0 );
+
+  test.identical( con1.resourcesGet(), [] );
+  test.identical( con1.competitorsEarlyGet().length, 0 );
+  test.identical( con2.resourcesGet(), [] );
+  test.identical( con2.competitorsEarlyGet().length, 0 );
+  test.identical( got, [ 1, 2 ] );
+}
+
+// --
+// time
+// --
 
 function timeOut( test )
 {
@@ -5747,7 +5832,6 @@ function timeLimitThrowingConsequence( test )
 {
   let context = this;
   let testMsg = 'value';
-  let amode = _.Consequence.AsyncModeGet();
   let ready = new _.Consequence().take( null )
 
   /* */
@@ -5991,84 +6075,362 @@ function timeLimitThrowingConsequence( test )
 
 timeLimitThrowingConsequence.timeOut = 30000;
 
-//
+// --
+// procedure
+// --
 
-function notDeadLock1( test )
+function procedureBasic( test )
 {
-  let con1 =  new _.Consequence({ capacity : 0 });
-  let con2 =  new _.Consequence({ capacity : 0 });
+  let pcounter = _.Procedure.Counter;
+  let counter = 0;
+  let con1 = new _.Consequence({ tag : 'con1' });
 
-  if( !Config.debug )
-  return _.dont;
-
-  test.case = 'take argument later';
-  var got = [];
-  test.identical( con1._dependsOf, [] );
-  test.identical( con2._dependsOf, [] );
-  con1.then( con2 );
-
-  test.identical( con1._dependsOf, [] );
-  test.identical( con2._dependsOf, [ con1 ] );
-  con2.then( con1 );
-
-  con1.then( ( arg ) => got.push( arg+1 ) );
-  con2.then( ( arg ) => got.push( arg+2 ) );
-  con1.take( 0 );
-
-  test.identical( con1.resourcesGet(), [ { error : undefined, argument : 0 }, { error : undefined, argument : 1 } ] );
-  test.identical( con1.competitorsEarlyGet().length, 0 );
-  test.identical( con2.resourcesGet(), [ { error : undefined, argument : 2 } ] );
-  test.identical( con2.competitorsEarlyGet().length, 0 );
-  test.identical( got, [ 1, 2 ] );
-
-  /* */
-
-  test.case = 'take argument early';
-  var got = [];
+  test.case = 'thenKeep';
+  test.identical( _.Procedure.Counter - pcounter, 0 );
+  con1.thenKeep( counterInc );
+  test.identical( _.Procedure.Counter - pcounter, 1 );
+  pcounter = _.Procedure.Counter;
+  var competitor = con1.competitorHas( counterInc );
+  test.identical( competitor.procedure._counter, 0 );
+  test.identical( competitor.procedure._name, 'counterInc' );
+  test.identical( competitor.procedure.isActivated(), false );
+  test.identical( competitor.procedure.isAlive(), true );
+  test.identical( competitor.procedure.isFinited(), false );
+  test.identical( competitor.procedure.isUsed(), false );
   con1.cancel();
-  con2.cancel();
-
-  test.identical( con1._dependsOf, [] );
-  test.identical( con2._dependsOf, [] );
-
-  con2.take( 0 );
-  con1.then( con2 );
-  con2.then( con1 );
-  con1.then( ( arg ) => got.push( arg+3 ) );
-  con2.then( ( arg ) => got.push( arg+4 ) );
-
-  test.identical( con1.resourcesGet(), [ { error : undefined, argument : 1 } ] );
-  test.identical( con1.competitorsEarlyGet().length, 0 );
-  test.identical( con2.resourcesGet(), [ { error : undefined, argument : 0 }, { error : undefined, argument : 2 } ] );
-  test.identical( con2.competitorsEarlyGet().length, 0 );
-  test.identical( got, [ 3, 4 ] );
-
-  /* */
+  test.identical( con1.competitorHas( counterInc ), false );
 
   test.case = 'thenGive';
-  var got = [];
+  test.identical( _.Procedure.Counter - pcounter, 0 );
+  con1.thenGive( counterInc );
+  test.identical( _.Procedure.Counter - pcounter, 1 );
+  pcounter = _.Procedure.Counter;
+  var competitor = con1.competitorHas( counterInc );
+  test.identical( competitor.procedure._counter, 0 );
+  test.identical( competitor.procedure._name, 'counterInc' );
+  test.identical( competitor.procedure.isActivated(), false );
+  test.identical( competitor.procedure.isAlive(), true );
+  test.identical( competitor.procedure.isFinited(), false );
+  test.identical( competitor.procedure.isUsed(), false );
   con1.cancel();
-  con2.cancel();
+  test.identical( con1.competitorHas( counterInc ), false );
 
-  test.identical( con1._dependsOf, [] );
-  test.identical( con2._dependsOf, [] );
-  con1.thenGive( con2 );
+  test.case = 'catchKeep';
+  test.identical( _.Procedure.Counter - pcounter, 0 );
+  con1.catchKeep( counterInc );
+  test.identical( _.Procedure.Counter - pcounter, 1 );
+  pcounter = _.Procedure.Counter;
+  var competitor = con1.competitorHas( counterInc );
+  test.identical( competitor.procedure._counter, 0 );
+  test.identical( competitor.procedure._name, 'counterInc' );
+  test.identical( competitor.procedure.isActivated(), false );
+  test.identical( competitor.procedure.isAlive(), true );
+  test.identical( competitor.procedure.isFinited(), false );
+  test.identical( competitor.procedure.isUsed(), false );
+  con1.cancel();
+  test.identical( con1.competitorHas( counterInc ), false );
 
-  test.identical( con1._dependsOf, [] );
-  test.identical( con2._dependsOf, [ con1 ] );
-  con2.then( con1 );
+  test.case = 'catchGive';
+  test.identical( _.Procedure.Counter - pcounter, 0 );
+  con1.catchGive( counterInc );
+  test.identical( _.Procedure.Counter - pcounter, 1 );
+  pcounter = _.Procedure.Counter;
+  var competitor = con1.competitorHas( counterInc );
+  test.identical( competitor.procedure._counter, 0 );
+  test.identical( competitor.procedure._name, 'counterInc' );
+  test.identical( competitor.procedure.isActivated(), false );
+  test.identical( competitor.procedure.isAlive(), true );
+  test.identical( competitor.procedure.isFinited(), false );
+  test.identical( competitor.procedure.isUsed(), false );
+  con1.cancel();
+  test.identical( con1.competitorHas( counterInc ), false );
 
-  con1.thenGive( ( arg ) => got.push( arg+1 ) );
-  con2.thenGive( ( arg ) => got.push( arg+2 ) );
+  test.case = 'finallyKeep';
+  test.identical( _.Procedure.Counter - pcounter, 0 );
+  con1.finallyKeep( counterInc );
+  test.identical( _.Procedure.Counter - pcounter, 1 );
+  pcounter = _.Procedure.Counter;
+  var competitor = con1.competitorHas( counterInc );
+  test.identical( competitor.procedure._counter, 0 );
+  test.identical( competitor.procedure._name, 'counterInc' );
+  test.identical( competitor.procedure.isActivated(), false );
+  test.identical( competitor.procedure.isAlive(), true );
+  test.identical( competitor.procedure.isFinited(), false );
+  test.identical( competitor.procedure.isUsed(), false );
+  con1.cancel();
+  test.identical( con1.competitorHas( counterInc ), false );
 
-  con1.take( 0 );
+  test.case = 'finallyGive';
+  test.identical( _.Procedure.Counter - pcounter, 0 );
+  con1.finallyGive( counterInc );
+  test.identical( _.Procedure.Counter - pcounter, 1 );
+  pcounter = _.Procedure.Counter;
+  var competitor = con1.competitorHas( counterInc );
+  test.identical( competitor.procedure._counter, 0 );
+  test.identical( competitor.procedure._name, 'counterInc' );
+  test.identical( competitor.procedure.isActivated(), false );
+  test.identical( competitor.procedure.isAlive(), true );
+  test.identical( competitor.procedure.isFinited(), false );
+  test.identical( competitor.procedure.isUsed(), false );
+  con1.cancel();
+  test.identical( con1.competitorHas( counterInc ), false );
 
-  test.identical( con1.resourcesGet(), [] );
-  test.identical( con1.competitorsEarlyGet().length, 0 );
-  test.identical( con2.resourcesGet(), [] );
-  test.identical( con2.competitorsEarlyGet().length, 0 );
-  test.identical( got, [ 1, 2 ] );
+  test.case = 'tap';
+  test.identical( _.Procedure.Counter - pcounter, 0 );
+  con1.tap( counterInc );
+  test.identical( _.Procedure.Counter - pcounter, 1 );
+  pcounter = _.Procedure.Counter;
+  var competitor = con1.competitorHas( counterInc );
+  test.identical( competitor.procedure._counter, 0 );
+  test.identical( competitor.procedure._name, 'counterInc' );
+  test.identical( competitor.procedure.isActivated(), false );
+  test.identical( competitor.procedure.isAlive(), true );
+  test.identical( competitor.procedure.isFinited(), false );
+  test.identical( competitor.procedure.isUsed(), false );
+  con1.cancel();
+  test.identical( con1.competitorHas( counterInc ), false );
+
+  function counterInc()
+  {
+    counter += 1;
+    return counter;
+  }
 }
+
+procedureBasic.description =
+`
+ - procedure is created for callback in method thenKeep
+`
+
+//
+
+function procedureThenKeepCallback( test )
+{
+  let pcounter = _.Procedure.Counter;
+  let counter = 0;
+  let con1 = new _.Consequence({ tag : 'con1' });
+
+  test.case = 'first';
+  test.identical( _.Procedure.Counter - pcounter, 0 );
+  con1.thenKeep( counterInc );
+  test.identical( _.Procedure.Counter - pcounter, 1 );
+  pcounter = _.Procedure.Counter;
+  var competitor = con1.competitorHas( counterInc );
+  test.identical( competitor.procedure._counter, 0 );
+  test.identical( competitor.procedure._name, 'counterInc' );
+  test.identical( competitor.procedure.isActivated(), false );
+  test.identical( competitor.procedure.isAlive(), true );
+  test.identical( competitor.procedure.isFinited(), false );
+  test.identical( competitor.procedure.isUsed(), false );
+
+  test.case = 'second';
+  test.identical( _.Procedure.Counter - pcounter, 0 );
+  con1.thenKeep( counterInc );
+  test.identical( _.Procedure.Counter - pcounter, 1 );
+  pcounter = _.Procedure.Counter;
+  var competitor = con1.competitorsGet()[ 1 ];
+  test.identical( competitor.procedure._counter, 0 );
+  test.identical( competitor.procedure._name, 'counterInc' );
+  test.identical( competitor.procedure.isActivated(), false );
+  test.identical( competitor.procedure.isAlive(), true );
+  test.identical( competitor.procedure.isFinited(), false );
+  test.identical( competitor.procedure.isUsed(), false );
+
+  con1.cancel();
+
+  function counterInc()
+  {
+    counter += 1;
+    return counter;
+  }
+}
+
+procedureThenKeepCallback.description =
+`
+ - several procedures is created for callback in method thenKeep
+`
+
+//
+
+function procedureForConsequence( test )
+{
+  let pcounter = _.Procedure.Counter;
+  let con1 = new _.Consequence({ tag : 'con1' });
+  let con2 = new _.Consequence({ tag : 'con2' });
+
+  test.identical( _.Procedure.Counter - pcounter, 0 );
+  con2.then( () => con1 );
+  test.identical( _.Procedure.Counter - pcounter, 1 );
+  pcounter = _.Procedure.Counter;
+  con2.take( null )
+  test.identical( _.Procedure.Counter - pcounter, 0 );
+  pcounter = _.Procedure.Counter;
+
+}
+
+procedureForConsequence.description =
+`
+ - no procedue is created for consequence
+`
+
+//
+
+function procedureStatesThenKeep( test )
+{
+  let pcounter = _.Procedure.Counter;
+  let counter = 0;
+  let con1 = new _.Consequence({ tag : 'con1' });
+
+  test.case = 'basic';
+  test.identical( _.Procedure.Counter - pcounter, 0 );
+  con1.thenKeep( counterInc );
+  test.identical( _.Procedure.Counter - pcounter, 1 );
+  pcounter = _.Procedure.Counter;
+  var competitor = con1.competitorHas( counterInc );
+  test.identical( competitor.procedure._counter, 0 );
+  test.identical( competitor.procedure._name, 'counterInc' );
+  test.identical( competitor.procedure.isActivated(), false );
+  test.identical( competitor.procedure.isAlive(), true );
+  test.identical( competitor.procedure.isFinited(), false );
+  test.identical( competitor.procedure.isUsed(), false );
+
+  con1.take( null );
+
+  test.identical( competitor.procedure._counter, 0 );
+  test.identical( competitor.procedure._name, 'counterInc' );
+  test.identical( competitor.procedure.isActivated(), false );
+  test.identical( competitor.procedure.isAlive(), false );
+  test.identical( competitor.procedure.isFinited(), true );
+  test.identical( competitor.procedure.isUsed(), false );
+
+  con1.cancel();
+  test.identical( counter, 1 );
+
+  function counterInc()
+  {
+    counter += 1;
+    test.identical( competitor.procedure._counter, 1 );
+    test.identical( competitor.procedure._name, 'counterInc' );
+    test.identical( competitor.procedure.isActivated(), true );
+    test.identical( competitor.procedure.isAlive(), true );
+    test.identical( competitor.procedure.isFinited(), false );
+    test.identical( competitor.procedure.isUsed(), true );
+    return counter;
+  }
+}
+
+procedureStatesThenKeep.description =
+`
+ - states of procedure changed properly during lifecycle of thenKeep
+`
+
+//
+
+function procedureStatesTap( test )
+{
+  let pcounter = _.Procedure.Counter;
+  let counter = 0;
+  let con1 = new _.Consequence({ tag : 'con1' });
+
+  test.case = 'first';
+  test.identical( _.Procedure.Counter - pcounter, 0 );
+  con1.tap( counterInc );
+  test.identical( _.Procedure.Counter - pcounter, 1 );
+  pcounter = _.Procedure.Counter;
+  var competitor = con1.competitorHas( counterInc );
+  test.identical( competitor.procedure._counter, 0 );
+  test.identical( competitor.procedure._name, 'counterInc' );
+  test.identical( competitor.procedure.isActivated(), false );
+  test.identical( competitor.procedure.isAlive(), true );
+  test.identical( competitor.procedure.isFinited(), false );
+  test.identical( competitor.procedure.isUsed(), false );
+
+  con1.take( null );
+
+  test.identical( competitor.procedure._counter, 0 );
+  test.identical( competitor.procedure._name, 'counterInc' );
+  test.identical( competitor.procedure.isActivated(), false );
+  test.identical( competitor.procedure.isAlive(), false );
+  test.identical( competitor.procedure.isFinited(), true );
+  test.identical( competitor.procedure.isUsed(), false );
+
+  con1.cancel();
+  test.identical( counter, 1 );
+
+  function counterInc()
+  {
+    counter += 1;
+    test.identical( competitor.procedure._counter, 1 );
+    test.identical( competitor.procedure._name, 'counterInc' );
+    test.identical( competitor.procedure.isActivated(), true );
+    test.identical( competitor.procedure.isAlive(), true );
+    test.identical( competitor.procedure.isFinited(), false );
+    test.identical( competitor.procedure.isUsed(), true );
+    return counter;
+  }
+}
+
+procedureStatesTap.description =
+`
+ - states of procedure changed properly during lifecycle of tap
+`
+
+//
+
+function procedureOff( test )
+{
+  let pcounter = _.Procedure.Counter;
+  let counter = 0;
+  let con1 = new _.Consequence({ tag : 'con1' });
+  test.identical( con1._procedure, null );
+  con1.procedure( false );
+  test.identical( con1._procedure, false );
+
+  test.case = 'first';
+  test.identical( con1._procedure, false );
+  test.identical( _.Procedure.Counter - pcounter, 0 );
+  con1.thenKeep( counterInc );
+  test.identical( _.Procedure.Counter - pcounter, 0 );
+  pcounter = _.Procedure.Counter;
+  var competitor = con1.competitorHas( counterInc );
+  test.identical( competitor.procedure, null );
+
+  test.case = 'second';
+  test.identical( con1._procedure, false );
+  test.identical( _.Procedure.Counter - pcounter, 0 );
+  con1.thenKeep( counterInc );
+  test.identical( _.Procedure.Counter - pcounter, 0 );
+  pcounter = _.Procedure.Counter;
+  var competitor = con1.competitorsGet()[ 1 ];
+  test.identical( competitor.procedure, null );
+
+  con1.take( null );
+  test.identical( con1.competitorHas( counterInc ), false );
+  test.identical( competitor.procedure, null );
+
+  test.case = 'third';
+  test.identical( con1._procedure, false );
+  test.identical( _.Procedure.Counter - pcounter, 0 );
+  con1.thenKeep( counterInc );
+  test.identical( _.Procedure.Counter - pcounter, 0 );
+  pcounter = _.Procedure.Counter;
+  test.identical( con1.competitorHas( counterInc ), false );
+
+  con1.cancel();
+  test.identical( counter, 3 );
+
+  function counterInc()
+  {
+    counter += 1;
+    test.identical( competitor.procedure, null );
+    return counter;
+  }
+}
+
+procedureOff.description =
+`
+ - no procedures are created if _procedure is false
+`
 
 // --
 // and
@@ -10124,6 +10486,159 @@ function orKeepingSplitCanceled( test )
 
 //
 
+function orKeepingSplitCanceledProcedure( test )
+{
+  let context = this;
+  let ready = _.async();
+
+  /* */
+
+  ready
+  .then( function( arg )
+  {
+    test.case = 'basic';
+
+    _.time.out( context.t3 / 4, () =>
+    {
+
+      test.identical( _.Procedure.Counter - pcounter, 5 );
+      pcounter = _.Procedure.Counter;
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 0 );
+      test.identical( con0.competitorsCount(), 2 );
+
+      test.identical( con00.errorsCount(), 0 );
+      test.identical( con00.argumentsCount(), 0 );
+      test.identical( con00.competitorsCount(), 0 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 1 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 0 );
+      test.identical( con2.competitorsCount(), 1 );
+
+      counter += 1;
+    })
+
+    _.time.out( context.t3, () =>
+    {
+
+      test.identical( _.Procedure.Counter - pcounter, 0 );
+      pcounter = _.Procedure.Counter;
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 1 );
+      test.identical( con0.competitorsCount(), 0 );
+
+      test.identical( con00.errorsCount(), 0 );
+      test.identical( con00.argumentsCount(), 1 );
+      test.identical( con00.competitorsCount(), 0 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 1 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 0 );
+      test.identical( con2.competitorsCount(), 0 );
+
+      counter += 1;
+    })
+
+    let pcounter = _.Procedure.Counter;
+    let counter = 0;
+    let con0 = _.time.out( context.t3 / 2 );
+    con0.tag = 'con0';
+    test.identical( _.Procedure.Counter - pcounter, 2 );
+    pcounter = _.Procedure.Counter;
+
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con2 = new _.Consequence({ tag : 'con2' });
+
+    test.identical( _.Procedure.Counter - pcounter, 0 );
+    con2.then( () => con1 );
+    test.identical( _.Procedure.Counter - pcounter, 1 );
+    pcounter = _.Procedure.Counter;
+    con2.take( null )
+    test.identical( _.Procedure.Counter - pcounter, 0 );
+    pcounter = _.Procedure.Counter;
+
+    test.identical( con0.errorsCount(), 0 );
+    test.identical( con0.argumentsCount(), 0 );
+    test.identical( con0.competitorsCount(), 1 );
+
+    test.identical( con1.errorsCount(), 0 );
+    test.identical( con1.argumentsCount(), 0 );
+    test.identical( con1.competitorsCount(), 1 );
+
+    test.identical( con2.errorsCount(), 0 );
+    test.identical( con2.argumentsCount(), 0 );
+    test.identical( con2.competitorsCount(), 0 );
+
+    let con00 = con0.orKeepingSplit([ con2 ]);
+
+    test.identical( con0.errorsCount(), 0 );
+    test.identical( con0.argumentsCount(), 0 );
+    test.identical( con0.competitorsCount(), 2 );
+
+    test.identical( con00.errorsCount(), 0 );
+    test.identical( con00.argumentsCount(), 0 );
+    test.identical( con00.competitorsCount(), 0 );
+
+    test.identical( con1.errorsCount(), 0 );
+    test.identical( con1.argumentsCount(), 0 );
+    test.identical( con1.competitorsCount(), 1 );
+
+    test.identical( con2.errorsCount(), 0 );
+    test.identical( con2.argumentsCount(), 0 );
+    test.identical( con2.competitorsCount(), 1 );
+
+    return _.time.out( context.t3*2, () =>
+    {
+
+      test.identical( _.Procedure.Counter - pcounter, 0 );
+      pcounter = _.Procedure.Counter;
+
+      test.identical( con0.errorsCount(), 0 );
+      test.identical( con0.argumentsCount(), 1 );
+      test.identical( con0.competitorsCount(), 0 );
+
+      test.identical( con00.errorsCount(), 0 );
+      test.identical( con00.argumentsCount(), 1 );
+      test.identical( con00.competitorsCount(), 0 );
+
+      test.identical( con1.errorsCount(), 0 );
+      test.identical( con1.argumentsCount(), 0 );
+      test.identical( con1.competitorsCount(), 1 );
+
+      test.identical( con2.errorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 0 );
+      test.identical( con2.competitorsCount(), 0 );
+
+      test.identical( counter, 2 );
+
+    });
+
+  });
+
+    // ready.then( () => suite.onSuiteEnd.call( suite.context, suite ) || null );
+    // ready = ready.orKeepingSplit([ timeLimitErrorCon, wTester._cancelCon ])
+
+  /* */
+
+  return ready;
+}
+
+orKeepingSplitCanceledProcedure.description =
+`
+ - consequence.then( consequence ) should produce no procedure
+`
+
+//
+
 function orKeepingCanceled( test )
 {
   let context = this;
@@ -13740,6 +14255,7 @@ let Self =
     timeAccuracy : 1,
     t1 : 100,
     t2 : 500,
+    t3 : 2500,
   },
 
   tests :
@@ -13767,11 +14283,6 @@ let Self =
     toStr,
     stringify,
 
-    // etc
-
-    trivial,
-    fields,
-
     // take
 
     ordinarResourceAsyncMode00,
@@ -13796,7 +14307,10 @@ let Self =
     finallyPromiseKeepAsyncMode01,
     finallyPromiseKeepAsyncMode11,
 
-    //
+    // etc
+
+    trivial,
+    fields,
 
     deasync,
 
@@ -13808,6 +14322,9 @@ let Self =
     ifNoErrorGotTrivial,
     ifNoErrorGotThrowing,
     keep,
+    notDeadLock1,
+
+    // time
 
     timeOut,
     timeLimitSplit,
@@ -13817,7 +14334,14 @@ let Self =
     timeLimitThrowingRoutine,
     timeLimitThrowingConsequence,
 
-    notDeadLock1,
+    // procedure
+
+    procedureBasic,
+    procedureThenKeepCallback,
+    procedureForConsequence,
+    procedureStatesThenKeep,
+    procedureStatesTap,
+    procedureOff,
 
     // and
 
@@ -13854,6 +14378,7 @@ let Self =
     orTakingWithLater,
     orTakingWithNow,
     orKeepingSplitCanceled,
+    orKeepingSplitCanceledProcedure,
     orKeepingCanceled,
 
     afterOrKeepingNotFiring,
