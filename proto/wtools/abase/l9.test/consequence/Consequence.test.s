@@ -100,11 +100,11 @@ function clone( test )
   test.is( con1._competitorsEarly !== con2._competitorsEarly );
   test.is( con1._competitorsLate !== con2._competitorsLate );
 
-  test.identical( _.Procedure.Filter( f ).length, 1 );
+  test.identical( _.Procedure.Find( f ).length, 1 );
   con2.cancel();
-  test.identical( _.Procedure.Filter( f ).length, 1 );
+  test.identical( _.Procedure.Find( f ).length, 1 );
   con1.cancel();
-  test.identical( _.Procedure.Filter( f ).length, 0 );
+  test.identical( _.Procedure.Find( f ).length, 0 );
 
 }
 
