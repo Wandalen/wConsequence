@@ -1431,6 +1431,8 @@ function timeOut_pre( routine, args )
 
 //
 
+/* rewrite method _timeOut with routine _.time.begin() instead of routine _.time.out() */
+
 function _timeOut( o )
 {
   let self = this;
