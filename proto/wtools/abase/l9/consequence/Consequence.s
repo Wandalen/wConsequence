@@ -126,7 +126,7 @@ let wConsequenceProxy = new Proxy
       if( o )
       if( o instanceof Self )
       {
-        o = _.mapOnly( o, Self.Composes );
+        o = _.mapOnly( o, Self.FieldsOfCopyableGroups );
       }
 
       if( Config.debug )
@@ -180,11 +180,11 @@ function init( o )
     }
     if( o instanceof Self )
     {
-      o = _.mapOnly( o, self.Composes );
+      o = _.mapOnly( o, self.FieldsOfCopyableGroups );
     }
     else
     {
-      _.assertMapHasOnly( o, self.Composes );
+      _.assertMapHasOnly( o, self.FieldsOfCopyableGroups );
     }
     if( o._resources )
     o._resources = o._resources.slice();
@@ -4633,8 +4633,15 @@ let Aggregates =
   _procedure : null,
 }
 
+// let Input =
+// {
+//   ... Composes,
+//   ... Aggregates,
+// }
+
 let Restricts =
 {
+  // _resources : null,
   _competitorsEarly : null,
   _competitorsLate : null,
 }
