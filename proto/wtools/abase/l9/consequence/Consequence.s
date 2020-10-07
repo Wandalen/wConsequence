@@ -4630,13 +4630,13 @@ _.mapExtend( Composes, ComposesDebug );
 
 let Aggregates =
 {
+  _procedure : null,
 }
 
 let Restricts =
 {
   _competitorsEarly : null,
   _competitorsLate : null,
-  _procedure : null,
 }
 
 let RestrictsDebug =
