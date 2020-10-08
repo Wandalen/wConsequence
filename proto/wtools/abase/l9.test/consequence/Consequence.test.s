@@ -8617,7 +8617,7 @@ function AndKeep( test )
     var con1 = new _.Consequence({ tag : 'con1' });
     var con2 = new _.Consequence({ tag : 'con2' });
 
-    let con = _.Consequence.AndKeep_( con1, con2 );
+    let con = _.Consequence.AndKeep( con1, con2 );
 
     con.finally( function( err, got )
     {
@@ -8667,7 +8667,7 @@ function AndTake( test )
     var con1 = new _.Consequence({ tag : 'con1' });
     var con2 = new _.Consequence({ tag : 'con2' });
 
-    let con = _.Consequence.AndTake_( con1, con2 );
+    let con = _.Consequence.AndTake( con1, con2 );
 
     con.finally( function( err, got )
     {

@@ -171,7 +171,7 @@ function AndKeepErrorAttend( test )
       return null
     })
 
-    _.Consequence.AndKeep_( con1, con2 )
+    _.Consequence.AndKeep( con1, con2 )
     .finally( ( err, arg ) =>
     {
       console.log( 'finally' );
@@ -229,7 +229,7 @@ function AndKeepErrorNotAttend( test )
       return null
     })
 
-    _.Consequence.AndKeep_( con1, con2 )
+    _.Consequence.AndKeep( con1, con2 )
     .finally(( err, arg ) =>
     {
       if( err )

@@ -2145,7 +2145,7 @@ defaults.waiting = false;
 
 //
 
-function AndTake_()
+function AndTake()
 {
   _.assert( !_.instanceIs( this ) )
   // _.assert( arguments.length === 1 );
@@ -2163,13 +2163,9 @@ function AndTake_()
 
 //
 
-// function AndKeep( srcs )
-function AndKeep_()
+function AndKeep()
 {
   _.assert( !_.instanceIs( this ) )
-  // _.assert( arguments.length === 1 );
-  // srcs = _.arrayFlatten( _.arrayAs( srcs ) );
-
   return _.Consequence().take( null )
   .andKeep( arguments )
   .then( ( arg ) =>
@@ -4677,9 +4673,9 @@ let Statics =
   TimeLimit,
   TimeLimitThrowing,
 
-  AndTake_,
-  AndKeep_,
-  And_ : AndKeep_,
+  AndTake,
+  AndKeep,
+  And_ : AndKeep,
 
   OrTake,
   OrKeep,
@@ -4846,9 +4842,9 @@ let Extension =
   alsoTake,
   also : alsoKeep,
 
-  AndTake_,
-  AndKeep_,
-  And_ : AndKeep_,
+  AndTake,
+  AndKeep,
+  And_ : AndKeep,
 
   // or
 
