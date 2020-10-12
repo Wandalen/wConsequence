@@ -3138,13 +3138,19 @@ function _competitorAppend( o )
       competitorRoutine._dependsOf.push( self );
     }
 
+    if( self.Diagnostics && self.Stacking )
+    {
+      competitorDescriptor.stack = _.introspector.stack([ stack, Infinity ]);
+    }
+
   }
 
   /* procedure */
 
   _.assert( _.routineIs( o.competitorRoutine ) );
 
-  if( competitorDescriptor.procedure === null && !_.consequenceIs( o.competitorRoutine ) )
+  // if( competitorDescriptor.procedure === null && !_.consequenceIs( o.competitorRoutine ) ) /* Dmytro : in previous implementation competitorRoutine can be consequence */
+  if( competitorDescriptor.procedure === null )
   {
     if( self._procedure )
     {
