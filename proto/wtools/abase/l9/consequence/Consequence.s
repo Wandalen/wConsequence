@@ -3159,7 +3159,7 @@ function _competitorAppend( o )
     }
     else
     {
-      if( self._procedure !== false )
+      if( self._procedure !== false && !_.consequenceIs( o.competitorRoutine ) )
       competitorDescriptor.procedure = new _.Procedure({ _stack : stack });
     }
   }
