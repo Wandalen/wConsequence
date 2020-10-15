@@ -5,14 +5,13 @@
 
 if( typeof module !== 'undefined' )
 {
-
   let _ = require( '../../../../wtools/Tools.s' );
-  require( '../../l9/consequence/Consequence.s' );
-  _.include( 'wTesting' );
 
+  _.include( 'wTesting' );
   _.include( 'wLogger' );
   _.include( 'wProcess' );
 
+  require( '../../l9/consequence/Namespace.s' );
 }
 
 let _ = _global_.wTools;
@@ -539,7 +538,7 @@ function tester( test )
   let a = context.assetFor( test, false );
   let toolsPath = a.path.nativize( _.module.toolsPathGet() );
   let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
-  locals.consequencePath = a.path.nativize( a.path.join( __dirname, '../../l9/consequence/Consequence.s' ) );
+  locals.consequencePath = a.path.nativize( a.path.join( __dirname, '../../l9/consequence/Namespace.s' ) );
   let programPath = a.program({ routine : program, locals });
 
   /* */
@@ -1051,7 +1050,7 @@ timeBegin.description =
 let Self =
 {
 
-  name : 'Tools.Consequence.Ext',
+  name : 'Tools.consequence.Ext',
   silencing : 1,
 
   onSuiteBegin,

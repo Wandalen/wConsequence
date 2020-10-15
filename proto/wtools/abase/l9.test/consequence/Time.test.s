@@ -17,21 +17,23 @@ if( typeof module !== 'undefined' )
 
   let _ = _global_.wTools;
 
-  try
-  {
-    require( '../tester/entry/Main.s' );
-  }
-  catch( err )
-  {
+  // try
+  // {
+  //   require( '../tester/entry/Main.s' );
+  // }
+  // catch( err )
+  // {
     _.include( 'wTesting' );
-  }
+  // }
 
-  _.include( 'wConsequence' );
-
+  // _.include( 'wConsequence' );
+  require( '../../l9/consequence/Namespace.s' );
 }
 
 let _global = _global_;
 let _ = _global_.wTools;
+
+/* qqq : split test cases by / * * / */
 
 // --
 // basic
@@ -6593,11 +6595,11 @@ function asyncStackTimeOut( test )
 let Self =
 {
 
-  name : 'Tools/Time/' + Math.floor( Math.random()*100000 ),
+  name : 'Tools/consequence/Time',
   silencing : 1,
   enabled : 1,
 
-  context :
+  context : /* qqq xxx : minimize number of time parameters. too many of such */
   {
     timeAccuracy : 1,
     dt1 : 10,
