@@ -3821,7 +3821,7 @@ function procedure( arg )
   }
   else if( _.strIs( arg ) )
   {
-    self._procedure = _.Procedure({ _name : arg, _stack : 2 });
+    self._procedure = _.Procedure({ _name : arg, _stack : 2 }); /* xxx : should be 1? */
   }
   else if( _.mapIs( arg ) )
   {
