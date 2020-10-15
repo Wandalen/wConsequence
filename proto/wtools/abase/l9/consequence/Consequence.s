@@ -3,11 +3,6 @@
 
 'use strict';
 
-/**
- * Advanced synchronization mechanism. Asynchronous routines may use Consequence to wrap postponed result, what allows classify callback for such routines as output, not input, what improves analyzability of a program. Consequence may be used to make a queue for mutually exclusive access to a resource. Algorithmically speaking Consequence is 2 queues ( FIFO ) and a customizable arbitrating algorithm. The first queue contains available resources, the second queue includes competitors for this resources. At any specific moment, one or another queue may be empty or full. Arbitrating algorithm makes resource available for a competitor as soon as possible. There are 2 kinds of resource: regular and erroneous. Unlike Promise, Consequence is much more customizable and can solve engineering problem which Promise cant. But have in mind with great power great responsibility comes. Consequence can coexist and interact with a Promise, getting fulfillment/rejection of a Promise or fulfilling it. Use Consequence to get more flexibility and improve readability of asynchronous aspect of your application.
-  @module Tools/base/Consequence
-*/
-
 /*
 
 = Concepts
@@ -39,14 +34,6 @@ Procedure ::
 2. give / keep
 
 */
-
-if( typeof module !== 'undefined' )
-{
-  let _ = require( '../../../../wtools/Tools.s' );
-  _.include( 'wProto' );
-  _.include( 'wCopyable' );
-  _.include( 'wProcedure' );
-}
 
 let _global = _global_;
 let _ = _global_.wTools;
@@ -1510,19 +1497,6 @@ defaults.kindOfResource = KindOfResource.ArgumentOnly;
 let exceptTimeOut = _.routineUnite( timeOut_head, _timeOut, 'exceptTimeOut' );
 var defaults = exceptTimeOut.defaults;
 defaults.kindOfResource = KindOfResource.ErrorOnly;
-
-//
-
-function sleep( delay )
-{
-
-  _.assert( arguments.length === 1 );
-  _.assert( _.numberIs( delay ) && delay >= 0, 'Specify valid value {-delay-}.' );
-  _.assert( _.numberIsFinite( delay ), 'Delay should have finite value.' );
-
-  let con = new _.Consequence().take( null );
-  con.timeOut( delay ).deasync();
-}
 
 //
 
@@ -4386,22 +4360,6 @@ function FinallyPass( err, arg )
   return arg;
 }
 
-//
-
-// function ThenPass( err, arg ) /*  aaa : Dmytro : commented due to task. Maybe, need to remove */
-// {
-//   _.assert( arg !== undefined, 'Expects non-undefined argument' );
-//   return arg;
-// }
-//
-// //
-//
-// function CatchPass( err, arg )
-// {
-//   _.assert( err !== undefined, 'Expects non-undefined error' );
-//   throw err;
-// }
-
 // --
 // meta
 // --
@@ -4435,198 +4393,8 @@ function _metaDefine( how, key, value )
 }
 
 // --
-// experimental
-// --
-
-// function FunctionWithin( consequence )
-// {
-//   let routine = this;
-//   let args;
-//   let context;
-//
-//   _.assert( arguments.length === 1, 'Expects single argument' );
-//   _.assert( _.consequenceIs( consequence ) );
-//
-//   consequence.finally( function( err, arg )
-//   {
-//
-//     return routine.apply( context, args );
-//
-//   });
-//
-//   return function()
-//   {
-//     context = this;
-//     args = arguments;
-//     return consequence;
-//   }
-//
-// }
-//
-// //
-//
-// function FunctionThereafter()
-// {
-//   let con = new Self();
-//   let routine = this;
-//   let args = arguments
-//
-//   con.finally( function( err, arg )
-//   {
-//
-//     return routine.apply( null, args );
-//
-//   });
-//
-//   return con;
-// }
-
-//
-
-// if( 0 )
-// {
-//   Function.prototype.within = FunctionWithin;
-//   Function.prototype.thereafter = FunctionThereafter;
-// }
-
-// //
-//
-// function experimentThereafter()
-// {
-//   debugger;
-//
-//   function f()
-//   {
-//     debugger;
-//     console.log( 'done2' );
-//   }
-//
-//   _.time.out( 5000, console.log.thereafter( 'done' ) );
-//   _.time.out( 5000, f.thereafter() );
-//
-//   debugger;
-//
-// }
-//
-// //
-//
-// function experimentWithin()
-// {
-//
-//   debugger;
-//   let con = _.time.out( 30000 );
-//   console.log.within( con ).call( console, 'done' );
-//   con.finally( function()
-//   {
-//
-//     debugger;
-//     console.log( 'done2' );
-//
-//   });
-//
-// }
-//
-// //
-//
-// function experimentCall()
-// {
-//
-//   let con = new Self();
-//   con( 123 );
-//   con.finally( function( err, arg )
-//   {
-//
-//     console.log( 'finallyGive :', arg );
-//
-//   });
-//
-//   debugger;
-//
-// }
-
-//
-
-function Now()
-{
-  _.assert( arguments.length === 0, 'Expects no arguments' );
-  return new _.Consequence().take( null );
-}
-
-//
-
-function After( resource )
-{
-  _.assert( arguments.length === 0 || arguments.length === 1 );
-  _.assert( arguments.length === 0 || resource !== undefined );
-
-  if( resource !== undefined )
-  return _.Consequence.From( resource );
-  else
-  return new _.Consequence().take( null );
-
-}
-
-// //
-//
-// function Before( consequence )
-// {
-//   _.assert( arguments.length === 1 );
-//   _.assert( arguments.length === 0 || consequence !== undefined );
-//   _.assert( 0, 'not tested' );
-//
-//   let result;
-//   if( _.consequenceLike( consequence ) )
-//   {
-//     consequence = _.Consequence.From( consequence );
-//   }
-//
-//   let result = _.Consequence();
-//   result.lateFinally( consequence );
-//
-//   return result;
-// }
-
-/**
- * @typedef {Object} Fields
- * @property {Array} [_competitorsEarly=[]] Queue of competitor that are penging for resource.
- * @property {Array} [_resources=[]] Queue of messages that are penging for competitor.
- * @property {wProcedure} [_procedure=null] Instance of wProcedure.
- * @property {String} tag
- * @property {Number} id Id of current instance
- * @property {Array} [_dependsOf=[]]
- * @property {Number} [capacity=0] Maximal number of resources. Unlimited by default.
- * @class wConsequence
- * @namespace Tools
- * @module Tools/base/Consequence
-*/
-
-// --
-// meta
-// --
-
-function _Extend( dstGlobal, srcGlobal )
-{
-  _.assert( _.routineIs( srcGlobal.wConsequence.After ) );
-  _.assert( _.mapIs( srcGlobal.wConsequence.Tools ) );
-  _.mapExtend( dstGlobal.wTools, srcGlobal.wConsequence.Tools );
-  let Self = srcGlobal.wConsequence;
-  dstGlobal.wTools[ Self.shortName ] = Self;
-  if( typeof module !== 'undefined' )
-  module[ 'exports' ] = Self;
-  return;
-}
-
-// --
 // relations
 // --
-
-let Tools =
-{
-  now : Now,
-  async : Now,
-  after : After,
-  // before : Before,
-}
 
 let Composes =
 {
@@ -4676,9 +4444,9 @@ let Medials =
 let Statics =
 {
 
-  Now,
-  Async : Now,
-  After,
+  Now : _.now,
+  Async : _.now,
+  After : _.after,
   From, /* qqq : cover please */
   FromCalling,
   Take,
@@ -4704,10 +4472,10 @@ let Statics =
   AsyncModeSet,
   AsyncModeGet,
 
-  Tools,
+  // ToolsExtension,
   KindOfResource,
 
-  _Extend,
+  // _Extend,
 
   //
 
@@ -4985,17 +4753,6 @@ _.Copyable.mixin( wConsequence ); /* zzz : remove the mixin, maybe */
 
 _metaDefine( 'field', Symbol.toPrimitive, _toPrimitive );
 _metaDefine( 'field', Symbol.for( 'nodejs.util.inspect.custom' ), _inspectCustom );
-
-_.mapExtend( _, Tools );
-_.mapExtend( _realGlobal_.wTools, Tools );
-
-
-let TimeExtension =
-{
-  sleep,
-};
-
-Object.assign( _.time, TimeExtension );
 
 //
 

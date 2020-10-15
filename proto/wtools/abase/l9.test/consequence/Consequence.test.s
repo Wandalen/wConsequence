@@ -6,12 +6,12 @@
 if( typeof module !== 'undefined' )
 {
   let _ = require( '../../../../wtools/Tools.s' );
-  require( '../../l9/consequence/Consequence.s' );
 
   _.include( 'wTesting' );
   _.include( 'wLogger' );
   _.include( 'wProcess' );
 
+  require( '../../l9/consequence/Namespace.s' );
 }
 
 let _global = _global_;
@@ -14322,7 +14322,7 @@ function thenSequenceAsync( test )
 let Self =
 {
 
-  name : 'Tools.Consequence',
+  name : 'Tools.consequence.Basic',
   silencing : 1,
   routineTimeOut : 30000,
 

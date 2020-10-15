@@ -3,14 +3,14 @@ root:
   - wConsequence.out
 consistency:
   wConsequence.out.will.yml: &ref_0
-    hash: ce5cd199818e4dcf5a35356cccb3c745
-    size: 41807
+    hash: 7af8872f20f0163f213455483c2f9b14
+    size: 41856
   ../.ex.will.yml: &ref_1
     hash: 149f0f8e82fc988b3f20d5f3fad38abd
     size: 2937
   ../.im.will.yml: &ref_2
-    hash: bc24290e95cd3e51858aece845fd4c14
-    size: 5378
+    hash: 8ae6a0f017fc05d514d5ad21bf44cb3b
+    size: 5374
 module:
   wConsequence.out:
     about:
@@ -137,7 +137,7 @@ module:
       entry.proto.no.tests:
         criterion:
           tests: no.tests
-        path: ../proto/wtools/abase/l9/consequence/Consequence.s
+        path: ../proto/wtools/abase/l9/consequence/Namespace.s
       entry.proto.only.tests:
         criterion:
           tests: only.tests
@@ -147,13 +147,13 @@ module:
           debug: debug
           raw: raw
           content: prime
-        path: '{path::out.*=1}/source/wtools/abase/l9/consequence/Consequence.s'
+        path: '{path::out.*=1}/source/wtools/abase/l9/consequence/Namespace.s'
       entry.out.raw.debug.release:
         criterion:
           debug: release
           raw: raw
           content: prime
-        path: '{path::out.*=1}/source/wtools/abase/l9/consequence/Consequence.s'
+        path: '{path::out.*=1}/source/wtools/abase/l9/consequence/Namespace.s'
       entry.out.compiled.debug.debug:
         criterion:
           debug: debug
@@ -186,6 +186,7 @@ module:
           - ../proto/wtools/abase/l9
           - ../proto/wtools/abase/l9/consequence
           - ../proto/wtools/abase/l9/consequence/Consequence.s
+          - ../proto/wtools/abase/l9/consequence/Namespace.s
           - ../proto/wtools/abase/l9.test
           - ../proto/wtools/abase/l9.test/consequence
           - ../proto/wtools/abase/l9.test/consequence/Consequence.test.s
@@ -975,7 +976,7 @@ module:
       entry.proto.no.tests:
         criterion:
           tests: no.tests
-        path: proto/wtools/abase/l9/consequence/Consequence.s
+        path: proto/wtools/abase/l9/consequence/Namespace.s
       entry.proto.only.tests:
         criterion:
           tests: only.tests
@@ -985,13 +986,13 @@ module:
           debug: debug
           raw: raw
           content: prime
-        path: '{path::out.*=1}/source/wtools/abase/l9/consequence/Consequence.s'
+        path: '{path::out.*=1}/source/wtools/abase/l9/consequence/Namespace.s'
       entry.out.raw.debug.release:
         criterion:
           debug: release
           raw: raw
           content: prime
-        path: '{path::out.*=1}/source/wtools/abase/l9/consequence/Consequence.s'
+        path: '{path::out.*=1}/source/wtools/abase/l9/consequence/Namespace.s'
       entry.out.compiled.debug.debug:
         criterion:
           debug: debug
@@ -1580,6 +1581,8 @@ module:
         hash: 149f0f8e82fc988b3f20d5f3fad38abd
         size: 2937
       ../.im.will.yml:
-        hash: bc24290e95cd3e51858aece845fd4c14
-        size: 5378
-      wConsequence.out.will.yml: *ref_0
+        hash: 8ae6a0f017fc05d514d5ad21bf44cb3b
+        size: 5374
+      wConsequence.out.will.yml:
+        hash: 7af8872f20f0163f213455483c2f9b14
+        size: 41856
