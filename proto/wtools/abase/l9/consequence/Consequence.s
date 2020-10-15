@@ -1431,7 +1431,7 @@ function timeOut_pre( routine, args )
 
 //
 
-/* rewrite method _timeOut with routine _.time.begin() instead of routine _.time.out() */
+/* qqq : rewrite method _timeOut with routine _.time.begin() instead of routine _.time.out() */
 
 function _timeOut( o )
 {
@@ -1603,7 +1603,7 @@ function _timeLimit( o )
     if( !_.consequenceIs( callback ) )
     {
       callback = _.Consequence.Try( () => callback() )
-      callback.procedure( () => procedure.clone() );
+      // callback.procedure( () => procedure.clone() ); /* yyy */
       callback.finally( callbackConsequence );
     }
 
@@ -3112,9 +3112,8 @@ function _competitorAppend( o )
   }
 
   let stack = o.stack;
-  let competitorDescriptor = o;
-  delete competitorDescriptor.times;
-  delete competitorDescriptor.stack;
+  delete o.times;
+  delete o.stack;
 
   /* */
 
@@ -3149,33 +3148,55 @@ function _competitorAppend( o )
 
   _.assert( _.routineIs( o.competitorRoutine ) );
 
+<<<<<<< HEAD
   // if( competitorDescriptor.procedure === null && !_.consequenceIs( o.competitorRoutine ) ) /* Dmytro : in previous implementation competitorRoutine can be consequence */
   if( competitorDescriptor.procedure === null )
+=======
+  if( o.procedure === null && !_.consequenceIs( o.competitorRoutine ) )
+>>>>>>> 8755a3711ad87827f3008be047a2211598b7eea5
   {
     if( self._procedure )
     {
-      competitorDescriptor.procedure = self._procedure;
+      o.procedure = self._procedure;
       self._procedure = null
     }
     else
     {
+<<<<<<< HEAD
       if( self._procedure !== false && !_.consequenceIs( o.competitorRoutine ) )
       competitorDescriptor.procedure = new _.Procedure({ _stack : stack });
+=======
+      if( self._procedure !== false )
+      o.procedure = new _.Procedure({ _stack : stack });
+>>>>>>> 8755a3711ad87827f3008be047a2211598b7eea5
     }
   }
-
-  if( competitorDescriptor.procedure )
+  else
   {
-    if( !competitorDescriptor.procedure.name() )
-    competitorDescriptor.procedure.name( o.competitorRoutine.name || '' );
+    _.assert
+    (
+      self._procedure === null,
+      'Procedure should not be allocated for consequence in role of callback'
+    );
+    _.assert
+    (
+      !_.consequenceIs( o.competitorRoutine ) || o.procedure === null,
+      'Procedure should not be allocated for consequence in role of callback ( passed to _competitorAppend )'
+    );
+  }
 
-    _.assert( competitorDescriptor.procedure._routine === null || competitorDescriptor.procedure._routine === o.competitorRoutine );
+  if( o.procedure )
+  {
+    if( !o.procedure.name() )
+    o.procedure.name( o.competitorRoutine.name || '' );
 
-    if( !competitorDescriptor.procedure._routine )
-    competitorDescriptor.procedure._routine = o.competitorRoutine;
-    if( !competitorDescriptor.procedure._object )
-    competitorDescriptor.procedure._object = competitorDescriptor;
-    competitorDescriptor.procedure.begin();
+    _.assert( o.procedure._routine === null || o.procedure._routine === o.competitorRoutine );
+
+    if( !o.procedure._routine )
+    o.procedure._routine = o.competitorRoutine;
+    if( !o.procedure._object )
+    o.procedure._object = o;
+    o.procedure.begin();
   }
 
   /* */
@@ -3186,11 +3207,11 @@ function _competitorAppend( o )
   // zzz : implement con1.then( con )
 
   if( o.late )
-  self._competitorsLate.unshift( competitorDescriptor );
+  self._competitorsLate.unshift( o );
   else
-  self._competitorsEarly.push( competitorDescriptor );
+  self._competitorsEarly.push( o );
 
-  return competitorDescriptor;
+  return o;
 }
 
 _competitorAppend.defaults =
@@ -4822,7 +4843,7 @@ let Extension =
 
   // time
 
-  _timeOut,
+  _timeOut, /* xxx : rename */
   finallyTimeOut,
   thenTimeOut,
   exceptTimeOut,
