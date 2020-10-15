@@ -3148,12 +3148,7 @@ function _competitorAppend( o )
 
   _.assert( _.routineIs( o.competitorRoutine ) );
 
-<<<<<<< HEAD
-  // if( competitorDescriptor.procedure === null && !_.consequenceIs( o.competitorRoutine ) ) /* Dmytro : in previous implementation competitorRoutine can be consequence */
-  if( competitorDescriptor.procedure === null )
-=======
   if( o.procedure === null && !_.consequenceIs( o.competitorRoutine ) )
->>>>>>> 8755a3711ad87827f3008be047a2211598b7eea5
   {
     if( self._procedure )
     {
@@ -3162,13 +3157,8 @@ function _competitorAppend( o )
     }
     else
     {
-<<<<<<< HEAD
-      if( self._procedure !== false && !_.consequenceIs( o.competitorRoutine ) )
-      competitorDescriptor.procedure = new _.Procedure({ _stack : stack });
-=======
       if( self._procedure !== false )
       o.procedure = new _.Procedure({ _stack : stack });
->>>>>>> 8755a3711ad87827f3008be047a2211598b7eea5
     }
   }
   else
