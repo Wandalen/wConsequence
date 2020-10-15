@@ -1331,7 +1331,7 @@ _put.defaults =
 
 //
 
-function put_pre( routine, args )
+function put_head( routine, args )
 {
   let self = this;
   let o = Object.create( null );
@@ -1353,22 +1353,22 @@ function put_pre( routine, args )
 
 //
 
-let putGive = _.routineFromPreAndBody( put_pre, _put, 'putGive' );
+let putGive = _.routineUnite( put_head, _put, 'putGive' );
 var defaults = putGive.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 defaults.keeping = false;
 
-let putKeep = _.routineFromPreAndBody( put_pre, _put, 'putKeep' );
+let putKeep = _.routineUnite( put_head, _put, 'putKeep' );
 var defaults = putKeep.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 defaults.keeping = true;
 
-let thenPutGive = _.routineFromPreAndBody( put_pre, _put, 'thenPutGive' );
+let thenPutGive = _.routineUnite( put_head, _put, 'thenPutGive' );
 var defaults = thenPutGive.defaults;
 defaults.kindOfResource = KindOfResource.ArgumentOnly;
 defaults.keeping = false;
 
-let thenPutKeep = _.routineFromPreAndBody( put_pre, _put, 'thenPutKeep' );
+let thenPutKeep = _.routineUnite( put_head, _put, 'thenPutKeep' );
 var defaults = thenPutKeep.defaults;
 defaults.kindOfResource = KindOfResource.ArgumentOnly;
 defaults.keeping = true;
@@ -1418,7 +1418,7 @@ defaults.keeping = true;
 
 //
 
-function timeOut_pre( routine, args )
+function timeOut_head( routine, args )
 {
   // let o = { time : args[ 0 ], callback : args[ 1 ] };
   let o = { time : args[ 0 ] };
@@ -1499,15 +1499,15 @@ _timeOut.having =
   consequizing : 1,
 }
 
-let finallyTimeOut = _.routineFromPreAndBody( timeOut_pre, _timeOut, 'finallyTimeOut' );
+let finallyTimeOut = _.routineUnite( timeOut_head, _timeOut, 'finallyTimeOut' );
 var defaults = finallyTimeOut.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 
-let thenTimeOut = _.routineFromPreAndBody( timeOut_pre, _timeOut, 'thenTimeOut' );
+let thenTimeOut = _.routineUnite( timeOut_head, _timeOut, 'thenTimeOut' );
 var defaults = thenTimeOut.defaults;
 defaults.kindOfResource = KindOfResource.ArgumentOnly;
 
-let exceptTimeOut = _.routineFromPreAndBody( timeOut_pre, _timeOut, 'exceptTimeOut' );
+let exceptTimeOut = _.routineUnite( timeOut_head, _timeOut, 'exceptTimeOut' );
 var defaults = exceptTimeOut.defaults;
 defaults.kindOfResource = KindOfResource.ErrorOnly;
 
@@ -1526,7 +1526,7 @@ function sleep( delay )
 
 //
 
-function timeLimit_pre( routine, args )
+function timeLimit_head( routine, args )
 {
   let o = { time : args[ 0 ], callback : args[ 1 ] };
   if( o.callback === undefined )
@@ -1635,12 +1635,12 @@ _timeLimit.having =
   consequizing : 1,
 }
 
-let timeLimit = _.routineFromPreAndBody( timeLimit_pre, _timeLimit, 'timeLimit' );
+let timeLimit = _.routineUnite( timeLimit_head, _timeLimit, 'timeLimit' );
 var defaults = timeLimit.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 defaults.throwing = 0;
 
-let timeLimitThrowing = _.routineFromPreAndBody( timeLimit_pre, _timeLimit, 'timeLimitThrowing' );
+let timeLimitThrowing = _.routineUnite( timeLimit_head, _timeLimit, 'timeLimitThrowing' );
 var defaults = timeLimitThrowing.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 defaults.throwing = 1;
@@ -1711,7 +1711,7 @@ function TimeLimitThrowing( timeLimit, consequence )
 // and
 // --
 
-function and_pre( routine, args )
+function and_head( routine, args )
 {
   let o = args[ 0 ];
 
@@ -2070,7 +2070,7 @@ having.andLike = 1;
  * @class wConsequence
  */
 
-let andTake = _.routineFromPreAndBody( and_pre, _and, 'andTake' );
+let andTake = _.routineUnite( and_head, _and, 'andTake' );
 var defaults = andTake.defaults;
 defaults.keeping = false;
 
@@ -2087,13 +2087,13 @@ defaults.keeping = false;
  * @class wConsequence
  */
 
-let andKeep = _.routineFromPreAndBody( and_pre, _and, 'andKeep' );
+let andKeep = _.routineUnite( and_head, _and, 'andKeep' );
 var defaults = andKeep.defaults;
 defaults.keeping = true;
 
 /* qqq : jsdoc, please */
 
-let andKeepAccumulative = _.routineFromPreAndBody( and_pre, _and, 'andKeepAccumulative' );
+let andKeepAccumulative = _.routineUnite( and_head, _and, 'andKeepAccumulative' );
 var defaults = andKeepAccumulative.defaults;
 defaults.keeping = true;
 defaults.accumulative = true;
@@ -2114,7 +2114,7 @@ defaults.accumulative = true;
  * @class wConsequence
  */
 
-let alsoKeep = _.routineFromPreAndBody( and_pre, _and, 'alsoKeep' );
+let alsoKeep = _.routineUnite( and_head, _and, 'alsoKeep' );
 var defaults = alsoKeep.defaults;
 defaults.keeping = true;
 defaults.accumulative = true;
@@ -2136,7 +2136,7 @@ defaults.waiting = false;
  * @class wConsequence
  */
 
-let alsoTake = _.routineFromPreAndBody( and_pre, _and, 'alsoTake' );
+let alsoTake = _.routineUnite( and_head, _and, 'alsoTake' );
 var defaults = alsoTake.defaults;
 defaults.keeping = false;
 defaults.accumulative = true;
