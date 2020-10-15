@@ -11,7 +11,7 @@
     { "name" : "Volodymyr M.", "email" : "volodymyr.migdal@gmail.com" },
     { "name" : "Ihor O.", "email" : "iostashvxi@gmail.com" }
   ],
-  "main" : "proto/wtools/abase/l9/consequence/Consequence.s",
+  "main" : "proto/wtools/abase/l9/consequence/Namespace.s",
   "files" : [ "proto/wtools/abase/l9", "proto/wtools/Tools.s", "out" ],
   "scripts" : { "test" : "wtest .run 'proto/**' rapidity:-1", "docgen" : "wdocgen proto" },
   "repository" :
