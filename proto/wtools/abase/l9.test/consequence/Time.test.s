@@ -1961,9 +1961,10 @@ function begin( test )
   ready.then( () =>
   {
     test.case = 'wrong type of onCancel';
-    return _testerGlobal_.wTools.time.out( 0, () => _.time.begin( 0, () => 1, [] ) )
+    return _testerGlobal_.wTools.time.out( 0, () => _.time.begin( 0, () => 1, [] ) ) /* xxx : use normal global namespace? */
     .finally( ( err, arg ) =>
     {
+      debugger;
       if( arg )
       {
         test.is( false );
