@@ -10574,7 +10574,7 @@ function orKeepingSplitCanceledProcedure( test )
     _.time.out( context.t3 / 4, () =>
     {
 
-      test.identical( _.Procedure.Counter - pcounter, 5 );
+      test.identical( _.Procedure.Counter - pcounter, 2 );
       pcounter = _.Procedure.Counter;
 
       test.identical( con0.errorsCount(), 0 );
@@ -10668,6 +10668,9 @@ function orKeepingSplitCanceledProcedure( test )
     test.identical( con2.errorsCount(), 0 );
     test.identical( con2.argumentsCount(), 0 );
     test.identical( con2.competitorsCount(), 1 );
+
+    test.identical( _.Procedure.Counter - pcounter, 3 );
+    pcounter = _.Procedure.Counter;
 
     return _.time.out( context.t3*2, () =>
     {
