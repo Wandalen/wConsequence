@@ -186,6 +186,7 @@ module:
           - ../proto/wtools/abase/l9
           - ../proto/wtools/abase/l9/consequence
           - ../proto/wtools/abase/l9/consequence/Consequence.s
+          - ../proto/wtools/abase/l9/consequence/Namespace.s
           - ../proto/wtools/abase/l9.test
           - ../proto/wtools/abase/l9.test/consequence
           - ../proto/wtools/abase/l9.test/consequence/Consequence.test.s
