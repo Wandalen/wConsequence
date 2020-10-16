@@ -1340,22 +1340,22 @@ function put_head( routine, args )
 
 //
 
-let putGive = _.routineUnite( put_head, _put, 'putGive' );
+let putGive = _.routineUnite({ head : put_head, body : _put, name : 'putGive' });
 var defaults = putGive.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 defaults.keeping = false;
 
-let putKeep = _.routineUnite( put_head, _put, 'putKeep' );
+let putKeep = _.routineUnite({ head : put_head, body : _put, name : 'putKeep' });
 var defaults = putKeep.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 defaults.keeping = true;
 
-let thenPutGive = _.routineUnite( put_head, _put, 'thenPutGive' );
+let thenPutGive = _.routineUnite({ head : put_head, body : _put, name : 'thenPutGive' });
 var defaults = thenPutGive.defaults;
 defaults.kindOfResource = KindOfResource.ArgumentOnly;
 defaults.keeping = false;
 
-let thenPutKeep = _.routineUnite( put_head, _put, 'thenPutKeep' );
+let thenPutKeep = _.routineUnite({ head : put_head, body : _put, name : 'thenPutKeep' });
 var defaults = thenPutKeep.defaults;
 defaults.kindOfResource = KindOfResource.ArgumentOnly;
 defaults.keeping = true;
@@ -1486,15 +1486,15 @@ _timeOut.having =
   consequizing : 1,
 }
 
-let finallyTimeOut = _.routineUnite( timeOut_head, _timeOut, 'finallyTimeOut' );
+let finallyTimeOut = _.routineUnite({ head : timeOut_head, body : _timeOut, name : 'finallyTimeOut' });
 var defaults = finallyTimeOut.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 
-let thenTimeOut = _.routineUnite( timeOut_head, _timeOut, 'thenTimeOut' );
+let thenTimeOut = _.routineUnite({ head : timeOut_head, body : _timeOut, name : 'thenTimeOut' });
 var defaults = thenTimeOut.defaults;
 defaults.kindOfResource = KindOfResource.ArgumentOnly;
 
-let exceptTimeOut = _.routineUnite( timeOut_head, _timeOut, 'exceptTimeOut' );
+let exceptTimeOut = _.routineUnite({ head : timeOut_head, body : _timeOut, name : 'exceptTimeOut' });
 var defaults = exceptTimeOut.defaults;
 defaults.kindOfResource = KindOfResource.ErrorOnly;
 
@@ -1609,12 +1609,12 @@ _timeLimit.having =
   consequizing : 1,
 }
 
-let timeLimit = _.routineUnite( timeLimit_head, _timeLimit, 'timeLimit' );
+let timeLimit = _.routineUnite({ head : timeLimit_head, body : _timeLimit, name : 'timeLimit' });
 var defaults = timeLimit.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 defaults.throwing = 0;
 
-let timeLimitThrowing = _.routineUnite( timeLimit_head, _timeLimit, 'timeLimitThrowing' );
+let timeLimitThrowing = _.routineUnite({ head : timeLimit_head, body : _timeLimit, name : 'timeLimitThrowing' });
 var defaults = timeLimitThrowing.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 defaults.throwing = 1;
@@ -2044,7 +2044,7 @@ having.andLike = 1;
  * @class wConsequence
  */
 
-let andTake = _.routineUnite( and_head, _and, 'andTake' );
+let andTake = _.routineUnite({ head : and_head, body : _and, name : 'andTake' });
 var defaults = andTake.defaults;
 defaults.keeping = false;
 
@@ -2061,13 +2061,13 @@ defaults.keeping = false;
  * @class wConsequence
  */
 
-let andKeep = _.routineUnite( and_head, _and, 'andKeep' );
+let andKeep = _.routineUnite({ head : and_head, body : _and, name : 'andKeep' });
 var defaults = andKeep.defaults;
 defaults.keeping = true;
 
 /* qqq : jsdoc, please */
 
-let andKeepAccumulative = _.routineUnite( and_head, _and, 'andKeepAccumulative' );
+let andKeepAccumulative = _.routineUnite({ head : and_head, body : _and, name : 'andKeepAccumulative' });
 var defaults = andKeepAccumulative.defaults;
 defaults.keeping = true;
 defaults.accumulative = true;
@@ -2088,7 +2088,7 @@ defaults.accumulative = true;
  * @class wConsequence
  */
 
-let alsoKeep = _.routineUnite( and_head, _and, 'alsoKeep' );
+let alsoKeep = _.routineUnite({ head : and_head, body : _and, name : 'alsoKeep' });
 var defaults = alsoKeep.defaults;
 defaults.keeping = true;
 defaults.accumulative = true;
@@ -2110,7 +2110,7 @@ defaults.waiting = false;
  * @class wConsequence
  */
 
-let alsoTake = _.routineUnite( and_head, _and, 'alsoTake' );
+let alsoTake = _.routineUnite({ head : and_head, body : _and, name : 'alsoTake' });
 var defaults = alsoTake.defaults;
 defaults.keeping = false;
 defaults.accumulative = true;
