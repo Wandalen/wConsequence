@@ -33,7 +33,7 @@ function sleep( delay )
   _.assert( _.numberIsFinite( delay ), 'Delay should have finite value.' );
 
   let con = new _.Consequence().take( null );
-  con.timeOut( delay ).deasync();
+  con.delay( delay ).deasync();
 }
 
 //
@@ -313,7 +313,7 @@ function outError_body( o )
   o.procedure = _.procedure.from( o.procedure ).nameElse( 'time.outError' );
 
   let con = _.time.out.body.call( _, o );
-  if( Config.debug )
+  if( Config.debug && con.tag === '' )
   con.tag = 'TimeOutError';
 
   con.finally( function outError( err, arg )
