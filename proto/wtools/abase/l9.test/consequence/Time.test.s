@@ -1005,7 +1005,7 @@ function timeOutMode10( test )
       test.identical( t.competitorsEarlyGet().length, 1 );
       return null;
     })
-    .timeOut( 1 )
+    .delay( 1 )
     .then( function()
     {
       test.identical( t.resourcesGet().length, 0 );
@@ -1035,7 +1035,7 @@ function timeOutMode10( test )
       test.identical( t.competitorsEarlyGet().length, 1 );
       return null;
     })
-    .timeOut( 1 )
+    .delay( 1 )
     .then( function()
     {
       test.identical( t.resourcesGet().length, 0 );
@@ -1066,7 +1066,7 @@ function timeOutMode10( test )
       test.identical( t.competitorsEarlyGet().length, 1 );
       return null;
     })
-    .timeOut( 1 )
+    .delay( 1 )
     .then( function()
     {
       test.identical( t.resourcesGet().length, 0 );
@@ -1096,7 +1096,7 @@ function timeOutMode10( test )
       test.identical( t.competitorsEarlyGet().length, 1 );
       return null;
     })
-    .timeOut( 1 )
+    .delay( 1 )
     .then( function()
     {
       test.identical( t.resourcesGet().length, 0 );
@@ -1126,7 +1126,7 @@ function timeOutMode10( test )
       test.identical( t.competitorsEarlyGet().length, 1 );
       return null;
     })
-    .timeOut( 1 )
+    .delay( 1 )
     .then( function()
     {
       test.identical( t.resourcesGet().length, 0 );
@@ -1160,7 +1160,7 @@ function timeOutMode10( test )
       test.identical( t.competitorsEarlyGet().length, 1 );
       return null;
     })
-    .timeOut( 1 )
+    .delay( 1 )
     .then( function()
     {
       test.identical( t.resourcesGet().length, 0 );
@@ -1272,7 +1272,7 @@ function timeOutMode10( test )
       test.identical( t.competitorsEarlyGet().length, 1 );
       return null;
     })
-    .timeOut( 1 )
+    .delay( 1 )
     .then( function()
     {
       test.identical( t.resourcesGet().length, 0 );
@@ -1293,7 +1293,7 @@ function timeOutMode10( test )
       test.identical( t.competitorsEarlyGet().length, 1 );
       return null;
     })
-    .timeOut( 1 )
+    .delay( 1 )
     .then( function()
     {
       test.identical( t.resourcesGet().length, 0 );
@@ -1346,7 +1346,7 @@ function timeOutMode11( test )
       test.identical( t.competitorsEarlyGet().length, 1 );
       return null;
     })
-    .timeOut( 1 )
+    .delay( 1 )
     .then( function()
     {
       test.identical( t.resourcesGet().length, 0 );
@@ -1376,7 +1376,7 @@ function timeOutMode11( test )
       test.identical( t.competitorsEarlyGet().length, 1 );
       return null;
     })
-    .timeOut( 1 )
+    .delay( 1 )
     .then( function()
     {
       test.identical( t.resourcesGet().length, 0 );
@@ -1407,7 +1407,7 @@ function timeOutMode11( test )
       test.identical( t.competitorsEarlyGet().length, 1 );
       return null;
     })
-    .timeOut( 1 )
+    .delay( 1 )
     .then( function()
     {
       test.identical( t.resourcesGet().length, 0 );
@@ -1437,7 +1437,7 @@ function timeOutMode11( test )
       test.identical( t.competitorsEarlyGet().length, 1 );
       return null;
     })
-    .timeOut( 1 )
+    .delay( 1 )
     .then( function()
     {
       test.identical( t.resourcesGet().length, 0 );
@@ -1467,7 +1467,7 @@ function timeOutMode11( test )
       test.identical( t.competitorsEarlyGet().length, 1 );
       return null;
     })
-    .timeOut( 1 )
+    .delay( 1 )
     .then( function()
     {
       test.identical( t.resourcesGet().length, 0 );
@@ -1501,7 +1501,7 @@ function timeOutMode11( test )
       test.identical( t.competitorsEarlyGet().length, 1 );
       return null;
     })
-    .timeOut( 1 )
+    .delay( 1 )
     .then( function()
     {
       test.identical( t.resourcesGet().length, 0 );
@@ -1541,7 +1541,7 @@ function timeOutMode11( test )
       test.identical( t.competitorsEarlyGet().length, 1 );
       return null;
     })
-    .timeOut( 1 )
+    .delay( 1 )
     .then( function()
     {
       test.identical( t.resourcesGet().length, 0 );
@@ -1583,7 +1583,7 @@ function timeOutMode11( test )
       test.identical( t.competitorsEarlyGet().length, 1 );
       return null;
     })
-    .timeOut( 1 )
+    .delay( 1 )
     .then( function()
     {
       test.identical( t.resourcesGet().length, 0 );
@@ -1615,7 +1615,7 @@ function timeOutMode11( test )
       test.identical( t.competitorsEarlyGet().length, 1 );
       return null;
     })
-    .timeOut( 1 )
+    .delay( 1 )
     .then( function()
     {
       test.identical( t.resourcesGet().length, 0 );
@@ -1636,7 +1636,7 @@ function timeOutMode11( test )
       test.identical( t.competitorsEarlyGet().length, 1 );
       return null;
     })
-    .timeOut( 1 )
+    .delay( 1 )
     .then( function()
     {
       test.identical( t.resourcesGet().length, 0 );
