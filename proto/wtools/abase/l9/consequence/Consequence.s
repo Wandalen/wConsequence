@@ -3285,6 +3285,11 @@ function _competitorAppend( o )
       competitorRoutine._dependsOf.push( self );
     }
 
+    // if( self.Diagnostics && self.Stacking )
+    // {
+    //   competitorDescriptor.stack = _.introspector.stack([ stack, Infinity ]);
+    // }
+
   }
 
   /* procedure */
