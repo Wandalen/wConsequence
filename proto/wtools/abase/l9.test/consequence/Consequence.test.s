@@ -15457,9 +15457,9 @@ let Self =
     alsoKeepThrowingBeforeAsync,
     alsoKeepThrowingAfterAsync,
     _and,
-    AndKeep, /* qqq2 : implement very similar test for routine andKeep */
-    AndTake, /* qqq2 : implement very similar test for routine andTake */
-    AndImmediate, /* qqq2 : implement very similar test for routine andImmediate */
+    AndKeep, /* qqq2 : implement very similar test for routine andKeep, alsoKeep */
+    AndTake, /* qqq2 : implement very similar test for routine andTake, alsoTake */
+    AndImmediate, /* qqq2 : implement very similar test for routine andImmediate, alsoImmediate */
     And,
 
     // or
