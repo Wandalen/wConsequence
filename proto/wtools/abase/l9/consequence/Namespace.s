@@ -316,7 +316,14 @@ function outError_body( o )
   if( Config.debug && con.tag === '' )
   con.tag = 'TimeOutError';
 
-  con.finally( function outError( err, arg )
+  _.assert( con._procedure === null );
+  con.procedure( o.procedure.clone() );
+  con.finally( outError );
+  _.assert( con._procedure === null );
+
+  return con;
+
+  function outError( err, arg )
   {
     if( err )
     throw err;
@@ -332,9 +339,8 @@ function outError_body( o )
     });
 
     throw err;
-  });
+  }
 
-  return con;
 }
 
 outError_body.defaults = Object.create( out_body.defaults );
@@ -388,111 +394,13 @@ _errTimeOut.defaults =
 // experimental
 // --
 
-// function FunctionWithin( consequence )
-// {
-//   let routine = this;
-//   let args;
-//   let context;
-//
-//   _.assert( arguments.length === 1, 'Expects single argument' );
-//   _.assert( _.consequenceIs( consequence ) );
-//
-//   consequence.finally( function( err, arg )
-//   {
-//
-//     return routine.apply( context, args );
-//
-//   });
-//
-//   return function()
-//   {
-//     context = this;
-//     args = arguments;
-//     return consequence;
-//   }
-//
-// }
-//
-// //
-//
-// function FunctionThereafter()
-// {
-//   let con = new Self();
-//   let routine = this;
-//   let args = arguments
-//
-//   con.finally( function( err, arg )
-//   {
-//
-//     return routine.apply( null, args );
-//
-//   });
-//
-//   return con;
-// }
-
-//
-
-// if( 0 )
-// {
-//   Function.prototype.within = FunctionWithin;
-//   Function.prototype.thereafter = FunctionThereafter;
-// }
-
-// //
-//
-// function experimentThereafter()
-// {
-//   debugger;
-//
-//   function f()
-//   {
-//     debugger;
-//     console.log( 'done2' );
-//   }
-//
-//   _.time.out( 5000, console.log.thereafter( 'done' ) );
-//   _.time.out( 5000, f.thereafter() );
-//
-//   debugger;
-//
-// }
-//
-// //
-//
-// function experimentWithin()
-// {
-//
-//   debugger;
-//   let con = _.time.out( 30000 );
-//   console.log.within( con ).call( console, 'done' );
-//   con.finally( function()
-//   {
-//
-//     debugger;
-//     console.log( 'done2' );
-//
-//   });
-//
-// }
-//
-// //
-//
-// function experimentCall()
-// {
-//
-//   let con = new Self();
-//   con( 123 );
-//   con.finally( function( err, arg )
-//   {
-//
-//     console.log( 'finallyGive :', arg );
-//
-//   });
-//
-//   debugger;
-//
-// }
+function take()
+{
+  if( !arguments.length )
+  return new _.Consequence().take( null );
+  else
+  return new _.Consequence().take( ... arguments );
+}
 
 //
 
@@ -536,19 +444,162 @@ function After( resource )
 //   return result;
 // }
 
-/**
- * @typedef {Object} Fields
- * @property {Array} [_competitorsEarly=[]] Queue of competitor that are penging for resource.
- * @property {Array} [_resources=[]] Queue of messages that are penging for competitor.
- * @property {wProcedure} [_procedure=null] Instance of wProcedure.
- * @property {String} tag
- * @property {Number} id Id of current instance
- * @property {Array} [_dependsOf=[]]
- * @property {Number} [capacity=0] Maximal number of resources. Unlimited by default.
- * @class wConsequence
- * @namespace Tools
- * @module Tools/base/Consequence
-*/
+//
+
+function execStages( stages, o )
+{
+  let logger = _global.logger || _global.console;
+
+  o = o || Object.create( null );
+
+  _.routineOptionsPreservingUndefines( execStages, o );
+
+  o.stages = stages;
+  o.stack = _.introspector.stackRelative( o.stack, 1 );
+
+  Object.preventExtensions( o );
+
+  /* validation */
+
+  _.assert( _.objectIs( stages ) || _.longIs( stages ),'Expects array or object ( stages ), but got',_.strType( stages ) );
+
+  for( let s in stages )
+  {
+
+    let routine = stages[ s ];
+
+    if( o.onRoutine )
+    routine = o.onRoutine( routine );
+
+    // _.assert( routine || routine === null,'execStages :','#'+s,'stage is not defined' );
+    _.assert( _.routineIs( routine ) || routine === null, () => 'stage' + '#'+s + ' does not have routine to execute' );
+
+  }
+
+  /*  let */
+
+  let ready = _.time.out( 1 );
+  let keys = Object.keys( stages );
+  let s = 0;
+
+  _.assert( arguments.length === 1 || arguments.length === 2 );
+
+  /* begin */
+
+  if( o.onBegin )
+  {
+    ready.procedure({ _stack : o.stack });
+    ready.finally( o.onBegin );
+    _.assert( ready._procedure === null );
+  }
+
+  handleStage();
+
+  return ready;
+
+  /* end */
+
+  function handleEnd()
+  {
+
+    ready.procedure({ _stack : o.stack });
+    ready.finally( function( err, data )
+    {
+      if( err )
+      {
+        debugger;
+        throw _.errLogOnce( err );
+      }
+      else
+      {
+        return data;
+      }
+    });
+    _.assert( ready._procedure === null );
+
+    if( o.onEnd )
+    {
+      ready.procedure({ _stack : o.stack });
+      ready.finally( o.onEnd );
+      _.assert( ready._procedure === null );
+    }
+
+  }
+
+  /* staging */
+
+  function handleStage()
+  {
+
+    let stage = stages[ keys[ s ] ];
+    let iteration = Object.create( null );
+
+    iteration.index = s;
+    iteration.key = keys[ s ];
+
+    s += 1;
+
+    if( stage === null )
+    return handleStage();
+
+    if( !stage )
+    return handleEnd();
+
+    /* arguments */
+
+    iteration.stage = stage;
+    if( o.onRoutine )
+    iteration.routine = o.onRoutine( stage );
+    else
+    iteration.routine = stage;
+    iteration.routine = _.routineJoin( o.context, iteration.routine, o.args );
+
+    function routineCall()
+    {
+      let ret = iteration.routine();
+      return ret;
+    }
+
+    /* exec */
+
+    if( o.onEachRoutine )
+    {
+      ready.procedure({ _stack : o.stack });
+      ready.ifNoErrorThen( _.routineSeal( o.context, o.onEachRoutine, [ iteration.stage, iteration, o ] ) );
+      _.assert( ready._procedure === null );
+    }
+
+    if( !o.manual )
+    {
+      ready.procedure({ _stack : o.stack });
+      ready.ifNoErrorThen( routineCall );
+      _.assert( ready._procedure === null );
+    }
+
+    ready.procedure({ _stack : o.stack });
+    ready.delay( o.delay );
+    _.assert( ready._procedure === null );
+
+    handleStage();
+
+  }
+
+}
+
+execStages.defaults =
+{
+  delay : 1,
+  stack : null,
+
+  args : undefined,
+  context : undefined,
+  manual : false,
+
+  onEachRoutine : null,
+  onBegin : null,
+  onEnd : null,
+  onRoutine : null,
+}
 
 // --
 // meta
@@ -572,10 +623,12 @@ function After( resource )
 
 let ToolsExtension =
 {
+  take,
   now : Now,
   async : Now,
   after : After,
   // before : Before,
+  execStages,
 }
 
 let TimeExtension =

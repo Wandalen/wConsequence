@@ -36,7 +36,7 @@ let _ = _global_.wTools;
 /* qqq : split test cases by / * * / */
 
 // --
-// tests
+// etc
 // --
 
 function sleep( test )
@@ -93,6 +93,42 @@ function sleep( test )
 sleep.timeOut = 30000;
 
 //
+
+function execStages( test )
+{
+  let self = this;
+
+  test.case = 'trivial';
+
+  var src1Result;
+  var src2Result;
+
+  function src1( o )
+  {
+    src1Result = o.a;
+    return o.a;
+  }
+
+  function src2( o )
+  {
+    src2Result = o.b;
+    return o.b;
+  }
+
+  var o = { a : 1, b : 2 };
+  var got = _.execStages( [ src1, src2 ], { args : [ o ] });
+
+  return got.thenKeep( ( got ) =>
+  {
+    test.identical( src1Result, 1 );
+    test.identical( src2Result, 2 );
+    return got;
+  })
+}
+
+// --
+// time out
+// --
 
 function timeOutCancelInsideOfCallback( test )
 {
@@ -1958,11 +1994,12 @@ let Self =
   tests :
   {
 
-    // tests
+    // etc
 
     sleep,
+    execStages,
 
-    //
+    // time out
 
     timeOutCancelInsideOfCallback,
     timeOutCancelOutsideOfCallback,

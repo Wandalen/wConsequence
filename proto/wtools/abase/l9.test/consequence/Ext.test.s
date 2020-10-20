@@ -44,7 +44,34 @@ function assetFor( test, ... args )
 {
   let context = this;
   let a = test.assetFor( ... args );
+
+  _.assert( _.routineIs( a.program.head ) );
+  _.assert( _.routineIs( a.program.body ) );
+
+  let oprogram = a.program;
+  program_body.defaults = a.program.defaults;
+  a.program = _.routineUnite( a.program.head, program_body );
+
   return a;
+
+  /* */
+
+  function program_body( o )
+  {
+    let locals =
+    {
+      context : { t0 : context.t0, t1 : context.t1, t2 : context.t2, t3 : context.t3 },
+      toolsPath : _.module.resolve( 'wTools' ),
+    };
+    o.locals = o.locals || locals;
+    _.mapSupplement( o.locals, locals );
+    _.mapSupplement( o.locals.context, locals.context );
+    if( !o.locals.consequencePath )
+    o.locals.consequencePath = a.path.nativize( a.path.join( __dirname, '../../l9/consequence/Namespace.s' ) );
+    let programPath = a.path.nativize( oprogram.body.call( a, o ) );
+    return programPath;
+  }
+
 }
 
 // --
@@ -55,9 +82,10 @@ function uncaughtSyncErrorOnExit( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
-  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
-  let programPath = a.program({ routine : program, locals });
+  // let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  // let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  // let programPath = a.program({ routine : program, locals });
+  let programPath = a.program({ routine : program });
 
   a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
@@ -98,16 +126,14 @@ function uncaughtAsyncErrorOnExit( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
-  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
-  let programPath = a.program({ routine : program, locals });
+  let programPath = a.program({ routine : program });
 
   a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
   {
-    test.notIdentical( op.exitCode, 0 );
-    test.identical( _.strCount( op.output, 'uncaught asynchronous error' ), 2 );
-    test.identical( _.strCount( op.output, 'error1' ), 1 );
+    test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, 'uncaught asynchronous error' ), 0 );
+    test.identical( _.strCount( op.output, 'error1' ), 0 );
     return null;
   });
 
@@ -133,13 +159,51 @@ Uncaught synchronous error on temrination caught and handled
 
 //
 
+function uncaughtAsyncErrorOnExitBefore( test )
+{
+  let context = this;
+  let a = context.assetFor( test, false );
+  let programPath = a.program({ routine : program });
+
+  a.appStartNonThrowing({ execPath : programPath })
+  .then( ( op ) =>
+  {
+    test.notIdentical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, 'uncaught asynchronous error' ), 2 );
+    test.identical( _.strCount( op.output, 'error1' ), 1 );
+    return null;
+  });
+
+  return a.ready;
+
+  function program()
+  {
+    let _ = require( toolsPath );
+    _.include( 'wProcess' );
+    let con = new _.Consequence();
+    _.process.on( 'exitBefore', () =>
+    {
+      debugger;
+      con.error( 'error1' );
+    })
+  }
+}
+
+uncaughtAsyncErrorOnExitBefore.description =
+`
+Uncaught synchronous error on temrination caught and handled
+`
+
+//
+
 function AndKeepErrorAttend( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
-  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
-  let programPath = a.program({ routine : program, locals });
+  // let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  // let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  // let programPath = a.program({ routine : program, locals });
+  let programPath = a.program({ routine : program });
 
   a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
@@ -159,12 +223,12 @@ function AndKeepErrorAttend( test )
     let _ = require( toolsPath );
     _.include( 'wConsequence' );
 
-    var con1 = _.time.out( t1, () =>
+    var con1 = _.time.out( context.t1, () =>
     {
       console.log( 'time1' );
       throw _.err( 'Test error' );
     })
-    var con2 = _.time.out( t1*3, () =>
+    var con2 = _.time.out( context.t1*3, () =>
     {
       console.log( 'time2' );
       return null
@@ -196,9 +260,10 @@ function AndKeepErrorNotAttend( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
-  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
-  let programPath = a.program({ routine : program, locals });
+  // let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  // let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  // let programPath = a.program({ routine : program, locals });
+  let programPath = a.program({ routine : program });
 
   a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
@@ -217,12 +282,12 @@ function AndKeepErrorNotAttend( test )
     let _ = require( toolsPath );
     _.include( 'wConsequence' );
 
-    var con1 = _.time.out( t1, () =>
+    var con1 = _.time.out( context.t1, () =>
     {
       console.log( 'time1' );
       throw _.err( 'Test error' );
     })
-    var con2 = _.time.out( t1*3, () =>
+    var con2 = _.time.out( context.t1*3, () =>
     {
       console.log( 'time2' );
       return null
@@ -253,9 +318,10 @@ function asyncStackWithTimeOut( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
-  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
-  let programPath = a.program({ routine : program, locals });
+  // let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  // let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  // let programPath = a.program({ routine : program, locals });
+  let programPath = a.program({ routine : program });
 
   /* */
 
@@ -311,9 +377,10 @@ function asyncStackWithConsequence( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
-  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
-  let programPath = a.program({ routine : program, locals });
+  // let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  // let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  // let programPath = a.program({ routine : program, locals });
+  let programPath = a.program({ routine : program });
 
   /* */
 
@@ -370,9 +437,10 @@ function asyncStackInConsequenceTrivial( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
-  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
-  let programPath = a.program({ routine : program, locals });
+  // let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  // let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  // let programPath = a.program({ routine : program, locals });
+  let programPath = a.program({ routine : program });
 
   /* */
 
@@ -398,14 +466,14 @@ function asyncStackInConsequenceTrivial( test )
     _.include( 'wConsequence' );
 
     var timeBefore = _.time.now();
-    var t = _.time.outError( t1*3 );
+    var t = _.time.outError( context.t1*3 );
     t.finally( function( err, got )
     {
       if( err )
       _.errAttend( err );
       return null;
     })
-    _.time.out( t1*3/2, () => { t.error( _.errAttend( 'stop' ) ); return null; } );
+    _.time.out( context.t1*3/2, () => { t.error( _.errAttend( 'stop' ) ); return null; } );
 
     return t;
   }
@@ -424,9 +492,10 @@ function asyncStackInConsequenceThen( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
-  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
-  let programPath = a.program({ routine : program, locals });
+  // let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  // let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  // let programPath = a.program({ routine : program, locals });
+  let programPath = a.program({ routine : program });
 
   /* */
 
@@ -485,9 +554,10 @@ function syncMaybeError( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
-  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
-  let programPath = a.program({ routine : program, locals });
+  // let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  // let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  // let programPath = a.program({ routine : program, locals });
+  let programPath = a.program({ routine : program });
 
   /* */
 
@@ -532,14 +602,86 @@ function syncMaybeError( test )
 
 //
 
+function symbolAsError( test )
+{
+  let context = this;
+  let a = context.assetFor( test, false );
+  let programPath = a.program({ routine : program });
+  let ready = _.take( null );
+
+  /* */
+
+  ready.then( () =>
+  {
+    return a.appStartNonThrowing
+    ({
+      execPath : programPath,
+      args : [ 'symbol:0' ],
+    })
+    .then( ( op ) =>
+    {
+      test.notIdentical( op.exitCode, 0 );
+      test.identical( _.strCount( op.output, 'con1.tap Error Undefined' ), 1 );
+      test.identical( _.strCount( op.output, 'Error1' ), 1 );
+      test.identical( _.strCount( op.output, 'uncaught asynchronous error' ), 2 );
+      return null;
+    });
+  });
+
+  /* */
+
+  ready.then( () =>
+  {
+    return a.appStartNonThrowing
+    ({
+      execPath : programPath,
+      args : [ 'symbol:1' ],
+    })
+    .then( ( op ) =>
+    {
+      test.identical( op.exitCode, 0 );
+      test.identical( _.strCount( op.output, 'con1.tap Symbol Undefined' ), 1 );
+      test.identical( _.strCount( op.output, 'Error1' ), 0 );
+      test.identical( _.strCount( op.output, 'uncaught asynchronous error' ), 0 );
+      return null;
+    });
+  });
+
+  /* */
+
+  return ready;
+
+  function program()
+  {
+    let _ = require( toolsPath );
+    require( consequencePath );
+    _.include( 'wProcess' );
+    let input = _.process.input();
+    let con1 = new _.Consequence();
+
+    con1.tap( ( err, arg ) =>
+    {
+      console.log( `con1.tap ${_.strType( err )} ${_.strType( arg )}` );
+    });
+
+    _.time.begin( context.t1, () =>
+    {
+      if( input.map.symbol )
+      con1.error( Symbol.for( 'Error1' ) );
+      else
+      con1.error( 'Error1' );
+    });
+  }
+
+}
+
+//
+
 function tester( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
-  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
-  locals.consequencePath = a.path.nativize( a.path.join( __dirname, '../../l9/consequence/Namespace.s' ) );
-  let programPath = a.program({ routine : program, locals });
+  let programPath = a.program({ routine : program });
 
   /* */
 
@@ -589,8 +731,8 @@ function tester( test )
 tester.timeOut = 60000;
 tester.description =
 `
-- async stack presents
-- async stack does not have duplicates
+  - async stack is here
+  - async stack does not have duplicates
 `
 
 //
@@ -599,9 +741,10 @@ function timeLimit( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
-  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
-  let programPath = a.program({ routine : program, locals });
+  // let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  // let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  // let programPath = a.program({ routine : program, locals });
+  let programPath = a.program({ routine : program });
 
   /* */
 
@@ -645,9 +788,10 @@ function timeLimitWaitingEnough( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
-  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
-  let programPath = a.program({ routine : program, locals });
+  // let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  // let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  // let programPath = a.program({ routine : program, locals });
+  let programPath = a.program({ routine : program });
 
   /* */
 
@@ -677,24 +821,24 @@ function timeLimitWaitingEnough( test )
     let _ = require( toolsPath );
     _.include( 'wConsequence' );
     _.include( 'wProcedure' );
-    let con = _.time.out( t2 );
+    let con = _.time.out( context.t2 );
 
     console.log( 'v0', _.time.spent( _.setup.startTime ) );
 
-    con.timeLimit( t2*6, () =>
+    con.timeLimit( context.t2*6, () =>
     {
       console.log( 'v2', _.time.spent( _.setup.startTime ) );
-      return _.time.out( t2*4, () =>
+      return _.time.out( context.t2*4, () =>
       {
         console.log( 'v4', _.time.spent( _.setup.startTime ) );
         return 'a';
       });
     });
 
-    _.time.out( t2*2, () =>
+    _.time.out( context.t2*2, () =>
     {
       console.log( 'v3', _.time.spent( _.setup.startTime ) );
-      _.procedure.terminationPeriod = t2*2;
+      _.procedure.terminationPeriod = context.t2*2;
       _.procedure.terminationBegin();
     });
 
@@ -716,9 +860,10 @@ function timeLimitWaitingNotEnough( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
-  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
-  let programPath = a.program({ routine : program, locals });
+  // let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  // let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  // let programPath = a.program({ routine : program, locals });
+  let programPath = a.program({ routine : program });
 
   /* */
 
@@ -748,24 +893,24 @@ function timeLimitWaitingNotEnough( test )
     _.include( 'wConsequence' );
     _.include( 'wProcedure' );
 
-    var con = _.time.out( t2 );
+    var con = _.time.out( context.t2 );
 
     console.log( 'v0', _.time.spent( _.setup.startTime ) );
 
-    con.timeLimit( t2*2, () =>
+    con.timeLimit( context.t2*2, () =>
     {
       console.log( 'v2', _.time.spent( _.setup.startTime ) );
-      return _.time.out( t2*6, () =>
+      return _.time.out( context.t2*6, () =>
       {
         console.log( 'v4', _.time.spent( _.setup.startTime ) );
         return 'a';
       });
     });
 
-    _.time.out( t2*2, () =>
+    _.time.out( context.t2*2, () =>
     {
       console.log( 'v3', _.time.spent( _.setup.startTime ) );
-      _.procedure.terminationPeriod = t2*2;
+      _.procedure.terminationPeriod = context.t2*2;
       _.procedure.terminationBegin();
     });
 
@@ -787,9 +932,10 @@ function timeCancelBefore( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
-  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
-  let programPath = a.program({ routine : program, locals });
+  // let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  // let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  // let programPath = a.program({ routine : program, locals });
+  let programPath = a.program({ routine : program });
 
   /* */
 
@@ -847,9 +993,10 @@ function timeCancelAfter( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
-  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
-  let programPath = a.program({ routine : program, locals });
+  // let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  // let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  // let programPath = a.program({ routine : program, locals });
+  let programPath = a.program({ routine : program });
 
   /* */
 
@@ -906,9 +1053,10 @@ function timeOutExternalMessage( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
-  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
-  let programPath = a.program({ routine : program, locals });
+  // let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  // let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  // let programPath = a.program({ routine : program, locals });
+  let programPath = a.program({ routine : program });
 
   /* */
 
@@ -943,7 +1091,7 @@ function timeOutExternalMessage( test )
     _.include( 'wProcedure' );
     _.include( 'wConsequence' );
 
-    var con1 = _.time.out( t1*2, () => 1 );
+    var con1 = _.time.out( context.t1*2, () => 1 );
 
     console.log( 'v1' );
     _.time.out( 1, function()
@@ -967,7 +1115,7 @@ function timeOutExternalMessage( test )
       });
     })
 
-    return _.time.out( t1*5 ).then( () =>
+    return _.time.out( context.t1*5 ).then( () =>
     {
       console.log( 'v6' );
       console.log( 'argumentsCount', con1.argumentsCount() );
@@ -992,9 +1140,10 @@ function timeBegin( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let toolsPath = a.path.nativize( _.module.toolsPathGet() );
-  let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
-  let programPath = a.program({ routine : program, locals });
+  // let toolsPath = a.path.nativize( _.module.toolsPathGet() );
+  // let locals = { toolsPath, t1 : context.t1, t2 : context.t2 };
+  // let programPath = a.program({ routine : program, locals });
+  let programPath = a.program({ routine : program });
 
   /* */
 
@@ -1059,13 +1208,12 @@ let Self =
   context :
   {
 
-    nameOfFile : 'Ext.test.s',
     suiteTempPath : null,
     assetsOriginalPath : null,
     appJsPath : null,
     t1 : 100,
     t2 : 500,
-
+    t3 : 10000,
     assetFor,
 
   },
@@ -1075,6 +1223,7 @@ let Self =
 
     uncaughtSyncErrorOnExit,
     uncaughtAsyncErrorOnExit,
+    uncaughtAsyncErrorOnExitBefore,
 
     AndKeepErrorAttend,
     AndKeepErrorNotAttend,
@@ -1085,6 +1234,7 @@ let Self =
     asyncStackInConsequenceThen,
 
     syncMaybeError,
+    symbolAsError,
 
     tester,
 

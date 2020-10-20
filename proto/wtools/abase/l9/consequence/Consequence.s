@@ -2814,6 +2814,9 @@ function __handleError( err, competitor )
 {
   let self = this;
 
+  if( _.symbolIs( err ) )
+  return err;
+
   if( Config.debug && competitor && err && !err.asyncCallsStack )
   {
     err = _._err
@@ -2836,7 +2839,7 @@ function __handleError( err, competitor )
   if( _.errIsAttended( err ) )
   return err;
 
-  let timer = _.time.finally( self.UncaughtTimeOut, function uncaught()
+  let timer = _.time._finally( self.UncaughtTimeOut, function uncaught()
   {
 
     if( !_.time.timerIsCancelBegun( timer ) && _.errIsSuspended( err ) )
@@ -4469,6 +4472,21 @@ function _metaDefine( how, key, value )
 // --
 // relations
 // --
+
+/**
+ * @typedef {Object} Fields
+ * @property {Array} [_competitorsEarly=[]] Queue of competitor that are penging for resource.
+ * @property {Array} [_resources=[]] Queue of messages that are penging for competitor.
+ * @property {wProcedure} [_procedure=null] Instance of wProcedure.
+ * @property {String} tag
+ * @property {Number} id Id of current instance
+ * @property {Array} [_dependsOf=[]]
+ * @property {Number} [capacity=0] Maximal number of resources. Unlimited by default.
+ * @class wConsequence
+ * @namespace Tools
+ * @module Tools/base/Consequence
+*/
+
 
 let Composes =
 {
