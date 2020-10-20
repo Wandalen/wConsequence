@@ -1712,7 +1712,7 @@ function _and( o )
   let accumulative = o.accumulative;
   let waitingResource = o.waitingResource;
   let waitingOthers = o.waitingOthers;
-  let procedure = self.procedure( o.stack, 1 ).nameElse( '_and' ); /* qqq : cover procedure.sourcePath of each derived routine */
+  let procedure = self.procedure( o.stack, 1 ).nameElse( '_and' ); /* qqq2 : cover procedure.sourcePath of each derived routine */
   let escaped = 0;
   let errId = {};
 
@@ -1759,15 +1759,11 @@ function _and( o )
 
     if( waitingResource )
     {
-      // debugger;
-      // __got.call( self, err, arg );
       got2({ index : indexOfSelf, competitor : self, err, arg });
     }
     else
     self.finallyGive( ( err, arg ) =>
     {
-      debugger;
-      // __got.call( self, err, arg );
       got2({ index : indexOfSelf, competitor : self, err, arg });
     });
 
@@ -1799,14 +1795,6 @@ function _and( o )
       if( _.promiseLike( competitor ) )
       competitor = competitors[ c ] = _.Consequence.From( competitor );
 
-      // if( waitingResource )
-      // _.assert
-      // (
-      //   competitor !== undefined
-      //   , () => `Expects defined value, but got ${_.strType( competitor )}`
-      //   + `${ _.routineIs( originalCompetitor ) ? '\n' + originalCompetitor.toString() : ''}`
-      // );
-      // else
       _.assert
       (
         competitor !== undefined
@@ -1817,11 +1805,8 @@ function _and( o )
       if( waitingResource )
       {
 
-        if( !_.consequenceIs( competitor ) ) /* qqq : teach And to accept non-consequence and cover */
+        if( !_.consequenceIs( competitor ) ) /* xxx : teach And to accept non-consequence and cover */
         {
-          // __got.call( competitor, undefined, competitor ); /* yyy */
-          // __got.call( null, undefined, competitor );
-          // got2( c, null, undefined, competitor );
           got2({ index : c, competitor : null, err : undefined, arg : competitor });
           return;
         }
@@ -1841,9 +1826,6 @@ function _and( o )
         }
         else
         {
-          // __got.call( competitor, undefined, competitor ); /* yyy */
-          // __got.call( null, undefined, competitor );
-          // got2( c, null, undefined, competitor );
           got2({ index : c, competitor : null, err : undefined, arg : competitor });
           return;
         }
@@ -1867,7 +1849,6 @@ function _and( o )
       }
 
       competitor.procedure({ _stack : procedure.stack() }).nameElse( 'and' );
-      // competitor.finallyGive( ( err, arg ) => got2( c, competitor, err, arg ) );
       competitor.finallyGive( ( err, arg ) => got2({ index : c, competitor, err, arg }) );
 
 
@@ -1877,90 +1858,8 @@ function _and( o )
 
   /* */
 
-  // function __got( err, arg )
-  // {
-  //   let competitor = this;
-  //   let firstIndex = -1;
-  //
-  //   _.assert( _.consequenceIs( competitor ) || competitor === null );
-  //
-  //   if( err && !anyErr )
-  //   anyErr = err;
-  //
-  //   // if( _.numberIs( competitor ) )  /* yyy */
-  //   // {
-  //   //   _.assert( 0 );
-  //   //   account( competitor )
-  //   // }
-  //   // else
-  //
-  //   if( _.consequenceIs( competitor ) ) /* yyy */
-  //   for( let c = 0 ; c < competitors.length ; c++ )
-  //   {
-  //     let competitor2 = competitors[ c ];
-  //     if( competitor2 === competitor )
-  //     account( c );
-  //   }
-  //
-  //   if( Config.debug && self.Diagnostics )
-  //   if( first <= firstIndex && firstIndex < last )
-  //   if( _.consequenceIs( competitor ) )
-  //   {
-  //     _.arrayRemoveElementOnceStrictly( self._dependsOf, competitor );
-  //   }
-  //
-  //   // debugger;
-  //   // if( !waitingOthers && _.numberIs( competitor ) )
-  //   if( !waitingOthers && competitor !== self && _.consequenceIs( competitor ) )
-  //   {
-  //     debugger;
-  //     // let competitor2 = competitors[ competitor ];
-  //     // _.assert( competitor2 !== self );
-  //     if( err && err.suspended === errId )
-  //     err = _.errSuspend( err, false );
-  //     competitor.take( err, arg ); /
-  //   }
-  //
-  //   _.assert( left >= 0 );
-  //   if( left === 0 )
-  //   {
-  //     if( escaped && waitingResource )
-  //     _.time.soon( __take );
-  //     else
-  //     __take();
-  //   }
-  //
-  //   function account( c )
-  //   {
-  //     if( err )
-  //     {
-  //       err = _.errSuspend( err, errId );
-  //       _.assert( err.suspended === errId );
-  //     }
-  //     errs[ c ] = err;
-  //     args[ c ] = arg;
-  //     left -= 1;
-  //     if( firstIndex === -1 )
-  //     firstIndex = c;
-  //   }
-  //
-  // }
-
-  /* */
-
-  // function got1( err, arg )
-  // {
-  //   let competitor = this;
-  //   got2( undefined, competitor, err, arg );
-  // }
-
-  /* */
-
-  // function got2( index, competitor, err, arg )
   function got2( op )
   {
-    // let competitor = this;
-    // let firstIndex = -1;
 
     _.assert( _.consequenceIs( op.competitor ) || op.competitor === null );
 
@@ -1992,12 +1891,9 @@ function _and( o )
       account( op );
     }
 
-    // debugger;
     if( Config.debug && self.Diagnostics )
-    // if( first <= firstIndex && firstIndex < last )
     if( op.competitor !== self && _.consequenceIs( op.competitor ) )
     {
-      // debugger;
       _.arrayRemoveElementOnceStrictly( self._dependsOf, op.competitor );
     }
 
@@ -2032,8 +1928,6 @@ function _and( o )
     errs[ op.index ] = op.err;
     args[ op.index ] = op.arg;
     left -= 1;
-    // if( firstIndex === -1 )
-    // firstIndex = index;
   }
 
   /* */
@@ -2324,14 +2218,13 @@ function AndImmediate()
 // or
 // --
 
-/* xxx : write head */
+/* qqq2 : write head similar _and has and use it in and* routines */
 
 function _or( o )
 {
   let self = this;
   let count = 0;
-  // let procedure = self.procedure( o.stack + 1 ).nameElse( 'or' );
-  let procedure = self.procedure( o.stack, 1 ).nameElse( '_or' ); /* qqq xxx : cover procedure.sourcePath of each derived routine */
+  let procedure = self.procedure( o.stack, 1 ).nameElse( '_or' ); /* qqq2 : cover procedure.sourcePath of each derived routine */
   let competitors = o.competitors;
   let competitorRoutines = [];
 
@@ -2342,7 +2235,7 @@ function _or( o )
   else
   competitors = [ competitors ];
 
-  /* qqq : implement tests : arguments are promises */
+  /* qqq2 : implement tests : arguments are promises */
 
   for( let c = competitors.length-1 ; c >= 0 ; c-- )
   {
@@ -4783,7 +4676,7 @@ let Extension =
 
   // time
 
-  _delay, /* xxx : rename */
+  _delay, /* yyy : rename */
   finallyDelay,
   thenDelay,
   exceptDelay,
