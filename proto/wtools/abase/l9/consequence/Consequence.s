@@ -4777,7 +4777,7 @@ let Extension =
 
   // competitor
 
-  competitorOwn, /* qqq2 : cover */
+  competitorOwn, /* aaa2 : cover */ /* Dmytro : covered, _competitorsLate restricted and not used */
   competitorHas,
   competitorsCount,  /* qqq2 : cover */
   competitorsEarlyGet,

@@ -15553,6 +15553,67 @@ function Or( test )
 // cancel
 // --
 
+function competitorOwn( test )
+{
+  test.case = 'consequence has no competitors';
+  var con = new _.Consequence().take( null );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( !!con.competitorOwn( competitorRoutine1 ), false );
+  test.identical( !!con.competitorOwn( competitorRoutine2 ), false );
+
+  test.case = 'consequence has one competitor routine';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  test.identical( con.competitorsCount(), 1 );
+  test.identical( !!con.competitorOwn( competitorRoutine1 ), true );
+  test.identical( !!con.competitorOwn( competitorRoutine2 ), false );
+  con.competitorsCancel( competitorRoutine1 );
+
+  test.case = 'consequence has a few instances of single competitor routine';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  debugger;
+  test.identical( con.competitorsCount(), 3 );
+  test.identical( !!con.competitorOwn( competitorRoutine1 ), true );
+  test.identical( !!con.competitorOwn( competitorRoutine2 ), false );
+  con.competitorsCancel( competitorRoutine1 );
+
+  test.case = 'consequence has single instance of different competitor routines';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine2 );
+  test.identical( con.competitorsCount(), 2 );
+  test.identical( !!con.competitorOwn( competitorRoutine1 ), true );
+  test.identical( !!con.competitorOwn( competitorRoutine2 ), true );
+  con.competitorsCancel( competitorRoutine1 );
+  con.competitorsCancel( competitorRoutine2 );
+
+  test.case = 'consequence has a few instances of different competitor routines';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine2 );
+  con.give( competitorRoutine2 );
+  test.identical( con.competitorsCount(), 4 );
+  test.identical( !!con.competitorOwn( competitorRoutine1 ), true );
+  test.identical( !!con.competitorOwn( competitorRoutine2 ), true );
+  con.competitorsCancel( competitorRoutine1 );
+  con.competitorsCancel( competitorRoutine2 );
+
+  /* */
+
+  function competitorRoutine1(){}
+  function competitorRoutine2(){}
+}
+
+//
+
 function competitorsCancelSingle( test )
 {
   var con = new _.Consequence({ tag : 'con' }).take( null );
@@ -17226,7 +17287,9 @@ let Self =
     OrTake,
     Or,
 
-    // cancel
+    // competitor
+
+    competitorOwn,
 
     competitorsCancelSingle,
     competitorsCancel,
