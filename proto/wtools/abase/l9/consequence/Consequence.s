@@ -1671,14 +1671,18 @@ function timeLimitThrowingSplit( time )
 
 function TimeLimit( timeLimit, consequence )
 {
-  return new _.Consequence().take( null ).timeLimit( timeLimit, consequence );
+  let result = new _.Consequence().take( null )
+  .timeLimit( timeLimit, consequence );
+  return result;
 }
 
 //
 
 function TimeLimitThrowing( timeLimit, consequence )
 {
-  return new _.Consequence().take( null ).timeLimitThrowing( timeLimit, consequence );
+  let result = new _.Consequence().take( null )
+  .timeLimitThrowing( timeLimit, consequence );
+  return result;
 }
 
 // --

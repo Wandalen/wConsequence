@@ -23,7 +23,7 @@ if( typeof module !== 'undefined' )
   // }
   // catch( err )
   // {
-    _.include( 'wTesting' );
+  _.include( 'wTesting' );
   // }
 
   // _.include( 'wConsequence' );
@@ -100,8 +100,7 @@ function execStages( test )
 
   test.case = 'trivial';
 
-  var src1Result;
-  var src2Result;
+  var src1Result, src2Result;
 
   function src1( o )
   {
