@@ -2222,7 +2222,23 @@ function AndImmediate()
 // or
 // --
 
-/* qqq2 : write head similar _and has and use it in and* routines */
+/* aaa2 : write head similar _and has and use it in or* routines */ /* Dmytro : implemented, used */
+
+function or_head( routine, args )
+{
+  let o = args[ 0 ];
+
+  if( !_.mapIs( o ) )
+  o = { competitors : args[ 0 ] };
+
+  _.routineOptions( routine, o );
+  _.assert( arguments.length === 2 );
+  _.assert( args.length === 1 );
+
+  return o;
+}
+
+//
 
 function _or( o )
 {
@@ -2337,35 +2353,47 @@ _or.having =
 
 //
 
-function afterOrTaking( competitors )
-{
-  let self = this;
-  _.assert( arguments.length === 1, 'Expects single argument' );
-  return self._or
-  ({
-    competitors,
-    keeping : false,
-    waitingResource : true,
-    stack : 2,
-  });
-}
+// function afterOrTaking( competitors )
+// {
+//   let self = this;
+//   _.assert( arguments.length === 1, 'Expects single argument' );
+//   return self._or
+//   ({
+//     competitors,
+//     keeping : false,
+//     waitingResource : true,
+//     stack : 2,
+//   });
+// }
+
+let afterOrTaking = _.routineUnite({ head : or_head, body : _or, name : 'afterOrTaking' });
+
+afterOrTaking.defaults = Object.create( _or.defaults );
+afterOrTaking.defaults.keeping = false;
+afterOrTaking.defaults.waitingResource = true;
 
 afterOrTaking.having = Object.create( _or.having );
 
 //
 
-function afterOrKeeping( competitors )
-{
-  let self = this;
-  _.assert( arguments.length === 1, 'Expects single argument' );
-  return self._or
-  ({
-    competitors,
-    keeping : true,
-    waitingResource : true,
-    stack : 2,
-  });
-}
+// function afterOrKeeping( competitors )
+// {
+//   let self = this;
+//   _.assert( arguments.length === 1, 'Expects single argument' );
+//   return self._or
+//   ({
+//     competitors,
+//     keeping : true,
+//     waitingResource : true,
+//     stack : 2,
+//   });
+// }
+
+let afterOrKeeping = _.routineUnite({ head : or_head, body : _or, name : 'afterOrKeeping' });
+
+afterOrKeeping.defaults = Object.create( _or.defaults );
+afterOrKeeping.defaults.keeping = true;
+afterOrKeeping.defaults.waitingResource = true;
 
 afterOrKeeping.having = Object.create( _or.having );
 
@@ -2395,35 +2423,47 @@ orKeepingSplit.having = Object.create( _or.having );
 
 //
 
-function orTaking( competitors )
-{
-  let self = this;
-  _.assert( arguments.length === 1, 'Expects single argument' );
-  return self._or
-  ({
-    competitors,
-    keeping : false,
-    waitingResource : false,
-    stack : 2,
-  });
-}
+// function orTaking( competitors )
+// {
+//   let self = this;
+//   _.assert( arguments.length === 1, 'Expects single argument' );
+//   return self._or
+//   ({
+//     competitors,
+//     keeping : false,
+//     waitingResource : false,
+//     stack : 2,
+//   });
+// }
+
+let orTaking = _.routineUnite({ head : or_head, body : _or, name : 'orTaking' });
+
+orTaking.defaults = Object.create( _or.defaults );
+orTaking.defaults.keeping = false;
+orTaking.defaults.waitingResource = false;
 
 orTaking.having = Object.create( _or.having );
 
 //
 
-function orKeeping( competitors )
-{
-  let self = this;
-  _.assert( arguments.length === 1, 'Expects single argument' );
-  return self._or
-  ({
-    competitors,
-    keeping : true,
-    waitingResource : false,
-    stack : 2,
-  });
-}
+// function orKeeping( competitors )
+// {
+//   let self = this;
+//   _.assert( arguments.length === 1, 'Expects single argument' );
+//   return self._or
+//   ({
+//     competitors,
+//     keeping : true,
+//     waitingResource : false,
+//     stack : 2,
+//   });
+// }
+
+let orKeeping = _.routineUnite({ head : or_head, body : _or, name : 'orKeeping' });
+
+orKeeping.defaults = Object.create( _or.defaults );
+orKeeping.defaults.keeping = true;
+orKeeping.defaults.waitingResource = false;
 
 orKeeping.having = Object.create( _or.having );
 
