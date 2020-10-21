@@ -15576,7 +15576,6 @@ function competitorOwn( test )
   con.give( competitorRoutine1 );
   con.give( competitorRoutine1 );
   con.give( competitorRoutine1 );
-  debugger;
   test.identical( con.competitorsCount(), 3 );
   test.identical( !!con.competitorOwn( competitorRoutine1 ), true );
   test.identical( !!con.competitorOwn( competitorRoutine2 ), false );
@@ -15605,6 +15604,141 @@ function competitorOwn( test )
   test.identical( !!con.competitorOwn( competitorRoutine2 ), true );
   con.competitorsCancel( competitorRoutine1 );
   con.competitorsCancel( competitorRoutine2 );
+
+  /* */
+
+  function competitorRoutine1(){}
+  function competitorRoutine2(){}
+}
+
+//
+
+function competitorsCount( test )
+{
+  test.open( 'without argument' );
+
+  test.case = 'consequence has no competitors';
+  var con = new _.Consequence().take( null );
+  test.identical( con.competitorsCount(), 0 );
+
+  test.case = 'consequence has no competitors';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  test.identical( con.competitorsCount(), 0 );
+
+  test.case = 'consequence has one competitor routine';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  test.identical( con.competitorsCount(), 1 );
+  con.competitorsCancel( competitorRoutine1 );
+
+  test.case = 'consequence has a few instances of single competitor routine';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  test.identical( con.competitorsCount(), 3 );
+  con.competitorsCancel( competitorRoutine1 );
+
+  test.case = 'consequence has single instance of different competitor routines';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine2 );
+  test.identical( con.competitorsCount(), 2 );
+  con.competitorsCancel( competitorRoutine1 );
+  con.competitorsCancel( competitorRoutine2 );
+
+  test.case = 'consequence has a few instances of different competitor routines';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine2 );
+  con.give( competitorRoutine2 );
+  test.identical( con.competitorsCount(), 4 );
+  con.competitorsCancel( competitorRoutine1 );
+  con.competitorsCancel( competitorRoutine2 );
+
+  test.close( 'without argument' );
+
+  /* - */
+
+  test.open( 'with competitorRoutine' );
+
+  test.case = 'consequence has no competitors';
+  var con = new _.Consequence().take( null );
+  test.identical( con.competitorsCount( competitorRoutine1 ), 0 );
+  test.identical( con.competitorsCount( competitorRoutine2 ), 0 );
+
+  test.case = 'consequence has no competitors';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  test.identical( con.competitorsCount( competitorRoutine1 ), 0 );
+  test.identical( con.competitorsCount( competitorRoutine2 ), 0 );
+
+  test.case = 'consequence has one competitor routine';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  test.identical( con.competitorsCount( competitorRoutine1 ), 1 );
+  test.identical( con.competitorsCount( competitorRoutine2 ), 0 );
+  con.competitorsCancel( competitorRoutine1 );
+
+  test.case = 'consequence has a few instances of single competitor routine';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  test.identical( con.competitorsCount( competitorRoutine1 ), 3 );
+  test.identical( con.competitorsCount( competitorRoutine2 ), 0 );
+  con.competitorsCancel( competitorRoutine1 );
+
+  test.case = 'consequence has single instance of different competitor routines';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine2 );
+  test.identical( con.competitorsCount( competitorRoutine1 ), 1 );
+  test.identical( con.competitorsCount( competitorRoutine2 ), 1 );
+  con.competitorsCancel( competitorRoutine1 );
+  con.competitorsCancel( competitorRoutine2 );
+
+  test.case = 'consequence has a few instances of different competitor routines';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine2 );
+  con.give( competitorRoutine2 );
+  test.identical( con.competitorsCount( competitorRoutine1 ), 2 );
+  test.identical( con.competitorsCount( competitorRoutine2 ), 2 );
+  con.competitorsCancel( competitorRoutine1 );
+  con.competitorsCancel( competitorRoutine2 );
+
+  test.close( 'with competitorRoutine' );
+
+  /* - */
+
+  if( Config.debug )
+  {
+    test.case = 'extra arguments';
+    test.shouldThrowErrorSync( () =>
+    {
+      var con = new _.Consequence().take( null );
+      con.competitorsCount( competitorRoutine1, competitorRoutine1 );
+    });
+
+    test.case = 'wrong type of competitorRoutine';
+    test.shouldThrowErrorSync( () =>
+    {
+      var con = new _.Consequence().take( null );
+      con.competitorsCount( 'wrong' );
+    });
+  }
 
   /* */
 
@@ -17290,6 +17424,7 @@ let Self =
     // competitor
 
     competitorOwn,
+    competitorsCount,
 
     competitorsCancelSingle,
     competitorsCancel,
