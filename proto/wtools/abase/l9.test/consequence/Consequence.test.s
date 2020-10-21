@@ -15925,6 +15925,120 @@ function competitorsCancel2( test )
 }
 
 // --
+// resource
+// --
+
+function argumentsCount( test )
+{
+  test.open( 'without arguments' );
+
+  test.case = 'con without arguments, empty _resources';
+  var con = new _.Consequence();
+  test.identical( con.argumentsCount(), 0 );
+
+  test.case = 'con without arguments, _resources has error';
+  var con = new _.Consequence();
+  con.error( _.errAttend( 'Error' ) );
+  test.identical( con.argumentsCount(), 0 );
+
+  test.case = 'con with single argument';
+  var con = new _.Consequence().take( null );
+  test.identical( con.argumentsCount(), 1 );
+
+  test.case = 'con with single argument and single error';
+  var con = new _.Consequence().take( null );
+  con.error( _.errAttend( 'Error' ) );
+  test.identical( con.argumentsCount(), 1 );
+
+  /* */
+
+  test.case = 'con with two arguments, capacity - 3';
+  var con = new _.Consequence({ capacity : 3 }).take( null );
+  con.take( 1 );
+  test.identical( con.argumentsCount(), 2 );
+
+  test.case = 'con with three arguments, capacity - 3';
+  var con = new _.Consequence({ capacity : 3 }).take( null );
+  con.take( 1 );
+  con.take( 1 );
+  test.identical( con.argumentsCount(), 3 );
+
+  test.case = 'con with three arguments and a few errors, capacity - 3';
+  var con = new _.Consequence({ capacity : 3 }).take( null );
+  con.take( 1 );
+  con.take( 1 );
+  con.error( _.errAttend( 'Error' ) );
+  con.error( _.errAttend( 'Error' ) );
+  test.identical( con.argumentsCount(), 3 );
+
+  test.close( 'without arguments' );
+
+  /* - */
+
+  test.open( 'with arg' );
+
+  test.case = 'con without arguments, empty _resources';
+  var con = new _.Consequence();
+  test.identical( con.argumentsCount( null ), 0 );
+  test.identical( con.argumentsCount( 1 ), 0 );
+
+  test.case = 'con without arguments, _resources has error';
+  var con = new _.Consequence();
+  con.error( _.errAttend( 'Error' ) );
+  test.identical( con.argumentsCount( null ), 0 );
+  test.identical( con.argumentsCount( 1 ), 0 );
+
+  test.case = 'con with single argument';
+  var con = new _.Consequence().take( null );
+  test.identical( con.argumentsCount( null ), 1 );
+  test.identical( con.argumentsCount( 1 ), 0 );
+
+  test.case = 'con with single argument and single error';
+  var con = new _.Consequence().take( null );
+  con.error( _.errAttend( 'Error' ) );
+  test.identical( con.argumentsCount( null ), 1 );
+  test.identical( con.argumentsCount( 1 ), 0 );
+
+  /* */
+
+  test.case = 'con with two arguments, capacity - 3';
+  var con = new _.Consequence({ capacity : 3 }).take( null );
+  con.take( 1 );
+  test.identical( con.argumentsCount( null ), 1 );
+  test.identical( con.argumentsCount( 1 ), 1 );
+
+  test.case = 'con with three arguments, capacity - 3';
+  var con = new _.Consequence({ capacity : 3 }).take( null );
+  con.take( 1 );
+  con.take( 1 );
+  test.identical( con.argumentsCount( null ), 1 );
+  test.identical( con.argumentsCount( 1 ), 2 );
+
+  test.case = 'con with three arguments and a few errors, capacity - 3';
+  var con = new _.Consequence({ capacity : 3 }).take( null );
+  con.take( 1 );
+  con.take( 1 );
+  con.error( _.errAttend( 'Error' ) );
+  con.error( _.errAttend( 'Error' ) );
+  test.identical( con.argumentsCount( null ), 1 );
+  test.identical( con.argumentsCount( 1 ), 2 );
+
+  test.close( 'with arg' );
+
+  /* - */
+
+  if( !Config.debug )
+  return;
+
+  test.case = 'extra arguments';
+  test.shouldThrowErrorSync( () =>
+  {
+    var con = new _.Consequence().take( null );
+    con.argumentsCount( null, 1 );
+  });
+}
+
+// --
 // advanced
 // --
 
@@ -17429,6 +17543,10 @@ let Self =
     competitorsCancelSingle,
     competitorsCancel,
     competitorsCancel2,
+
+    // resource
+
+    argumentsCount,
 
     // advanced
 
