@@ -2244,7 +2244,7 @@ function _or( o )
 {
   let self = this;
   let count = 0;
-  let procedure = self.procedure( o.stack, 1 ).nameElse( '_or' ); /* qqq2 : cover procedure.sourcePath of each derived routine */
+  let procedure = self.procedure( o.stack, 1 ).nameElse( '_or' ); /* aaa2 : cover procedure.sourcePath of each derived routine */ /* Dmytro : covered */
   let competitors = o.competitors;
   let competitorRoutines = [];
 

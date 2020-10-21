@@ -14024,56 +14024,6 @@ function afterOrKeepingNotFiring( test )
 
 //
 
-function afterOrKeepingCheckProcedureSourcePath( test )
-{
-  let context = this;
-
-  test.case = 'check path';
-  var con = new _.Consequence({ tag : 'con' });
-  var con1 = new _.Consequence({ tag : 'con1' });
-  var con2 = new _.Consequence({ tag : 'con2' });
-
-  con.afterOrKeeping([ con1, con2 ]);
-  var competitor = con.competitorsGet()[ 0 ];
-  var infoFromErr = _._err({ args : [ '' ], level : 1 });
-  var number = infoFromErr.lineNumber - 2;
-  var path = infoFromErr.location.filePath;
-  var exp = `${ path }:${ number }`;
-  test.is( _.strHas( competitor.procedure._sourcePath, exp ) );
-
-  con1.take( 1 );
-  con2.take( 2 );
-  _.time.out( context.t1, () =>
-  {
-    con.take( 0 );
-  });
-
-  con.finallyGive( ( err, arg ) =>
-  {
-    test.identical( err, undefined );
-    test.identical( arg, 1 );
-  });
-
-  return _.time.out( context.t2, ( err, arg ) =>
-  {
-    test.identical( con.errorsCount(), 0 );
-    test.identical( con.argumentsCount(), 0 );
-    test.identical( con.competitorsCount(), 0 );
-    test.identical( con1.errorsCount(), 0 );
-    test.identical( con1.argumentsCount(), 1 );
-    test.identical( con1.competitorsCount(), 0 );
-    test.identical( con1.resourcesGet( 0 ), { argument : 1, error : undefined } );
-    test.identical( con2.errorsCount(), 0 );
-    test.identical( con2.argumentsCount(), 1 );
-    test.identical( con2.competitorsCount(), 0 );
-    test.identical( con2.resourcesGet( 0 ), { argument : 2, error : undefined } );
-    test.identical( err, undefined );
-    con.competitorsCancel();
-  });
-}
-
-//
-
 function afterOrKeepingWithSimple( test )
 {
   let context = this;
@@ -14332,6 +14282,56 @@ function afterOrKeepingWithSimple( test )
   /* */
 
   return ready;
+}
+
+//
+
+function afterOrKeepingCheckProcedureSourcePath( test )
+{
+  let context = this;
+
+  test.case = 'check path';
+  var con = new _.Consequence({ tag : 'con' });
+  var con1 = new _.Consequence({ tag : 'con1' });
+  var con2 = new _.Consequence({ tag : 'con2' });
+
+  con.afterOrKeeping([ con1, con2 ]);
+  var competitor = con.competitorsGet()[ 0 ];
+  var infoFromErr = _._err({ args : [ '' ], level : 1 });
+  var number = infoFromErr.lineNumber - 2;
+  var path = infoFromErr.location.filePath;
+  var exp = `${ path }:${ number }`;
+  test.is( _.strHas( competitor.procedure._sourcePath, exp ) );
+
+  con1.take( 1 );
+  con2.take( 2 );
+  _.time.out( context.t1, () =>
+  {
+    con.take( 0 );
+  });
+
+  con.finallyGive( ( err, arg ) =>
+  {
+    test.identical( err, undefined );
+    test.identical( arg, 1 );
+  });
+
+  return _.time.out( context.t2, ( err, arg ) =>
+  {
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+    test.identical( con1.errorsCount(), 0 );
+    test.identical( con1.argumentsCount(), 1 );
+    test.identical( con1.competitorsCount(), 0 );
+    test.identical( con1.resourcesGet( 0 ), { argument : 1, error : undefined } );
+    test.identical( con2.errorsCount(), 0 );
+    test.identical( con2.argumentsCount(), 1 );
+    test.identical( con2.competitorsCount(), 0 );
+    test.identical( con2.resourcesGet( 0 ), { argument : 2, error : undefined } );
+    test.identical( err, undefined );
+    con.competitorsCancel();
+  });
 }
 
 //
@@ -15029,6 +15029,56 @@ function afterOrTakingWithSimple( test )
   /* */
 
   return ready;
+}
+
+//
+
+function afterOrTakingCheckProcedureSourcePath( test )
+{
+  let context = this;
+
+  test.case = 'check path';
+  var con = new _.Consequence({ tag : 'con' });
+  var con1 = new _.Consequence({ tag : 'con1' });
+  var con2 = new _.Consequence({ tag : 'con2' });
+
+  con.afterOrTaking([ con1, con2 ]);
+  var competitor = con.competitorsGet()[ 0 ];
+  var infoFromErr = _._err({ args : [ '' ], level : 1 });
+  var number = infoFromErr.lineNumber - 2;
+  var path = infoFromErr.location.filePath;
+  var exp = `${ path }:${ number }`;
+  test.is( _.strHas( competitor.procedure._sourcePath, exp ) );
+
+  con1.take( 1 );
+  con2.take( 2 );
+  _.time.out( context.t1, () =>
+  {
+    con.take( 0 );
+  });
+
+  con.finallyGive( ( err, arg ) =>
+  {
+    test.identical( err, undefined );
+    test.identical( arg, 1 );
+  });
+
+  return _.time.out( context.t2, ( err, arg ) =>
+  {
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+    test.identical( con1.errorsCount(), 0 );
+    test.identical( con1.argumentsCount(), 0 );
+    test.identical( con1.competitorsCount(), 0 );
+    test.identical( con1.resourcesGet( 0 ), undefined );
+    test.identical( con2.errorsCount(), 0 );
+    test.identical( con2.argumentsCount(), 1 );
+    test.identical( con2.competitorsCount(), 0 );
+    test.identical( con2.resourcesGet( 0 ), { argument : 2, error : undefined } );
+    test.identical( err, undefined );
+    con.competitorsCancel();
+  });
 }
 
 //
@@ -17938,11 +17988,12 @@ let Self =
     orKeepingCanceled,
 
     afterOrKeepingNotFiring,
-    afterOrKeepingCheckProcedureSourcePath,
     afterOrKeepingWithSimple,
+    afterOrKeepingCheckProcedureSourcePath,
     afterOrKeepingWithLater,
     afterOrKeepingWithTwoTake0,
     afterOrTakingWithSimple,
+    afterOrTakingCheckProcedureSourcePath,
     afterOrTakingWithLater,
     afterOrTakingWithTwoTake0,
 
