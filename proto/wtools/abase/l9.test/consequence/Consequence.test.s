@@ -16038,6 +16038,137 @@ function argumentsCount( test )
   });
 }
 
+//
+
+function errorsCount( test )
+{
+  test.open( 'without arguments' );
+
+  test.case = 'con without errors, empty _resources';
+  var con = new _.Consequence();
+  test.identical( con.errorsCount(), 0 );
+
+  test.case = 'con without errors, _resources has resource';
+  var con = new _.Consequence().take( null );
+  test.identical( con.errorsCount(), 0 );
+
+  test.case = 'con with single error';
+  var con = new _.Consequence().error( _.errAttend( 'Error' ) );
+  test.identical( con.errorsCount(), 1 );
+
+  test.case = 'con with single argument and single error';
+  var con = new _.Consequence().take( null );
+  con.error( _.errAttend( 'Error' ) );
+  test.identical( con.errorsCount(), 1 );
+
+  /* */
+
+  test.case = 'con with two errors, capacity - 3';
+  var err1 = _.errAttend( 'Error' );
+  var err2 = _.errAttend( 'Error2' );
+  var con = new _.Consequence({ capacity : 3 }).error( err1 );
+  con.error( err2 );
+  test.identical( con.errorsCount(), 2 );
+
+  test.case = 'con with three errors, capacity - 3';
+  var err1 = _.errAttend( 'Error' );
+  var err2 = _.errAttend( 'Error2' );
+  var con = new _.Consequence({ capacity : 3 }).error( err1 );
+  con.error( err2 );
+  con.error( err2 );
+  test.identical( con.errorsCount(), 3 );
+
+  test.case = 'con with three errors and a few arguments, capacity - 3';
+  var err1 = _.errAttend( 'Error' );
+  var err2 = _.errAttend( 'Error2' )
+  var con = new _.Consequence({ capacity : 3 }).take( null );
+  con.take( null );
+  con.error( err1 );
+  con.error( err2 );
+  con.error( err2 );
+  test.identical( con.errorsCount(), 3 );
+
+  test.close( 'without arguments' );
+
+  /* - */
+
+  test.open( 'with err' );
+
+  test.case = 'con without errors, empty _resources';
+  var err1 = _.errAttend( 'Error' );
+  var err2 = _.errAttend( 'Error2' )
+  var con = new _.Consequence();
+  test.identical( con.errorsCount( err1 ), 0 );
+  test.identical( con.errorsCount( err2 ), 0 );
+
+  test.case = 'con without errors, _resources has resource';
+  var err1 = _.errAttend( 'Error' );
+  var err2 = _.errAttend( 'Error2' )
+  var con = new _.Consequence().take( null );
+  test.identical( con.errorsCount( err1 ), 0 );
+  test.identical( con.errorsCount( err2 ), 0 );
+
+  test.case = 'con with single error';
+  var err1 = _.errAttend( 'Error' );
+  var err2 = _.errAttend( 'Error2' )
+  var con = new _.Consequence().error( err1 );
+  test.identical( con.errorsCount( err1 ), 1 );
+  test.identical( con.errorsCount( err2 ), 0 );
+
+  test.case = 'con with single argument and single error';
+  var err1 = _.errAttend( 'Error' );
+  var err2 = _.errAttend( 'Error2' )
+  var con = new _.Consequence().take( null );
+  con.error( err1 );
+  test.identical( con.errorsCount( err1 ), 1 );
+  test.identical( con.errorsCount( err2 ), 0 );
+
+  /* */
+
+  test.case = 'con with two errors, capacity - 3';
+  var err1 = _.errAttend( 'Error' );
+  var err2 = _.errAttend( 'Error2' );
+  var con = new _.Consequence({ capacity : 3 }).error( err1 );
+  con.error( err2 );
+  test.identical( con.errorsCount( err1 ), 1 );
+  test.identical( con.errorsCount( err2 ), 1 );
+
+  test.case = 'con with three errors, capacity - 3';
+  var err1 = _.errAttend( 'Error' );
+  var err2 = _.errAttend( 'Error2' );
+  var con = new _.Consequence({ capacity : 3 }).error( err1 );
+  con.error( err2 );
+  con.error( err2 );
+  test.identical( con.errorsCount( err1 ), 1 );
+  test.identical( con.errorsCount( err2 ), 2 );
+
+  test.case = 'con with three errors and a few arguments, capacity - 3';
+  var err1 = _.errAttend( 'Error' );
+  var err2 = _.errAttend( 'Error2' )
+  var con = new _.Consequence({ capacity : 3 }).take( null );
+  con.take( null );
+  con.error( err1 );
+  con.error( err2 );
+  con.error( err2 );
+  test.identical( con.errorsCount( err1 ), 1 );
+  test.identical( con.errorsCount( err2 ), 2 );
+
+  test.close( 'with err' );
+
+  /* - */
+
+  if( !Config.debug )
+  return;
+
+  test.case = 'extra arguments';
+  test.shouldThrowErrorSync( () =>
+  {
+    var err = _.errAttend( 'Error' );
+    var con = new _.Consequence().error( err );
+    con.errorsCount( err, _.errAttend( 'err' ) );
+  });
+}
+
 // --
 // advanced
 // --
@@ -17547,6 +17678,7 @@ let Self =
     // resource
 
     argumentsCount,
+    errorsCount,
 
     // advanced
 
