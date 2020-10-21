@@ -3691,11 +3691,17 @@ function competitorsCancel( competitorRoutine )
 
 //
 
-function argumentsCount()
+function argumentsCount( arg )
 {
   let self = this;
   // self._resources.filter( ( e ) => console.log( e ) );
+
+  if( arguments.length === 0 )
   return self._resources.filter( ( e ) => e.argument !== undefined ).length;
+  else if( arguments.length === 1 )
+  return self._resources.filter( ( e ) => e.argument === arg ).length;
+  else
+  _.assert( 0, 'Expects no arguments or single argument {-arg-}.' );
 }
 
 //
@@ -4796,7 +4802,7 @@ let Extension =
 
   competitorOwn, /* aaa2 : cover */ /* Dmytro : covered, _competitorsLate restricted and not used */
   competitorHas,
-  competitorsCount,  /* qqq2 : cover */
+  competitorsCount,  /* aaa2 : cover */ /* Dmytro : covered, _competitorsLate restricted and not used */
   competitorsEarlyGet,
   competitorsLateGet,
   competitorsGet,
@@ -4804,7 +4810,7 @@ let Extension =
 
   // resource
 
-  argumentsCount, /* qqq2 : cover */
+  argumentsCount, /* aaa2 : cover */ /* Dmytro : covered */
   errorsCount, /* qqq2 : cover */
   resourcesCount, /* qqq2 : cover */
   resourcesGet,
