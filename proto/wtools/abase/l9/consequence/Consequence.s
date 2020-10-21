@@ -3747,10 +3747,16 @@ function errorsCount( err )
  * @class wConsequence
  */
 
-function resourcesCount()
+function resourcesCount( arg )
 {
   let self = this;
+
+  if( arguments.length === 0 )
   return self._resources.length;
+  else if( arguments.length === 1 )
+  return self._resources.filter( ( e ) => e.argument === arg || e.error === arg ).length;
+  else
+  _.assert( 0, 'Expects no arguments or single argument {-arg-}.' );
 }
 
 //
@@ -4818,7 +4824,7 @@ let Extension =
 
   argumentsCount, /* aaa2 : cover */ /* Dmytro : covered */
   errorsCount, /* aaa2 : cover */ /* Dmytro : covered */
-  resourcesCount, /* qqq2 : cover */
+  resourcesCount, /* aaa2 : cover */ /* Dmytro : covered */
   resourcesGet,
   argumentsGet,
   errorsGet,
