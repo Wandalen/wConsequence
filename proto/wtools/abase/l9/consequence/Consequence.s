@@ -3483,11 +3483,28 @@ function competitorHas( competitorRoutine )
 
 //
 
-function competitorsCount()
+function competitorsCount( competitorRoutine )
 {
   let self = this;
-  _.assert( arguments.length === 0, 'Expects no arguments' );
-  return self._competitorsEarly.length + self._competitorsLate.length;
+
+  if( arguments.length === 0 )
+  {
+    return self._competitorsEarly.length + self._competitorsLate.length;
+  }
+  else if( arguments.length === 1 )
+  {
+    _.assert( _.routineIs( competitorRoutine ), 'Expects competitor routine {-competitorRoutine-}' );
+
+    let competitorRoutinesEqualize = ( competitor, routine ) => competitor.competitorRoutine === routine;
+    let numberOfEarlyCompetitors = _.longCountElement( self._competitorsEarly, competitorRoutine, competitorRoutinesEqualize );
+    let numberOfLateCompetitors = _.longCountElement( self._competitorsLate, competitorRoutine, competitorRoutinesEqualize );
+
+    return numberOfEarlyCompetitors + numberOfLateCompetitors;
+  }
+  else
+  {
+    _.assert( 0, 'Expects no arguments or single competitor routine {-competitorRoutine-}.' );
+  }
 }
 
 //
