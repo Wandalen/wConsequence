@@ -38,6 +38,48 @@ function sleep( delay )
 
 //
 
+function ready_body( o )
+{
+
+  if( !o.procedure )
+  o.procedure = _.Procedure({ _stack : 1, _name : 'timeReady' });
+
+  _.assert( _.procedureIs( o.procedure ) );
+
+  if( typeof window !== 'undefined' && typeof document !== 'undefined' && document.readyState !== 'complete' )
+  {
+    let con = new _.Consequence({ tag : 'timeReady' });
+    window.addEventListener( 'load', function() { handleReady( con, ... arguments ) } );
+    return con;
+  }
+  else
+  {
+    debugger;
+    return _.time.out( o.timeOut, o.procedure, o.onReady );
+  }
+
+  /* */
+
+  function handleReady( con )
+  {
+    return _.time.out( timeOut, procedure, onReady ).finally( con );
+  }
+
+}
+
+ready_body.defaults =
+{
+  timeOut : 0,
+  procedure : null,
+  onReady : null,
+};
+
+//
+
+let ready = _.routineUnite( _.time.ready.head, ready_body );
+
+//
+
 /**
  * Routine creates timer that executes provided routine( onReady ) after some amout of time( delay ).
  * Returns wConsequence instance. {@link module:Tools/base/Consequence.wConsequence wConsequence}
@@ -637,6 +679,7 @@ let TimeExtension =
   outError,
   _errTimeOut,
   sleep,
+  ready,
 };
 
 _.mapExtend( _, ToolsExtension );
@@ -654,3 +697,4 @@ if( typeof module !== 'undefined' )
 module[ 'exports' ] = _;
 
 })();
+
