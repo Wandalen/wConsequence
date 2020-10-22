@@ -10510,6 +10510,141 @@ function orKeepingWithNow( test )
 
 //
 
+function orKeepingWithPromises( test )
+{
+  let context = this;
+  let ready = new _.Consequence().take( null )
+
+  /* */
+
+  .then( ( arg ) =>
+  {
+    test.case = 'resolve promise1, resolve promise2 after';
+    let t = context.t1;
+    let promise1 = new Promise( ( resolve, reject ) => { _.time.out( t / 2, () => resolve( 1 ) ) } );
+    let promise2 = new Promise( ( resolve, reject ) => { _.time.out( t, () => resolve( 2 ) ) } );
+    let con = new _.Consequence({ capacity : 2 });
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+
+    con.orKeeping([ promise1, promise2 ]);
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 1 );
+
+    con.finallyGive( ( err, arg ) =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 0 );
+
+      test.identical( err, undefined );
+      test.identical( arg, 1 );
+    });
+
+    return _.time.out( t * 2, () =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 0 );
+
+      return null;
+    });
+
+  });
+
+  //
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'reject promise1, resolve promise2 after';
+    let t = context.t1;
+    let promise1 = new Promise( ( resolve, reject ) => { _.time.out( t / 2, () => reject( _.errAttend( 'Error' ) ) ) } );
+    let promise2 = new Promise( ( resolve, reject ) => { _.time.out( t, () => resolve( 2 ) ) } );
+    let con = new _.Consequence({ capacity : 2 });
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+
+    con.orKeeping([ promise1, promise2 ]);
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 1 );
+
+    con.finallyGive( ( err, arg ) =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 0 );
+
+      test.is( _.errIs( err ) );
+      test.identical( arg, undefined );
+      _.errAttend( err );
+    });
+
+    return _.time.out( t * 2, () =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 0 );
+
+      return null;
+    });
+  })
+
+  //
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'resolve promise1 after resolve promise2';
+    let t = context.t1;
+    let promise1 = new Promise( ( resolve, reject ) => { _.time.out( t, () => resolve( 1 ) ) } );
+    let promise2 = new Promise( ( resolve, reject ) => { _.time.out( t / 2, () => resolve( 2 ) ) } );
+    let con = new _.Consequence({ capacity : 2 });
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+
+    con.orKeeping([ promise1, promise2 ]);
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 1 );
+
+    con.finallyGive( ( err, arg ) =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 0 );
+
+      test.identical( arg, 2 );
+      test.identical( err, undefined );
+      _.errAttend( err );
+    });
+
+    return _.time.out( t * 2, () =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 0 );
+
+      return null;
+    });
+  })
+
+  /* */
+
+  return ready;
+}
+
+//
+
 function orTakingWithSimple( test )
 {
   let context = this;
@@ -15467,6 +15602,7 @@ let Self =
     orKeepingWithSimple,
     orKeepingWithLater,
     orKeepingWithNow,
+    orKeepingWithPromises,
     orTakingWithSimple,
     orTakingWithLater,
     orTakingWithNow,
