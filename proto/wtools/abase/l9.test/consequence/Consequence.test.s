@@ -8637,7 +8637,7 @@ function AndKeep( test )
   {
     test.case = 'take take';
     let t = context.t1*2;
-    let track = [];
+    track = [];
     let con1 = new _.Consequence({ tag : 'con1' });
     let con2 = new _.Consequence({ tag : 'con2' });
     let con = _.Consequence.AndKeep( con1, con2 );
@@ -8727,7 +8727,7 @@ function AndKeep( test )
   {
     test.case = 'error take';
     let t = context.t1*2;
-    let track = [];
+    track = [];
     let con1 = new _.Consequence({ tag : 'con1' });
     let con2 = new _.Consequence({ tag : 'con2' });
     let con = _.Consequence.AndKeep( con1, con2 );
@@ -8822,7 +8822,7 @@ function AndKeep( test )
   {
     test.case = 'take error';
     let t = context.t1*2;
-    let track = [];
+    track = [];
     let con1 = new _.Consequence({ tag : 'con1' });
     let con2 = new _.Consequence({ tag : 'con2' });
     let con = _.Consequence.AndKeep( con1, con2 );
@@ -8930,7 +8930,7 @@ function AndTake( test )
   {
     test.case = 'take take';
     let t = context.t1;
-    let track = [];
+    track = [];
     let con1 = new _.Consequence({ tag : 'con1' });
     let con2 = new _.Consequence({ tag : 'con2' });
     let con = _.Consequence.AndTake( con1, con2 );
@@ -9022,7 +9022,7 @@ function AndTake( test )
   {
     test.case = 'error take';
     let t = context.t1;
-    let track = [];
+    track = [];
     let con1 = new _.Consequence({ tag : 'con1' });
     let con2 = new _.Consequence({ tag : 'con2' });
     let con = _.Consequence.AndTake( con1, con2 );
@@ -9119,7 +9119,7 @@ function AndTake( test )
   {
     test.case = 'take error';
     let t = context.t1;
-    let track = [];
+    track = [];
     let con1 = new _.Consequence({ tag : 'con1' });
     let con2 = new _.Consequence({ tag : 'con2' });
     let con = _.Consequence.AndTake( con1, con2 );
@@ -9163,8 +9163,6 @@ function AndTake( test )
       test.is( !_.errIsSuspended( err ) );
       _.errAttend( err );
     });
-
-    // _.process.on( 'uncaughtError', uncaughtError_functor( mode ) );
 
     _.time.out( t, () =>
     {
@@ -9216,18 +9214,6 @@ function AndTake( test )
 
   return ready;
 
-  function uncaughtError_functor( mode )
-  {
-    return function uncaughtError( e )
-    {
-      var exp = `xxx`;
-      test.equivalent( e.err.originalMessage, exp )
-      _.errAttend( e.err );
-      track.push( 'uncaughtError' );
-      _.process.off( 'uncaughtError', uncaughtError ); /* xxx : cover in module::Tools */
-    }
-  }
-
 }
 
 //
@@ -9245,7 +9231,7 @@ function AndImmediate( test )
   {
     test.case = 'take take';
     let t = context.t1;
-    let track = [];
+    track = [];
     let con1 = new _.Consequence({ tag : 'con1' });
     let con2 = new _.Consequence({ tag : 'con2' });
     let con = _.Consequence.AndImmediate( con1, con2 );
@@ -9335,7 +9321,7 @@ function AndImmediate( test )
   {
     test.case = 'error take';
     let t = context.t1;
-    let track = [];
+    track = [];
     let con1 = new _.Consequence({ tag : 'con1' });
     let con2 = new _.Consequence({ tag : 'con2' });
     let con = _.Consequence.AndImmediate( con1, con2 );
@@ -9430,7 +9416,7 @@ function AndImmediate( test )
   {
     test.case = 'take error';
     let t = context.t1;
-    let track = [];
+    track = [];
     let con1 = new _.Consequence({ tag : 'con1' });
     let con2 = new _.Consequence({ tag : 'con2' });
     let con = _.Consequence.AndImmediate( con1, con2 );
@@ -9496,9 +9482,7 @@ function AndImmediate( test )
     });
     _.time.out( t * 2 + t/2, () =>
     {
-      debugger;
       test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
-      debugger;
       test.identical( con.competitorsCount(), 0 );
       test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
       test.identical( con1.competitorsEarlyGet().length, 0 );
@@ -9540,7 +9524,7 @@ function And( test )
   {
     test.case = 'take take';
     let t = context.t1*2;
-    let track = [];
+    track = [];
     let con1 = new _.Consequence({ tag : 'con1' });
     let con2 = new _.Consequence({ tag : 'con2' });
     let con = _.Consequence.And( con1, con2 );
@@ -9630,7 +9614,7 @@ function And( test )
   {
     test.case = 'error take';
     let t = context.t1*2;
-    let track = [];
+    track = [];
     let con1 = new _.Consequence({ tag : 'con1' });
     let con2 = new _.Consequence({ tag : 'con2' });
     let con = _.Consequence.And( con1, con2 );
@@ -9725,7 +9709,7 @@ function And( test )
   {
     test.case = 'take error';
     let t = context.t1*2;
-    let track = [];
+    track = [];
     let con1 = new _.Consequence({ tag : 'con1' });
     let con2 = new _.Consequence({ tag : 'con2' });
     let con = _.Consequence.And( con1, con2 );
@@ -9817,6 +9801,193 @@ function And( test )
   /* */
 
   return ready;
+}
+
+//
+
+function AndUncaughtError( test )
+{
+  let context = this;
+  let track;
+  let ready = new _.Consequence().take( null )
+
+  /* */
+
+  .then( function( arg )
+  {
+    test.case = 'error take uncaughtError';
+    let t = context.t1;
+    track = [];
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con2 = new _.Consequence({ tag : 'con2' });
+    let con = _.Consequence.AndImmediate( con1, con2 );
+    let err1 = _.err( 'Error1' );
+
+    _.process.on( 'uncaughtError', uncaughtError_functor( 'Error1' ) );
+
+    con1.tap( ( err, arg ) =>
+    {
+      track.push( 'con1.tap' );
+    });
+
+    con2.tap( ( err, arg ) =>
+    {
+      track.push( 'con2.tap' );
+    });
+
+    con.tap( function( err, got )
+    {
+      track.push( 'con.tap' );
+      test.identical( got, undefined );
+      test.is( err === err1 );
+      test.is( !_.errIsAttended( err ) );
+      test.is( _.errIsWary( err ) );
+      test.is( !_.errIsSuspended( err ) );
+    });
+
+    _.time.out( t, () =>
+    {
+      track.push( 'con1.error' );
+      con1.error( err1 );
+    });
+    _.time.out( t * 2, () =>
+    {
+      track.push( 'con2.take' );
+      con2.take( 2 )
+    });
+
+    return _.time.out( t * 4, function()
+    {
+      var exp = [ 'con1.error', 'con1.tap', 'con2.take', 'con2.tap', 'con.tap', 'uncaughtError' ];
+      test.identical( track, exp );
+      return null;
+    });
+
+  })
+
+  /* */
+
+  .then( function( arg )
+  {
+    test.case = 'take error uncaughtError';
+    let t = context.t1;
+    track = [];
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con2 = new _.Consequence({ tag : 'con2' });
+    let con = _.Consequence.AndImmediate( con1, con2 );
+    let err1 = _.err( 'Error1' );
+
+    _.process.on( 'uncaughtError', uncaughtError_functor( 'Error1' ) );
+
+    con1.tap( ( err, arg ) =>
+    {
+      track.push( 'con1.tap' );
+    });
+
+    con2.tap( ( err, arg ) =>
+    {
+      track.push( 'con2.tap' );
+    });
+
+    con.tap( function( err, got )
+    {
+      track.push( 'con.tap' );
+      test.identical( got, undefined );
+      test.is( err === err1 );
+      test.is( !_.errIsAttended( err ) );
+      test.is( _.errIsWary( err ) );
+      test.is( !_.errIsSuspended( err ) );
+    });
+
+    _.time.out( t, () =>
+    {
+      track.push( 'con1.error' );
+      con1.take( 1 );
+    });
+    _.time.out( t * 2, () =>
+    {
+      track.push( 'con2.take' );
+      con2.error( err1 )
+    });
+
+    return _.time.out( t * 4, function()
+    {
+      var exp = [ 'con1.error', 'con1.tap', 'con2.take', 'con2.tap', 'con.tap', 'uncaughtError' ];
+      test.identical( track, exp );
+      return null;
+    });
+
+  })
+
+  /* */
+
+  .then( function( arg )
+  {
+    test.case = 'error-non-object take uncaughtError';
+    let t = context.t1;
+    track = [];
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con2 = new _.Consequence({ tag : 'con2' });
+    let con = _.Consequence.AndImmediate( con1, con2 );
+
+    _.process.on( 'uncaughtError', uncaughtError_functor( '1' ) );
+
+    con1.tap( ( err, arg ) =>
+    {
+      track.push( 'con1.tap' );
+    });
+
+    con2.tap( ( err, arg ) =>
+    {
+      track.push( 'con2.tap' );
+    });
+
+    con.tap( function( err, got )
+    {
+      track.push( 'con.tap' );
+      test.identical( got, undefined );
+      test.is( _.errIs( err ) );
+      test.is( !_.errIsAttended( err ) );
+      test.is( _.errIsWary( err ) );
+      test.is( !_.errIsSuspended( err ) );
+    });
+
+    _.time.out( t, () =>
+    {
+      track.push( 'con1.error' );
+      con1.error( 1 );
+    });
+    _.time.out( t * 2, () =>
+    {
+      track.push( 'con2.take' );
+      con2.take( 2 )
+    });
+
+    return _.time.out( t * 4, function()
+    {
+      var exp = [ 'con1.error', 'con1.tap', 'con2.take', 'con2.tap', 'con.tap', 'uncaughtError' ];
+      test.identical( track, exp );
+      return null;
+    });
+
+  })
+
+  /* */
+
+  return ready;
+
+  function uncaughtError_functor( originalMessage )
+  {
+    return function uncaughtError( e )
+    {
+      debugger;
+      test.equivalent( e.err.originalMessage, originalMessage );
+      _.errAttend( e.err );
+      track.push( 'uncaughtError' );
+      _.process.off( 'uncaughtError', uncaughtError );
+    }
+  }
+
 }
 
 // --
@@ -15515,6 +15686,7 @@ let Self =
     AndTake, /* qqq2 : implement very similar test for routine andTake, alsoTake */
     AndImmediate, /* qqq2 : implement very similar test for routine andImmediate, alsoImmediate */
     And,
+    AndUncaughtError,
 
     // or
 
@@ -15560,8 +15732,7 @@ let Self =
     thenSequenceSync,
     // thenSequenceAsync,
 
-    // experiment
-
+    // experiment,
 
   },
 
