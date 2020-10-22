@@ -15936,6 +15936,36 @@ function takeInToolsNamespace( test )
   });
 }
 
+//
+
+function takeSymbolInErrorChanel( test )
+{
+  test.case = 'by method take';
+  var symbolOk = Symbol.for( 'Ok' );
+  var con = new _.Consequence().take( symbolOk, undefined );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : symbolOk, 'argument' : undefined } );
+
+  test.case = 'by method error';
+  var symbolOk = Symbol.for( 'Ok' );
+  var con = new _.Consequence().error( symbolOk );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : symbolOk, 'argument' : undefined } );
+
+  /* - */
+
+  if( !Config.debug )
+  return;
+
+  test.case = 'not Symbol, not Error';
+  test.shouldThrowErrorAsync( () => new _.Consequence().take( 'Ok', undefined ) );
+  test.shouldThrowErrorAsync( () => new _.Consequence().error( 'Ok' ) );
+}
+
 // --
 // competitor
 // --
@@ -18191,6 +18221,7 @@ let Self =
 
     take,
     takeInToolsNamespace,
+    takeSymbolInErrorChanel,
 
     // competitor
 
