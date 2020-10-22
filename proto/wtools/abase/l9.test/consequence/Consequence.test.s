@@ -11804,9 +11804,10 @@ function orKeepingCheckProcedureSourcePath( test )
   var competitor = con.competitorsGet()[ 0 ];
   var infoFromErr = _._err({ args : [ '' ], level : 1 });
   var number = infoFromErr.lineNumber - 2;
-  var path = infoFromErr.location.filePath;
-  var exp = `${ path }:${ number }`;
+  var fileName = infoFromErr.location.fileName;
+  var exp = `${ fileName }:${ number }`;
   test.is( _.strHas( competitor.procedure._sourcePath, exp ) );
+  test.is( _.strHas( competitor.procedure._sourcePath, infoFromErr.location.routineName ) );
 
   con1.take( 1 );
   con2.take( 2 );
@@ -12587,9 +12588,10 @@ function orTakingCheckProcedureSourcePath( test )
   var competitor = con.competitorsGet()[ 0 ];
   var infoFromErr = _._err({ args : [ '' ], level : 1 });
   var number = infoFromErr.lineNumber - 2;
-  var path = infoFromErr.location.filePath;
-  var exp = `${ path }:${ number }`;
+  var fileName = infoFromErr.location.fileName;
+  var exp = `${ fileName }:${ number }`;
   test.is( _.strHas( competitor.procedure._sourcePath, exp ) );
+  test.is( _.strHas( competitor.procedure._sourcePath, infoFromErr.location.routineName ) );
 
   con1.take( 1 );
   con2.take( 2 );
@@ -14299,9 +14301,10 @@ function afterOrKeepingCheckProcedureSourcePath( test )
   var competitor = con.competitorsGet()[ 0 ];
   var infoFromErr = _._err({ args : [ '' ], level : 1 });
   var number = infoFromErr.lineNumber - 2;
-  var path = infoFromErr.location.filePath;
-  var exp = `${ path }:${ number }`;
+  var fileName = infoFromErr.location.fileName;
+  var exp = `${ fileName }:${ number }`;
   test.is( _.strHas( competitor.procedure._sourcePath, exp ) );
+  test.is( _.strHas( competitor.procedure._sourcePath, infoFromErr.location.routineName ) );
 
   con1.take( 1 );
   con2.take( 2 );
@@ -15046,9 +15049,10 @@ function afterOrTakingCheckProcedureSourcePath( test )
   var competitor = con.competitorsGet()[ 0 ];
   var infoFromErr = _._err({ args : [ '' ], level : 1 });
   var number = infoFromErr.lineNumber - 2;
-  var path = infoFromErr.location.filePath;
-  var exp = `${ path }:${ number }`;
+  var fileName = infoFromErr.location.fileName;
+  var exp = `${ fileName }:${ number }`;
   test.is( _.strHas( competitor.procedure._sourcePath, exp ) );
+  test.is( _.strHas( competitor.procedure._sourcePath, infoFromErr.location.routineName ) );
 
   con1.take( 1 );
   con2.take( 2 );
