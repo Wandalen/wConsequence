@@ -8628,6 +8628,7 @@ function _and( test )
 function AndKeep( test )
 {
   let context = this;
+  let track;
   let ready = new _.Consequence().take( null )
 
   /* */
@@ -8635,7 +8636,7 @@ function AndKeep( test )
   .then( function( arg )
   {
     test.case = 'take take';
-    let t = context.t1;
+    let t = context.t1*2;
     let track = [];
     let con1 = new _.Consequence({ tag : 'con1' });
     let con2 = new _.Consequence({ tag : 'con2' });
@@ -8725,12 +8726,12 @@ function AndKeep( test )
   .then( function( arg )
   {
     test.case = 'error take';
-    let t = context.t1;
+    let t = context.t1*2;
     let track = [];
     let con1 = new _.Consequence({ tag : 'con1' });
     let con2 = new _.Consequence({ tag : 'con2' });
     let con = _.Consequence.AndKeep( con1, con2 );
-    let err1 = _.errAttend( 'Error1' );
+    let err1 = _.err( 'Error1' );
 
     con1.tap( ( err, arg ) =>
     {
@@ -8765,6 +8766,10 @@ function AndKeep( test )
       test.identical( con1.competitorsEarlyGet().length, 0 );
       test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
       test.identical( con2.competitorsEarlyGet().length, 0 );
+      test.is( !_.errIsAttended( err ) );
+      test.is( _.errIsWary( err ) );
+      test.is( !_.errIsSuspended( err ) );
+      _.errAttend( err );
     });
 
     _.time.out( t, () =>
@@ -8816,12 +8821,12 @@ function AndKeep( test )
   .then( function( arg )
   {
     test.case = 'take error';
-    let t = context.t1;
+    let t = context.t1*2;
     let track = [];
     let con1 = new _.Consequence({ tag : 'con1' });
     let con2 = new _.Consequence({ tag : 'con2' });
     let con = _.Consequence.AndKeep( con1, con2 );
-    let err1 = _.errAttend( 'Error1' );
+    let err1 = _.err( 'Error1' );
 
     con1.tap( ( err, arg ) =>
     {
@@ -8856,6 +8861,10 @@ function AndKeep( test )
       test.identical( con1.competitorsEarlyGet().length, 0 );
       test.identical( con2.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
       test.identical( con2.competitorsEarlyGet().length, 0 );
+      test.is( !_.errIsAttended( err ) );
+      test.is( _.errIsWary( err ) );
+      test.is( !_.errIsSuspended( err ) );
+      _.errAttend( err );
     });
 
     _.time.out( t, () =>
@@ -8912,6 +8921,7 @@ function AndKeep( test )
 function AndTake( test )
 {
   let context = this;
+  let track;
   let ready = new _.Consequence().take( null )
 
   /* */
@@ -9016,7 +9026,7 @@ function AndTake( test )
     let con1 = new _.Consequence({ tag : 'con1' });
     let con2 = new _.Consequence({ tag : 'con2' });
     let con = _.Consequence.AndTake( con1, con2 );
-    let err1 = _.errAttend( 'Error1' );
+    let err1 = _.err( 'Error1' );
 
     con1.tap( ( err, arg ) =>
     {
@@ -9051,6 +9061,10 @@ function AndTake( test )
       test.identical( con1.competitorsEarlyGet().length, 1 );
       test.identical( con2.resourcesGet(), [] );
       test.identical( con2.competitorsEarlyGet().length, 1 );
+      test.is( !_.errIsAttended( err ) );
+      test.is( _.errIsWary( err ) );
+      test.is( !_.errIsSuspended( err ) );
+      _.errAttend( err );
     });
 
     _.time.out( t, () =>
@@ -9109,7 +9123,7 @@ function AndTake( test )
     let con1 = new _.Consequence({ tag : 'con1' });
     let con2 = new _.Consequence({ tag : 'con2' });
     let con = _.Consequence.AndTake( con1, con2 );
-    let err1 = _.errAttend( 'Error1' );
+    let err1 = _.err( 'Error1' );
 
     con1.tap( ( err, arg ) =>
     {
@@ -9144,7 +9158,13 @@ function AndTake( test )
       test.identical( con1.competitorsEarlyGet().length, 1 );
       test.identical( con2.resourcesGet(), [] );
       test.identical( con2.competitorsEarlyGet().length, 1 );
+      test.is( !_.errIsAttended( err ) );
+      test.is( _.errIsWary( err ) );
+      test.is( !_.errIsSuspended( err ) );
+      _.errAttend( err );
     });
+
+    // _.process.on( 'uncaughtError', uncaughtError_functor( mode ) );
 
     _.time.out( t, () =>
     {
@@ -9195,13 +9215,28 @@ function AndTake( test )
   /* */
 
   return ready;
+
+  function uncaughtError_functor( mode )
+  {
+    return function uncaughtError( e )
+    {
+      var exp = `xxx`;
+      test.equivalent( e.err.originalMessage, exp )
+      _.errAttend( e.err );
+      track.push( 'uncaughtError' );
+      _.process.off( 'uncaughtError', uncaughtError ); /* xxx : cover in module::Tools */
+    }
+  }
+
 }
 
 //
 
+/* xxx : add test case not attending errors */
 function AndImmediate( test )
 {
   let context = this;
+  let track;
   let ready = new _.Consequence().take( null )
 
   /* */
@@ -9304,7 +9339,7 @@ function AndImmediate( test )
     let con1 = new _.Consequence({ tag : 'con1' });
     let con2 = new _.Consequence({ tag : 'con2' });
     let con = _.Consequence.AndImmediate( con1, con2 );
-    let err1 = _.errAttend( 'Error1' );
+    let err1 = _.err( 'Error1' );
 
     con1.tap( ( err, arg ) =>
     {
@@ -9339,6 +9374,10 @@ function AndImmediate( test )
       test.identical( con1.competitorsEarlyGet().length, 0 );
       test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
       test.identical( con2.competitorsEarlyGet().length, 0 );
+      test.is( !_.errIsAttended( err ) );
+      test.is( _.errIsWary( err ) );
+      test.is( !_.errIsSuspended( err ) );
+      _.errAttend( err );
     });
 
     _.time.out( t, () =>
@@ -9395,7 +9434,7 @@ function AndImmediate( test )
     let con1 = new _.Consequence({ tag : 'con1' });
     let con2 = new _.Consequence({ tag : 'con2' });
     let con = _.Consequence.AndImmediate( con1, con2 );
-    let err1 = _.errAttend( 'Error1' );
+    let err1 = _.err( 'Error1' );
 
     con1.tap( ( err, arg ) =>
     {
@@ -9430,6 +9469,10 @@ function AndImmediate( test )
       test.identical( con1.competitorsEarlyGet().length, 0 );
       test.identical( con2.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
       test.identical( con2.competitorsEarlyGet().length, 0 );
+      test.is( !_.errIsAttended( err ) );
+      test.is( _.errIsWary( err ) );
+      test.is( !_.errIsSuspended( err ) );
+      _.errAttend( err );
     });
 
     _.time.out( t, () =>
@@ -9453,7 +9496,9 @@ function AndImmediate( test )
     });
     _.time.out( t * 2 + t/2, () =>
     {
+      debugger;
       test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      debugger;
       test.identical( con.competitorsCount(), 0 );
       test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
       test.identical( con1.competitorsEarlyGet().length, 0 );
@@ -9486,6 +9531,7 @@ function AndImmediate( test )
 function And( test )
 {
   let context = this;
+  let track;
   let ready = new _.Consequence().take( null )
 
   /* */
@@ -9493,7 +9539,7 @@ function And( test )
   .then( function( arg )
   {
     test.case = 'take take';
-    let t = context.t1;
+    let t = context.t1*2;
     let track = [];
     let con1 = new _.Consequence({ tag : 'con1' });
     let con2 = new _.Consequence({ tag : 'con2' });
@@ -9583,12 +9629,12 @@ function And( test )
   .then( function( arg )
   {
     test.case = 'error take';
-    let t = context.t1;
+    let t = context.t1*2;
     let track = [];
     let con1 = new _.Consequence({ tag : 'con1' });
     let con2 = new _.Consequence({ tag : 'con2' });
     let con = _.Consequence.And( con1, con2 );
-    let err1 = _.errAttend( 'Error1' );
+    let err1 = _.err( 'Error1' );
 
     con1.tap( ( err, arg ) =>
     {
@@ -9623,6 +9669,10 @@ function And( test )
       test.identical( con1.competitorsEarlyGet().length, 0 );
       test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
       test.identical( con2.competitorsEarlyGet().length, 0 );
+      test.is( !_.errIsAttended( err ) );
+      test.is( _.errIsWary( err ) );
+      test.is( !_.errIsSuspended( err ) );
+      _.errAttend( err );
     });
 
     _.time.out( t, () =>
@@ -9674,12 +9724,12 @@ function And( test )
   .then( function( arg )
   {
     test.case = 'take error';
-    let t = context.t1;
+    let t = context.t1*2;
     let track = [];
     let con1 = new _.Consequence({ tag : 'con1' });
     let con2 = new _.Consequence({ tag : 'con2' });
     let con = _.Consequence.And( con1, con2 );
-    let err1 = _.errAttend( 'Error1' );
+    let err1 = _.err( 'Error1' );
 
     con1.tap( ( err, arg ) =>
     {
@@ -9714,6 +9764,10 @@ function And( test )
       test.identical( con1.competitorsEarlyGet().length, 0 );
       test.identical( con2.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
       test.identical( con2.competitorsEarlyGet().length, 0 );
+      test.is( !_.errIsAttended( err ) );
+      test.is( _.errIsWary( err ) );
+      test.is( !_.errIsSuspended( err ) );
+      _.errAttend( err );
     });
 
     _.time.out( t, () =>

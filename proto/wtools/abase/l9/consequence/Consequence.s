@@ -1714,7 +1714,7 @@ function _and( o )
   let waitingOthers = o.waitingOthers;
   let procedure = self.procedure( o.stack, 1 ).nameElse( '_and' ); /* qqq2 : cover procedure.sourcePath of each derived routine */
   let escaped = 0;
-  let errId = {};
+  let errOwner = {};
 
   _.assertRoutineOptions( _and, arguments );
 
@@ -1899,8 +1899,11 @@ function _and( o )
 
     if( !waitingOthers && op.competitor !== self && _.consequenceIs( op.competitor ) )
     {
-      if( op.err && op.err.suspended === errId )
-      op.err = _.errSuspend( op.err, false );
+      // if( op.err )
+      // debugger;
+      // if( op.err && op.err.suspended === errOwner )
+      // if( op.err )
+      // op.err = _.errSuspend( op.err, errOwner, false );
       op.competitor.take( op.err, op.arg ); /* xxx : use maybe routine time.soon? */
     }
 
@@ -1908,9 +1911,9 @@ function _and( o )
     if( left === 0 )
     {
       if( escaped && waitingResource )
-      _.time.soon( __take );
+      _.time.soon( done );
       else
-      __take();
+      done();
     }
 
   }
@@ -1922,8 +1925,8 @@ function _and( o )
     _.assert( op.index >= 0 )
     if( op.err )
     {
-      op.err = _.errSuspend( op.err, errId );
-      _.assert( op.err.suspended === errId );
+      op.err = _.errSuspend( op.err, errOwner, true );
+      _.assert( op.err.suspended === errOwner );
     }
     errs[ op.index ] = op.err;
     args[ op.index ] = op.arg;
@@ -1932,9 +1935,16 @@ function _and( o )
 
   /* */
 
-  function __take()
+  function done()
   {
     let competitors2 = [];
+
+    for( let i = first ; i < last ; i++ )
+    {
+      let err = errs[ i ];
+      if( err )
+      err = _.errSuspend( err, errOwner, false );
+    }
 
     if( keeping && waitingOthers )
     for( let i = first ; i < last ; i++ )
@@ -1947,10 +1957,8 @@ function _and( o )
       continue;
 
       let err = errs[ i ];
-      if( err && err.suspended === errId )
-      {
-        err = _.errSuspend( err, false );
-      }
+      // if( err )
+      // err = _.errSuspend( err, errOwner, false );
 
       competitor.take( err, args[ i ] );
       competitors2.push( competitor );
@@ -1958,6 +1966,11 @@ function _and( o )
 
     if( accumulative )
     args = _.arrayFlatten( args );
+
+    if( anyErr )
+    {
+      anyErr = _.errSuspend( anyErr, errOwner, false );
+    }
 
     if( anyErr )
     self.error( anyErr );
@@ -2835,23 +2848,29 @@ function __handleError( err, competitor )
     });
   }
 
-  if( _.errIsAttended( err ) )
-  return err;
+  // if( _.errIsAttended( err ) )
+  // return err;
 
-  let timer = _.time._finally( self.UncaughtTimeOut, function uncaught()
-  {
-
-    if( !_.time.timerIsCancelBegun( timer ) && _.errIsSuspended( err ) )
-    return;
-
-    if( _.errIsAttended( err ) )
-    return;
-
-    _.setup._errUncaughtHandler2( err, 'uncaught asynchronous error' );
-    return null;
-  });
+  _.error._handleUncaughtAsync( err );
 
   return err;
+  // let timer = _.time._finally( self.UncaughtTimeOut, function uncaught()
+  // {
+  //
+  //   if( _.errIsAttended( err ) )
+  //   return;
+  //
+  //   // if( !_.time.timerIsCancelBegun( timer ) && _.errIsSuspended( err ) ) /* yyy */
+  //   // return;
+  //
+  //   if( _.errIsSuspended( err ) )
+  //   return;
+  //
+  //   _.error._handleUncaught2( err, 'uncaught asynchronous error' );
+  //   return null;
+  // });
+  //
+  // return err;
 }
 
 //
@@ -4571,7 +4590,7 @@ let Statics =
 
   //
 
-  UncaughtTimeOut : 100,
+  // UncaughtTimeOut : 100,
   Diagnostics : 1,
   AsyncCompetitorHanding : 0,
   AsyncResourceAdding : 0,
@@ -4749,7 +4768,9 @@ let Extension =
   takeSoon,
   takeAll,
   take,
+  resolve : take,
   error,
+  reject : error,
   __take,
   // __onTake, /*  aaa : Dmytro : commented due to task. Maybe, need to remove */
 
