@@ -2210,7 +2210,6 @@ function AndImmediate()
   result.procedure( 1 ).nameElse( 'AndImmediate' );
   result.then( ( arg ) =>
   {
-    debugger;
     _.assert( arg[ arg.length - 1 ] === null );
     arg.splice( arg.length - 1, 1 );
     return arg;
