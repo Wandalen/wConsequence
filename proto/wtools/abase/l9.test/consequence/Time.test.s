@@ -94,6 +94,217 @@ sleep.timeOut = 30000;
 
 //
 
+function ready( test )
+{
+  let context = this;
+  let ready =  new _.Consequence().take( null );
+
+  /* */
+
+  ready.then( () =>
+  {
+    test.case = 'without arguments';
+    var proceduresBefore = _.Procedure.Counter;
+    var got = _.time.ready();
+    var proceduresAfter = _.Procedure.Counter;
+    test.identical( proceduresAfter - proceduresBefore, 2 );
+    test.is( _.consequenceIs( got ) );
+
+    return null;
+  });
+
+  ready.then( () =>
+  {
+    test.case = 'only onReady, no timeOut';
+    var arr = [];
+    var onReady = () => arr.push( 1 );
+    var proceduresBefore = _.Procedure.Counter;
+    _.time.ready( onReady );
+    var proceduresAfter = _.Procedure.Counter;
+    test.identical( proceduresAfter - proceduresBefore, 2 );
+
+    return _.time.out( context.dt2, () =>
+    {
+      test.identical( arr, [ 1 ] );
+      return null;
+    });
+  });
+
+  ready.then( () =>
+  {
+    test.case = 'timeOut and onReady';
+    var arr = [];
+    var onReady = () => arr.push( 1 );
+    var proceduresBefore = _.Procedure.Counter;
+    _.time.ready( context.dt2, onReady );
+    var proceduresAfter = _.Procedure.Counter;
+    test.identical( proceduresAfter - proceduresBefore, 2 );
+    test.identical( arr, [] );
+
+    return _.time.out( context.dt2 * 2, () =>
+    {
+      test.identical( arr, [ 1 ] );
+      return null;
+    });
+  });
+
+  /* */
+
+  ready.then( () =>
+  {
+    test.case = 'empty map';
+    var proceduresBefore = _.Procedure.Counter;
+    var got = _.time.ready( {} );
+    var proceduresAfter = _.Procedure.Counter;
+    test.identical( proceduresAfter - proceduresBefore, 2 );
+    test.is( _.consequenceIs( got ) );
+
+    return null;
+  });
+
+  ready.then( () =>
+  {
+    test.case = 'only timeOut';
+    var proceduresBefore = _.Procedure.Counter;
+    var got = _.time.ready({ timeOut : context.dt1 });
+    var proceduresAfter = _.Procedure.Counter;
+    test.identical( proceduresAfter - proceduresBefore, 2 );
+    test.identical( got.resourcesCount(), 0 );
+
+    return _.time.out( context.dt2, () =>
+    {
+      test.identical( got.resourcesCount(), 1 );
+    });
+  });
+
+  ready.then( () =>
+  {
+    test.case = 'only onReady, no timeOut, no procedure';
+    var arr = [];
+    var onReady = () => arr.push( 1 );
+    var proceduresBefore = _.Procedure.Counter;
+    _.time.ready({ onReady });
+    var proceduresAfter = _.Procedure.Counter;
+    test.identical( proceduresAfter - proceduresBefore, 2 );
+
+    return _.time.out( context.dt2, () =>
+    {
+      test.identical( arr, [ 1 ] );
+      return null;
+    });
+  });
+
+  ready.then( () =>
+  {
+    test.case = 'only procedure, no timeOut, no onReady';
+    var procedure = _.Procedure( 2 );
+    var proceduresBefore = _.Procedure.Counter;
+    _.time.ready({ procedure });
+    var proceduresAfter = _.Procedure.Counter;
+    test.identical( proceduresAfter - proceduresBefore, 1 );
+
+    return null;
+  });
+
+  ready.then( () =>
+  {
+    test.case = 'timeOut and onReady';
+    var arr = [];
+    var onReady = () => arr.push( 1 );
+    var proceduresBefore = _.Procedure.Counter;
+    _.time.ready({ timeOut : context.dt1, onReady });
+    var proceduresAfter = _.Procedure.Counter;
+    test.identical( proceduresAfter - proceduresBefore, 2 );
+    test.identical( arr, [] );
+
+    return _.time.out( context.dt2 * 2, () =>
+    {
+      test.identical( arr, [ 1 ] );
+      return null;
+    });
+  });
+
+  ready.then( () =>
+  {
+    test.case = 'timeOut and procedure';
+    var procedure = _.Procedure( 2 );
+    var proceduresBefore = _.Procedure.Counter;
+    var got = _.time.ready({ timeOut : context.dt1, procedure });
+    var proceduresAfter = _.Procedure.Counter;
+    test.identical( proceduresAfter - proceduresBefore, 1 );
+    test.identical( got.resourcesCount(), 0 );
+
+    return _.time.out( context.dt2 * 2, () =>
+    {
+      test.identical( got.resourcesCount(), 1 );
+      return null;
+    });
+  });
+
+  ready.then( () =>
+  {
+    test.case = 'onReady and procedure';
+    var arr = [];
+    var procedure = _.Procedure( 2 );
+    var onReady = () => arr.push( 1 );
+    var proceduresBefore = _.Procedure.Counter;
+    _.time.ready({ procedure, onReady });
+    var proceduresAfter = _.Procedure.Counter;
+    test.identical( proceduresAfter - proceduresBefore, 1 );
+    test.identical( arr, [] );
+
+    return _.time.out( context.dt2 * 2, () =>
+    {
+      test.identical( arr, [ 1 ] );
+      return null;
+    });
+  });
+
+  ready.then( () =>
+  {
+    test.case = 'timeOut, onReady and procedure';
+    var arr = [];
+    var procedure = _.Procedure( 2 );
+    var onReady = () => arr.push( 1 );
+    var proceduresBefore = _.Procedure.Counter;
+    _.time.ready({ timeOut : context.dt1, procedure, onReady });
+    var proceduresAfter = _.Procedure.Counter;
+    test.identical( proceduresAfter - proceduresBefore, 1 );
+    test.identical( arr, [] );
+
+    return _.time.out( context.dt2 * 2, () =>
+    {
+      test.identical( arr, [ 1 ] );
+      return null;
+    });
+  });
+
+  /* - */
+
+  if( !Config.debug )
+  return;
+
+  test.case = 'single arg is not a routine';
+  test.shouldThrowErrorSync( () => _.time.ready( 1 ) );
+
+  test.case = 'wrong type of timeOut';
+  test.shouldThrowErrorSync( () => _.time.ready( 'wrong', () => 'ready' ) );
+  test.shouldThrowErrorSync( () => _.time.ready( 10.5, () => 'ready' ) );
+  test.shouldThrowErrorSync( () => _.time.ready( Infinity, () => 'ready' ) );
+
+  test.case = 'wrong type of onReady';
+  test.shouldThrowErrorSync( () => _.time.ready( 10, 'wrong' ) );
+
+  test.case = 'options map has not known option';
+  test.shouldThrowErrorSync( () => _.time.ready({ timeOut : 10, unknown : 'unknown', onReady : () => 'ready' }) );
+
+  return ready;
+}
+
+ready.timeOut = 10000;
+
+//
+
 function execStages( test )
 {
   let self = this;
@@ -1997,6 +2208,7 @@ let Self =
     // etc
 
     sleep,
+    ready,
     execStages,
 
     // time out
@@ -2023,3 +2235,4 @@ if( typeof module !== 'undefined' && !module.parent )
 wTester.test( Self.name );
 
 })();
+
