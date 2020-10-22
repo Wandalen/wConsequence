@@ -1340,22 +1340,22 @@ function put_head( routine, args )
 
 //
 
-let putGive = _.routineUnite( put_head, _put, 'putGive' );
+let putGive = _.routineUnite({ head : put_head, body : _put, name : 'putGive' });
 var defaults = putGive.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 defaults.keeping = false;
 
-let putKeep = _.routineUnite( put_head, _put, 'putKeep' );
+let putKeep = _.routineUnite({ head : put_head, body : _put, name : 'putKeep' });
 var defaults = putKeep.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 defaults.keeping = true;
 
-let thenPutGive = _.routineUnite( put_head, _put, 'thenPutGive' );
+let thenPutGive = _.routineUnite({ head : put_head, body : _put, name : 'thenPutGive' });
 var defaults = thenPutGive.defaults;
 defaults.kindOfResource = KindOfResource.ArgumentOnly;
 defaults.keeping = false;
 
-let thenPutKeep = _.routineUnite( put_head, _put, 'thenPutKeep' );
+let thenPutKeep = _.routineUnite({ head : put_head, body : _put, name : 'thenPutKeep' });
 var defaults = thenPutKeep.defaults;
 defaults.kindOfResource = KindOfResource.ArgumentOnly;
 defaults.keeping = true;
@@ -1609,12 +1609,12 @@ _timeLimit.having =
   consequizing : 1,
 }
 
-let timeLimit = _.routineUnite( timeLimit_head, _timeLimit, 'timeLimit' );
+let timeLimit = _.routineUnite({ head : timeLimit_head, body : _timeLimit, name : 'timeLimit' });
 var defaults = timeLimit.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 defaults.throwing = 0;
 
-let timeLimitThrowing = _.routineUnite( timeLimit_head, _timeLimit, 'timeLimitThrowing' );
+let timeLimitThrowing = _.routineUnite({ head : timeLimit_head, body : _timeLimit, name : 'timeLimitThrowing' });
 var defaults = timeLimitThrowing.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 defaults.throwing = 1;
@@ -1671,14 +1671,18 @@ function timeLimitThrowingSplit( time )
 
 function TimeLimit( timeLimit, consequence )
 {
-  return new _.Consequence().take( null ).timeLimit( timeLimit, consequence );
+  let result = new _.Consequence().take( null )
+  .timeLimit( timeLimit, consequence );
+  return result;
 }
 
 //
 
 function TimeLimitThrowing( timeLimit, consequence )
 {
-  return new _.Consequence().take( null ).timeLimitThrowing( timeLimit, consequence );
+  let result = new _.Consequence().take( null )
+  .timeLimitThrowing( timeLimit, consequence );
+  return result;
 }
 
 // --
@@ -2064,7 +2068,7 @@ having.andLike = 1;
  * @class wConsequence
  */
 
-let andTake = _.routineUnite( and_head, _and, 'andTake' );
+let andTake = _.routineUnite({ head : and_head, body : _and, name : 'andTake' });
 var defaults = andTake.defaults;
 defaults.keeping = false;
 
@@ -2081,7 +2085,7 @@ defaults.keeping = false;
  * @class wConsequence
  */
 
-let andKeep = _.routineUnite( and_head, _and, 'andKeep' );
+let andKeep = _.routineUnite({ head : and_head, body : _and, name : 'andKeep' });
 var defaults = andKeep.defaults;
 defaults.keeping = true;
 
@@ -2217,7 +2221,23 @@ function AndImmediate()
 // or
 // --
 
-/* qqq2 : write head similar _and has and use it in and* routines */
+/* aaa2 : write head similar _and has and use it in or* routines */ /* Dmytro : implemented, used */
+
+function or_head( routine, args )
+{
+  let o = args[ 0 ];
+
+  if( !_.mapIs( o ) )
+  o = { competitors : args[ 0 ] };
+
+  _.routineOptions( routine, o );
+  _.assert( arguments.length === 2 );
+  _.assert( args.length === 1 );
+
+  return o;
+}
+
+//
 
 function _or( o )
 {
@@ -2332,35 +2352,47 @@ _or.having =
 
 //
 
-function afterOrTaking( competitors )
-{
-  let self = this;
-  _.assert( arguments.length === 1, 'Expects single argument' );
-  return self._or
-  ({
-    competitors,
-    keeping : false,
-    waitingResource : true,
-    stack : 2,
-  });
-}
+// function afterOrTaking( competitors )
+// {
+//   let self = this;
+//   _.assert( arguments.length === 1, 'Expects single argument' );
+//   return self._or
+//   ({
+//     competitors,
+//     keeping : false,
+//     waitingResource : true,
+//     stack : 2,
+//   });
+// }
+
+let afterOrTaking = _.routineUnite({ head : or_head, body : _or, name : 'afterOrTaking' });
+
+afterOrTaking.defaults = Object.create( _or.defaults );
+afterOrTaking.defaults.keeping = false;
+afterOrTaking.defaults.waitingResource = true;
 
 afterOrTaking.having = Object.create( _or.having );
 
 //
 
-function afterOrKeeping( competitors )
-{
-  let self = this;
-  _.assert( arguments.length === 1, 'Expects single argument' );
-  return self._or
-  ({
-    competitors,
-    keeping : true,
-    waitingResource : true,
-    stack : 2,
-  });
-}
+// function afterOrKeeping( competitors )
+// {
+//   let self = this;
+//   _.assert( arguments.length === 1, 'Expects single argument' );
+//   return self._or
+//   ({
+//     competitors,
+//     keeping : true,
+//     waitingResource : true,
+//     stack : 2,
+//   });
+// }
+
+let afterOrKeeping = _.routineUnite({ head : or_head, body : _or, name : 'afterOrKeeping' });
+
+afterOrKeeping.defaults = Object.create( _or.defaults );
+afterOrKeeping.defaults.keeping = true;
+afterOrKeeping.defaults.waitingResource = true;
 
 afterOrKeeping.having = Object.create( _or.having );
 
@@ -2390,35 +2422,47 @@ orKeepingSplit.having = Object.create( _or.having );
 
 //
 
-function orTaking( competitors )
-{
-  let self = this;
-  _.assert( arguments.length === 1, 'Expects single argument' );
-  return self._or
-  ({
-    competitors,
-    keeping : false,
-    waitingResource : false,
-    stack : 2,
-  });
-}
+// function orTaking( competitors )
+// {
+//   let self = this;
+//   _.assert( arguments.length === 1, 'Expects single argument' );
+//   return self._or
+//   ({
+//     competitors,
+//     keeping : false,
+//     waitingResource : false,
+//     stack : 2,
+//   });
+// }
+
+let orTaking = _.routineUnite({ head : or_head, body : _or, name : 'orTaking' });
+
+orTaking.defaults = Object.create( _or.defaults );
+orTaking.defaults.keeping = false;
+orTaking.defaults.waitingResource = false;
 
 orTaking.having = Object.create( _or.having );
 
 //
 
-function orKeeping( competitors )
-{
-  let self = this;
-  _.assert( arguments.length === 1, 'Expects single argument' );
-  return self._or
-  ({
-    competitors,
-    keeping : true,
-    waitingResource : false,
-    stack : 2,
-  });
-}
+// function orKeeping( competitors )
+// {
+//   let self = this;
+//   _.assert( arguments.length === 1, 'Expects single argument' );
+//   return self._or
+//   ({
+//     competitors,
+//     keeping : true,
+//     waitingResource : false,
+//     stack : 2,
+//   });
+// }
+
+let orKeeping = _.routineUnite({ head : or_head, body : _or, name : 'orKeeping' });
+
+orKeeping.defaults = Object.create( _or.defaults );
+orKeeping.defaults.keeping = true;
+orKeeping.defaults.waitingResource = false;
 
 orKeeping.having = Object.create( _or.having );
 
@@ -3478,11 +3522,28 @@ function competitorHas( competitorRoutine )
 
 //
 
-function competitorsCount()
+function competitorsCount( competitorRoutine )
 {
   let self = this;
-  _.assert( arguments.length === 0, 'Expects no arguments' );
-  return self._competitorsEarly.length + self._competitorsLate.length;
+
+  if( arguments.length === 0 )
+  {
+    return self._competitorsEarly.length + self._competitorsLate.length;
+  }
+  else if( arguments.length === 1 )
+  {
+    _.assert( _.routineIs( competitorRoutine ), 'Expects competitor routine {-competitorRoutine-}' );
+
+    let competitorRoutinesEqualize = ( competitor, routine ) => competitor.competitorRoutine === routine;
+    let numberOfEarlyCompetitors = _.longCountElement( self._competitorsEarly, competitorRoutine, competitorRoutinesEqualize );
+    let numberOfLateCompetitors = _.longCountElement( self._competitorsLate, competitorRoutine, competitorRoutinesEqualize );
+
+    return numberOfEarlyCompetitors + numberOfLateCompetitors;
+  }
+  else
+  {
+    _.assert( 0, 'Expects no arguments or single competitor routine {-competitorRoutine-}.' );
+  }
 }
 
 //
@@ -3669,19 +3730,31 @@ function competitorsCancel( competitorRoutine )
 
 //
 
-function argumentsCount()
+function argumentsCount( arg )
 {
   let self = this;
   // self._resources.filter( ( e ) => console.log( e ) );
+
+  if( arguments.length === 0 )
   return self._resources.filter( ( e ) => e.argument !== undefined ).length;
+  else if( arguments.length === 1 )
+  return self._resources.filter( ( e ) => e.argument === arg ).length;
+  else
+  _.assert( 0, 'Expects no arguments or single argument {-arg-}.' );
 }
 
 //
 
-function errorsCount()
+function errorsCount( err )
 {
   let self = this;
+
+  if( arguments.length === 0 )
   return self._resources.filter( ( e ) => e.error !== undefined ).length;
+  else if( arguments.length === 1 )
+  return self._resources.filter( ( e ) => e.error === err ).length;
+  else
+  _.assert( 0, 'Expects no arguments or single argument {-err-}.' );
 }
 
 //
@@ -3713,10 +3786,16 @@ function errorsCount()
  * @class wConsequence
  */
 
-function resourcesCount()
+function resourcesCount( arg )
 {
   let self = this;
+
+  if( arguments.length === 0 )
   return self._resources.length;
+  else if( arguments.length === 1 )
+  return self._resources.filter( ( e ) => e.argument === arg || e.error === arg ).length;
+  else
+  _.assert( 0, 'Expects no arguments or single argument {-arg-}.' );
 }
 
 //
@@ -4772,9 +4851,9 @@ let Extension =
 
   // competitor
 
-  competitorOwn, /* qqq2 : cover */
+  competitorOwn, /* aaa2 : cover */ /* Dmytro : covered, _competitorsLate restricted and not used */
   competitorHas,
-  competitorsCount,  /* qqq2 : cover */
+  competitorsCount,  /* aaa2 : cover */ /* Dmytro : covered, _competitorsLate restricted and not used */
   competitorsEarlyGet,
   competitorsLateGet,
   competitorsGet,
@@ -4782,9 +4861,9 @@ let Extension =
 
   // resource
 
-  argumentsCount, /* qqq2 : cover */
-  errorsCount, /* qqq2 : cover */
-  resourcesCount, /* qqq2 : cover */
+  argumentsCount, /* aaa2 : cover */ /* Dmytro : covered */
+  errorsCount, /* aaa2 : cover */ /* Dmytro : covered */
+  resourcesCount, /* aaa2 : cover */ /* Dmytro : covered */
   resourcesGet,
   argumentsGet,
   errorsGet,
@@ -4892,3 +4971,4 @@ if( typeof module !== 'undefined' )
 module[ 'exports' ] = Self;
 
 })();
+
