@@ -1926,7 +1926,7 @@ function _and( o )
     if( op.err )
     {
       op.err = _.errSuspend( op.err, errOwner, true );
-      _.assert( op.err.suspended === errOwner );
+      // _.assert( op.err.suspended === errOwner );
     }
     errs[ op.index ] = op.err;
     args[ op.index ] = op.arg;
