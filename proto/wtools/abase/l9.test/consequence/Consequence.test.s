@@ -15842,6 +15842,100 @@ function take( test )
   });
 }
 
+//
+
+function takeInToolsNamespace( test )
+{
+  test.case = 'without arguments';
+  var con = _.take();
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : undefined, 'argument' : null } );
+
+  test.case = 'take single argument - null';
+  var con = _.take( null );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : undefined, 'argument' : null } );
+
+  test.case = 'take single argument - string';
+  var con = _.take( 'str' );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : undefined, 'argument' : 'str' } );
+
+  test.case = 'take single argument - array';
+  var con = _.take([ 1, 2 ]);
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : undefined, 'argument' : [ 1, 2 ] } );
+
+  test.case = 'take single argument - error';
+  var err = _._err({ args : [ 'err' ] });
+  var con = _.take( err );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : undefined, 'argument' : err } );
+
+  /* */
+
+  test.case = 'take two arguments - undefined and null';
+  var con = _.take( undefined, null );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : undefined, 'argument' : null } );
+
+  test.case = 'take two arguments - undefined and error';
+  var err = _._err({ args : [ 'err' ] });
+  var con = _.take( undefined, err );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : undefined, 'argument' : err } );
+
+  /* */
+
+  test.case = 'two arguments, error - error, argument - undefined';
+  var err = _.errAttend( 'Error' );
+  var con = _.take( err, undefined );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : err, 'argument' : undefined } );
+
+  test.case = 'two arguments, error - Symbol, argument - undefined';
+  var symbolOk = Symbol.for( 'Ok' );
+  var con = _.take( symbolOk, undefined );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : symbolOk, 'argument' : undefined } );
+
+  /* - */
+
+  if( !Config.debug )
+  return;
+
+  test.case = 'extra arguments';
+  test.shouldThrowErrorSync( () => _.take( undefined, null, 'extra' ) );
+
+  test.case = 'error and argument have not defined values';
+  test.shouldThrowErrorSync( () => _.take( undefined, undefined ) );
+
+  test.case = 'error and argument have defined values';
+  test.shouldThrowErrorSync( () =>
+  {
+    var err = _.errAttend( 'err' );
+    _.take( err, null );
+  });
+}
+
 // --
 // competitor
 // --
@@ -18096,6 +18190,7 @@ let Self =
     // resource handling
 
     take,
+    takeInToolsNamespace,
 
     // competitor
 
