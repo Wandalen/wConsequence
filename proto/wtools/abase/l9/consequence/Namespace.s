@@ -51,7 +51,6 @@ _.assert( !_.Consequence, 'Consequence included several times' );
  * @extends Tools
  */
 
-
 function sleep( delay )
 {
 
@@ -143,6 +142,21 @@ ready_body.defaults =
 //
 
 let ready = _.routineUnite( _.time.ready.head, ready_body );
+
+//
+
+function readyJoin( context, routine, args )
+{
+  let joinedRoutine = _.routineJoin( context, routine, args );
+  return _timeReady;
+  function _timeReady()
+  {
+    let args = arguments;
+    let procedure = _.Procedure({ _stack : 1, _name : 'timeReadyJoin' });
+    let joinedRoutine2 = _.routineSeal( this, joinedRoutine, args );
+    return _.time.ready({ procedure, onReady : joinedRoutine2 });
+  }
+}
 
 //
 
@@ -741,11 +755,12 @@ let ToolsExtension =
 
 let TimeExtension =
 {
+  sleep,
+  ready,
+  readyJoin,
   out,
   outError,
   _errTimeOut,
-  sleep,
-  ready,
 };
 
 _.mapExtend( _, ToolsExtension );
