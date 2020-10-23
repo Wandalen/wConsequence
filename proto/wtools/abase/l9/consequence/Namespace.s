@@ -25,6 +25,33 @@ _.assert( !_.Consequence, 'Consequence included several times' );
 // time
 // --
 
+/**
+ * The routine sleep() suspends program execution on time delay {-delay-}.
+ *
+ * @example
+ * let result = [];
+ * let periodic = _.time.periodic( 100, () => result.length < 10 ? result.push( 1 ) : undefined );
+ * let before = _.time.now();
+ *  _.time.sleep( 500 );
+ * console.log( result.length <= 1 );
+ * // log : true
+ * let after = _.time.now();
+ * let delta = after - before;
+ * console.log( delta <= 550 );
+ * // log : true
+ *
+ * @param { Number } delay - The delay to suspend program.
+ * @returns { Undefined } - Returns not a value, suspends program.
+ * @function sleep
+ * @throws { Error } If arguments.length is less then 1 or great then 2.
+ * @throws { Error } If {-delay-} is not a Number.
+ * @throws { Error } If {-delay-} is less then zero.
+ * @throws { Error } If {-delay-} has not finite value.
+ * @namespace wTools.time
+ * @extends Tools
+ */
+
+
 function sleep( delay )
 {
 
