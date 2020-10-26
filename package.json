@@ -25,13 +25,13 @@
   },
   "dependencies" :
   {
-    "wTools" : "",
-    "wProto" : "",
-    "wCopyable" : "",
-    "wprocedure" : ""
+    "wTools" : "alpha",
+    "wProto" : "alpha",
+    "wCopyable" : "alpha",
+    "wprocedure" : "alpha"
   },
-  "optionalDependencies" : { "deasync" : "" },
-  "devDependencies" : { "wTesting" : "", "eslint" : "=7.1.0", "wConsequence" : "file:." },
+  "optionalDependencies" : { "deasync" : "0.1.20" },
+  "devDependencies" : { "eslint" : "=7.1.0", "wConsequence" : "file:.", "wTesting" : "alpha" },
   "keywords" :
   [
     "wTools",
