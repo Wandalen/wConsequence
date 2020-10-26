@@ -29,4 +29,3 @@ jobs :
       run : npm test
       env :
         WTOOLS_BOT_TOKEN : ${{ secrets.WTOOLS_BOT_TOKEN }}
-
