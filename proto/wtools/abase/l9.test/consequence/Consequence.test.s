@@ -7568,6 +7568,293 @@ function andKeep( test )
 
 //
 
+function andKeepExtended( test )
+{
+  let context = this;
+  let ready = new _.Consequence().take( null )
+
+  /* */
+
+  .then( ( arg ) =>
+  {
+    test.case = 'take take';
+    let t = context.t1;
+    let track = [];
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con2 = new _.Consequence({ tag : 'con2' });
+    let con = new _.Consequence().take( 3 );
+    con.andKeep([ con1, con2 ]);
+
+    con1.tap( ( _err, arg ) =>
+    {
+      track.push( 'con1.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 1 );
+    });
+
+    con2.tap( ( _err, arg ) =>
+    {
+      track.push( 'con2.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    con.tap( ( _err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, [ 1, 2, 3 ] );
+      test.is( _err === undefined );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 1, 2, 3 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    _.time.out( t, () =>
+    {
+      track.push( 'con1.take' );
+      con1.take( 1 );
+    });
+    _.time.out( t + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 2 );
+    });
+    _.time.out( t * 2, () =>
+    {
+      track.push( 'con2.take' );
+      con2.take( 2 )
+    });
+    _.time.out( t * 2 + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 1, 2, 3 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'con1.take', 'con2.take', 'con1.tap', 'con2.tap', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 1, 2, 3 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+      return null;
+    });
+
+  })
+
+  /* */
+
+  .then( ( arg ) =>
+  {
+    test.case = 'error take';
+    let t = context.t1;
+    let track = [];
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con2 = new _.Consequence({ tag : 'con2' });
+    let con = new _.Consequence().take( 3 );
+    con.andKeep([ con1, con2 ]);
+    let err1 = _.errAttend( 'Error1' );
+
+    con1.tap( ( _err, arg ) =>
+    {
+      track.push( 'con1.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 1 );
+    });
+
+    con2.tap( ( _err, arg ) =>
+    {
+      track.push( 'con2.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    con.tap( ( _err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, undefined );
+      test.is( _err === err1 );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    _.time.out( t, () =>
+    {
+      track.push( 'con1.error' );
+      con1.error( err1 );
+    });
+    _.time.out( t + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 2 );
+    });
+    _.time.out( t * 2, () =>
+    {
+      track.push( 'con2.take' );
+      con2.take( 2 )
+    });
+    _.time.out( t * 2 + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'con1.error', 'con2.take', 'con1.tap', 'con2.tap', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+      return null;
+    });
+
+  })
+
+  /* */
+
+  .then( ( arg ) =>
+  {
+    test.case = 'take error';
+    let t = context.t1;
+    let track = [];
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con2 = new _.Consequence({ tag : 'con2' });
+    let con = _.Consequence().take( 3 );
+    con.andKeep([ con1, con2 ]);
+    let err1 = _.errAttend( 'Error1' );
+
+    con1.tap( ( _err, arg ) =>
+    {
+      track.push( 'con1.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 1 );
+    });
+
+    con2.tap( ( _err, arg ) =>
+    {
+      track.push( 'con2.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    con.tap( ( _err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, undefined );
+      test.is( _err === err1 );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    _.time.out( t, () =>
+    {
+      track.push( 'con1.take' );
+      con1.take( 1 );
+    });
+    _.time.out( t + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 2 );
+    });
+    _.time.out( t * 2, () =>
+    {
+      track.push( 'con2.error' );
+      con2.error( err1 )
+    });
+    _.time.out( t * 2 + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'con1.take', 'con2.error', 'con1.tap', 'con2.tap', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+      return null;
+    });
+
+  })
+
+  /* */
+
+  return ready;
+}
+
+//
+
 function andTake( test )
 {
   let context = this;
@@ -7938,6 +8225,299 @@ function andTake( test )
 
 //
 
+function andTakeExtended( test )
+{
+  let context = this;
+  let ready = new _.Consequence().take( null )
+
+  /* */
+
+  .then( ( arg ) =>
+  {
+    test.case = 'take take';
+    let t = context.t1;
+    let track = [];
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con2 = new _.Consequence({ tag : 'con2' });
+    let con = new _.Consequence().take( 3 );
+    con.andTake([ con1, con2 ]);
+
+    con1.tap( ( _err, arg ) =>
+    {
+      track.push( 'con1.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 2 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 1 );
+    });
+
+    con2.tap( ( _err, arg ) =>
+    {
+      track.push( 'con2.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 2 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    con.tap( ( _err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, [ 1, 2, 3 ] );
+      test.is( _err === undefined );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 1, 2, 3 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 1 );
+    });
+
+    _.time.out( t, () =>
+    {
+      track.push( 'con1.take' );
+      con1.take( 1 );
+    });
+    _.time.out( t + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 2 );
+    });
+    _.time.out( t * 2, () =>
+    {
+      track.push( 'con2.take' );
+      con2.take( 2 )
+    });
+    _.time.out( t * 2 + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 1, 2, 3 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 1 );
+    });
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'con1.take', 'con2.take', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 1, 2, 3 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 1 );
+      con1.cancel();
+      con2.cancel();
+      return null;
+    });
+
+  })
+
+  /* */
+
+  .then( ( arg ) =>
+  {
+    test.case = 'error take';
+    let t = context.t1;
+    let track = [];
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con2 = new _.Consequence({ tag : 'con2' });
+    let con = new _.Consequence().take( 3 );
+    con.andTake([ con1, con2 ]);
+    let err1 = _.errAttend( 'Error1' );
+
+    con1.tap( ( _err, arg ) =>
+    {
+      track.push( 'con1.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 2 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 1 );
+    });
+
+    con2.tap( ( _err, arg ) =>
+    {
+      track.push( 'con2.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 2 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 1 );
+    });
+
+    con.tap( ( _err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, undefined );
+      test.is( _err === err1 );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 1 );
+    });
+
+    _.time.out( t, () =>
+    {
+      track.push( 'con1.error' );
+      con1.error( err1 );
+    });
+    _.time.out( t + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 2 );
+    });
+    _.time.out( t * 2, () =>
+    {
+      track.push( 'con2.take' );
+      con2.take( 2 )
+    });
+    _.time.out( t * 2 + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 1 );
+    });
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'con1.error', 'con2.take', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 1 );
+      con1.cancel();
+      con2.cancel();
+      return null;
+    });
+
+  })
+
+  /* */
+
+  .then( ( arg ) =>
+  {
+    test.case = 'take error';
+    let t = context.t1;
+    let track = [];
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con2 = new _.Consequence({ tag : 'con2' });
+    let con = new _.Consequence().take( 3 );
+    con.andTake([ con1, con2 ]);
+    let err1 = _.errAttend( 'Error1' );
+
+    con1.tap( ( _err, arg ) =>
+    {
+      track.push( 'con1.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 2 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 1 );
+    });
+
+    con2.tap( ( _err, arg ) =>
+    {
+      track.push( 'con2.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 2 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 1 );
+    });
+
+    con.tap( ( _err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, undefined );
+      test.is( _err === err1 );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 1 );
+    });
+
+    _.time.out( t, () =>
+    {
+      track.push( 'con1.take' );
+      con1.take( 1 );
+    });
+    _.time.out( t + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 2 );
+    });
+    _.time.out( t * 2, () =>
+    {
+      track.push( 'con2.error' );
+      con2.error( err1 )
+    });
+    _.time.out( t * 2 + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 1 );
+    });
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'con1.take', 'con2.error', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 1 );
+      con1.cancel();
+      con2.cancel();
+      return null;
+    });
+
+  })
+
+  /* */
+
+  return ready;
+}
+
+//
+
 function andKeepAccumulative( test )
 {
   let context = this;
@@ -8039,6 +8619,293 @@ function andKeepAccumulativeNonConsequence( test )
     test.identical( thenArg, [ 3, 2, null, 1, 10 ] );
     test.identical( track, [ 1, 10, null, 2, 3 ] );
   });
+}
+
+//
+
+function andImmediate( test )
+{
+  let context = this;
+  let ready = new _.Consequence().take( null )
+
+  /* */
+
+  .then( ( arg ) =>
+  {
+    test.case = 'take take';
+    let t = context.t1;
+    let track = [];
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con2 = new _.Consequence({ tag : 'con2' });
+    let con = _.Consequence().take( 3 );
+    con.andImmediate([ con1, con2 ]);
+
+    con1.tap( ( _err, arg ) =>
+    {
+      track.push( 'con1.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 2 );
+    });
+
+    con2.tap( ( _err, arg ) =>
+    {
+      track.push( 'con2.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    con.tap( ( _err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, [ 1, 2, 3 ] );
+      test.is( _err === undefined );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 1, 2, 3 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    _.time.out( t, () =>
+    {
+      track.push( 'con1.take' );
+      con1.take( 1 );
+    });
+    _.time.out( t + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 2 );
+    });
+    _.time.out( t * 2, () =>
+    {
+      track.push( 'con2.take' );
+      con2.take( 2 )
+    });
+    _.time.out( t * 2 + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 1, 2, 3 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'con1.take', 'con1.tap', 'con2.take', 'con2.tap', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 1, 2, 3 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+      return null;
+    });
+
+  })
+
+  /* */
+
+  .then( ( arg ) =>
+  {
+    test.case = 'error take';
+    let t = context.t1;
+    let track = [];
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con2 = new _.Consequence({ tag : 'con2' });
+    let con = _.Consequence().take( 3 );
+    con.andImmediate([ con1, con2 ]);
+    let err1 = _.errAttend( 'Error1' );
+
+    con1.tap( ( _err, arg ) =>
+    {
+      track.push( 'con1.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 2 );
+    });
+
+    con2.tap( ( _err, arg ) =>
+    {
+      track.push( 'con2.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    con.tap( ( _err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, undefined );
+      test.is( _err === err1 );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    _.time.out( t, () =>
+    {
+      track.push( 'con1.error' );
+      con1.error( err1 );
+    });
+    _.time.out( t + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 2 );
+    });
+    _.time.out( t * 2, () =>
+    {
+      track.push( 'con2.take' );
+      con2.take( 2 )
+    });
+    _.time.out( t * 2 + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'con1.error', 'con1.tap', 'con2.take', 'con2.tap', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+      return null;
+    });
+
+  })
+
+  /* */
+
+  .then( ( arg ) =>
+  {
+    test.case = 'take error';
+    let t = context.t1;
+    let track = [];
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con2 = new _.Consequence({ tag : 'con2' });
+    let con = _.Consequence().take( 3 );
+    con.andImmediate([ con1, con2 ]);
+    let err1 = _.errAttend( 'Error1' );
+
+    con1.tap( ( _err, arg ) =>
+    {
+      track.push( 'con1.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 2 );
+    });
+
+    con2.tap( ( _err, arg ) =>
+    {
+      track.push( 'con2.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    con.tap( ( _err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, undefined );
+      test.is( _err === err1 );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    _.time.out( t, () =>
+    {
+      track.push( 'con1.take' );
+      con1.take( 1 );
+    });
+    _.time.out( t + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 2 );
+    });
+    _.time.out( t * 2, () =>
+    {
+      track.push( 'con2.error' );
+      con2.error( err1 )
+    });
+    _.time.out( t * 2 + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'con1.take', 'con1.tap', 'con2.error', 'con2.tap', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+      return null;
+    });
+
+  })
+
+  /* */
+
+  return ready;
 }
 
 //
@@ -8204,6 +9071,293 @@ function alsoKeep( test )
     test.identical( thenArg, [ 0, 'a', 'b', 'context', 'd' ] );
     test.identical( track, [ 'd', '0', '2', 'b', 'context', 'a', '1' ] );
   });
+}
+
+//
+
+function alsoKeepExtended( test )
+{
+  let context = this;
+  let ready = new _.Consequence().take( null )
+
+  /* */
+
+  .then( ( arg ) =>
+  {
+    test.case = 'take take';
+    let t = context.t1;
+    let track = [];
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con2 = new _.Consequence({ tag : 'con2' });
+    let con = new _.Consequence().take( 3 );
+    con.alsoKeep([ con1, con2 ]);
+
+    con1.tap( ( _err, arg ) =>
+    {
+      track.push( 'con1.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 1 );
+    });
+
+    con2.tap( ( _err, arg ) =>
+    {
+      track.push( 'con2.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    con.tap( ( _err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, [ 3, 1, 2 ] );
+      test.is( _err === undefined );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 3, 1, 2 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    _.time.out( t, () =>
+    {
+      track.push( 'con1.take' );
+      con1.take( 1 );
+    });
+    _.time.out( t + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 2 );
+    });
+    _.time.out( t * 2, () =>
+    {
+      track.push( 'con2.take' );
+      con2.take( 2 )
+    });
+    _.time.out( t * 2 + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 3, 1, 2 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'con1.take', 'con2.take', 'con1.tap', 'con2.tap', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 3, 1, 2 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+      return null;
+    });
+
+  })
+
+  /* */
+
+  .then( ( arg ) =>
+  {
+    test.case = 'error take';
+    let t = context.t1;
+    let track = [];
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con2 = new _.Consequence({ tag : 'con2' });
+    let con = new _.Consequence().take( 3 );
+    con.alsoKeep([ con1, con2 ]);
+    let err1 = _.errAttend( 'Error1' );
+
+    con1.tap( ( _err, arg ) =>
+    {
+      track.push( 'con1.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 1 );
+    });
+
+    con2.tap( ( _err, arg ) =>
+    {
+      track.push( 'con2.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    con.tap( ( _err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, undefined );
+      test.is( _err === err1 );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    _.time.out( t, () =>
+    {
+      track.push( 'con1.error' );
+      con1.error( err1 );
+    });
+    _.time.out( t + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 2 );
+    });
+    _.time.out( t * 2, () =>
+    {
+      track.push( 'con2.take' );
+      con2.take( 2 )
+    });
+    _.time.out( t * 2 + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'con1.error', 'con2.take', 'con1.tap', 'con2.tap', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+      return null;
+    });
+
+  })
+
+  /* */
+
+  .then( ( arg ) =>
+  {
+    test.case = 'take error';
+    let t = context.t1;
+    let track = [];
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con2 = new _.Consequence({ tag : 'con2' });
+    let con = _.Consequence().take( 3 );
+    con.alsoKeep([ con1, con2 ]);
+    let err1 = _.errAttend( 'Error1' );
+
+    con1.tap( ( _err, arg ) =>
+    {
+      track.push( 'con1.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 1 );
+    });
+
+    con2.tap( ( _err, arg ) =>
+    {
+      track.push( 'con2.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    con.tap( ( _err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, undefined );
+      test.is( _err === err1 );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    _.time.out( t, () =>
+    {
+      track.push( 'con1.take' );
+      con1.take( 1 );
+    });
+    _.time.out( t + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 2 );
+    });
+    _.time.out( t * 2, () =>
+    {
+      track.push( 'con2.error' );
+      con2.error( err1 )
+    });
+    _.time.out( t * 2 + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'con1.take', 'con2.error', 'con1.tap', 'con2.tap', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+      return null;
+    });
+
+  })
+
+  /* */
+
+  return ready;
 }
 
 //
@@ -8470,6 +9624,293 @@ function alsoKeepThrowingAfterAsync( test )
 
   }
 
+}
+
+//
+
+function alsoImmediate( test )
+{
+  let context = this;
+  let ready = new _.Consequence().take( null )
+
+  /* */
+
+  .then( ( arg ) =>
+  {
+    test.case = 'take take';
+    let t = context.t1;
+    let track = [];
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con2 = new _.Consequence({ tag : 'con2' });
+    let con = _.Consequence().take( 3 );
+    con.alsoImmediate([ con1, con2 ]);
+
+    con1.tap( ( _err, arg ) =>
+    {
+      track.push( 'con1.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 2 );
+    });
+
+    con2.tap( ( _err, arg ) =>
+    {
+      track.push( 'con2.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    con.tap( ( _err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, [ 3, 1, 2 ] );
+      test.is( _err === undefined );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 3, 1, 2 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    _.time.out( t, () =>
+    {
+      track.push( 'con1.take' );
+      con1.take( 1 );
+    });
+    _.time.out( t + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 2 );
+    });
+    _.time.out( t * 2, () =>
+    {
+      track.push( 'con2.take' );
+      con2.take( 2 )
+    });
+    _.time.out( t * 2 + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 3, 1, 2 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'con1.take', 'con1.tap', 'con2.take', 'con2.tap', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 3, 1, 2 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+      return null;
+    });
+
+  })
+
+  /* */
+
+  .then( ( arg ) =>
+  {
+    test.case = 'error take';
+    let t = context.t1;
+    let track = [];
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con2 = new _.Consequence({ tag : 'con2' });
+    let con = _.Consequence().take( 3 );
+    con.alsoImmediate([ con1, con2 ]);
+    let err1 = _.errAttend( 'Error1' );
+
+    con1.tap( ( _err, arg ) =>
+    {
+      track.push( 'con1.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 2 );
+    });
+
+    con2.tap( ( _err, arg ) =>
+    {
+      track.push( 'con2.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    con.tap( ( _err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, undefined );
+      test.is( _err === err1 );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    _.time.out( t, () =>
+    {
+      track.push( 'con1.error' );
+      con1.error( err1 );
+    });
+    _.time.out( t + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 2 );
+    });
+    _.time.out( t * 2, () =>
+    {
+      track.push( 'con2.take' );
+      con2.take( 2 )
+    });
+    _.time.out( t * 2 + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'con1.error', 'con1.tap', 'con2.take', 'con2.tap', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+      return null;
+    });
+
+  })
+
+  /* */
+
+  .then( ( arg ) =>
+  {
+    test.case = 'take error';
+    let t = context.t1;
+    let track = [];
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con2 = new _.Consequence({ tag : 'con2' });
+    let con = _.Consequence().take( 3 );
+    con.alsoImmediate([ con1, con2 ]);
+    let err1 = _.errAttend( 'Error1' );
+
+    con1.tap( ( _err, arg ) =>
+    {
+      track.push( 'con1.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 2 );
+    });
+
+    con2.tap( ( _err, arg ) =>
+    {
+      track.push( 'con2.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    con.tap( ( _err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, undefined );
+      test.is( _err === err1 );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    _.time.out( t, () =>
+    {
+      track.push( 'con1.take' );
+      con1.take( 1 );
+    });
+    _.time.out( t + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 2 );
+    });
+    _.time.out( t * 2, () =>
+    {
+      track.push( 'con2.error' );
+      con2.error( err1 )
+    });
+    _.time.out( t * 2 + t/2, () =>
+    {
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'con1.take', 'con1.tap', 'con2.error', 'con2.tap', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+      return null;
+    });
+
+  })
+
+  /* */
+
+  return ready;
 }
 
 //
@@ -10716,6 +12157,57 @@ function orKeepingWithNow( test )
 
 //
 
+function orKeepingCheckProcedureSourcePath( test )
+{
+  let context = this;
+
+  test.case = 'check path';
+  var con = new _.Consequence({ tag : 'con' });
+  var con1 = new _.Consequence({ tag : 'con1' });
+  var con2 = new _.Consequence({ tag : 'con2' });
+
+  con.orKeeping([ con1, con2 ]);
+  var competitor = con.competitorsGet()[ 0 ];
+  var infoFromErr = _._err({ args : [ '' ], level : 1 });
+  var number = infoFromErr.lineNumber - 2;
+  var fileName = infoFromErr.location.fileName;
+  var exp = `${ fileName }:${ number }`;
+  test.is( _.strHas( competitor.procedure._sourcePath, exp ) );
+  test.is( _.strHas( competitor.procedure._sourcePath, infoFromErr.location.routineName ) );
+
+  con1.take( 1 );
+  con2.take( 2 );
+  _.time.out( context.t1, () =>
+  {
+    con.take( 0 );
+  });
+
+  con.finallyGive( ( err, arg ) =>
+  {
+    test.identical( err, undefined );
+    test.identical( arg, 1 );
+  });
+
+  return _.time.out( context.t2, ( err, arg ) =>
+  {
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 1 );
+    test.identical( con.competitorsCount(), 0 );
+    test.identical( con1.errorsCount(), 0 );
+    test.identical( con1.argumentsCount(), 1 );
+    test.identical( con1.competitorsCount(), 0 );
+    test.identical( con1.resourcesGet( 0 ), { argument : 1, error : undefined } );
+    test.identical( con2.errorsCount(), 0 );
+    test.identical( con2.argumentsCount(), 1 );
+    test.identical( con2.competitorsCount(), 0 );
+    test.identical( con2.resourcesGet( 0 ), { argument : 2, error : undefined } );
+    test.identical( err, undefined );
+    con.competitorsCancel();
+  });
+}
+
+//
+
 function orTakingWithSimple( test )
 {
   let context = this;
@@ -11443,6 +12935,57 @@ function orTakingWithNow( test )
   /* */
 
   return ready;
+}
+
+//
+
+function orTakingCheckProcedureSourcePath( test )
+{
+  let context = this;
+
+  test.case = 'check path';
+  var con = new _.Consequence({ tag : 'con' });
+  var con1 = new _.Consequence({ tag : 'con1' });
+  var con2 = new _.Consequence({ tag : 'con2' });
+
+  con.orTaking([ con1, con2 ]);
+  var competitor = con.competitorsGet()[ 0 ];
+  var infoFromErr = _._err({ args : [ '' ], level : 1 });
+  var number = infoFromErr.lineNumber - 2;
+  var fileName = infoFromErr.location.fileName;
+  var exp = `${ fileName }:${ number }`;
+  test.is( _.strHas( competitor.procedure._sourcePath, exp ) );
+  test.is( _.strHas( competitor.procedure._sourcePath, infoFromErr.location.routineName ) );
+
+  con1.take( 1 );
+  con2.take( 2 );
+  _.time.out( context.t1, () =>
+  {
+    con.take( 0 );
+  });
+
+  con.finallyGive( ( err, arg ) =>
+  {
+    test.identical( err, undefined );
+    test.identical( arg, 1 );
+  });
+
+  return _.time.out( context.t2, ( err, arg ) =>
+  {
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 1 );
+    test.identical( con.competitorsCount(), 0 );
+    test.identical( con1.errorsCount(), 0 );
+    test.identical( con1.argumentsCount(), 0 );
+    test.identical( con1.competitorsCount(), 0 );
+    test.identical( con1.resourcesGet( 0 ), undefined );
+    test.identical( con2.errorsCount(), 0 );
+    test.identical( con2.argumentsCount(), 1 );
+    test.identical( con2.competitorsCount(), 0 );
+    test.identical( con2.resourcesGet( 0 ), { argument : 2, error : undefined } );
+    test.identical( err, undefined );
+    con.competitorsCancel();
+  });
 }
 
 //
@@ -13094,6 +14637,57 @@ function afterOrKeepingWithTwoTake0( test )
 
 //
 
+function afterOrKeepingCheckProcedureSourcePath( test )
+{
+  let context = this;
+
+  test.case = 'check path';
+  var con = new _.Consequence({ tag : 'con' });
+  var con1 = new _.Consequence({ tag : 'con1' });
+  var con2 = new _.Consequence({ tag : 'con2' });
+
+  con.afterOrKeeping([ con1, con2 ]);
+  var competitor = con.competitorsGet()[ 0 ];
+  var infoFromErr = _._err({ args : [ '' ], level : 1 });
+  var number = infoFromErr.lineNumber - 2;
+  var fileName = infoFromErr.location.fileName;
+  var exp = `${ fileName }:${ number }`;
+  test.is( _.strHas( competitor.procedure._sourcePath, exp ) );
+  test.is( _.strHas( competitor.procedure._sourcePath, infoFromErr.location.routineName ) );
+
+  con1.take( 1 );
+  con2.take( 2 );
+  _.time.out( context.t1, () =>
+  {
+    con.take( 0 );
+  });
+
+  con.finallyGive( ( err, arg ) =>
+  {
+    test.identical( err, undefined );
+    test.identical( arg, 1 );
+  });
+
+  return _.time.out( context.t2, ( err, arg ) =>
+  {
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+    test.identical( con1.errorsCount(), 0 );
+    test.identical( con1.argumentsCount(), 1 );
+    test.identical( con1.competitorsCount(), 0 );
+    test.identical( con1.resourcesGet( 0 ), { argument : 1, error : undefined } );
+    test.identical( con2.errorsCount(), 0 );
+    test.identical( con2.argumentsCount(), 1 );
+    test.identical( con2.competitorsCount(), 0 );
+    test.identical( con2.resourcesGet( 0 ), { argument : 2, error : undefined } );
+    test.identical( err, undefined );
+    con.competitorsCancel();
+  });
+}
+
+//
+
 function afterOrTakingWithSimple( test )
 {
   let context = this;
@@ -13790,6 +15384,57 @@ function afterOrTakingWithTwoTake0( test )
 
 //
 
+function afterOrTakingCheckProcedureSourcePath( test )
+{
+  let context = this;
+
+  test.case = 'check path';
+  var con = new _.Consequence({ tag : 'con' });
+  var con1 = new _.Consequence({ tag : 'con1' });
+  var con2 = new _.Consequence({ tag : 'con2' });
+
+  con.afterOrTaking([ con1, con2 ]);
+  var competitor = con.competitorsGet()[ 0 ];
+  var infoFromErr = _._err({ args : [ '' ], level : 1 });
+  var number = infoFromErr.lineNumber - 2;
+  var fileName = infoFromErr.location.fileName;
+  var exp = `${ fileName }:${ number }`;
+  test.is( _.strHas( competitor.procedure._sourcePath, exp ) );
+  test.is( _.strHas( competitor.procedure._sourcePath, infoFromErr.location.routineName ) );
+
+  con1.take( 1 );
+  con2.take( 2 );
+  _.time.out( context.t1, () =>
+  {
+    con.take( 0 );
+  });
+
+  con.finallyGive( ( err, arg ) =>
+  {
+    test.identical( err, undefined );
+    test.identical( arg, 1 );
+  });
+
+  return _.time.out( context.t2, ( err, arg ) =>
+  {
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+    test.identical( con1.errorsCount(), 0 );
+    test.identical( con1.argumentsCount(), 0 );
+    test.identical( con1.competitorsCount(), 0 );
+    test.identical( con1.resourcesGet( 0 ), undefined );
+    test.identical( con2.errorsCount(), 0 );
+    test.identical( con2.argumentsCount(), 1 );
+    test.identical( con2.competitorsCount(), 0 );
+    test.identical( con2.resourcesGet( 0 ), { argument : 2, error : undefined } );
+    test.identical( err, undefined );
+    con.competitorsCancel();
+  });
+}
+
+//
+
 function OrKeep( test )
 {
   let context = this;
@@ -14023,8 +15668,419 @@ function Or( test )
 }
 
 // --
-// cancel
+// resource handling
 // --
+
+function take( test )
+{
+  test.case = 'take single argument - null';
+  var con = new _.Consequence().take( null );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : undefined, 'argument' : null } );
+
+  test.case = 'take single argument - string';
+  var con = new _.Consequence().take( 'str' );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : undefined, 'argument' : 'str' } );
+
+  test.case = 'take single argument - array';
+  var con = new _.Consequence().take([ 1, 2 ]);
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : undefined, 'argument' : [ 1, 2 ] } );
+
+  test.case = 'take single argument - error';
+  var err = _._err({ args : [ 'err' ] });
+  var con = new _.Consequence().take( err );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : undefined, 'argument' : err } );
+
+  /* */
+
+  test.case = 'take two arguments - undefined and null';
+  var con = new _.Consequence().take( undefined, null );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : undefined, 'argument' : null } );
+
+  test.case = 'take two arguments - undefined and error';
+  var err = _._err({ args : [ 'err' ] });
+  var con = new _.Consequence().take( undefined, err );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : undefined, 'argument' : err } );
+
+  /* */
+
+  test.case = 'two arguments, error - error, argument - undefined';
+  var err = _.errAttend( 'Error' );
+  var con = new _.Consequence().take( err, undefined );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : err, 'argument' : undefined } );
+
+  test.case = 'two arguments, error - Symbol, argument - undefined';
+  var symbolOk = Symbol.for( 'Ok' );
+  var con = new _.Consequence().take( symbolOk, undefined );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : symbolOk, 'argument' : undefined } );
+
+  /* - */
+
+  if( !Config.debug )
+  return;
+
+  test.case = 'without arguments';
+  test.shouldThrowErrorSync( () => new _.Consequence().take() );
+
+  test.case = 'extra arguments';
+  test.shouldThrowErrorSync( () => new _.Consequence().take( undefined, null, 'extra' ) );
+
+  test.case = 'error and argument have not defined values';
+  test.shouldThrowErrorSync( () => new _.Consequence().take( undefined, undefined ) );
+
+  test.case = 'error and argument have defined values';
+  test.shouldThrowErrorSync( () =>
+  {
+    var err = _.errAttend( 'err' );
+    new _.Consequence().take( err, null );
+  });
+}
+
+//
+
+function takeInToolsNamespace( test )
+{
+  test.case = 'without arguments';
+  var con = _.take();
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : undefined, 'argument' : null } );
+
+  test.case = 'take single argument - null';
+  var con = _.take( null );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : undefined, 'argument' : null } );
+
+  test.case = 'take single argument - string';
+  var con = _.take( 'str' );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : undefined, 'argument' : 'str' } );
+
+  test.case = 'take single argument - array';
+  var con = _.take([ 1, 2 ]);
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : undefined, 'argument' : [ 1, 2 ] } );
+
+  test.case = 'take single argument - error';
+  var err = _._err({ args : [ 'err' ] });
+  var con = _.take( err );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : undefined, 'argument' : err } );
+
+  /* */
+
+  test.case = 'take two arguments - undefined and null';
+  var con = _.take( undefined, null );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : undefined, 'argument' : null } );
+
+  test.case = 'take two arguments - undefined and error';
+  var err = _._err({ args : [ 'err' ] });
+  var con = _.take( undefined, err );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : undefined, 'argument' : err } );
+
+  /* */
+
+  test.case = 'two arguments, error - error, argument - undefined';
+  var err = _.errAttend( 'Error' );
+  var con = _.take( err, undefined );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : err, 'argument' : undefined } );
+
+  test.case = 'two arguments, error - Symbol, argument - undefined';
+  var symbolOk = Symbol.for( 'Ok' );
+  var con = _.take( symbolOk, undefined );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : symbolOk, 'argument' : undefined } );
+
+  /* - */
+
+  if( !Config.debug )
+  return;
+
+  test.case = 'extra arguments';
+  test.shouldThrowErrorSync( () => _.take( undefined, null, 'extra' ) );
+
+  test.case = 'error and argument have not defined values';
+  test.shouldThrowErrorSync( () => _.take( undefined, undefined ) );
+
+  test.case = 'error and argument have defined values';
+  test.shouldThrowErrorSync( () =>
+  {
+    var err = _.errAttend( 'err' );
+    _.take( err, null );
+  });
+}
+
+//
+
+function takeSymbolInErrorChanel( test )
+{
+  test.case = 'by method take';
+  var symbolOk = Symbol.for( 'Ok' );
+  var con = new _.Consequence().take( symbolOk, undefined );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : symbolOk, 'argument' : undefined } );
+
+  test.case = 'by method error';
+  var symbolOk = Symbol.for( 'Ok' );
+  var con = new _.Consequence().error( symbolOk );
+  var got = con.resourcesCount();
+  test.identical( got, 1 );
+  var got = con.resourcesGet()[ 0 ];
+  test.identical( got, { 'error' : symbolOk, 'argument' : undefined } );
+
+  /* - */
+
+  if( !Config.debug )
+  return;
+
+  test.case = 'not Symbol, not Error';
+  test.shouldThrowErrorAsync( () => new _.Consequence().take( 'Ok', undefined ) );
+  test.shouldThrowErrorAsync( () => new _.Consequence().error( 'Ok' ) );
+}
+
+// --
+// competitor
+// --
+
+function competitorOwn( test )
+{
+  test.case = 'consequence has no competitors';
+  var con = new _.Consequence().take( null );
+  test.identical( con.competitorsCount(), 0 );
+  test.identical( !!con.competitorOwn( competitorRoutine1 ), false );
+  test.identical( !!con.competitorOwn( competitorRoutine2 ), false );
+
+  test.case = 'consequence has one competitor routine';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  test.identical( con.competitorsCount(), 1 );
+  test.identical( !!con.competitorOwn( competitorRoutine1 ), true );
+  test.identical( !!con.competitorOwn( competitorRoutine2 ), false );
+  con.competitorsCancel( competitorRoutine1 );
+
+  test.case = 'consequence has a few instances of single competitor routine';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  test.identical( con.competitorsCount(), 3 );
+  test.identical( !!con.competitorOwn( competitorRoutine1 ), true );
+  test.identical( !!con.competitorOwn( competitorRoutine2 ), false );
+  con.competitorsCancel( competitorRoutine1 );
+
+  test.case = 'consequence has single instance of different competitor routines';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine2 );
+  test.identical( con.competitorsCount(), 2 );
+  test.identical( !!con.competitorOwn( competitorRoutine1 ), true );
+  test.identical( !!con.competitorOwn( competitorRoutine2 ), true );
+  con.competitorsCancel( competitorRoutine1 );
+  con.competitorsCancel( competitorRoutine2 );
+
+  test.case = 'consequence has a few instances of different competitor routines';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine2 );
+  con.give( competitorRoutine2 );
+  test.identical( con.competitorsCount(), 4 );
+  test.identical( !!con.competitorOwn( competitorRoutine1 ), true );
+  test.identical( !!con.competitorOwn( competitorRoutine2 ), true );
+  con.competitorsCancel( competitorRoutine1 );
+  con.competitorsCancel( competitorRoutine2 );
+
+  /* */
+
+  function competitorRoutine1(){}
+  function competitorRoutine2(){}
+}
+
+//
+
+function competitorsCount( test )
+{
+  test.open( 'without argument' );
+
+  test.case = 'consequence has no competitors';
+  var con = new _.Consequence().take( null );
+  test.identical( con.competitorsCount(), 0 );
+
+  test.case = 'consequence has no competitors';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  test.identical( con.competitorsCount(), 0 );
+
+  test.case = 'consequence has one competitor routine';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  test.identical( con.competitorsCount(), 1 );
+  con.competitorsCancel( competitorRoutine1 );
+
+  test.case = 'consequence has a few instances of single competitor routine';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  test.identical( con.competitorsCount(), 3 );
+  con.competitorsCancel( competitorRoutine1 );
+
+  test.case = 'consequence has single instance of different competitor routines';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine2 );
+  test.identical( con.competitorsCount(), 2 );
+  con.competitorsCancel( competitorRoutine1 );
+  con.competitorsCancel( competitorRoutine2 );
+
+  test.case = 'consequence has a few instances of different competitor routines';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine2 );
+  con.give( competitorRoutine2 );
+  test.identical( con.competitorsCount(), 4 );
+  con.competitorsCancel( competitorRoutine1 );
+  con.competitorsCancel( competitorRoutine2 );
+
+  test.close( 'without argument' );
+
+  /* - */
+
+  test.open( 'with competitorRoutine' );
+
+  test.case = 'consequence has no competitors';
+  var con = new _.Consequence().take( null );
+  test.identical( con.competitorsCount( competitorRoutine1 ), 0 );
+  test.identical( con.competitorsCount( competitorRoutine2 ), 0 );
+
+  test.case = 'consequence has no competitors';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  test.identical( con.competitorsCount( competitorRoutine1 ), 0 );
+  test.identical( con.competitorsCount( competitorRoutine2 ), 0 );
+
+  test.case = 'consequence has one competitor routine';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  test.identical( con.competitorsCount( competitorRoutine1 ), 1 );
+  test.identical( con.competitorsCount( competitorRoutine2 ), 0 );
+  con.competitorsCancel( competitorRoutine1 );
+
+  test.case = 'consequence has a few instances of single competitor routine';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  test.identical( con.competitorsCount( competitorRoutine1 ), 3 );
+  test.identical( con.competitorsCount( competitorRoutine2 ), 0 );
+  con.competitorsCancel( competitorRoutine1 );
+
+  test.case = 'consequence has single instance of different competitor routines';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine2 );
+  test.identical( con.competitorsCount( competitorRoutine1 ), 1 );
+  test.identical( con.competitorsCount( competitorRoutine2 ), 1 );
+  con.competitorsCancel( competitorRoutine1 );
+  con.competitorsCancel( competitorRoutine2 );
+
+  test.case = 'consequence has a few instances of different competitor routines';
+  var con = new _.Consequence().take( null );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine1 );
+  con.give( competitorRoutine2 );
+  con.give( competitorRoutine2 );
+  test.identical( con.competitorsCount( competitorRoutine1 ), 2 );
+  test.identical( con.competitorsCount( competitorRoutine2 ), 2 );
+  con.competitorsCancel( competitorRoutine1 );
+  con.competitorsCancel( competitorRoutine2 );
+
+  test.close( 'with competitorRoutine' );
+
+  /* - */
+
+  if( Config.debug )
+  {
+    test.case = 'extra arguments';
+    test.shouldThrowErrorSync( () =>
+    {
+      var con = new _.Consequence().take( null );
+      con.competitorsCount( competitorRoutine1, competitorRoutine1 );
+    });
+
+    test.case = 'wrong type of competitorRoutine';
+    test.shouldThrowErrorSync( () =>
+    {
+      var con = new _.Consequence().take( null );
+      con.competitorsCount( 'wrong' );
+    });
+  }
+
+  /* */
+
+  function competitorRoutine1(){}
+  function competitorRoutine2(){}
+}
+
+//
 
 function competitorsCancelSingle( test )
 {
@@ -14200,6 +16256,381 @@ function competitorsCancel2( test )
     console.log( 'end : ', got )
     return got;
   }
+}
+
+// --
+// resources
+// --
+
+function argumentsCount( test )
+{
+  test.open( 'without arguments' );
+
+  test.case = 'con without arguments, empty _resources';
+  var con = new _.Consequence();
+  test.identical( con.argumentsCount(), 0 );
+
+  test.case = 'con without arguments, _resources has error';
+  var con = new _.Consequence();
+  con.error( _.errAttend( 'Error' ) );
+  test.identical( con.argumentsCount(), 0 );
+
+  test.case = 'con with single argument';
+  var con = new _.Consequence().take( null );
+  test.identical( con.argumentsCount(), 1 );
+
+  test.case = 'con with single argument and single error';
+  var con = new _.Consequence().take( null );
+  con.error( _.errAttend( 'Error' ) );
+  test.identical( con.argumentsCount(), 1 );
+
+  /* */
+
+  test.case = 'con with two arguments, capacity - 3';
+  var con = new _.Consequence({ capacity : 3 }).take( null );
+  con.take( 1 );
+  test.identical( con.argumentsCount(), 2 );
+
+  test.case = 'con with three arguments, capacity - 3';
+  var con = new _.Consequence({ capacity : 3 }).take( null );
+  con.take( 1 );
+  con.take( 1 );
+  test.identical( con.argumentsCount(), 3 );
+
+  test.case = 'con with three arguments and a few errors, capacity - 3';
+  var con = new _.Consequence({ capacity : 3 }).take( null );
+  con.take( 1 );
+  con.take( 1 );
+  con.error( _.errAttend( 'Error' ) );
+  con.error( _.errAttend( 'Error' ) );
+  test.identical( con.argumentsCount(), 3 );
+
+  test.close( 'without arguments' );
+
+  /* - */
+
+  test.open( 'with arg' );
+
+  test.case = 'con without arguments, empty _resources';
+  var con = new _.Consequence();
+  test.identical( con.argumentsCount( null ), 0 );
+  test.identical( con.argumentsCount( 1 ), 0 );
+
+  test.case = 'con without arguments, _resources has error';
+  var con = new _.Consequence();
+  con.error( _.errAttend( 'Error' ) );
+  test.identical( con.argumentsCount( null ), 0 );
+  test.identical( con.argumentsCount( 1 ), 0 );
+
+  test.case = 'con with single argument';
+  var con = new _.Consequence().take( null );
+  test.identical( con.argumentsCount( null ), 1 );
+  test.identical( con.argumentsCount( 1 ), 0 );
+
+  test.case = 'con with single argument and single error';
+  var con = new _.Consequence().take( null );
+  con.error( _.errAttend( 'Error' ) );
+  test.identical( con.argumentsCount( null ), 1 );
+  test.identical( con.argumentsCount( 1 ), 0 );
+
+  /* */
+
+  test.case = 'con with two arguments, capacity - 3';
+  var con = new _.Consequence({ capacity : 3 }).take( null );
+  con.take( 1 );
+  test.identical( con.argumentsCount( null ), 1 );
+  test.identical( con.argumentsCount( 1 ), 1 );
+
+  test.case = 'con with three arguments, capacity - 3';
+  var con = new _.Consequence({ capacity : 3 }).take( null );
+  con.take( 1 );
+  con.take( 1 );
+  test.identical( con.argumentsCount( null ), 1 );
+  test.identical( con.argumentsCount( 1 ), 2 );
+
+  test.case = 'con with three arguments and a few errors, capacity - 3';
+  var con = new _.Consequence({ capacity : 3 }).take( null );
+  con.take( 1 );
+  con.take( 1 );
+  con.error( _.errAttend( 'Error' ) );
+  con.error( _.errAttend( 'Error' ) );
+  test.identical( con.argumentsCount( null ), 1 );
+  test.identical( con.argumentsCount( 1 ), 2 );
+
+  test.close( 'with arg' );
+
+  /* - */
+
+  if( !Config.debug )
+  return;
+
+  test.case = 'extra arguments';
+  test.shouldThrowErrorSync( () =>
+  {
+    var con = new _.Consequence().take( null );
+    con.argumentsCount( null, 1 );
+  });
+}
+
+//
+
+function errorsCount( test )
+{
+  test.open( 'without arguments' );
+
+  test.case = 'con without errors, empty _resources';
+  var con = new _.Consequence();
+  test.identical( con.errorsCount(), 0 );
+
+  test.case = 'con without errors, _resources has resource';
+  var con = new _.Consequence().take( null );
+  test.identical( con.errorsCount(), 0 );
+
+  test.case = 'con with single error';
+  var con = new _.Consequence().error( _.errAttend( 'Error' ) );
+  test.identical( con.errorsCount(), 1 );
+
+  test.case = 'con with single argument and single error';
+  var con = new _.Consequence().take( null );
+  con.error( _.errAttend( 'Error' ) );
+  test.identical( con.errorsCount(), 1 );
+
+  /* */
+
+  test.case = 'con with two errors, capacity - 3';
+  var err1 = _.errAttend( 'Error' );
+  var err2 = _.errAttend( 'Error2' );
+  var con = new _.Consequence({ capacity : 3 }).error( err1 );
+  con.error( err2 );
+  test.identical( con.errorsCount(), 2 );
+
+  test.case = 'con with three errors, capacity - 3';
+  var err1 = _.errAttend( 'Error' );
+  var err2 = _.errAttend( 'Error2' );
+  var con = new _.Consequence({ capacity : 3 }).error( err1 );
+  con.error( err2 );
+  con.error( err2 );
+  test.identical( con.errorsCount(), 3 );
+
+  test.case = 'con with three errors and a few arguments, capacity - 3';
+  var err1 = _.errAttend( 'Error' );
+  var err2 = _.errAttend( 'Error2' )
+  var con = new _.Consequence({ capacity : 3 }).take( null );
+  con.take( null );
+  con.error( err1 );
+  con.error( err2 );
+  con.error( err2 );
+  test.identical( con.errorsCount(), 3 );
+
+  test.close( 'without arguments' );
+
+  /* - */
+
+  test.open( 'with err' );
+
+  test.case = 'con without errors, empty _resources';
+  var err1 = _.errAttend( 'Error' );
+  var err2 = _.errAttend( 'Error2' )
+  var con = new _.Consequence();
+  test.identical( con.errorsCount( err1 ), 0 );
+  test.identical( con.errorsCount( err2 ), 0 );
+
+  test.case = 'con without errors, _resources has resource';
+  var err1 = _.errAttend( 'Error' );
+  var err2 = _.errAttend( 'Error2' )
+  var con = new _.Consequence().take( null );
+  test.identical( con.errorsCount( err1 ), 0 );
+  test.identical( con.errorsCount( err2 ), 0 );
+
+  test.case = 'con with single error';
+  var err1 = _.errAttend( 'Error' );
+  var err2 = _.errAttend( 'Error2' )
+  var con = new _.Consequence().error( err1 );
+  test.identical( con.errorsCount( err1 ), 1 );
+  test.identical( con.errorsCount( err2 ), 0 );
+
+  test.case = 'con with single argument and single error';
+  var err1 = _.errAttend( 'Error' );
+  var err2 = _.errAttend( 'Error2' )
+  var con = new _.Consequence().take( null );
+  con.error( err1 );
+  test.identical( con.errorsCount( err1 ), 1 );
+  test.identical( con.errorsCount( err2 ), 0 );
+
+  /* */
+
+  test.case = 'con with two errors, capacity - 3';
+  var err1 = _.errAttend( 'Error' );
+  var err2 = _.errAttend( 'Error2' );
+  var con = new _.Consequence({ capacity : 3 }).error( err1 );
+  con.error( err2 );
+  test.identical( con.errorsCount( err1 ), 1 );
+  test.identical( con.errorsCount( err2 ), 1 );
+
+  test.case = 'con with three errors, capacity - 3';
+  var err1 = _.errAttend( 'Error' );
+  var err2 = _.errAttend( 'Error2' );
+  var con = new _.Consequence({ capacity : 3 }).error( err1 );
+  con.error( err2 );
+  con.error( err2 );
+  test.identical( con.errorsCount( err1 ), 1 );
+  test.identical( con.errorsCount( err2 ), 2 );
+
+  test.case = 'con with three errors and a few arguments, capacity - 3';
+  var err1 = _.errAttend( 'Error' );
+  var err2 = _.errAttend( 'Error2' )
+  var con = new _.Consequence({ capacity : 3 }).take( null );
+  con.take( null );
+  con.error( err1 );
+  con.error( err2 );
+  con.error( err2 );
+  test.identical( con.errorsCount( err1 ), 1 );
+  test.identical( con.errorsCount( err2 ), 2 );
+
+  test.close( 'with err' );
+
+  /* - */
+
+  if( !Config.debug )
+  return;
+
+  test.case = 'extra arguments';
+  test.shouldThrowErrorSync( () =>
+  {
+    var err = _.errAttend( 'Error' );
+    var con = new _.Consequence().error( err );
+    con.errorsCount( err, _.errAttend( 'err' ) );
+  });
+}
+
+//
+
+function resourcesCount( test )
+{
+  test.open( 'without arguments' );
+
+  test.case = 'con without arguments, empty _resources';
+  var con = new _.Consequence();
+  test.identical( con.resourcesCount(), 0 );
+
+  test.case = 'con without arguments, _resources has error';
+  var con = new _.Consequence();
+  con.error( _.errAttend( 'Error' ) );
+  test.identical( con.resourcesCount(), 1 );
+
+  test.case = 'con with single argument';
+  var con = new _.Consequence().take( null );
+  test.identical( con.resourcesCount(), 1 );
+
+  test.case = 'con with single argument and single error';
+  var con = new _.Consequence().take( null );
+  con.error( _.errAttend( 'Error' ) );
+  test.identical( con.resourcesCount(), 2 );
+
+  /* */
+
+  test.case = 'con with two arguments, capacity - 3';
+  var con = new _.Consequence({ capacity : 3 }).take( null );
+  con.take( 1 );
+  test.identical( con.resourcesCount(), 2 );
+
+  test.case = 'con with three arguments, capacity - 3';
+  var con = new _.Consequence({ capacity : 3 }).take( null );
+  con.take( 1 );
+  con.take( 1 );
+  test.identical( con.resourcesCount(), 3 );
+
+  test.case = 'con with three arguments and a few errors, capacity - 3';
+  var con = new _.Consequence({ capacity : 3 }).take( null );
+  con.take( 1 );
+  con.take( 1 );
+  con.error( _.errAttend( 'Error' ) );
+  con.error( _.errAttend( 'Error' ) );
+  test.identical( con.resourcesCount(), 5 );
+
+  test.close( 'without arguments' );
+
+  /* - */
+
+  test.open( 'with arg' );
+
+  test.case = 'con without arguments, empty _resources';
+  var err1 = _.errAttend( 'Error' );
+  var con = new _.Consequence();
+  test.identical( con.resourcesCount( null ), 0 );
+  test.identical( con.resourcesCount( 1 ), 0 );
+  test.identical( con.resourcesCount( err1 ), 0 );
+
+  test.case = 'con without arguments, _resources has error';
+  var err1 = _.errAttend( 'Error' );
+  var con = new _.Consequence();
+  con.error( err1 );
+  test.identical( con.resourcesCount( null ), 0 );
+  test.identical( con.resourcesCount( 1 ), 0 );
+  test.identical( con.resourcesCount( err1 ), 1 );
+
+  test.case = 'con with single argument';
+  var err1 = _.errAttend( 'Error' );
+  var con = new _.Consequence().take( null );
+  test.identical( con.resourcesCount( null ), 1 );
+  test.identical( con.resourcesCount( 1 ), 0 );
+  test.identical( con.resourcesCount( err1 ), 0 );
+
+  test.case = 'con with single argument and single error';
+  var err1 = _.errAttend( 'Error' );
+  var con = new _.Consequence().take( null );
+  con.error( err1 );
+  test.identical( con.resourcesCount( null ), 1 );
+  test.identical( con.resourcesCount( 1 ), 0 );
+  test.identical( con.resourcesCount( err1 ), 1 );
+
+  /* */
+
+  test.case = 'con with two arguments, capacity - 3';
+  var err1 = _.errAttend( 'Error' );
+  var con = new _.Consequence({ capacity : 3 }).take( null );
+  con.take( 1 );
+  test.identical( con.resourcesCount( null ), 1 );
+  test.identical( con.resourcesCount( 1 ), 1 );
+  test.identical( con.resourcesCount( err1 ), 0 );
+
+  test.case = 'con with three arguments, capacity - 3';
+  var err1 = _.errAttend( 'Error' );
+  var con = new _.Consequence({ capacity : 3 }).take( null );
+  con.take( 1 );
+  con.take( 1 );
+  test.identical( con.resourcesCount( null ), 1 );
+  test.identical( con.resourcesCount( 1 ), 2 );
+  test.identical( con.resourcesCount( err1 ), 0 );
+
+  test.case = 'con with three arguments and a few errors, capacity - 3';
+  var err1 = _.errAttend( 'Error' );
+  var err2 = _.errAttend( 'Error2' );
+  var symbolOk = Symbol.for( 'Ok' );
+  var con = new _.Consequence({ capacity : 3 }).take( null );
+  con.take( symbolOk );
+  con.take( symbolOk );
+  con.error( err1 );
+  con.error( err2 );
+  con.error( symbolOk );
+  test.identical( con.resourcesCount( null ), 1 );
+  test.identical( con.resourcesCount( symbolOk ), 3 );
+  test.identical( con.resourcesCount( err1 ), 1 );
+  test.identical( con.resourcesCount( err2 ), 1 );
+
+  test.close( 'with arg' );
+
+  /* - */
+
+  if( !Config.debug )
+  return;
+
+  test.case = 'extra arguments';
+  test.shouldThrowErrorSync( () =>
+  {
+    var con = new _.Consequence().take( null );
+    con.resourcesCount( null, 1 );
+  });
 }
 
 // --
@@ -15649,21 +18080,26 @@ let Self =
     andKeepDuplicates,
     andKeepInstant,
     andKeep,
+    andKeepExtended,
     andTake,
+    andTakeExtended,
     andKeepAccumulative,
     andKeepAccumulativeNonConsequence,
+    andImmediate,
     alsoKeepTrivialSyncBefore,
     alsoKeepTrivialSyncAfter,
     alsoKeepTrivialAsync,
     alsoKeep,
+    alsoKeepExtended,
     alsoKeepThrowingBeforeSync,
     alsoKeepThrowingAfterSync,
     alsoKeepThrowingBeforeAsync,
     alsoKeepThrowingAfterAsync,
+    alsoImmediate,
     _and,
-    AndKeep, /* qqq2 : implement very similar test for routine andKeep, alsoKeep */
-    AndTake, /* qqq2 : implement very similar test for routine andTake, alsoTake */
-    AndImmediate, /* qqq2 : implement very similar test for routine andImmediate, alsoImmediate */
+    AndKeep, /* aaa2 : implement very similar test for routine andKeep, alsoKeep */ /* Dmytro : implemented */
+    AndTake, /* aaa2 : implement very similar test for routine andTake, alsoTake */ /* Dmytro : implemented */
+    AndImmediate, /* aaa2 : implement very similar test for routine andImmediate, alsoImmediate */ /* Dmytro : implemented */
     And,
     AndUncaughtError,
 
@@ -15672,9 +18108,11 @@ let Self =
     orKeepingWithSimple,
     orKeepingWithLater,
     orKeepingWithNow,
+    orKeepingCheckProcedureSourcePath,
     orTakingWithSimple,
     orTakingWithLater,
     orTakingWithNow,
+    orTakingCheckProcedureSourcePath,
     orKeepingSplitCanceled,
     orKeepingSplitCanceledProcedure,
     orKeepingCanceled,
@@ -15683,19 +18121,36 @@ let Self =
     afterOrKeepingWithSimple,
     afterOrKeepingWithLater,
     afterOrKeepingWithTwoTake0,
+    afterOrKeepingCheckProcedureSourcePath,
     afterOrTakingWithSimple,
     afterOrTakingWithLater,
     afterOrTakingWithTwoTake0,
+    afterOrTakingCheckProcedureSourcePath,
 
     OrKeep,
     OrTake,
     Or,
 
-    // cancel
+    // resource handling
+
+    take,
+    takeInToolsNamespace,
+    takeSymbolInErrorChanel,
+
+    // competitor
+
+    competitorOwn,
+    competitorsCount,
 
     competitorsCancelSingle,
     competitorsCancel,
     competitorsCancel2,
+
+    // resources
+
+    argumentsCount,
+    errorsCount,
+    resourcesCount,
 
     // advanced
 
