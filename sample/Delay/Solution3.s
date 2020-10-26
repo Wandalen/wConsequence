@@ -1,12 +1,12 @@
 require( 'wTools' );
 require( 'wConsequence' );
 
-/* Solution - using same approach, but now thenTimeOut runs our delayed task */
+/* Solution - using same approach, but now thenDelay runs our delayed task */
 
 function taskWithDelay( delay, task )
 {
   var con = new wConsequence();
-  con.thenTimeOut( delay ).then( () => task() || null );
+  con.thenDelay( delay ).then( () => task() || null );
   con.take( task );
   return con;
 }

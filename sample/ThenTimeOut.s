@@ -9,7 +9,7 @@ var t = _.time.out( 2000, function()
   console.log( 'case1' );
   var con = new _.Consequence({ capacity : 0 });
 
-  con.thenTimeOut( 1000 )
+  con.thenDelay( 1000 )
   .got( gotHandler1 )
   .got( gotHandler2 );
 
@@ -37,13 +37,13 @@ function gotHandler2( value )
 
 /**/
 
-// t.thenTimeOut( 2000, function()
+// t.thenDelay( 2000, function()
 // {
 
 //   console.log( 'case2' );
 //   var con = new _.Consequence();
 
-//   con.thenTimeOut( 1000, gotHandler1 ).got( gotHandler2 );
+//   con.thenDelay( 1000, gotHandler1 ).got( gotHandler2 );
 
 //   con.take( 90 );
 
@@ -51,7 +51,7 @@ function gotHandler2( value )
 
 // /**/
 
-// t.thenTimeOut( 2000, function()
+// t.thenDelay( 2000, function()
 // {
 
 //   console.log( 'case3' );
@@ -59,13 +59,13 @@ function gotHandler2( value )
 
 //   con.take( 90 );
 
-//   con.thenTimeOut( 1000, gotHandler1 ).got( gotHandler2 );
+//   con.thenDelay( 1000, gotHandler1 ).got( gotHandler2 );
 
 // });
 
 // /**/
 
-// t.thenTimeOut( 2000, function()
+// t.thenDelay( 2000, function()
 // {
 
 //   console.log( 'case4' );
@@ -76,7 +76,7 @@ function gotHandler2( value )
 //   debugger;
 
 //   con.take( 90 );
-//   con.thenTimeOut( 1000, con2 ).got( gotHandler1 );
+//   con.thenDelay( 1000, con2 ).got( gotHandler1 );
 //   con2.then( gotHandler2 );
 
 //   _.time.out( 1500, function()

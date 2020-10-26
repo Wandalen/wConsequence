@@ -123,42 +123,53 @@ function out_head( routine, args )
     args = _.longBut( args, [ 1, 2 ] );
   }
 
-  if( !_.mapIs( args[ 0 ] ) || args.length !== 1 )
+  // if( !_.mapIs( args[ 0 ] ) || args.length === 2 )
+  if( !_.mapIs( args[ 0 ] ) )
   {
-    let delay = args[ 0 ];
-    let onEnd = args[ 1 ];
-
-    if( onEnd !== undefined && !_.routineIs( onEnd ) && !_.consequenceIs( onEnd ) )
+    if( args.length === 1 || args.length === 2 )
     {
-      _.assert( args.length === 2, 'Expects two arguments if second one is not callable' );
-      let returnOnEnd = onEnd;
-      onEnd = function onEnd()
+      let delay = args[ 0 ];
+      let onEnd = args[ 1 ];
+
+      if( onEnd !== undefined && !_.routineIs( onEnd ) && !_.consequenceIs( onEnd ) )
       {
-        return returnOnEnd;
+        _.assert( args.length === 2, 'Expects two arguments if second one is not callable' );
+        _.assert( !routine.defaults.error, 'Time out throwing error should have callback to attend it' ); /* qqq : cover */
+        let returnOnEnd = args[ 1 ];
+        onEnd = function onEnd()
+        {
+          return returnOnEnd;
+        }
       }
+      // else if( _.routineIs( onEnd ) && !_.consequenceIs( onEnd ) )
+      // {
+      //   let _onEnd = onEnd;
+      //   onEnd = function timeOutEnd( timer )
+      //   {
+      //     let result = _onEnd.apply( this, arguments );
+      //     return result === undefined ? timer : result;
+      //   }
+      // }
+
+      o = { delay, onEnd }
     }
-    else if( _.routineIs( onEnd ) && !_.consequenceIs( onEnd ) )
+    else
     {
-      let _onEnd = onEnd;
-      onEnd = function timeOutEnd()
-      {
-        let result = _onEnd.apply( this, arguments );
-        return result === undefined ? null : result;
-      }
+
+      _.assert( args.length <= 4 );
+
+      // if( args[ 1 ] !== undefined && args[ 2 ] === undefined && args[ 3 ] === undefined )
+      // _.assert( _.routineIs( onEnd ) || _.consequenceIs( onEnd ) );
+      // else if( args[ 2 ] !== undefined || args[ 3 ] !== undefined )
+      // _.assert( _.routineIs( args[ 2 ] ) );
+      //
+      // if( args[ 2 ] !== undefined || args[ 3 ] !== undefined )
+
+      let delay = args[ 0 ];
+      let onEnd = _.routineJoin.call( _, args[ 1 ], args[ 2 ], args[ 3 ] );  /* qqq : cover by separate test routine */
+
+      o = { delay, onEnd }
     }
-
-    _.assert( args.length <= 4 );
-
-    if( args[ 1 ] !== undefined && args[ 2 ] === undefined && args[ 3 ] === undefined )
-    _.assert( _.routineIs( onEnd ) || _.consequenceIs( onEnd ) );
-    else if( args[ 2 ] !== undefined || args[ 3 ] !== undefined )
-    _.assert( _.routineIs( args[ 2 ] ) );
-
-    if( args[ 2 ] !== undefined || args[ 3 ] !== undefined )
-    onEnd = _.routineJoin.call( _, args[ 1 ], args[ 2 ], args[ 3 ] );
-
-    o = { delay, onEnd }
-
   }
   else
   {
@@ -183,61 +194,89 @@ function out_body( o )
 {
   let con = new _.Consequence();
   let timer = null;
-  let handleCalled = false;
 
   _.assertRoutineOptions( out_body, arguments );
+
+  /* */
 
   if( o.procedure === null )
   o.procedure = _.Procedure( 2 ).name( 'time.out' );
   _.assert( _.procedureIs( o.procedure ) );
 
-  // if( o.procedure.id === 2 )
-  // debugger;
-
-  // /* */
-  //
-  // timer = _.time.begin( o.delay, o.procedure, timeEnd );
-
-  /* */
-
-  if( con )
-  {
-    con.procedure( o.procedure.clone() );
-    // con.procedure( o.procedure );
-    con.give( function timeGot( err, arg )
-    {
-      if( arg === _.dont )
-      _.time.cancel( timer );
-      con.take( err, arg );
-    });
-  }
+  if( Config.debug )
+  if( con.tag === null )
+  con.tag = 'time.out';
+  con.procedure( o.procedure.clone() );
+  con.finally( timeEnd2 );
 
   /* */
 
-  timer = _.time.begin( o.delay, o.procedure, timeEnd );
+  timer = _.time.begin( o.delay, o.procedure, timeEnd1 );
 
   return con;
 
   /* */
 
-  function timeEnd()
+  function timeEnd2( err, arg )
   {
-    let result;
-
-    handleCalled = true;
-
-    if( con )
+    if( !_.time.timerInEndBegun( timer ) )
     {
-      if( o.onEnd )
-      con.first( o.onEnd );
-      else
-      con.take( _.time.out );
+      _.time.cancel( timer );
     }
     else
     {
-      o.onEnd();
+      if( _.consequenceIs( o.onEnd ) )
+      {
+        arg = o.onEnd;
+        err = undefined;
+      }
+      else
+      {
+        if( o.onEnd )
+        arg = o.onEnd.call( timer, err ? err : arg );
+        if( arg === undefined )
+        arg = timer;
+        else
+        err = undefined;
+      }
     }
+    if( err )
+    throw err;
+    return arg;
+  }
 
+  /* */
+
+  function timeEnd1()
+  {
+    if( !con.competitorOwn( timeEnd2 ) )
+    return;
+    // console.log( con.toStr() );
+    // if( con.resourcesCount() )
+    // {
+    //   console.log( 'timeEnd1' );
+    //   console.log( con.toStr() );
+    //   console.log( o.procedure._stack );
+    //   debugger;
+    // }
+    if( o.error )
+    con.error( errMake() );
+    else
+    con.take( timer );
+  }
+
+  /* */
+
+  function errMake()
+  {
+    let err = _.time._errTimeOut
+    ({
+      message : 'Time out!',
+      reason : 'time out',
+      consequnce : con,
+      procedure : o.procedure,
+    });
+    return err;
   }
 
   /* */
@@ -249,10 +288,11 @@ out_body.defaults =
   delay : null,
   onEnd : null,
   procedure : null,
-  isFinally : false,
+  error : 0,
 }
 
 let out = _.routineUnite( out_head, out_body );
+out.defaults.error = 0;
 
 //
 
@@ -298,54 +338,57 @@ let out = _.routineUnite( out_head, out_body );
  * @namespace Tools
  */
 
-/* zzz : remove the body, use out_body */
-function outError_body( o )
-{
-  _.assert( _.routineIs( _.Consequence ) );
-  _.assertRoutineOptions( outError_body, arguments );
+let outError = _.routineUnite( out_head, out_body );
+outError.defaults.error = 1;
 
-  if( _.numberIs( o.procedure ) )
-  o.procedure += 1;
-  else if( o.procedure === null )
-  o.procedure = 2;
-
-  if( !o.procedure || _.numberIs( o.procedure ) )
-  o.procedure = _.procedure.from( o.procedure ).nameElse( 'time.outError' );
-
-  let con = _.time.out.body.call( _, o );
-  if( Config.debug && con.tag === '' )
-  con.tag = 'TimeOutError';
-
-  _.assert( con._procedure === null );
-  con.procedure( o.procedure.clone() );
-  con.finally( outError );
-  _.assert( con._procedure === null );
-
-  return con;
-
-  function outError( err, arg )
-  {
-    if( err )
-    throw err;
-    if( arg === _.dont )
-    return arg;
-
-    err = _.time._errTimeOut
-    ({
-      message : 'Time out!',
-      reason : 'time out',
-      consequnce : con,
-      procedure : o.procedure,
-    });
-
-    throw err;
-  }
-
-}
-
-outError_body.defaults = Object.create( out_body.defaults );
-
-let outError = _.routineUnite( out_head, outError_body );
+// /* zzz : remove the body, use out_body */
+// function outError_body( o )
+// {
+//   _.assert( _.routineIs( _.Consequence ) );
+//   _.assertRoutineOptions( outError_body, arguments );
+//
+//   if( _.numberIs( o.procedure ) )
+//   o.procedure += 1;
+//   else if( o.procedure === null )
+//   o.procedure = 2;
+//
+//   if( !o.procedure || _.numberIs( o.procedure ) )
+//   o.procedure = _.procedure.from( o.procedure ).nameElse( 'time.outError' );
+//
+//   let con = _.time.out.body.call( _, o );
+//   if( Config.debug && con.tag === '' )
+//   con.tag = 'TimeOutError';
+//
+//   _.assert( con._procedure === null );
+//   con.procedure( o.procedure.clone() );
+//   con.finally( outError );
+//   _.assert( con._procedure === null );
+//
+//   return con;
+//
+//   function outError( err, arg )
+//   {
+//     if( err )
+//     throw err;
+//     if( arg === _.dont )
+//     return arg;
+//
+//     err = _.time._errTimeOut
+//     ({
+//       message : 'Time out!',
+//       reason : 'time out',
+//       consequnce : con,
+//       procedure : o.procedure,
+//     });
+//
+//     throw err;
+//   }
+//
+// }
+//
+// outError_body.defaults = Object.create( out_body.defaults );
+//
+// let outError = _.routineUnite( out_head, outError_body );
 
 //
 
@@ -365,6 +408,7 @@ function _errTimeOut( o )
     throws : o.procedure ? [ o.procedure._sourcePath ] : [],
     asyncCallsStack : o.procedure ? [ o.procedure.stack() ] : [],
     reason : o.reason,
+    throwCallsStack : o.procedure ? o.procedure._stack : null,
   });
 
   if( o.consequnce )

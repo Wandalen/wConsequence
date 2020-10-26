@@ -115,26 +115,25 @@ function clone( test )
 function fromAsyncMode00( test )
 {
   let context = this;
-  let testMsg = 'value';
   let amode = _.Consequence.AsyncModeGet();
   let ready = new _.Consequence().take( null )
 
   /* */
 
-  .finally( () =>
-  {
-    _.Consequence.AsyncModeSet([ 0, 0 ]);
-    test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
-    return null;
-  })
+  // .finally( () =>
+  // {
+  //   _.Consequence.AsyncModeSet([ 0, 0 ]);
+  //   test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+  //   return null;
+  // })
 
   /* */
 
   .then( function( arg )
   {
     test.case = 'passing value';
-    var con = _.Consequence.From( testMsg );
-    test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
+    var con = _.Consequence.From( 'str' );
+    test.identical( con.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
     test.identical( con.competitorsCount(), 0 );
     return con;
   })
@@ -144,7 +143,7 @@ function fromAsyncMode00( test )
   .then( function( arg )
   {
     test.case = 'passing an error';
-    var err = _.errAttend( testMsg );
+    var err = _.errAttend( 'str' );
     var con = _.Consequence.From( err );
     test.identical( con.resourcesGet(), [ { error : err, argument : undefined } ] );
     test.identical( con.competitorsCount(), 0 );
@@ -156,10 +155,10 @@ function fromAsyncMode00( test )
   .then( function( arg )
   {
     test.case = 'passing consequence';
-    var src = new _.Consequence().take( testMsg );
+    var src = new _.Consequence().take( 'str' );
     var con = _.Consequence.From( src );
     test.identical( con, src );
-    test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
+    test.identical( con.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
     test.identical( con.competitorsCount(), 0 );
     return con;
   })
@@ -169,11 +168,11 @@ function fromAsyncMode00( test )
   .then( function( arg )
   {
     test.case = 'passing resolved promise';
-    var src = Promise.resolve( testMsg );
+    var src = Promise.resolve( 'str' );
     var con = _.Consequence.From( src );
     return _.time.out( 1, function()
     {
-      test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
+      test.identical( con.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
       test.identical( con.competitorsCount(), 0 );
       return null;
     })
@@ -184,11 +183,11 @@ function fromAsyncMode00( test )
   .then( function( arg )
   {
     test.case = 'passing rejected promise';
-    var src = Promise.reject( testMsg );
+    var src = Promise.reject( 'str' );
     var con = _.Consequence.From( src );
     return _.time.out( 1, function()
     {
-      test.is( _.strHas( String( con.errorsGet()[ 0 ] ), testMsg ) );
+      test.is( _.strHas( String( con.errorsGet()[ 0 ] ), 'str' ) );
       test.identical( con.competitorsCount(), 0 );
       return null;
     })
@@ -199,12 +198,12 @@ function fromAsyncMode00( test )
   .then( function( arg )
   {
     test.case = 'sync, resolved promise, timeout';
-    var src = Promise.resolve( testMsg );
+    var src = Promise.resolve( 'str' );
     // var con = _.Consequence.From( src, context.t1*5 );
-    var con = _.Consequence.TimeLimitThrowing( context.t1*5, src );
-    con.give( ( err, got ) =>
+    var con = _.Consequence.TimeLimitError( context.t1*5, src );
+    con.give( ( err, got ) => /* qqq : rename all err, got -> err, arg */
     {
-      test.identical( got, testMsg );
+      test.identical( got, 'str' );
       test.identical( err, undefined );
       return null;
     });
@@ -227,10 +226,10 @@ function fromAsyncMode00( test )
     test.case = 'sync, promise resolved with timeout';
     var src = new Promise( ( resolve ) =>
     {
-      setTimeout( () => resolve( testMsg ), context.t1*2 );
+      setTimeout( () => resolve( 'str' ), context.t1*2 );
     })
     // var con = _.Consequence.From( src, context.t1 );
-    var con = _.Consequence.TimeLimitThrowing( context.t1, src );
+    var con = _.Consequence.TimeLimitError( context.t1, src );
     con.finally( ( err, got ) =>
     {
       test.is( _.errIs( err ) );
@@ -256,12 +255,12 @@ function fromAsyncMode00( test )
   .then( function( arg )
   {
     test.case = 'sync, timeout, src is a consequence';
-    var con = new _.Consequence({ tag : 'con' }).take( testMsg );
+    var con = new _.Consequence({ tag : 'con' }).take( 'str' );
     // con = _.Consequence.From( con, context.t1 );
-    con = _.Consequence.TimeLimitThrowing( context.t1, con );
+    con = _.Consequence.TimeLimitError( context.t1, con );
     con.give( ( err, got ) =>
     {
-      test.identical( got, testMsg );
+      test.identical( got, 'str' );
       test.identical( err, undefined );
     });
     test.identical( con.competitorsCount(), 0 );
@@ -275,11 +274,11 @@ function fromAsyncMode00( test )
   .then( function( arg )
   {
     test.case = 'sync, timeout, src is a consequence';
-    var con = _.time.out( context.t1*2, () => testMsg );
+    var con = _.time.out( context.t1*2, () => 'str' );
     con.tag = 'con1';
     // con = _.Consequence.From( con, context.t1 );
-    // con = _.Consequence.TimeLimitThrowing( context.t1, con );
-    con = con.timeLimitThrowingSplit( context.t1 );
+    // con = _.Consequence.TimeLimitError( context.t1, con );
+    con = con.timeLimitErrorSplit( context.t1 );
     con.tag = 'con2';
     con.give( ( err, got ) =>
     {
@@ -301,15 +300,15 @@ function fromAsyncMode00( test )
 
   /* */
 
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
-    _.Consequence.AsyncModeSet( amode );
-    if( err )
-    throw err;
-    return arg;
-
-  })
+  // .finally( ( err, arg ) =>
+  // {
+  //   test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+  //   _.Consequence.AsyncModeSet( amode );
+  //   if( err )
+  //   throw err;
+  //   return arg;
+  //
+  // })
 
   /* */
 
@@ -320,428 +319,425 @@ fromAsyncMode00.timeOut = 30000;
 
 //
 
-function fromAsyncMode10( test )
-{
-  var testMsg = 'value';
-  let amode = _.Consequence.AsyncModeGet();
-  let ready = new _.Consequence().take( null )
-
-  /* */
-
-  .finally( () =>
-  {
-    _.Consequence.AsyncModeSet([ 1, 0 ]);
-    test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
-    return null;
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async competitors adding, passing value';
-    var con = _.Consequence.From( testMsg );
-    con.give( ( err, got ) =>
-    {
-      test.identical( got, testMsg );
-      test.identical( err, undefined );
-    });
-    test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
-    test.identical( con.competitorsCount(), 1 );
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesGet(), [] );
-      test.identical( con.competitorsCount(), 0 );
-      return null;
-    });
-
-    return con;
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async competitors adding, passing an error';
-    var src = _.errAttend( testMsg );
-    var con = _.Consequence.From( src );
-    con.give( ( err, got ) => test.is( err === src ) );
-    test.identical( con.resourcesGet(), [ { error : src, argument : undefined } ] );
-    test.identical( con.competitorsCount(), 1 );
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesGet(), [] );
-      test.identical( con.competitorsCount(), 0 );
-      return null;
-    })
-
-    return con;
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async competitors adding, passing consequence';
-    var src = new _.Consequence().take( testMsg );
-    var con = _.Consequence.From( src );
-    con.give( ( err, got ) =>
-    {
-      test.identical( got, testMsg );
-      test.identical( err, undefined );
-    });
-    test.identical( src.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
-    test.identical( con.competitorsCount(), 1 );
-    test.identical( con, src );
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesGet(), [] );
-      test.identical( con.competitorsCount(), 0 );
-      return null;
-    })
-
-    return con;
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async competitors adding, passing resolved promise';
-    var src = Promise.resolve( testMsg );
-    var con = _.Consequence.From( src );
-    con.give( ( err, got ) =>
-    {
-      test.identical( got, testMsg );
-      test.identical( err, undefined );
-    });
-    test.identical( con.competitorsCount(), 1 );
-    test.identical( con.resourcesCount(), 0 )
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesCount(), 0 )
-      test.identical( con.competitorsCount(), 0 )
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async competitors adding, passing rejected promise';
-    var src = Promise.reject( testMsg );
-    var con = _.Consequence.From( src );
-    con.give( ( err, got ) => test.is( _.strHas( String( err ), testMsg ) ) );
-    test.identical( con.competitorsCount(), 1 );
-    test.identical( con.resourcesCount(), 0 )
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesCount(), 0 )
-      test.identical( con.competitorsCount(), 0 )
-      return null;
-    })
-  })
-
-  /* */
-
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
-
-    _.Consequence.AsyncModeSet( amode );
-
-
-    if( err )
-    throw err;
-    return arg;
-
-  })
-  return ready;
-}
-
+// function fromAsyncMode10( test )
+// {
+//   let amode = _.Consequence.AsyncModeGet();
+//   let ready = new _.Consequence().take( null )
 //
-
-function fromAsyncMode01( test )
-{
-  var testMsg = 'value';
-  let amode = _.Consequence.AsyncModeGet();
-  let ready = new _.Consequence().take( null )
-
-  /* */
-
-  .finally( () =>
-  {
-    _.Consequence.AsyncModeSet([ 0, 1 ]);
-    test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
-    return null;
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async resources adding passing value';
-    var con = _.Consequence.From( testMsg );
-    test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
-    con.give( ( err, got ) =>
-    {
-      test.identical( got, testMsg );
-      test.identical( err, undefined );
-    });
-    test.identical( con.resourcesGet(), [] );
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesGet(), [] );
-      test.identical( con.competitorsCount(), 0 );
-      return null;
-    })
-
-    return con;
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'passing an error';
-    var src = _.errAttend( testMsg );
-    var con = _.Consequence.From( src );
-    test.identical( con.resourcesGet(), [ { error : src, argument : undefined } ] );
-    // con.give( ( err, got ) => test.is( _.strHas( String( err ), src ) ) );
-    con.give( ( err, got ) => test.is( err === src ) );
-    test.identical( con.resourcesGet(), [] );
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesGet(), [] );
-      test.identical( con.competitorsCount(), 0 );
-      return null;
-    })
-
-    return con;
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'passing consequence';
-    var src = new _.Consequence().take( testMsg );
-    var con = _.Consequence.From( src );
-    test.identical( src.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
-    con.give( ( err, got ) =>
-    {
-      test.identical( got, testMsg );
-      test.identical( err, undefined );
-    });
-    test.identical( src.resourcesGet(), [] );
-    test.identical( con, src );
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesGet(), [] );
-      test.identical( con.competitorsCount(), 0 );
-      return null;
-    })
-
-    return con;
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'passing resolved promise';
-    var src = Promise.resolve( testMsg );
-    var con = _.Consequence.From( src );
-    con.give( ( err, got ) =>
-    {
-      test.identical( got, testMsg );
-      test.identical( err, undefined );
-    });
-    test.identical( con.resourcesCount(), 0 )
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesCount(), 0 )
-      test.identical( con.competitorsCount(), 0 )
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'passing rejected promise';
-    var src = Promise.reject( testMsg );
-    var con = _.Consequence.From( src );
-    con.give( ( err, got ) => test.is( _.strHas( String( err ), testMsg ) ) );
-    test.identical( con.resourcesCount(), 0 )
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesCount(), 0 )
-      test.identical( con.competitorsCount(), 0 )
-      return null;
-    })
-  })
-
-  /* */
-
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
-
-    _.Consequence.AsyncModeSet( amode );
-
-
-    if( err )
-    throw err;
-    return arg;
-
-  })
-  return ready;
-}
-
+//   /* */
 //
-
-function fromAsyncMode11( test )
-{
-  var testMsg = 'value';
-  let amode = _.Consequence.AsyncModeGet();
-  let ready = new _.Consequence().take( null )
-
-  /* */
-
-  .finally( () =>
-  {
-    _.Consequence.AsyncModeSet([ 1, 1 ]);
-    test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
-    return null;
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async, passing value';
-    var con = _.Consequence.From( testMsg );
-    con.give( ( err, got ) =>
-    {
-      test.identical( got, testMsg );
-      test.identical( err, undefined );
-    });
-    test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
-    test.identical( con.competitorsCount(), 1 );
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesGet(), [] );
-      test.identical( con.competitorsCount(), 0 );
-      return null;
-    })
-
-    return con;
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async, passing an error';
-    var src = _.errAttend( testMsg );
-    var con = _.Consequence.From( src );
-    con.give( ( err, got ) => test.is( err === src ) );
-    test.identical( con.resourcesGet(), [ { error : src, argument : undefined } ] );
-    test.identical( con.competitorsCount(), 1 );
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesGet(), [] );
-      test.identical( con.competitorsCount(), 0 );
-      return null;
-    })
-
-    return con;
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async, passing consequence';
-    var src = new _.Consequence().take( testMsg );
-    var con = _.Consequence.From( src );
-    con.give( ( err, got ) =>
-    {
-      test.identical( got, testMsg );
-      test.identical( err, undefined );
-    });
-    test.identical( src.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
-    test.identical( con.competitorsCount(), 1 );
-    test.identical( con, src );
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesGet(), [] );
-      test.identical( con.competitorsCount(), 0 );
-      return null;
-    })
-
-    return con;
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async, passing resolved promise';
-    var src = Promise.resolve( testMsg );
-    var con = _.Consequence.From( src );
-    con.give( ( err, got ) =>
-    {
-      test.identical( got, testMsg );
-      test.identical( err, undefined );
-    });
-    test.identical( con.competitorsCount(), 1 );
-    test.identical( con.resourcesCount(), 0 )
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesCount(), 0 )
-      test.identical( con.competitorsCount(), 0 )
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async, passing rejected promise';
-    var src = Promise.reject( testMsg );
-    var con = _.Consequence.From( src );
-    con.give( ( err, got ) => test.is( _.strHas( String( err ), testMsg ) ) );
-    test.identical( con.competitorsCount(), 1 );
-    test.identical( con.resourcesCount(), 0 )
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesCount(), 0 )
-      test.identical( con.competitorsCount(), 0 )
-      return null;
-    })
-  })
-
-  /* */
-
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
-
-    _.Consequence.AsyncModeSet( amode );
-
-
-    if( err )
-    throw err;
-    return arg;
-
-  })
-  return ready;
-}
+//   .finally( () =>
+//   {
+//     _.Consequence.AsyncModeSet([ 1, 0 ]);
+//     test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
+//     return null;
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async competitors adding, passing value';
+//     var con = _.Consequence.From( 'str' );
+//     con.give( ( err, got ) =>
+//     {
+//       test.identical( got, 'str' );
+//       test.identical( err, undefined );
+//     });
+//     test.identical( con.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
+//     test.identical( con.competitorsCount(), 1 );
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesGet(), [] );
+//       test.identical( con.competitorsCount(), 0 );
+//       return null;
+//     });
+//
+//     return con;
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async competitors adding, passing an error';
+//     var src = _.errAttend( 'str' );
+//     var con = _.Consequence.From( src );
+//     con.give( ( err, got ) => test.is( err === src ) );
+//     test.identical( con.resourcesGet(), [ { error : src, argument : undefined } ] );
+//     test.identical( con.competitorsCount(), 1 );
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesGet(), [] );
+//       test.identical( con.competitorsCount(), 0 );
+//       return null;
+//     })
+//
+//     return con;
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async competitors adding, passing consequence';
+//     var src = new _.Consequence().take( 'str' );
+//     var con = _.Consequence.From( src );
+//     con.give( ( err, got ) =>
+//     {
+//       test.identical( got, 'str' );
+//       test.identical( err, undefined );
+//     });
+//     test.identical( src.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
+//     test.identical( con.competitorsCount(), 1 );
+//     test.identical( con, src );
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesGet(), [] );
+//       test.identical( con.competitorsCount(), 0 );
+//       return null;
+//     })
+//
+//     return con;
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async competitors adding, passing resolved promise';
+//     var src = Promise.resolve( 'str' );
+//     var con = _.Consequence.From( src );
+//     con.give( ( err, got ) =>
+//     {
+//       test.identical( got, 'str' );
+//       test.identical( err, undefined );
+//     });
+//     test.identical( con.competitorsCount(), 1 );
+//     test.identical( con.resourcesCount(), 0 )
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesCount(), 0 )
+//       test.identical( con.competitorsCount(), 0 )
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async competitors adding, passing rejected promise';
+//     var src = Promise.reject( 'str' );
+//     var con = _.Consequence.From( src );
+//     con.give( ( err, got ) => test.is( _.strHas( String( err ), 'str' ) ) );
+//     test.identical( con.competitorsCount(), 1 );
+//     test.identical( con.resourcesCount(), 0 )
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesCount(), 0 )
+//       test.identical( con.competitorsCount(), 0 )
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( ( err, arg ) =>
+//   {
+//     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
+//
+//     _.Consequence.AsyncModeSet( amode );
+//
+//
+//     if( err )
+//     throw err;
+//     return arg;
+//
+//   })
+//   return ready;
+// }
+//
+// //
+//
+// function fromAsyncMode01( test )
+// {
+//   let amode = _.Consequence.AsyncModeGet();
+//   let ready = new _.Consequence().take( null )
+//
+//   /* */
+//
+//   .finally( () =>
+//   {
+//     _.Consequence.AsyncModeSet([ 0, 1 ]);
+//     test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
+//     return null;
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async resources adding passing value';
+//     var con = _.Consequence.From( 'str' );
+//     test.identical( con.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
+//     con.give( ( err, got ) =>
+//     {
+//       test.identical( got, 'str' );
+//       test.identical( err, undefined );
+//     });
+//     test.identical( con.resourcesGet(), [] );
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesGet(), [] );
+//       test.identical( con.competitorsCount(), 0 );
+//       return null;
+//     })
+//
+//     return con;
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'passing an error';
+//     var src = _.errAttend( 'str' );
+//     var con = _.Consequence.From( src );
+//     test.identical( con.resourcesGet(), [ { error : src, argument : undefined } ] );
+//     // con.give( ( err, got ) => test.is( _.strHas( String( err ), src ) ) );
+//     con.give( ( err, got ) => test.is( err === src ) );
+//     test.identical( con.resourcesGet(), [] );
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesGet(), [] );
+//       test.identical( con.competitorsCount(), 0 );
+//       return null;
+//     })
+//
+//     return con;
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'passing consequence';
+//     var src = new _.Consequence().take( 'str' );
+//     var con = _.Consequence.From( src );
+//     test.identical( src.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
+//     con.give( ( err, got ) =>
+//     {
+//       test.identical( got, 'str' );
+//       test.identical( err, undefined );
+//     });
+//     test.identical( src.resourcesGet(), [] );
+//     test.identical( con, src );
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesGet(), [] );
+//       test.identical( con.competitorsCount(), 0 );
+//       return null;
+//     })
+//
+//     return con;
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'passing resolved promise';
+//     var src = Promise.resolve( 'str' );
+//     var con = _.Consequence.From( src );
+//     con.give( ( err, got ) =>
+//     {
+//       test.identical( got, 'str' );
+//       test.identical( err, undefined );
+//     });
+//     test.identical( con.resourcesCount(), 0 )
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesCount(), 0 )
+//       test.identical( con.competitorsCount(), 0 )
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'passing rejected promise';
+//     var src = Promise.reject( 'str' );
+//     var con = _.Consequence.From( src );
+//     con.give( ( err, got ) => test.is( _.strHas( String( err ), 'str' ) ) );
+//     test.identical( con.resourcesCount(), 0 )
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesCount(), 0 )
+//       test.identical( con.competitorsCount(), 0 )
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( ( err, arg ) =>
+//   {
+//     test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
+//
+//     _.Consequence.AsyncModeSet( amode );
+//
+//
+//     if( err )
+//     throw err;
+//     return arg;
+//
+//   })
+//   return ready;
+// }
+//
+// //
+//
+// function fromAsyncMode11( test )
+// {
+//   let amode = _.Consequence.AsyncModeGet();
+//   let ready = new _.Consequence().take( null )
+//
+//   /* */
+//
+//   .finally( () =>
+//   {
+//     _.Consequence.AsyncModeSet([ 1, 1 ]);
+//     test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
+//     return null;
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async, passing value';
+//     var con = _.Consequence.From( 'str' );
+//     con.give( ( err, got ) =>
+//     {
+//       test.identical( got, 'str' );
+//       test.identical( err, undefined );
+//     });
+//     test.identical( con.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
+//     test.identical( con.competitorsCount(), 1 );
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesGet(), [] );
+//       test.identical( con.competitorsCount(), 0 );
+//       return null;
+//     })
+//
+//     return con;
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async, passing an error';
+//     var src = _.errAttend( 'str' );
+//     var con = _.Consequence.From( src );
+//     con.give( ( err, got ) => test.is( err === src ) );
+//     test.identical( con.resourcesGet(), [ { error : src, argument : undefined } ] );
+//     test.identical( con.competitorsCount(), 1 );
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesGet(), [] );
+//       test.identical( con.competitorsCount(), 0 );
+//       return null;
+//     })
+//
+//     return con;
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async, passing consequence';
+//     var src = new _.Consequence().take( 'str' );
+//     var con = _.Consequence.From( src );
+//     con.give( ( err, got ) =>
+//     {
+//       test.identical( got, 'str' );
+//       test.identical( err, undefined );
+//     });
+//     test.identical( src.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
+//     test.identical( con.competitorsCount(), 1 );
+//     test.identical( con, src );
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesGet(), [] );
+//       test.identical( con.competitorsCount(), 0 );
+//       return null;
+//     })
+//
+//     return con;
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async, passing resolved promise';
+//     var src = Promise.resolve( 'str' );
+//     var con = _.Consequence.From( src );
+//     con.give( ( err, got ) =>
+//     {
+//       test.identical( got, 'str' );
+//       test.identical( err, undefined );
+//     });
+//     test.identical( con.competitorsCount(), 1 );
+//     test.identical( con.resourcesCount(), 0 )
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesCount(), 0 )
+//       test.identical( con.competitorsCount(), 0 )
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async, passing rejected promise';
+//     var src = Promise.reject( 'str' );
+//     var con = _.Consequence.From( src );
+//     con.give( ( err, got ) => test.is( _.strHas( String( err ), 'str' ) ) );
+//     test.identical( con.competitorsCount(), 1 );
+//     test.identical( con.resourcesCount(), 0 )
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesCount(), 0 )
+//       test.identical( con.competitorsCount(), 0 )
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( ( err, arg ) =>
+//   {
+//     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
+//
+//     _.Consequence.AsyncModeSet( amode );
+//
+//
+//     if( err )
+//     throw err;
+//     return arg;
+//
+//   })
+//   return ready;
+// }
 
 //
 
@@ -1108,14 +1104,14 @@ function ordinarResourceAsyncMode00( test )
 
   /* */
 
-  .finally( () =>
-  {
-    test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+  // .finally( () =>
+  // {
+  //   test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+  //   test.case = 'single resource';
+  //   _.Consequence.AsyncModeSet([ 0, 0 ]);
+  //   return null;
+  // })
 
-    test.case = 'single resource';
-    _.Consequence.AsyncModeSet([ 0, 0 ]);
-    return null;
-  })
   .then( function( arg )
   {
     var con = new _.Consequence({ tag : 'con' });
@@ -1199,438 +1195,434 @@ function ordinarResourceAsyncMode00( test )
 
   /* */
 
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+  // .finally( ( err, arg ) =>
+  // {
+  //   test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+  //   _.Consequence.AsyncModeSet( amode );
+  //   if( err )
+  //   throw err;
+  //   return arg;
+  // })
 
-    _.Consequence.AsyncModeSet( amode );
-
-
-    if( err )
-    throw err;
-    return arg;
-
-  })
   return ready;
 }
 
 //
 
-function ordinarResourceAsyncMode10( test )
-{
-  let context = this;
-  let amode = _.Consequence.AsyncModeGet();
-  let ready = new _.Consequence().take( null )
-
-  /* */
-
-  .finally( () =>
-  {
-    test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
-
-    test.case = 'single resource';
-    _.Consequence.AsyncModeSet([ 1, 0 ]);
-    return null;
-  })
-  .then( function( arg )
-  {
-    var con = new _.Consequence({ tag : 'con' });
-    con.take( 1 );
-    test.identical( con.resourcesCount(), 1 );
-    con.give( function( err, got )
-    {
-      test.identical( err, undefined )
-      test.identical( got, 1 );
-    })
-    test.identical( con.resourcesCount(), 1 );
-    test.identical( con.competitorsCount(), 1 );
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesCount(), 0 );
-      test.identical( con.competitorsCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .finally( () =>
-  {
-    test.case = 'several resources';
-    return null;
-  })
-  .then( function( arg )
-  {
-    var con = new _.Consequence({ tag : 'con', capacity : 3 });
-    con.take( 1 )
-    .take( 2 )
-    .take( 3 );
-    con.give( ( err, got ) => test.identical( got, 1 ) && test.identical( err, undefined ) );
-    con.give( ( err, got ) => test.identical( got, 2 ) && test.identical( err, undefined ) );
-    con.give( ( err, got ) => test.identical( got, 3 ) && test.identical( err, undefined ) );
-    test.identical( con.competitorsCount(), 3 );
-    test.identical( con.resourcesCount(), 3 );
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .finally( () =>
-  {
-    test.case = 'single error';
-    return null;
-  })
-  .then( function( arg )
-  {
-    var con = new _.Consequence({ tag : 'con' });
-    con.error( _.errAttend( 'err' ) );
-    test.identical( con.resourcesCount(), 1 );
-    con.give( function( err, got )
-    {
-      test.is( !!err );
-      test.identical( got, undefined );
-    })
-    test.identical( con.resourcesCount(), 1 );
-    test.identical( con.competitorsCount(), 1 );
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesCount(), 0 );
-      test.identical( con.competitorsCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .finally( () =>
-  {
-    test.case = 'several error'
-    return null;
-  })
-  .then( function( arg )
-  {
-    var con = new _.Consequence({ tag : 'con', capacity : 3 });
-    con.error( _.errAttend( 'err1' ) )
-    .error( _.errAttend( 'err2' ) )
-    .error( _.errAttend( 'err3' ) );
-    con.give( ( err, got ) => test.is( !!err ) );
-    con.give( ( err, got ) => test.is( !!err ) );
-    con.give( ( err, got ) => test.is( !!err ) );
-    test.identical( con.competitorsCount(), 3 );
-    test.identical( con.resourcesCount(), 3 );
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
-
-    _.Consequence.AsyncModeSet( amode );
-
-
-    if( err )
-    throw err;
-    return arg;
-
-  })
-  return ready;
-}
-
+// function ordinarResourceAsyncMode10( test )
+// {
+//   let context = this;
+//   let amode = _.Consequence.AsyncModeGet();
+//   let ready = new _.Consequence().take( null )
 //
-
-function ordinarResourceAsyncMode01( test )
-{
-  let context = this;
-  let amode = _.Consequence.AsyncModeGet();
-  let ready = new _.Consequence().take( null )
-
-  /* */
-
-  .finally( () =>
-  {
-    test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
-
-    test.case = 'single resource';
-    _.Consequence.AsyncModeSet([ 0, 1 ]);
-    return null;
-  })
-  .then( function( arg )
-  {
-    var con = new _.Consequence({ tag : 'con' });
-    con.take( 1 );
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesCount(), 1 );
-      test.identical( con.competitorsCount(), 0 );
-      con.give( function( err, got )
-      {
-        test.identical( err, undefined )
-        test.identical( got, 1 );
-      })
-      return null;
-    })
-    .then( function( arg )
-    {
-      test.identical( con.resourcesCount(), 0 );
-      test.identical( con.competitorsCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .finally( () =>
-  {
-    test.case = 'several resources';
-    return null;
-  })
-  .then( function( arg )
-  {
-    var con = new _.Consequence({ tag : 'con', capacity : 3 });
-    con.take( 1 )
-    .take( 2 )
-    .take( 3 );
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 3 );
-      con.give( ( err, got ) => test.identical( got, 1 ) && test.identical( err, undefined ) );
-      con.give( ( err, got ) => test.identical( got, 2 ) && test.identical( err, undefined ) );
-      con.give( ( err, got ) => test.identical( got, 3 ) && test.identical( err, undefined ) );
-      return null;
-    })
-    .then( function( arg )
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .finally( () =>
-  {
-    test.case = 'single error';
-    return null;
-  })
-  .then( function( arg )
-  {
-    var con = new _.Consequence({ tag : 'con' });
-    con.error( _.errAttend( 'err' ) );
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesCount(), 1 );
-      test.identical( con.competitorsCount(), 0 );
-      con.give( function( err, got )
-      {
-        test.is( !!err );
-        test.identical( got, undefined );
-      })
-      return null;
-    })
-    .then( function( arg )
-    {
-      test.identical( con.resourcesCount(), 0 );
-      test.identical( con.competitorsCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .finally( () =>
-  {
-    test.case = 'several error'
-    return null;
-  })
-  .then( function( arg )
-  {
-    var con = new _.Consequence({ tag : 'con', capacity : 3 });
-    con.error( _.errAttend( 'err1' ) )
-    .error( _.errAttend( 'err2' ) )
-    .error( _.errAttend( 'err3' ) );
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 3 );
-      con.give( ( err, got ) => test.is( !!err ) );
-      con.give( ( err, got ) => test.is( !!err ) );
-      con.give( ( err, got ) => test.is( !!err ) );
-      return null;
-    })
-    .then( function( arg )
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
-
-    _.Consequence.AsyncModeSet( amode );
-
-
-    if( err )
-    throw err;
-    return arg;
-
-  })
-  return ready;
-}
-
+//   /* */
 //
-
-function ordinarResourceAsyncMode11( test )
-{
-  let context = this;
-  let amode = _.Consequence.AsyncModeGet();
-  let ready = new _.Consequence().take( null )
-
-  /* */
-
-  .finally( () =>
-  {
-    test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
-
-    test.case = 'single resource';
-    _.Consequence.AsyncModeSet([ 1, 1 ]);
-    return null;
-  })
-  .then( function( arg )
-  {
-    var con = new _.Consequence({ tag : 'con' });
-    con.take( 1 );
-    con.give( function( err, got )
-    {
-      test.identical( err, undefined )
-      test.identical( got, 1 );
-    })
-    test.identical( con.resourcesCount(), 1 );
-    test.identical( con.competitorsCount(), 1 );
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesCount(), 0 );
-      test.identical( con.competitorsCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .finally( () =>
-  {
-    test.case = 'several resources';
-    return null;
-  })
-  .then( function( arg )
-  {
-    var con = new _.Consequence({ tag : 'con', capacity : 3 });
-    con.take( 1 )
-    .take( 2 )
-    .take( 3 );
-    con.give( ( err, got ) => test.identical( got, 1 ) && test.identical( err, undefined ) );
-    con.give( ( err, got ) => test.identical( got, 2 ) && test.identical( err, undefined ) );
-    con.give( ( err, got ) => test.identical( got, 3 ) && test.identical( err, undefined ) );
-    test.identical( con.competitorsCount(), 3 );
-    test.identical( con.resourcesCount(), 3 );
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .finally( () =>
-  {
-    test.case = 'single error';
-    return null;
-  })
-  .then( function( arg )
-  {
-    var con = new _.Consequence({ tag : 'con' });
-    con.error( _.errAttend( 'err' ) );
-    con.give( function( err, got )
-    {
-      test.is( !!err );
-      test.identical( got, undefined );
-    })
-    test.identical( con.resourcesCount(), 1 );
-    test.identical( con.competitorsCount(), 1 );
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesCount(), 0 );
-      test.identical( con.competitorsCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .finally( () =>
-  {
-    test.case = 'several error'
-    return null;
-  })
-  .then( function( arg )
-  {
-    var con = new _.Consequence({ tag : 'con', capacity : 3 });
-    con.error( _.errAttend( 'err1' ) )
-    .error( _.errAttend( 'err2' ) )
-    .error( _.errAttend( 'err3' ) );
-    con.give( ( err, got ) => test.is( !!err ) );
-    con.give( ( err, got ) => test.is( !!err ) );
-    con.give( ( err, got ) => test.is( !!err ) );
-    test.identical( con.competitorsCount(), 3 );
-    test.identical( con.resourcesCount(), 3 );
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
-
-    _.Consequence.AsyncModeSet( amode );
-
-
-    if( err )
-    throw err;
-    return arg;
-
-  })
-  return ready;
-}
+//   .finally( () =>
+//   {
+//     test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
+//
+//     test.case = 'single resource';
+//     _.Consequence.AsyncModeSet([ 1, 0 ]);
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.take( 1 );
+//     test.identical( con.resourcesCount(), 1 );
+//     con.give( function( err, got )
+//     {
+//       test.identical( err, undefined )
+//       test.identical( got, 1 );
+//     })
+//     test.identical( con.resourcesCount(), 1 );
+//     test.identical( con.competitorsCount(), 1 );
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesCount(), 0 );
+//       test.identical( con.competitorsCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( () =>
+//   {
+//     test.case = 'several resources';
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     var con = new _.Consequence({ tag : 'con', capacity : 3 });
+//     con.take( 1 )
+//     .take( 2 )
+//     .take( 3 );
+//     con.give( ( err, got ) => test.identical( got, 1 ) && test.identical( err, undefined ) );
+//     con.give( ( err, got ) => test.identical( got, 2 ) && test.identical( err, undefined ) );
+//     con.give( ( err, got ) => test.identical( got, 3 ) && test.identical( err, undefined ) );
+//     test.identical( con.competitorsCount(), 3 );
+//     test.identical( con.resourcesCount(), 3 );
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( () =>
+//   {
+//     test.case = 'single error';
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.error( _.errAttend( 'err' ) );
+//     test.identical( con.resourcesCount(), 1 );
+//     con.give( function( err, got )
+//     {
+//       test.is( !!err );
+//       test.identical( got, undefined );
+//     })
+//     test.identical( con.resourcesCount(), 1 );
+//     test.identical( con.competitorsCount(), 1 );
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesCount(), 0 );
+//       test.identical( con.competitorsCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( () =>
+//   {
+//     test.case = 'several error'
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     var con = new _.Consequence({ tag : 'con', capacity : 3 });
+//     con.error( _.errAttend( 'err1' ) )
+//     .error( _.errAttend( 'err2' ) )
+//     .error( _.errAttend( 'err3' ) );
+//     con.give( ( err, got ) => test.is( !!err ) );
+//     con.give( ( err, got ) => test.is( !!err ) );
+//     con.give( ( err, got ) => test.is( !!err ) );
+//     test.identical( con.competitorsCount(), 3 );
+//     test.identical( con.resourcesCount(), 3 );
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( ( err, arg ) =>
+//   {
+//     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
+//
+//     _.Consequence.AsyncModeSet( amode );
+//
+//
+//     if( err )
+//     throw err;
+//     return arg;
+//
+//   })
+//   return ready;
+// }
+//
+// //
+//
+// function ordinarResourceAsyncMode01( test )
+// {
+//   let context = this;
+//   let amode = _.Consequence.AsyncModeGet();
+//   let ready = new _.Consequence().take( null )
+//
+//   /* */
+//
+//   .finally( () =>
+//   {
+//     test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
+//
+//     test.case = 'single resource';
+//     _.Consequence.AsyncModeSet([ 0, 1 ]);
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.take( 1 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesCount(), 1 );
+//       test.identical( con.competitorsCount(), 0 );
+//       con.give( function( err, got )
+//       {
+//         test.identical( err, undefined )
+//         test.identical( got, 1 );
+//       })
+//     })
+//     .then( function( arg )
+//     {
+//       test.identical( con.resourcesCount(), 0 );
+//       test.identical( con.competitorsCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( () =>
+//   {
+//     test.case = 'several resources';
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     var con = new _.Consequence({ tag : 'con', capacity : 3 });
+//     con.take( 1 )
+//     .take( 2 )
+//     .take( 3 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 3 );
+//       con.give( ( err, got ) => test.identical( got, 1 ) && test.identical( err, undefined ) );
+//       con.give( ( err, got ) => test.identical( got, 2 ) && test.identical( err, undefined ) );
+//       con.give( ( err, got ) => test.identical( got, 3 ) && test.identical( err, undefined ) );
+//       return null;
+//     })
+//     .then( function( arg )
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( () =>
+//   {
+//     test.case = 'single error';
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.error( _.errAttend( 'err' ) );
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesCount(), 1 );
+//       test.identical( con.competitorsCount(), 0 );
+//       con.give( function( err, got )
+//       {
+//         test.is( !!err );
+//         test.identical( got, undefined );
+//       })
+//       return null;
+//     })
+//     .then( function( arg )
+//     {
+//       test.identical( con.resourcesCount(), 0 );
+//       test.identical( con.competitorsCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( () =>
+//   {
+//     test.case = 'several error'
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     var con = new _.Consequence({ tag : 'con', capacity : 3 });
+//     con.error( _.errAttend( 'err1' ) )
+//     .error( _.errAttend( 'err2' ) )
+//     .error( _.errAttend( 'err3' ) );
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 3 );
+//       con.give( ( err, got ) => test.is( !!err ) );
+//       con.give( ( err, got ) => test.is( !!err ) );
+//       con.give( ( err, got ) => test.is( !!err ) );
+//       return null;
+//     })
+//     .then( function( arg )
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( ( err, arg ) =>
+//   {
+//     test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
+//
+//     _.Consequence.AsyncModeSet( amode );
+//
+//
+//     if( err )
+//     throw err;
+//     return arg;
+//
+//   })
+//   return ready;
+// }
+//
+// //
+//
+// function ordinarResourceAsyncMode11( test )
+// {
+//   let context = this;
+//   let amode = _.Consequence.AsyncModeGet();
+//   let ready = new _.Consequence().take( null )
+//
+//   /* */
+//
+//   .finally( () =>
+//   {
+//     test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
+//
+//     test.case = 'single resource';
+//     _.Consequence.AsyncModeSet([ 1, 1 ]);
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.take( 1 );
+//     con.give( function( err, got )
+//     {
+//       test.identical( err, undefined )
+//       test.identical( got, 1 );
+//     })
+//     test.identical( con.resourcesCount(), 1 );
+//     test.identical( con.competitorsCount(), 1 );
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesCount(), 0 );
+//       test.identical( con.competitorsCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( () =>
+//   {
+//     test.case = 'several resources';
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     var con = new _.Consequence({ tag : 'con', capacity : 3 });
+//     con.take( 1 )
+//     .take( 2 )
+//     .take( 3 );
+//     con.give( ( err, got ) => test.identical( got, 1 ) && test.identical( err, undefined ) );
+//     con.give( ( err, got ) => test.identical( got, 2 ) && test.identical( err, undefined ) );
+//     con.give( ( err, got ) => test.identical( got, 3 ) && test.identical( err, undefined ) );
+//     test.identical( con.competitorsCount(), 3 );
+//     test.identical( con.resourcesCount(), 3 );
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( () =>
+//   {
+//     test.case = 'single error';
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.error( _.errAttend( 'err' ) );
+//     con.give( function( err, got )
+//     {
+//       test.is( !!err );
+//       test.identical( got, undefined );
+//     })
+//     test.identical( con.resourcesCount(), 1 );
+//     test.identical( con.competitorsCount(), 1 );
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesCount(), 0 );
+//       test.identical( con.competitorsCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( () =>
+//   {
+//     test.case = 'several error'
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     var con = new _.Consequence({ tag : 'con', capacity : 3 });
+//     con.error( _.errAttend( 'err1' ) )
+//     .error( _.errAttend( 'err2' ) )
+//     .error( _.errAttend( 'err3' ) );
+//     con.give( ( err, got ) => test.is( !!err ) );
+//     con.give( ( err, got ) => test.is( !!err ) );
+//     con.give( ( err, got ) => test.is( !!err ) );
+//     test.identical( con.competitorsCount(), 3 );
+//     test.identical( con.resourcesCount(), 3 );
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( ( err, arg ) =>
+//   {
+//     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
+//
+//     _.Consequence.AsyncModeSet( amode );
+//
+//
+//     if( err )
+//     throw err;
+//     return arg;
+//
+//   })
+//   return ready;
+// }
 
 //
 
@@ -1656,7 +1648,6 @@ function takeAll( test )
 function finallyPromiseGiveAsyncMode00( test )
 {
   let context = this;
-  let testMsg = 'testMsg';
   let con;
   let amode = _.Consequence.AsyncModeGet();
   let ready = new _.Consequence({ tag : 'finallyPromiseGiveCon' }).take( null );
@@ -1665,13 +1656,12 @@ function finallyPromiseGiveAsyncMode00( test )
 
   /* */
 
-  .finally( () =>
-  {
-    test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
-
-    _.Consequence.AsyncModeSet([ 0, 0 ]);
-    return null;
-  })
+  // .finally( () =>
+  // {
+  //   test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+  //   _.Consequence.AsyncModeSet([ 0, 0 ]); /* xxx */
+  //   return null;
+  // })
 
   .then( function( arg )
   {
@@ -1702,12 +1692,12 @@ function finallyPromiseGiveAsyncMode00( test )
   {
     test.case = 'single resource';
     var con = new _.Consequence({ tag : 'con' });
-    con.take( testMsg );
+    con.take( 'str' );
     test.identical( con.resourcesCount(), 1 );
     var promise = con.finallyPromiseGive();
     promise.then( function( got )
     {
-      test.identical( got, testMsg );
+      test.identical( got, 'str' );
       test.is( _.promiseIs( promise ) );
       test.identical( con.resourcesCount(), 0 );
       test.identical( con.competitorsCount(), 0 );
@@ -1722,7 +1712,7 @@ function finallyPromiseGiveAsyncMode00( test )
   {
     test.case = 'single error';
     var con = new _.Consequence({ tag : 'con' });
-    con.error( testMsg );
+    con.error( 'str' );
 
     test.identical( con.resourcesCount(), 1 );
     test.identical( con.argumentsCount(), 0 );
@@ -1738,7 +1728,7 @@ function finallyPromiseGiveAsyncMode00( test )
 
     promise.catch( function( err )
     {
-      test.is( _.strHas( String( err ), testMsg ) );
+      test.is( _.strHas( String( err ), 'str' ) );
       test.is( _.promiseIs( promise ) );
       test.identical( con.resourcesCount(), 0 );
       test.identical( con.argumentsCount(), 0 );
@@ -1755,14 +1745,14 @@ function finallyPromiseGiveAsyncMode00( test )
   {
     test.case = 'several resources';
     var con = new _.Consequence({ capacity : 3 });
-    con.take( testMsg + 1 );
-    con.take( testMsg + 2 );
-    con.take( testMsg + 3 );
+    con.take( 'str' + 1 );
+    con.take( 'str' + 2 );
+    con.take( 'str' + 3 );
     test.identical( con.resourcesCount(), 3 );
     var promise = con.finallyPromiseGive();
     promise.then( function( got )
     {
-      test.identical( got, testMsg + 1 );
+      test.identical( got, 'str' + 1 );
       test.is( _.promiseIs( promise ) );
       test.identical( con.resourcesCount(), 2 );
       test.identical( con.competitorsCount(), 0 );
@@ -1772,353 +1762,350 @@ function finallyPromiseGiveAsyncMode00( test )
 
   /* */
 
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+  // .finally( ( err, arg ) =>
+  // {
+  //   test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+  //   _.Consequence.AsyncModeSet( amode );
+  //   if( err )
+  //   throw err;
+  //   return arg;
+  // })
 
-    _.Consequence.AsyncModeSet( amode );
-
-
-    if( err )
-    throw err;
-    return arg;
-
-  })
   return ready;
 }
 
 //
 
-function finallyPromiseGiveAsyncMode10( test )
-{
-  let context = this;
-  let testMsg = 'testMsg';
-  let con;
-  let amode = _.Consequence.AsyncModeGet();
-  let ready = new _.Consequence({ tag : 'finallyPromiseGiveCon' }).take( null );
-
-  ready
-
-  /* */
-
-  .finally( () =>
-  {
-    test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
-
-    _.Consequence.AsyncModeSet([ 1, 0 ]);
-    return null;
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async competitors adding, single resource';
-    var con = new _.Consequence({ tag : 'con' });
-    con.take( testMsg );
-    var promise = con.finallyPromiseGive();
-    test.identical( con.competitorsCount(), 1 );
-    test.identical( con.resourcesCount(), 1 );
-    return _.time.out( 1, function()
-    {
-      promise.then( function( got )
-      {
-        test.identical( got, testMsg );
-        test.is( _.promiseIs( promise ) );
-        test.identical( con.resourcesCount(), 0 );
-        test.identical( con.competitorsCount(), 0 );
-      });
-      return _.Consequence.From( promise );
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async competitors adding, error resource';
-    var con = new _.Consequence({ tag : 'con' });
-    con.error( testMsg );
-    var promise = con.finallyPromiseGive();
-    promise.catch( function( err )
-    {
-      test.is( _.strHas( String( err ), testMsg ) );
-      test.is( _.promiseIs( promise ) );
-    });
-    test.identical( con.resourcesCount(), 1 );
-    test.identical( con.competitorsCount(), 1 );
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesCount(), 0 );
-      test.identical( con.competitorsCount(), 0 );
-      return _.Consequence.From( promise ).finally( () => null );
-    });
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async competitors adding, several resources';
-    var con = new _.Consequence({ capacity : 3 });
-    con.take( testMsg + 1 );
-    con.take( testMsg + 2 );
-    con.take( testMsg + 3 );
-    var promise = con.finallyPromiseGive();
-    test.identical( con.resourcesCount(), 3 );
-    test.identical( con.competitorsCount(), 1 );
-
-    return _.time.out( 1, function()
-    {
-      promise.then( function( got )
-      {
-        test.identical( got, testMsg + 1 );
-        test.is( _.promiseIs( promise ) );
-        test.identical( con.resourcesCount(), 2 );
-        test.identical( con.competitorsCount(), 0 );
-      })
-      return _.Consequence.From( promise );
-    })
-  })
-
-  /* */
-
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
-
-    _.Consequence.AsyncModeSet( amode );
-
-
-    if( err )
-    throw err;
-    return arg;
-
-  })
-  return ready;
-}
-
+// function finallyPromiseGiveAsyncMode10( test )
+// {
+//   let context = this;
 //
-
-function finallyPromiseGiveAsyncMode01( test )
-{
-  let context = this;
-  let testMsg = 'testMsg';
-  let con;
-  let amode = _.Consequence.AsyncModeGet();
-  let ready = new _.Consequence({ tag : 'finallyPromiseGiveCon' }).take( null );
-
-  ready
-
-  /* */
-
-  .finally( () =>
-  {
-    test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
-
-    _.Consequence.AsyncModeSet([ 0, 1 ]);
-    return null;
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async resources adding, single resource';
-    var con = new _.Consequence({ tag : 'con' });
-    var promise = con.finallyPromiseGive();
-    con.take( testMsg );
-    test.identical( con.competitorsCount(), 1 );
-    test.identical( con.resourcesCount(), 1 );
-    return _.time.out( 1, function()
-    {
-      promise.then( function( got )
-      {
-        test.identical( got, testMsg );
-        test.is( _.promiseIs( promise ) );
-        test.identical( con.resourcesCount(), 0 );
-        test.identical( con.competitorsCount(), 0 );
-      });
-      return _.Consequence.From( promise );
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async resources adding, single error';
-    var con = new _.Consequence({ tag : 'con' });
-    var promise = con.finallyPromiseGive();
-    con.error( testMsg );
-    promise.catch( function( err )
-    {
-      test.is( _.strHas( String( err ), testMsg ) );
-      test.is( _.promiseIs( promise ) );
-    });
-    test.identical( con.resourcesCount(), 1 );
-    test.identical( con.competitorsCount(), 1 );
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesCount(), 0 );
-      test.identical( con.competitorsCount(), 0 );
-      return _.Consequence.From( promise ).finally( () => null );
-    });
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async resources adding, several resources';
-    var con = new _.Consequence({ capacity : 3 });
-    var promise = con.finallyPromiseGive();
-    con.take( testMsg + 1 );
-    con.take( testMsg + 2 );
-    con.take( testMsg + 3 );
-    test.identical( con.resourcesCount(), 3 );
-    test.identical( con.competitorsCount(), 1 );
-
-    return _.time.out( 1, function()
-    {
-      promise.then( function( got )
-      {
-        test.identical( got, testMsg + 1 );
-        test.is( _.promiseIs( promise ) );
-        test.identical( con.resourcesCount(), 2 );
-        test.identical( con.competitorsCount(), 0 );
-      })
-      return _.Consequence.From( promise );
-    })
-  })
-
-  /* */
-
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
-
-    _.Consequence.AsyncModeSet( amode );
-
-
-    if( err )
-    throw err;
-    return arg;
-
-  })
-  return ready;
-}
-
+//   let con;
+//   let amode = _.Consequence.AsyncModeGet();
+//   let ready = new _.Consequence({ tag : 'finallyPromiseGiveCon' }).take( null );
 //
-
-function finallyPromiseGiveAsyncMode11( test )
-{
-  let context = this;
-  let testMsg = 'testMsg';
-  let con;
-  let amode = _.Consequence.AsyncModeGet();
-  let ready = new _.Consequence({ tag : 'finallyPromiseGiveCon' }).take( null );
-
-  ready
-
-  /* */
-
-  .finally( () =>
-  {
-    test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
-
-    _.Consequence.AsyncModeSet([ 1, 1 ]);
-    return null;
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async competitors adding+resources adding signle resource';
-    var con = new _.Consequence({ tag : 'con' });
-    con.take( testMsg );
-    var promise = con.finallyPromiseGive();
-    test.identical( con.competitorsCount(), 1 );
-    test.identical( con.resourcesCount(), 1 );
-    return _.time.out( 1, function()
-    {
-      promise.then( function( got )
-      {
-        test.identical( got, testMsg );
-        test.is( _.promiseIs( promise ) );
-        test.identical( con.resourcesCount(), 0 );
-        test.identical( con.competitorsCount(), 0 );
-      });
-      return _.Consequence.From( promise );
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async competitors adding+resources adding error resource';
-    var con = new _.Consequence({ tag : 'con' });
-    con.error( testMsg );
-    var promise = con.finallyPromiseGive();
-    promise.catch( function( err )
-    {
-      test.is( _.strHas( String( err ), testMsg ) );
-      test.is( _.promiseIs( promise ) );
-    });
-    test.identical( con.resourcesCount(), 1 );
-    test.identical( con.competitorsCount(), 1 );
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesCount(), 0 );
-      test.identical( con.competitorsCount(), 0 );
-      return _.Consequence.From( promise ).finally( () => null );
-    });
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async competitors adding+resources adding several resources';
-    var con = new _.Consequence({ capacity : 3 });
-    con.take( testMsg + 1 );
-    con.take( testMsg + 2 );
-    con.take( testMsg + 3 );
-    var promise = con.finallyPromiseGive();
-    test.identical( con.resourcesCount(), 3 );
-    test.identical( con.competitorsCount(), 1 );
-
-    return _.time.out( 1, function()
-    {
-      promise.then( function( got )
-      {
-        test.identical( got, testMsg + 1 );
-        test.is( _.promiseIs( promise ) );
-        test.identical( con.resourcesCount(), 2 );
-        test.identical( con.competitorsCount(), 0 );
-      })
-      return _.Consequence.From( promise );
-    })
-  })
-
-  /* */
-
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
-
-    _.Consequence.AsyncModeSet( amode );
-
-
-    if( err )
-    throw err;
-    return arg;
-
-  })
-  return ready;
-}
+//   ready
+//
+//   /* */
+//
+//   .finally( () =>
+//   {
+//     test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
+//
+//     _.Consequence.AsyncModeSet([ 1, 0 ]);
+//     return null;
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async competitors adding, single resource';
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.take( 'str' );
+//     var promise = con.finallyPromiseGive();
+//     test.identical( con.competitorsCount(), 1 );
+//     test.identical( con.resourcesCount(), 1 );
+//     return _.time.out( 1, function()
+//     {
+//       promise.then( function( got )
+//       {
+//         test.identical( got, 'str' );
+//         test.is( _.promiseIs( promise ) );
+//         test.identical( con.resourcesCount(), 0 );
+//         test.identical( con.competitorsCount(), 0 );
+//       });
+//       return _.Consequence.From( promise );
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async competitors adding, error resource';
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.error( 'str' );
+//     var promise = con.finallyPromiseGive();
+//     promise.catch( function( err )
+//     {
+//       test.is( _.strHas( String( err ), 'str' ) );
+//       test.is( _.promiseIs( promise ) );
+//     });
+//     test.identical( con.resourcesCount(), 1 );
+//     test.identical( con.competitorsCount(), 1 );
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesCount(), 0 );
+//       test.identical( con.competitorsCount(), 0 );
+//       return _.Consequence.From( promise ).finally( () => null );
+//     });
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async competitors adding, several resources';
+//     var con = new _.Consequence({ capacity : 3 });
+//     con.take( 'str' + 1 );
+//     con.take( 'str' + 2 );
+//     con.take( 'str' + 3 );
+//     var promise = con.finallyPromiseGive();
+//     test.identical( con.resourcesCount(), 3 );
+//     test.identical( con.competitorsCount(), 1 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       promise.then( function( got )
+//       {
+//         test.identical( got, 'str' + 1 );
+//         test.is( _.promiseIs( promise ) );
+//         test.identical( con.resourcesCount(), 2 );
+//         test.identical( con.competitorsCount(), 0 );
+//       })
+//       return _.Consequence.From( promise );
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( ( err, arg ) =>
+//   {
+//     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
+//
+//     _.Consequence.AsyncModeSet( amode );
+//
+//
+//     if( err )
+//     throw err;
+//     return arg;
+//
+//   })
+//   return ready;
+// }
+//
+// //
+//
+// function finallyPromiseGiveAsyncMode01( test )
+// {
+//   let context = this;
+//
+//   let con;
+//   let amode = _.Consequence.AsyncModeGet();
+//   let ready = new _.Consequence({ tag : 'finallyPromiseGiveCon' }).take( null );
+//
+//   ready
+//
+//   /* */
+//
+//   .finally( () =>
+//   {
+//     test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
+//
+//     _.Consequence.AsyncModeSet([ 0, 1 ]);
+//     return null;
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async resources adding, single resource';
+//     var con = new _.Consequence({ tag : 'con' });
+//     var promise = con.finallyPromiseGive();
+//     con.take( 'str' );
+//     test.identical( con.competitorsCount(), 1 );
+//     test.identical( con.resourcesCount(), 1 );
+//     return _.time.out( 1, function()
+//     {
+//       promise.then( function( got )
+//       {
+//         test.identical( got, 'str' );
+//         test.is( _.promiseIs( promise ) );
+//         test.identical( con.resourcesCount(), 0 );
+//         test.identical( con.competitorsCount(), 0 );
+//       });
+//       return _.Consequence.From( promise );
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async resources adding, single error';
+//     var con = new _.Consequence({ tag : 'con' });
+//     var promise = con.finallyPromiseGive();
+//     con.error( 'str' );
+//     promise.catch( function( err )
+//     {
+//       test.is( _.strHas( String( err ), 'str' ) );
+//       test.is( _.promiseIs( promise ) );
+//     });
+//     test.identical( con.resourcesCount(), 1 );
+//     test.identical( con.competitorsCount(), 1 );
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesCount(), 0 );
+//       test.identical( con.competitorsCount(), 0 );
+//       return _.Consequence.From( promise ).finally( () => null );
+//     });
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async resources adding, several resources';
+//     var con = new _.Consequence({ capacity : 3 });
+//     var promise = con.finallyPromiseGive();
+//     con.take( 'str' + 1 );
+//     con.take( 'str' + 2 );
+//     con.take( 'str' + 3 );
+//     test.identical( con.resourcesCount(), 3 );
+//     test.identical( con.competitorsCount(), 1 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       promise.then( function( got )
+//       {
+//         test.identical( got, 'str' + 1 );
+//         test.is( _.promiseIs( promise ) );
+//         test.identical( con.resourcesCount(), 2 );
+//         test.identical( con.competitorsCount(), 0 );
+//       })
+//       return _.Consequence.From( promise );
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( ( err, arg ) =>
+//   {
+//     test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
+//
+//     _.Consequence.AsyncModeSet( amode );
+//
+//
+//     if( err )
+//     throw err;
+//     return arg;
+//
+//   })
+//   return ready;
+// }
+//
+// //
+//
+// function finallyPromiseGiveAsyncMode11( test )
+// {
+//   let context = this;
+//
+//   let con;
+//   let amode = _.Consequence.AsyncModeGet();
+//   let ready = new _.Consequence({ tag : 'finallyPromiseGiveCon' }).take( null );
+//
+//   ready
+//
+//   /* */
+//
+//   .finally( () =>
+//   {
+//     test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
+//
+//     _.Consequence.AsyncModeSet([ 1, 1 ]);
+//     return null;
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async competitors adding+resources adding signle resource';
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.take( 'str' );
+//     var promise = con.finallyPromiseGive();
+//     test.identical( con.competitorsCount(), 1 );
+//     test.identical( con.resourcesCount(), 1 );
+//     return _.time.out( 1, function()
+//     {
+//       promise.then( function( got )
+//       {
+//         test.identical( got, 'str' );
+//         test.is( _.promiseIs( promise ) );
+//         test.identical( con.resourcesCount(), 0 );
+//         test.identical( con.competitorsCount(), 0 );
+//       });
+//       return _.Consequence.From( promise );
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async competitors adding+resources adding error resource';
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.error( 'str' );
+//     var promise = con.finallyPromiseGive();
+//     promise.catch( function( err )
+//     {
+//       test.is( _.strHas( String( err ), 'str' ) );
+//       test.is( _.promiseIs( promise ) );
+//     });
+//     test.identical( con.resourcesCount(), 1 );
+//     test.identical( con.competitorsCount(), 1 );
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesCount(), 0 );
+//       test.identical( con.competitorsCount(), 0 );
+//       return _.Consequence.From( promise ).finally( () => null );
+//     });
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async competitors adding+resources adding several resources';
+//     var con = new _.Consequence({ capacity : 3 });
+//     con.take( 'str' + 1 );
+//     con.take( 'str' + 2 );
+//     con.take( 'str' + 3 );
+//     var promise = con.finallyPromiseGive();
+//     test.identical( con.resourcesCount(), 3 );
+//     test.identical( con.competitorsCount(), 1 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       promise.then( function( got )
+//       {
+//         test.identical( got, 'str' + 1 );
+//         test.is( _.promiseIs( promise ) );
+//         test.identical( con.resourcesCount(), 2 );
+//         test.identical( con.competitorsCount(), 0 );
+//       })
+//       return _.Consequence.From( promise );
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( ( err, arg ) =>
+//   {
+//     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
+//
+//     _.Consequence.AsyncModeSet( amode );
+//
+//
+//     if( err )
+//     throw err;
+//     return arg;
+//
+//   })
+//   return ready;
+// }
 
 //--
 // _finally
@@ -2128,20 +2115,19 @@ function _finallyAsyncMode00( test )
 {
   let context = this;
   let amode = _.Consequence.AsyncModeGet();
-  let testMsg = 'msg';
   var con;
   let ready = new _.Consequence().take( null )
 
   /* */
 
-  .then( function( arg )
-  {
-    test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
-
-    test.case += ', no resource';
-    _.Consequence.AsyncModeSet([ 0, 0 ]);
-    return null;
-  })
+  // .then( function( arg )
+  // {
+  //   test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+  //
+  //   test.case += ', no resource';
+  //   _.Consequence.AsyncModeSet([ 0, 0 ]);
+  //   return null;
+  // })
   .then( function( arg )
   {
     con = new _.Consequence();
@@ -2173,13 +2159,13 @@ function _finallyAsyncMode00( test )
     function competitor( err, got )
     {
       test.identical( err, undefined )
-      test.identical( got, testMsg );
+      test.identical( got, 'str' );
       return null;
     }
     var con = new _.Consequence({ tag : 'con' });
-    con.take( testMsg );
+    con.take( 'str' );
     test.identical( con.resourcesCount(), 1 )
-    test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : testMsg } )
+    test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : 'str' } )
     con.finally( competitor );
     test.identical( con.competitorsCount(), 0 );
     test.identical( con.resourcesCount(), 1 )
@@ -2198,28 +2184,28 @@ function _finallyAsyncMode00( test )
   .then( function( arg )
   {
     var con = new _.Consequence({ tag : 'con' });
-    con.take( testMsg );
+    con.take( 'str' );
     con.finally( function( err, got )
     {
       test.identical( err, undefined )
-      test.identical( got, testMsg );
-      return testMsg + 1;
+      test.identical( got, 'str' );
+      return 'str' + 1;
     });
     con.finally( function( err, got )
     {
       test.identical( err, undefined )
-      test.identical( got, testMsg + 1);
-      return testMsg + 2;
+      test.identical( got, 'str' + 1);
+      return 'str' + 2;
     });
     con.finally( function( err, got )
     {
       test.identical( err, undefined )
-      test.identical( got, testMsg + 2);
-      return testMsg + 3;
+      test.identical( got, 'str' + 2 );
+      return 'str' + 3;
     });
     test.identical( con.competitorsCount(), 0 )
     test.identical( con.resourcesCount(), 1 )
-    test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : testMsg + 3 } );
+    test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : 'str' + 3 } );
 
     return con;
   })
@@ -2235,29 +2221,29 @@ function _finallyAsyncMode00( test )
   {
     var con = new _.Consequence({ tag : 'con' });
     var con2 = new _.Consequence({ tag : 'con2' });
-    var con2TakerFired = false;
-    con.take( testMsg );
+    var con2TakerCalled = false;
+    con.take( 'str' );
     /* finally only transfers the copy of messsage to the competitor without waiting for response */
     con.finally( con2 );
     con.give( function( err, got )
     {
-      test.identical( got, testMsg );
+      test.identical( got, 'str' );
       test.identical( err, undefined );
-      test.identical( con2TakerFired, false );
+      test.identical( con2TakerCalled, false );
       test.identical( con2.resourcesCount(), 1 );
     });
 
     con2.finally( function( err, got )
     {
-      test.identical( got, testMsg );
+      test.identical( got, 'str' );
       test.identical( err, undefined );
-      con2TakerFired = true;
+      con2TakerCalled = true;
       return null;
     });
 
     con2.finally( function()
     {
-      test.identical( con2TakerFired, true );
+      test.identical( con2TakerCalled, true );
       test.identical( con.resourcesCount(), 0 );
       test.identical( con.competitorsCount(), 0 );
       test.identical( con2.resourcesCount(), 0 );
@@ -2282,689 +2268,689 @@ function _finallyAsyncMode00( test )
     con.take( null );
     con.finally( function()
     {
-      return con2.take( testMsg );
+      return con2.take( 'str' );
     });
 
     test.identical( con.competitorsCount(), 0 );
     test.identical( con.resourcesCount(), 1 );
-    test.identical( con.resourcesGet()[ 0 ].argument, testMsg );
+    test.identical( con.resourcesGet()[ 0 ].argument, 'str' );
 
     test.identical( con2.resourcesCount(), 1 );
-    test.identical( con2.resourcesGet()[ 0 ].argument, testMsg );
+    test.identical( con2.resourcesGet()[ 0 ].argument, 'str' );
 
     return null;
   })
 
   /* */
 
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
-
-    _.Consequence.AsyncModeSet( amode );
-    if( err )
-    throw err;
-    return arg;
-  });
-  return ready;
-}
-
-//
-
-function _finallyAsyncMode10( test )
-{
-  let context = this;
-  let amode = _.Consequence.AsyncModeGet();
-  let testMsg = 'msg';
-  var con;
-  let ready = new _.Consequence().take( null )
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
-
-    test.case += ', no resource';
-    _.Consequence.AsyncModeSet([ 1, 0 ]);
-    return null;
-  })
-
-  // .then( function( arg )
+  // .finally( ( err, arg ) =>
   // {
-  //   var con = new _.Consequence({ tag : 'con' });
-  //   con.finally( () => test.identical( 0, 1 ) );
-  //   test.identical( con.competitorsCount(), 1 );
-  //   test.identical( con.resourcesCount(), 0 );ччч
-  //   return null;
-  // })
+  //   test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+  //   _.Consequence.AsyncModeSet( amode );
+  //   if( err )
+  //   throw err;
+  //   return arg;
+  // });
 
-  .then( function( arg )
-  {
-    con = new _.Consequence();
-    con.finally( () => test.identical( 0, 1 ) );
-    test.identical( con.competitorsCount(), 1 );
-    test.identical( con.resourcesCount(), 0 );
-    return null;
-  })
-  .delay( context.t1 )
-  .then( function( arg )
-  {
-    test.identical( con.competitorsCount(), 1 );
-    test.identical( con.resourcesCount(), 0 );
-    con.competitorsCancel();
-    test.identical( con.competitorsCount(), 0 );
-    test.identical( con.resourcesCount(), 0 );
-    return null;
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case += ', single resource, competitor is a routine';
-    return null;
-  })
-  .then( function( arg )
-  {
-    function competitor( err, got )
-    {
-      test.identical( err, undefined )
-      test.identical( got, testMsg );
-      return null;
-    }
-    var con = new _.Consequence({ tag : 'con' });
-    con.take( testMsg );
-    con.finally( competitor );
-    test.identical( con.resourcesCount(), 1 )
-    test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : testMsg } )
-    test.identical( con.competitorsCount(), 1 );
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 1 )
-      test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : null } )
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case += ', several finally, competitor is a routine';
-    return null;
-  })
-  .then( function( arg )
-  {
-    var con = new _.Consequence({ tag : 'con' });
-    con.take( testMsg );
-    con.finally( function( err, got )
-    {
-      test.identical( err, undefined )
-      test.identical( got, testMsg );
-      return testMsg + 1;
-    });
-    con.finally( function( err, got )
-    {
-      test.identical( err, undefined )
-      test.identical( got, testMsg + 1);
-      return testMsg + 2;
-    });
-    con.finally( function( err, got )
-    {
-      test.identical( err, undefined )
-      test.identical( got, testMsg + 2);
-      return testMsg + 3;
-    });
-    test.identical( con.competitorsCount(), 3 )
-    test.identical( con.resourcesCount(), 1 )
-    test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : testMsg } );
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 )
-      test.identical( con.resourcesCount(), 1 )
-      test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : testMsg + 3 } );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case += ', single resource, consequence as a competitor';
-    return null;
-  })
-  .then( function( arg )
-  {
-    var con = new _.Consequence({ tag : 'con' });
-    var con2 = new _.Consequence({ tag : 'con2' });
-    var con2TakerFired = false;
-    con.take( testMsg );
-    con.finally( con2 );
-    con.give( function( err, got )
-    {
-      test.identical( got, testMsg );
-      test.identical( err, undefined );
-      test.identical( con2TakerFired, true );
-      test.identical( con2.resourcesCount(), 0 );
-    });
-
-    con2.give( function( err, got )
-    {
-      test.identical( got, testMsg );
-      test.identical( err, undefined );
-      con2TakerFired = true;
-    });
-
-    test.identical( con2TakerFired, false );
-    test.identical( con.resourcesCount(), 1 );
-    test.identical( con.competitorsCount(), 2 );
-    test.identical( con2.competitorsEarlyGet().length, 1 );
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con2TakerFired, true );
-      test.identical( con.resourcesCount(), 0 );
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con2.resourcesCount(), 0 );
-      test.identical( con2.competitorsEarlyGet().length, 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case += 'competitor returns consequence with msg';
-    return null;
-  })
-  .then( function( arg )
-  {
-    var con = new _.Consequence({ tag : 'con' });
-    var con2 = new _.Consequence({ tag : 'con2' });
-    con.take( null );
-    con.finally( function()
-    {
-      return con2.take( testMsg );
-    });
-
-    test.identical( con.competitorsCount(), 1 );
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 1 );
-      test.identical( con.resourcesGet()[ 0 ].argument, testMsg );
-
-      test.identical( con2.resourcesCount(), 1 );
-      test.identical( con2.resourcesGet()[ 0 ].argument, testMsg );
-      return null;
-    })
-  })
-
-  /* */
-
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
-
-    _.Consequence.AsyncModeSet( amode );
-    if( err )
-    throw err;
-    return arg;
-  });
   return ready;
 }
 
+// //
 //
-
-function _finallyAsyncMode01( test )
-{
-  let context = this;
-  let amode = _.Consequence.AsyncModeGet();
-  let testMsg = 'msg';
-  var con;
-  let ready = new _.Consequence().take( null )
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
-
-    test.case += ', no resource';
-    _.Consequence.AsyncModeSet([ 0, 1 ]);
-    return null;
-  })
-  // .then( function( arg )
-  // {
-  //   var con = new _.Consequence({ tag : 'con' });
-  //   con.finally( () => test.identical( 0, 1 ) );
-  //   test.identical( con.competitorsCount(), 1 );
-  //   test.identical( con.resourcesCount(), 0 );
-  //   return null;
-  // })
-
-  .then( function( arg )
-  {
-    con = new _.Consequence();
-    con.finally( () => test.identical( 0, 1 ) );
-    test.identical( con.competitorsCount(), 1 );
-    test.identical( con.resourcesCount(), 0 );
-    return null;
-  })
-  .delay( context.t1 )
-  .then( function( arg )
-  {
-    test.identical( con.competitorsCount(), 1 );
-    test.identical( con.resourcesCount(), 0 );
-    con.competitorsCancel();
-    test.identical( con.competitorsCount(), 0 );
-    test.identical( con.resourcesCount(), 0 );
-    return null;
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case += ', single resource, competitor is a routine';
-    return null;
-  })
-  .then( function( arg )
-  {
-    function competitor( err, got )
-    {
-      test.identical( err, undefined )
-      test.identical( got, testMsg );
-      return null;
-    }
-    var con = new _.Consequence({ tag : 'con' });
-    con.take( testMsg );
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesCount(), 1 )
-      test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : testMsg } )
-      test.identical( con.competitorsCount(), 0 );
-
-      con.finally( competitor );
-      return null;
-    })
-    .then( function( arg )
-    {
-      test.identical( con.competitorsCount(), 0 )
-      test.identical( con.resourcesCount(), 1 )
-      test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : null } )
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case += ', several finally, competitor is a routine';
-    return null;
-  })
-  .then( function( arg )
-  {
-    var con = new _.Consequence({ tag : 'con' });
-    con.take( testMsg );
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 )
-      test.identical( con.resourcesCount(), 1 )
-      test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : testMsg } );
-
-      con.finally( function( err, got )
-      {
-        test.identical( err, undefined )
-        test.identical( got, testMsg );
-        return testMsg + 1;
-      });
-      con.finally( function( err, got )
-      {
-        test.identical( err, undefined )
-        test.identical( got, testMsg + 1);
-        return testMsg + 2;
-      });
-      con.finally( function( err, got )
-      {
-        test.identical( err, undefined )
-        test.identical( got, testMsg + 2);
-        return testMsg + 3;
-      });
-
-      return con;
-    })
-    .then( function( arg )
-    {
-      test.identical( con.competitorsCount(), 0 )
-      test.identical( con.resourcesCount(), 1 )
-      test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : testMsg + 3 } );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case += ', single resource, consequence as a competitor';
-    return null;
-  })
-  .then( function( arg )
-  {
-    var con = new _.Consequence({ tag : 'con' });
-    var con2 = new _.Consequence({ tag : 'con2' });
-    var con2TakerFired = false;
-    con.take( testMsg );
-
-    test.identical( con2TakerFired, false );
-    test.identical( con.resourcesCount(), 1 );
-    test.identical( con.competitorsCount(), 0 );
-    test.identical( con2.competitorsEarlyGet().length, 0 );
-
-    return _.time.out( 1, function()
-    {
-      con.finally( con2 );
-      con.give( function( err, arg )
-      {
-        test.identical( arg, testMsg );
-        test.identical( err, undefined );
-        test.identical( con2TakerFired, false );
-        test.identical( con2.resourcesCount(), 1 );
-      });
-
-      con2.finally( function( err, arg )
-      {
-        test.identical( arg, testMsg );
-        test.identical( err, undefined );
-        con2TakerFired = true;
-        return arg;
-      });
-
-      return con2;
-    })
-    .then( function( arg )
-    {
-      test.identical( con2TakerFired, true );
-      test.identical( con.resourcesCount(), 0 );
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con2.resourcesCount(), 1 );
-      test.identical( con2.competitorsEarlyGet().length, 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case += 'competitor returns consequence with msg';
-    return null;
-  })
-  .then( function( arg )
-  {
-    var con = new _.Consequence({ tag : 'con' });
-    var con2 = new _.Consequence({ tag : 'con2' });
-    con.take( null );
-
-    test.identical( con.resourcesCount(), 1 );
-
-    return _.time.out( 1, function()
-    {
-      con.finally( function()
-      {
-        return con2.take( testMsg );
-      });
-
-      return con;
-    })
-    .then( function( arg )
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 1 );
-      test.identical( con.resourcesGet()[ 0 ].argument, testMsg );
-
-      test.identical( con2.resourcesCount(), 1 );
-      test.identical( con2.resourcesGet()[ 0 ].argument, testMsg );
-      return null;
-    })
-  })
-
-  /* */
-
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
-
-    _.Consequence.AsyncModeSet( amode );
-    if( err )
-    throw err;
-    return arg;
-  });
-  return ready;
-}
-
+// function _finallyAsyncMode10( test )
+// {
+//   let context = this;
+//   let amode = _.Consequence.AsyncModeGet();
 //
-
-function _finallyAsyncMode11( test )
-{
-  let context = this;
-  let amode = _.Consequence.AsyncModeGet();
-  let testMsg = 'msg';
-  var con;
-  let ready = new _.Consequence().take( null )
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
-
-    test.case += ', no resource';
-    _.Consequence.AsyncModeSet([ 1, 1 ]);
-    return null;
-  })
-  // .then( function( arg )
-  // {
-  //   var con = new _.Consequence({ tag : 'con' });
-  //   con.finally( () => test.identical( 0, 1 ) );
-  //   test.identical( con.competitorsCount(), 1 );
-  //   test.identical( con.resourcesCount(), 0 );
-  //   return null;
-  // })
-
-  .then( function( arg )
-  {
-    con = new _.Consequence();
-    con.finally( () => test.identical( 0, 1 ) );
-    test.identical( con.competitorsCount(), 1 );
-    test.identical( con.resourcesCount(), 0 );
-    return null;
-  })
-  .delay( context.t1 )
-  .then( function( arg )
-  {
-    test.identical( con.competitorsCount(), 1 );
-    test.identical( con.resourcesCount(), 0 );
-    con.competitorsCancel();
-    test.identical( con.competitorsCount(), 0 );
-    test.identical( con.resourcesCount(), 0 );
-    return null;
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case += ', single resource, competitor is a routine'
-    return null;
-  })
-  .then( function( arg )
-  {
-    function competitor( err, got )
-    {
-      test.identical( err, undefined )
-      test.identical( got, testMsg );
-      return null;
-    }
-    var con = new _.Consequence({ tag : 'con' });
-    con.take( testMsg );
-    con.finally( competitor );
-    test.identical( con.competitorsCount(), 1 )
-    test.identical( con.resourcesCount(), 1 )
-    test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : testMsg } )
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 )
-      test.identical( con.resourcesCount(), 1 )
-      test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : null } )
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case += ', several finally, competitor is a routine';
-    return null;
-  })
-  .then( function( arg )
-  {
-    var con = new _.Consequence({ tag : 'con' });
-    con.take( testMsg );
-
-    con.finally( function( err, got )
-    {
-      test.identical( err, undefined )
-      test.identical( got, testMsg );
-      return testMsg + 1;
-    });
-    con.finally( function( err, got )
-    {
-      test.identical( err, undefined )
-      test.identical( got, testMsg + 1);
-      return testMsg + 2;
-    });
-    con.finally( function( err, got )
-    {
-      test.identical( err, undefined )
-      test.identical( got, testMsg + 2);
-      return testMsg + 3;
-    });
-
-    test.identical( con.competitorsCount(), 3 );
-    test.identical( con.resourcesCount(), 1 );
-    test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : testMsg } );
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 1 );
-      test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : testMsg + 3 } );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case += ', single resource, consequence as a competitor';
-    return null;
-  })
-  .then( function( arg )
-  {
-    var con = new _.Consequence({ tag : 'con' });
-    var con2 = new _.Consequence({ tag : 'con2' });
-    var con2TakerFired = false;
-    con.take( testMsg );
-    con.finally( con2 );
-    con.give( function( err, got )
-    {
-      test.identical( got, testMsg );
-      test.identical( err, undefined );
-      test.identical( con2TakerFired, false );
-      test.identical( con2.resourcesCount(), 1 );
-    });
-
-    con2.give( function( err, got )
-    {
-      test.identical( got, testMsg );
-      test.identical( err, undefined );
-      con2TakerFired = true;
-    });
-
-    test.identical( con2TakerFired, false );
-    test.identical( con.resourcesCount(), 1 );
-    test.identical( con.competitorsCount(), 2 );
-    test.identical( con2.competitorsEarlyGet().length, 1 );
-    test.identical( con2.resourcesCount(), 0 );
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con2TakerFired, true );
-      test.identical( con.resourcesCount(), 0 );
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con2.resourcesCount(), 0 );
-      test.identical( con2.competitorsEarlyGet().length, 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case += 'competitor returns consequence with msg';
-    return null;
-  })
-  .then( function( arg )
-  {
-    var con = new _.Consequence({ tag : 'con' });
-    var con2 = new _.Consequence({ tag : 'con2' });
-    con.take( null );
-    con.finally( function()
-    {
-      return con2.take( testMsg );
-    });
-
-    test.identical( con.resourcesCount(), 1 );
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 1 );
-      test.identical( con.resourcesGet()[ 0 ].argument, testMsg );
-
-      test.identical( con2.resourcesCount(), 1 );
-      test.identical( con2.resourcesGet()[ 0 ].argument, testMsg );
-      return null;
-    })
-  })
-
-  /* */
-
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
-
-    _.Consequence.AsyncModeSet( amode );
-    if( err )
-    throw err;
-    return arg;
-  });
-  return ready;
-}
+//   var con;
+//   let ready = new _.Consequence().take( null )
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
+//
+//     test.case += ', no resource';
+//     _.Consequence.AsyncModeSet([ 1, 0 ]);
+//     return null;
+//   })
+//
+//   // .then( function( arg )
+//   // {
+//   //   var con = new _.Consequence({ tag : 'con' });
+//   //   con.finally( () => test.identical( 0, 1 ) );
+//   //   test.identical( con.competitorsCount(), 1 );
+//   //   test.identical( con.resourcesCount(), 0 );
+//   //   return null;
+//   // })
+//
+//   .then( function( arg )
+//   {
+//     con = new _.Consequence();
+//     con.finally( () => test.identical( 0, 1 ) );
+//     test.identical( con.competitorsCount(), 1 );
+//     test.identical( con.resourcesCount(), 0 );
+//     return null;
+//   })
+//   .delay( context.t1 )
+//   .then( function( arg )
+//   {
+//     test.identical( con.competitorsCount(), 1 );
+//     test.identical( con.resourcesCount(), 0 );
+//     con.competitorsCancel();
+//     test.identical( con.competitorsCount(), 0 );
+//     test.identical( con.resourcesCount(), 0 );
+//     return null;
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case += ', single resource, competitor is a routine';
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     function competitor( err, got )
+//     {
+//       test.identical( err, undefined )
+//       test.identical( got, 'str' );
+//       return null;
+//     }
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.take( 'str' );
+//     con.finally( competitor );
+//     test.identical( con.resourcesCount(), 1 )
+//     test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : 'str' } )
+//     test.identical( con.competitorsCount(), 1 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 1 )
+//       test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : null } )
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case += ', several finally, competitor is a routine';
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.take( 'str' );
+//     con.finally( function( err, got )
+//     {
+//       test.identical( err, undefined )
+//       test.identical( got, 'str' );
+//       return 'str' + 1;
+//     });
+//     con.finally( function( err, got )
+//     {
+//       test.identical( err, undefined )
+//       test.identical( got, 'str' + 1);
+//       return 'str' + 2;
+//     });
+//     con.finally( function( err, got )
+//     {
+//       test.identical( err, undefined )
+//       test.identical( got, 'str' + 2);
+//       return 'str' + 3;
+//     });
+//     test.identical( con.competitorsCount(), 3 )
+//     test.identical( con.resourcesCount(), 1 )
+//     test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : 'str' } );
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 )
+//       test.identical( con.resourcesCount(), 1 )
+//       test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : 'str' + 3 } );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case += ', single resource, consequence as a competitor';
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     var con = new _.Consequence({ tag : 'con' });
+//     var con2 = new _.Consequence({ tag : 'con2' });
+//     var con2TakerCalled = false;
+//     con.take( 'str' );
+//     con.finally( con2 );
+//     con.give( function( err, got )
+//     {
+//       test.identical( got, 'str' );
+//       test.identical( err, undefined );
+//       test.identical( con2TakerCalled, true );
+//       test.identical( con2.resourcesCount(), 0 );
+//     });
+//
+//     con2.give( function( err, got )
+//     {
+//       test.identical( got, 'str' );
+//       test.identical( err, undefined );
+//       con2TakerCalled = true;
+//     });
+//
+//     test.identical( con2TakerCalled, false );
+//     test.identical( con.resourcesCount(), 1 );
+//     test.identical( con.competitorsCount(), 2 );
+//     test.identical( con2.competitorsEarlyGet().length, 1 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con2TakerCalled, true );
+//       test.identical( con.resourcesCount(), 0 );
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con2.resourcesCount(), 0 );
+//       test.identical( con2.competitorsEarlyGet().length, 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case += 'competitor returns consequence with msg';
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     var con = new _.Consequence({ tag : 'con' });
+//     var con2 = new _.Consequence({ tag : 'con2' });
+//     con.take( null );
+//     con.finally( function()
+//     {
+//       return con2.take( 'str' );
+//     });
+//
+//     test.identical( con.competitorsCount(), 1 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 1 );
+//       test.identical( con.resourcesGet()[ 0 ].argument, 'str' );
+//
+//       test.identical( con2.resourcesCount(), 1 );
+//       test.identical( con2.resourcesGet()[ 0 ].argument, 'str' );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( ( err, arg ) =>
+//   {
+//     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
+//
+//     _.Consequence.AsyncModeSet( amode );
+//     if( err )
+//     throw err;
+//     return arg;
+//   });
+//   return ready;
+// }
+//
+// //
+//
+// function _finallyAsyncMode01( test )
+// {
+//   let context = this;
+//   let amode = _.Consequence.AsyncModeGet();
+//
+//   var con;
+//   let ready = new _.Consequence().take( null )
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
+//
+//     test.case += ', no resource';
+//     _.Consequence.AsyncModeSet([ 0, 1 ]);
+//     return null;
+//   })
+//   // .then( function( arg )
+//   // {
+//   //   var con = new _.Consequence({ tag : 'con' });
+//   //   con.finally( () => test.identical( 0, 1 ) );
+//   //   test.identical( con.competitorsCount(), 1 );
+//   //   test.identical( con.resourcesCount(), 0 );
+//   //   return null;
+//   // })
+//
+//   .then( function( arg )
+//   {
+//     con = new _.Consequence();
+//     con.finally( () => test.identical( 0, 1 ) );
+//     test.identical( con.competitorsCount(), 1 );
+//     test.identical( con.resourcesCount(), 0 );
+//     return null;
+//   })
+//   .delay( context.t1 )
+//   .then( function( arg )
+//   {
+//     test.identical( con.competitorsCount(), 1 );
+//     test.identical( con.resourcesCount(), 0 );
+//     con.competitorsCancel();
+//     test.identical( con.competitorsCount(), 0 );
+//     test.identical( con.resourcesCount(), 0 );
+//     return null;
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case += ', single resource, competitor is a routine';
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     function competitor( err, got )
+//     {
+//       test.identical( err, undefined )
+//       test.identical( got, 'str' );
+//       return null;
+//     }
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.take( 'str' );
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesCount(), 1 )
+//       test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : 'str' } )
+//       test.identical( con.competitorsCount(), 0 );
+//
+//       con.finally( competitor );
+//       return null;
+//     })
+//     .then( function( arg )
+//     {
+//       test.identical( con.competitorsCount(), 0 )
+//       test.identical( con.resourcesCount(), 1 )
+//       test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : 'str' } )
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case += ', several finally, competitor is a routine';
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.take( 'str' );
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 )
+//       test.identical( con.resourcesCount(), 1 )
+//       test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : 'str' } );
+//
+//       con.finally( function( err, got )
+//       {
+//         test.identical( err, undefined )
+//         test.identical( got, 'str' );
+//         return 'str' + 1;
+//       });
+//       con.finally( function( err, got )
+//       {
+//         test.identical( err, undefined )
+//         test.identical( got, 'str' + 1);
+//         return 'str' + 2;
+//       });
+//       con.finally( function( err, got )
+//       {
+//         test.identical( err, undefined )
+//         test.identical( got, 'str' + 2);
+//         return 'str' + 3;
+//       });
+//
+//       return con;
+//     })
+//     .then( function( arg )
+//     {
+//       test.identical( con.competitorsCount(), 0 )
+//       test.identical( con.resourcesCount(), 1 )
+//       test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : 'str' + 3 } );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case += ', single resource, consequence as a competitor';
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     var con = new _.Consequence({ tag : 'con' });
+//     var con2 = new _.Consequence({ tag : 'con2' });
+//     var con2TakerCalled = false;
+//     con.take( 'str' );
+//
+//     test.identical( con2TakerCalled, false );
+//     test.identical( con.resourcesCount(), 1 );
+//     test.identical( con.competitorsCount(), 0 );
+//     test.identical( con2.competitorsEarlyGet().length, 0 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       con.finally( con2 );
+//       con.give( function( err, arg )
+//       {
+//         test.identical( arg, 'str' );
+//         test.identical( err, undefined );
+//         test.identical( con2TakerCalled, false );
+//         test.identical( con2.resourcesCount(), 1 );
+//       });
+//
+//       con2.finally( function( err, arg )
+//       {
+//         test.identical( arg, 'str' );
+//         test.identical( err, undefined );
+//         con2TakerCalled = true;
+//         return arg;
+//       });
+//
+//       return con2;
+//     })
+//     .then( function( arg )
+//     {
+//       test.identical( con2TakerCalled, true );
+//       test.identical( con.resourcesCount(), 0 );
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con2.resourcesCount(), 1 );
+//       test.identical( con2.competitorsEarlyGet().length, 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case += 'competitor returns consequence with msg';
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     var con = new _.Consequence({ tag : 'con' });
+//     var con2 = new _.Consequence({ tag : 'con2' });
+//     con.take( null );
+//
+//     test.identical( con.resourcesCount(), 1 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       con.finally( function()
+//       {
+//         return con2.take( 'str' );
+//       });
+//
+//       return con;
+//     })
+//     .then( function( arg )
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 1 );
+//       test.identical( con.resourcesGet()[ 0 ].argument, 'str' );
+//
+//       test.identical( con2.resourcesCount(), 1 );
+//       test.identical( con2.resourcesGet()[ 0 ].argument, 'str' );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( ( err, arg ) =>
+//   {
+//     test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
+//
+//     _.Consequence.AsyncModeSet( amode );
+//     if( err )
+//     throw err;
+//     return arg;
+//   });
+//   return ready;
+// }
+//
+// //
+//
+// function _finallyAsyncMode11( test )
+// {
+//   let context = this;
+//   let amode = _.Consequence.AsyncModeGet();
+//
+//   var con;
+//   let ready = new _.Consequence().take( null )
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
+//
+//     test.case += ', no resource';
+//     _.Consequence.AsyncModeSet([ 1, 1 ]);
+//     return null;
+//   })
+//   // .then( function( arg )
+//   // {
+//   //   var con = new _.Consequence({ tag : 'con' });
+//   //   con.finally( () => test.identical( 0, 1 ) );
+//   //   test.identical( con.competitorsCount(), 1 );
+//   //   test.identical( con.resourcesCount(), 0 );
+//   //   return null;
+//   // })
+//
+//   .then( function( arg )
+//   {
+//     con = new _.Consequence();
+//     con.finally( () => test.identical( 0, 1 ) );
+//     test.identical( con.competitorsCount(), 1 );
+//     test.identical( con.resourcesCount(), 0 );
+//     return null;
+//   })
+//   .delay( context.t1 )
+//   .then( function( arg )
+//   {
+//     test.identical( con.competitorsCount(), 1 );
+//     test.identical( con.resourcesCount(), 0 );
+//     con.competitorsCancel();
+//     test.identical( con.competitorsCount(), 0 );
+//     test.identical( con.resourcesCount(), 0 );
+//     return null;
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case += ', single resource, competitor is a routine'
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     function competitor( err, got )
+//     {
+//       test.identical( err, undefined )
+//       test.identical( got, 'str' );
+//       return null;
+//     }
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.take( 'str' );
+//     con.finally( competitor );
+//     test.identical( con.competitorsCount(), 1 )
+//     test.identical( con.resourcesCount(), 1 )
+//     test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : 'str' } )
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 )
+//       test.identical( con.resourcesCount(), 1 )
+//       test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : null } )
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case += ', several finally, competitor is a routine';
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.take( 'str' );
+//
+//     con.finally( function( err, got )
+//     {
+//       test.identical( err, undefined )
+//       test.identical( got, 'str' );
+//       return 'str' + 1;
+//     });
+//     con.finally( function( err, got )
+//     {
+//       test.identical( err, undefined )
+//       test.identical( got, 'str' + 1);
+//       return 'str' + 2;
+//     });
+//     con.finally( function( err, got )
+//     {
+//       test.identical( err, undefined )
+//       test.identical( got, 'str' + 2);
+//       return 'str' + 3;
+//     });
+//
+//     test.identical( con.competitorsCount(), 3 );
+//     test.identical( con.resourcesCount(), 1 );
+//     test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : 'str' } );
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 1 );
+//       test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : 'str' + 3 } );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case += ', single resource, consequence as a competitor';
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     var con = new _.Consequence({ tag : 'con' });
+//     var con2 = new _.Consequence({ tag : 'con2' });
+//     var con2TakerCalled = false;
+//     con.take( 'str' );
+//     con.finally( con2 );
+//     con.give( function( err, got )
+//     {
+//       test.identical( got, 'str' );
+//       test.identical( err, undefined );
+//       test.identical( con2TakerCalled, false );
+//       test.identical( con2.resourcesCount(), 1 );
+//     });
+//
+//     con2.give( function( err, got )
+//     {
+//       test.identical( got, 'str' );
+//       test.identical( err, undefined );
+//       con2TakerCalled = true;
+//     });
+//
+//     test.identical( con2TakerCalled, false );
+//     test.identical( con.resourcesCount(), 1 );
+//     test.identical( con.competitorsCount(), 2 );
+//     test.identical( con2.competitorsEarlyGet().length, 1 );
+//     test.identical( con2.resourcesCount(), 0 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con2TakerCalled, true );
+//       test.identical( con.resourcesCount(), 0 );
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con2.resourcesCount(), 0 );
+//       test.identical( con2.competitorsEarlyGet().length, 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case += 'competitor returns consequence with msg';
+//     return null;
+//   })
+//   .then( function( arg )
+//   {
+//     var con = new _.Consequence({ tag : 'con' });
+//     var con2 = new _.Consequence({ tag : 'con2' });
+//     con.take( null );
+//     con.finally( function()
+//     {
+//       return con2.take( 'str' );
+//     });
+//
+//     test.identical( con.resourcesCount(), 1 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 1 );
+//       test.identical( con.resourcesGet()[ 0 ].argument, 'str' );
+//
+//       test.identical( con2.resourcesCount(), 1 );
+//       test.identical( con2.resourcesGet()[ 0 ].argument, 'str' );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( ( err, arg ) =>
+//   {
+//     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
+//
+//     _.Consequence.AsyncModeSet( amode );
+//     if( err )
+//     throw err;
+//     return arg;
+//   });
+//   return ready;
+// }
 
 //--
 // finallyPromiseKeep
@@ -2973,7 +2959,6 @@ function _finallyAsyncMode11( test )
 function finallyPromiseKeepAsyncMode00( test )
 {
   let context = this;
-  let testMsg = 'testMsg';
   let con;
   let amode = _.Consequence.AsyncModeGet();
   let ready = new _.Consequence({ tag : 'finallyPromiseKeepCon' }).take( null );
@@ -2982,13 +2967,12 @@ function finallyPromiseKeepAsyncMode00( test )
 
   /* */
 
-  .finally( () =>
-  {
-    test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
-
-    _.Consequence.AsyncModeSet([ 0, 0 ]);
-    return null;
-  })
+  // .finally( () =>
+  // {
+  //   test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+  //   _.Consequence.AsyncModeSet([ 0, 0 ]);
+  //   return null;
+  // })
 
   /* */
 
@@ -3023,14 +3007,14 @@ function finallyPromiseKeepAsyncMode00( test )
   {
     test.case = 'single resource';
     var con = new _.Consequence({ tag : 'con' });
-    con.take( testMsg );
+    con.take( 'str' );
     test.identical( con.resourcesCount(), 1 );
     var promise = con.finallyPromiseKeep();
     promise.then( function( got )
     {
-      test.identical( got, testMsg );
+      test.identical( got, 'str' );
       test.is( _.promiseIs( promise ) );
-      test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
+      test.identical( con.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
       test.identical( con.competitorsCount(), 0 );
     })
 
@@ -3043,14 +3027,14 @@ function finallyPromiseKeepAsyncMode00( test )
   {
     test.case = 'error resource';
     var con = new _.Consequence({ tag : 'con' });
-    con.error( testMsg );
+    con.error( 'str' );
     test.identical( con.resourcesCount(), 1 );
     var promise = con.finallyPromiseKeep();
     promise.catch( function( err )
     {
-      test.is( _.strHas( String( err ), testMsg ) );
+      test.is( _.strHas( String( err ), 'str' ) );
       test.is( _.promiseIs( promise ) );
-      // test.identical( con.resourcesGet(), [ { error : testMsg, argument : undefined } ] );
+      // test.identical( con.resourcesGet(), [ { error : 'str', argument : undefined } ] );
       test.identical( con.argumentsGet(), [] );
       test.identical( con.errorsGet().length, 1 );
       test.identical( con.competitorsCount(), 0 );
@@ -3064,14 +3048,14 @@ function finallyPromiseKeepAsyncMode00( test )
   {
     test.case = 'several resources';
     var con = new _.Consequence({ capacity : 3 });
-    con.take( testMsg + 1 );
-    con.take( testMsg + 2 );
-    con.take( testMsg + 3 );
+    con.take( 'str' + 1 );
+    con.take( 'str' + 2 );
+    con.take( 'str' + 3 );
     test.identical( con.resourcesCount(), 3 );
     var promise = con.finallyPromiseKeep();
     promise.then( function( got )
     {
-      test.identical( got, testMsg + 1 );
+      test.identical( got, 'str' + 1 );
       test.is( _.promiseIs( promise ) );
       test.identical( con.resourcesCount(), 3 );
       test.identical( con.competitorsCount(), 0 );
@@ -3081,355 +3065,355 @@ function finallyPromiseKeepAsyncMode00( test )
 
   /* */
 
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+  // .finally( ( err, arg ) =>
+  // {
+  //   test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+  //   _.Consequence.AsyncModeSet( amode );
+  //   if( err )
+  //   throw err;
+  //   return arg;
+  // })
 
-    _.Consequence.AsyncModeSet( amode );
-    if( err )
-    throw err;
-    return arg;
-  })
   return ready;
 }
 
 //
 
-function finallyPromiseKeepAsyncMode10( test )
-{
-  let context = this;
-  let testMsg = 'testMsg';
-  let con;
-  let amode = _.Consequence.AsyncModeGet();
-  let ready = new _.Consequence({ tag : 'finallyPromiseKeepCon' }).take( null );
-
-  ready
-
-  /* */
-
-  .finally( () =>
-  {
-    test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
-
-    _.Consequence.AsyncModeSet([ 1, 0 ]);
-    return null;
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async competitors adding, single resource';
-    var con = new _.Consequence({ tag : 'con' });
-    con.take( testMsg );
-    var promise = con.finallyPromiseKeep();
-    test.identical( con.competitorsCount(), 1 );
-    test.identical( con.resourcesCount(), 1 );
-    return _.time.out( 1, function()
-    {
-      promise.then( function( got )
-      {
-        test.identical( got, testMsg );
-        test.is( _.promiseIs( promise ) );
-        test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
-        test.identical( con.competitorsCount(), 0 );
-      });
-      return _.Consequence.From( promise );
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async competitors adding, error resource';
-    var con = new _.Consequence({ tag : 'con' });
-    var catched = 0;
-    con.error( testMsg );
-    var promise = con.finallyPromiseKeep();
-    promise.catch( function( err )
-    {
-      catched = 1;
-      test.is( _.strHas( String( err ), testMsg ) );
-      test.is( _.promiseIs( promise ) );
-    });
-    test.identical( con.resourcesCount(), 1 );
-    test.identical( con.competitorsCount(), 1 );
-    return _.time.out( 1, function()
-    {
-      // test.identical( con.resourcesGet(), [ { error : testMsg, argument : undefined } ] );
-      test.identical( con.argumentsGet(), [] );
-      test.identical( con.errorsGet().length, 1 );
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( catched, 1 );
-      return _.Consequence.From( promise ).finally( () => null );
-    });
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async competitors adding, several resources';
-    var con = new _.Consequence({ capacity : 3 });
-    con.take( testMsg + 1 );
-    con.take( testMsg + 2 );
-    con.take( testMsg + 3 );
-    var promise = con.finallyPromiseKeep();
-    test.identical( con.resourcesCount(), 3 );
-    test.identical( con.competitorsCount(), 1 );
-
-    return _.time.out( 1, function()
-    {
-      promise.then( function( got )
-      {
-        test.identical( got, testMsg + 1 );
-        test.is( _.promiseIs( promise ) );
-        test.identical( con.resourcesCount(), 3 );
-        test.identical( con.competitorsCount(), 0 );
-      })
-      return _.Consequence.From( promise );
-    })
-  })
-
-  /* */
-
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
-
-    _.Consequence.AsyncModeSet( amode );
-    if( err )
-    throw err;
-    return arg;
-  })
-  return ready;
-}
-
+// function finallyPromiseKeepAsyncMode10( test )
+// {
+//   let context = this;
 //
-
-function finallyPromiseKeepAsyncMode01( test )
-{
-  let context = this;
-  let testMsg = 'testMsg';
-  let con;
-  let amode = _.Consequence.AsyncModeGet();
-  let ready = new _.Consequence({ tag : 'finallyPromiseKeepCon' }).take( null );
-
-  ready
-
-  /* */
-
-  .finally( () =>
-  {
-    test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
-
-    _.Consequence.AsyncModeSet([ 0, 1 ]);
-    return null;
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async resources adding, single resource';
-    var con = new _.Consequence({ tag : 'con' });
-    var promise = con.finallyPromiseKeep();
-    con.take( testMsg );
-    test.identical( con.competitorsCount(), 1 );
-    test.identical( con.resourcesCount(), 1 );
-    return _.time.out( 1, function()
-    {
-      promise.then( function( got )
-      {
-        test.identical( got, testMsg );
-        test.is( _.promiseIs( promise ) );
-        test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
-        test.identical( con.competitorsCount(), 0 );
-      });
-      return _.Consequence.From( promise );
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async resources adding, error resource';
-    var catched = 0;
-    var con = new _.Consequence({ tag : 'con' });
-    var promise = con.finallyPromiseKeep();
-    promise.catch( function( err )
-    {
-      test.is( _.strHas( String( err ), testMsg ) );
-      test.is( _.promiseIs( promise ) );
-      catched = 1;
-    });
-    con.error( testMsg );
-    test.identical( con.resourcesCount(), 1 );
-    test.identical( con.competitorsCount(), 1 );
-    return _.time.out( 1, function()
-    {
-      // test.identical( con.resourcesGet(), [ { error : testMsg, argument : undefined } ] );
-      test.identical( con.argumentsGet(), [] );
-      test.identical( con.errorsGet().length, 1 );
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( catched, 1 );
-      return _.Consequence.From( promise ).finally( () => null );
-    });
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async resources adding, several resources';
-    var con = new _.Consequence({ capacity : 3 });
-    var promise = con.finallyPromiseKeep();
-    con.take( testMsg + 1 );
-    con.take( testMsg + 2 );
-    con.take( testMsg + 3 );
-    test.identical( con.resourcesCount(), 3 );
-    test.identical( con.competitorsCount(), 1 );
-
-    return _.time.out( 1, function()
-    {
-      promise.then( function( got )
-      {
-        test.identical( got, testMsg + 1 );
-        test.is( _.promiseIs( promise ) );
-        test.identical( con.resourcesCount(), 3 );
-        test.identical( con.competitorsCount(), 0 );
-      })
-      return _.Consequence.From( promise );
-    })
-  })
-
-  /* */
-
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
-
-    _.Consequence.AsyncModeSet( amode );
-    if( err )
-    throw err;
-    return arg;
-  })
-  return ready;
-}
-
+//   let con;
+//   let amode = _.Consequence.AsyncModeGet();
+//   let ready = new _.Consequence({ tag : 'finallyPromiseKeepCon' }).take( null );
 //
-
-function finallyPromiseKeepAsyncMode11( test )
-{
-  let context = this;
-  let testMsg = 'testMsg';
-  let con;
-  let amode = _.Consequence.AsyncModeGet();
-  let ready = new _.Consequence({ tag : 'finallyPromiseKeepCon' }).take( null );
-
-  ready
-
-  /* */
-
-  .finally( () =>
-  {
-    test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
-
-    _.Consequence.AsyncModeSet([ 1, 1 ]);
-    return null;
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async competitors adding+resources adding, single resource';
-    var con = new _.Consequence({ tag : 'con' });
-    con.take( testMsg );
-    var promise = con.finallyPromiseKeep();
-    test.identical( con.competitorsCount(), 1 );
-    test.identical( con.resourcesCount(), 1 );
-    return _.time.out( 1, function()
-    {
-      promise.then( function( got )
-      {
-        test.identical( got, testMsg );
-        test.is( _.promiseIs( promise ) );
-        test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
-        test.identical( con.competitorsCount(), 0 );
-      });
-      return _.Consequence.From( promise );
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async competitors adding+resources adding, error resource';
-    var catched = 0;
-    var con = new _.Consequence({ tag : 'con' });
-    con.error( testMsg );
-    var promise = con.finallyPromiseKeep();
-    promise.catch( function( err )
-    {
-      test.is( _.strHas( String( err ), testMsg ) );
-      test.is( _.promiseIs( promise ) );
-      catched = 1;
-    });
-    test.identical( con.resourcesCount(), 1 );
-    test.identical( con.competitorsCount(), 1 );
-    return _.time.out( 1, function()
-    {
-      test.identical( con.argumentsGet(), [] );
-      test.identical( con.errorsGet().length, 1 );
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( catched, 1 );
-      return _.Consequence.From( promise ).finally( () => null );
-    });
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'async competitors adding+resources adding, several resources';
-    var con = new _.Consequence({ capacity : 3 });
-    con.take( testMsg + 1 );
-    con.take( testMsg + 2 );
-    con.take( testMsg + 3 );
-    var promise = con.finallyPromiseKeep();
-    test.identical( con.resourcesCount(), 3 );
-    test.identical( con.competitorsCount(), 1 );
-
-    return _.time.out( 1, function()
-    {
-      promise.then( function( got )
-      {
-        test.identical( got, testMsg + 1 );
-        test.is( _.promiseIs( promise ) );
-        test.identical( con.resourcesCount(), 3 );
-        test.identical( con.competitorsCount(), 0 );
-      })
-      return _.Consequence.From( promise );
-    })
-  })
-
-  /* */
-
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
-
-    _.Consequence.AsyncModeSet( amode );
-    if( err )
-    throw err;
-    return arg;
-  })
-  return ready;
-}
+//   ready
+//
+//   /* */
+//
+//   .finally( () =>
+//   {
+//     test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
+//
+//     _.Consequence.AsyncModeSet([ 1, 0 ]);
+//     return null;
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async competitors adding, single resource';
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.take( 'str' );
+//     var promise = con.finallyPromiseKeep();
+//     test.identical( con.competitorsCount(), 1 );
+//     test.identical( con.resourcesCount(), 1 );
+//     return _.time.out( 1, function()
+//     {
+//       promise.then( function( got )
+//       {
+//         test.identical( got, 'str' );
+//         test.is( _.promiseIs( promise ) );
+//         test.identical( con.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
+//         test.identical( con.competitorsCount(), 0 );
+//       });
+//       return _.Consequence.From( promise );
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async competitors adding, error resource';
+//     var con = new _.Consequence({ tag : 'con' });
+//     var catched = 0;
+//     con.error( 'str' );
+//     var promise = con.finallyPromiseKeep();
+//     promise.catch( function( err )
+//     {
+//       catched = 1;
+//       test.is( _.strHas( String( err ), 'str' ) );
+//       test.is( _.promiseIs( promise ) );
+//     });
+//     test.identical( con.resourcesCount(), 1 );
+//     test.identical( con.competitorsCount(), 1 );
+//     return _.time.out( 1, function()
+//     {
+//       // test.identical( con.resourcesGet(), [ { error : 'str', argument : undefined } ] );
+//       test.identical( con.argumentsGet(), [] );
+//       test.identical( con.errorsGet().length, 1 );
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( catched, 1 );
+//       return _.Consequence.From( promise ).finally( () => null );
+//     });
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async competitors adding, several resources';
+//     var con = new _.Consequence({ capacity : 3 });
+//     con.take( 'str' + 1 );
+//     con.take( 'str' + 2 );
+//     con.take( 'str' + 3 );
+//     var promise = con.finallyPromiseKeep();
+//     test.identical( con.resourcesCount(), 3 );
+//     test.identical( con.competitorsCount(), 1 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       promise.then( function( got )
+//       {
+//         test.identical( got, 'str' + 1 );
+//         test.is( _.promiseIs( promise ) );
+//         test.identical( con.resourcesCount(), 3 );
+//         test.identical( con.competitorsCount(), 0 );
+//       })
+//       return _.Consequence.From( promise );
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( ( err, arg ) =>
+//   {
+//     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
+//
+//     _.Consequence.AsyncModeSet( amode );
+//     if( err )
+//     throw err;
+//     return arg;
+//   })
+//   return ready;
+// }
+//
+// //
+//
+// function finallyPromiseKeepAsyncMode01( test )
+// {
+//   let context = this;
+//
+//   let con;
+//   let amode = _.Consequence.AsyncModeGet();
+//   let ready = new _.Consequence({ tag : 'finallyPromiseKeepCon' }).take( null );
+//
+//   ready
+//
+//   /* */
+//
+//   .finally( () =>
+//   {
+//     test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
+//
+//     _.Consequence.AsyncModeSet([ 0, 1 ]);
+//     return null;
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async resources adding, single resource';
+//     var con = new _.Consequence({ tag : 'con' });
+//     var promise = con.finallyPromiseKeep();
+//     con.take( 'str' );
+//     test.identical( con.competitorsCount(), 1 );
+//     test.identical( con.resourcesCount(), 1 );
+//     return _.time.out( 1, function()
+//     {
+//       promise.then( function( got )
+//       {
+//         test.identical( got, 'str' );
+//         test.is( _.promiseIs( promise ) );
+//         test.identical( con.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
+//         test.identical( con.competitorsCount(), 0 );
+//       });
+//       return _.Consequence.From( promise );
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async resources adding, error resource';
+//     var catched = 0;
+//     var con = new _.Consequence({ tag : 'con' });
+//     var promise = con.finallyPromiseKeep();
+//     promise.catch( function( err )
+//     {
+//       test.is( _.strHas( String( err ), 'str' ) );
+//       test.is( _.promiseIs( promise ) );
+//       catched = 1;
+//     });
+//     con.error( 'str' );
+//     test.identical( con.resourcesCount(), 1 );
+//     test.identical( con.competitorsCount(), 1 );
+//     return _.time.out( 1, function()
+//     {
+//       // test.identical( con.resourcesGet(), [ { error : 'str', argument : undefined } ] );
+//       test.identical( con.argumentsGet(), [] );
+//       test.identical( con.errorsGet().length, 1 );
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( catched, 1 );
+//       return _.Consequence.From( promise ).finally( () => null );
+//     });
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async resources adding, several resources';
+//     var con = new _.Consequence({ capacity : 3 });
+//     var promise = con.finallyPromiseKeep();
+//     con.take( 'str' + 1 );
+//     con.take( 'str' + 2 );
+//     con.take( 'str' + 3 );
+//     test.identical( con.resourcesCount(), 3 );
+//     test.identical( con.competitorsCount(), 1 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       promise.then( function( got )
+//       {
+//         test.identical( got, 'str' + 1 );
+//         test.is( _.promiseIs( promise ) );
+//         test.identical( con.resourcesCount(), 3 );
+//         test.identical( con.competitorsCount(), 0 );
+//       })
+//       return _.Consequence.From( promise );
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( ( err, arg ) =>
+//   {
+//     test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
+//
+//     _.Consequence.AsyncModeSet( amode );
+//     if( err )
+//     throw err;
+//     return arg;
+//   })
+//   return ready;
+// }
+//
+// //
+//
+// function finallyPromiseKeepAsyncMode11( test )
+// {
+//   let context = this;
+//
+//   let con;
+//   let amode = _.Consequence.AsyncModeGet();
+//   let ready = new _.Consequence({ tag : 'finallyPromiseKeepCon' }).take( null );
+//
+//   ready
+//
+//   /* */
+//
+//   .finally( () =>
+//   {
+//     test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
+//
+//     _.Consequence.AsyncModeSet([ 1, 1 ]);
+//     return null;
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async competitors adding+resources adding, single resource';
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.take( 'str' );
+//     var promise = con.finallyPromiseKeep();
+//     test.identical( con.competitorsCount(), 1 );
+//     test.identical( con.resourcesCount(), 1 );
+//     return _.time.out( 1, function()
+//     {
+//       promise.then( function( got )
+//       {
+//         test.identical( got, 'str' );
+//         test.is( _.promiseIs( promise ) );
+//         test.identical( con.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
+//         test.identical( con.competitorsCount(), 0 );
+//       });
+//       return _.Consequence.From( promise );
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async competitors adding+resources adding, error resource';
+//     var catched = 0;
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.error( 'str' );
+//     var promise = con.finallyPromiseKeep();
+//     promise.catch( function( err )
+//     {
+//       test.is( _.strHas( String( err ), 'str' ) );
+//       test.is( _.promiseIs( promise ) );
+//       catched = 1;
+//     });
+//     test.identical( con.resourcesCount(), 1 );
+//     test.identical( con.competitorsCount(), 1 );
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.argumentsGet(), [] );
+//       test.identical( con.errorsGet().length, 1 );
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( catched, 1 );
+//       return _.Consequence.From( promise ).finally( () => null );
+//     });
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'async competitors adding+resources adding, several resources';
+//     var con = new _.Consequence({ capacity : 3 });
+//     con.take( 'str' + 1 );
+//     con.take( 'str' + 2 );
+//     con.take( 'str' + 3 );
+//     var promise = con.finallyPromiseKeep();
+//     test.identical( con.resourcesCount(), 3 );
+//     test.identical( con.competitorsCount(), 1 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       promise.then( function( got )
+//       {
+//         test.identical( got, 'str' + 1 );
+//         test.is( _.promiseIs( promise ) );
+//         test.identical( con.resourcesCount(), 3 );
+//         test.identical( con.competitorsCount(), 0 );
+//       })
+//       return _.Consequence.From( promise );
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( ( err, arg ) =>
+//   {
+//     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
+//
+//     _.Consequence.AsyncModeSet( amode );
+//     if( err )
+//     throw err;
+//     return arg;
+//   })
+//   return ready;
+// }
 
 // --
 // etc
@@ -3744,7 +3728,7 @@ function split( test )
 
 function tap( test )
 {
-  let testMsg = 'msg';
+
   let ready = new _.Consequence().take( null )
 
   /* */
@@ -3753,9 +3737,9 @@ function tap( test )
   {
     test.case = 'single value in give sequence, and single taker : attached taker after value resolved';
     var con = new _.Consequence({ tag : 'con' });
-    con.take( testMsg );
-    con.tap( ( err, got ) => test.identical( got, testMsg ) && test.identical( err, undefined ) );
-    con.give( ( err, got ) => test.identical( got, testMsg ) && test.identical( err, undefined ) );
+    con.take( 'str' );
+    con.tap( ( err, got ) => test.identical( got, 'str' ) && test.identical( err, undefined ) );
+    con.give( ( err, got ) => test.identical( got, 'str' ) && test.identical( err, undefined ) );
     test.identical( con.competitorsCount(), 0 );
     test.identical( con.resourcesCount(), 0 );
     return null;
@@ -3767,9 +3751,9 @@ function tap( test )
   {
     test.case = 'single error and single taker : attached taker after value resolved';
     var con = new _.Consequence({ tag : 'con' });
-    con.error( testMsg );
-    con.tap( ( err, got ) => test.is( _.strHas( String( err ), testMsg ) ) );
-    con.give( ( err, got ) => test.is( _.strHas( String( err ), testMsg ) ) );
+    con.error( 'str' );
+    con.tap( ( err, got ) => test.is( _.strHas( String( err ), 'str' ) ) );
+    con.give( ( err, got ) => test.is( _.strHas( String( err ), 'str' ) ) );
     test.identical( con.competitorsCount(), 0 );
     test.identical( con.resourcesCount(), 0 );
     return null;
@@ -3781,10 +3765,10 @@ function tap( test )
   {
     test.case = 'test tap in chain';
     var con = new _.Consequence({ tag : 'con' });
-    con.take( testMsg );
-    con.tap( ( err, got ) => test.identical( got, testMsg ) && test.identical( err, undefined ) );
-    con.tap( ( err, got ) => test.identical( got, testMsg ) && test.identical( err, undefined ) );
-    con.give( ( err, got ) => test.identical( got, testMsg ) && test.identical( err, undefined ) );
+    con.take( 'str' );
+    con.tap( ( err, got ) => test.identical( got, 'str' ) && test.identical( err, undefined ) );
+    con.tap( ( err, got ) => test.identical( got, 'str' ) && test.identical( err, undefined ) );
+    con.give( ( err, got ) => test.identical( got, 'str' ) && test.identical( err, undefined ) );
     test.identical( con.competitorsCount(), 0 );
     test.identical( con.resourcesCount(), 0 );
     return null;
@@ -3934,7 +3918,7 @@ function tapHandling( test )
 
 function catchTestRoutine( test )
 {
-  let testMsg = 'msg';
+
   let ready = new _.Consequence().take( null )
 
   /* common wConsequence corespondent tests. */
@@ -3943,10 +3927,10 @@ function catchTestRoutine( test )
   {
     test.case = 'single value in give sequence, and single taker : attached taker after value resolved';
     var con = new _.Consequence({ tag : 'con' });
-    con.take( testMsg );
+    con.take( 'str' );
     // con.catch( ( err ) => { test.identical( 0, 1 ); return null; } );
     con.catch( ( err ) => { test.identical( err, undefined ); return null; } );
-    con.give( ( err, got ) => test.identical( got, testMsg ) && test.identical( err, undefined ) );
+    con.give( ( err, got ) => test.identical( got, 'str' ) && test.identical( err, undefined ) );
 
     test.identical( con.competitorsCount(), 0 );
     test.identical( con.resourcesCount(), 0 );
@@ -3960,8 +3944,8 @@ function catchTestRoutine( test )
   {
     test.case = 'single err in give sequence, and single taker : attached taker after value resolved';
     var con = new _.Consequence({ tag : 'con' });
-    con.error( testMsg );
-    con.catch( ( err ) => { test.is( _.strHas( String( err ), testMsg ) ); return null; });
+    con.error( 'str' );
+    con.catch( ( err ) => { test.is( _.strHas( String( err ), 'str' ) ); return null; });
     con.give( ( err, got ) => test.identical( got, null ) && test.identical( err, undefined ) );
 
     test.identical( con.competitorsCount(), 0 );
@@ -3976,17 +3960,17 @@ function catchTestRoutine( test )
   {
     test.case = 'test catchTestRoutine in chain, regular resource is given before error';
     var con = new _.Consequence({ capacity : 0 });
-    con.take( testMsg );
-    con.error( testMsg + 1 );
-    con.error( testMsg + 2 );
+    con.take( 'str' );
+    con.error( 'str' + 1 );
+    con.error( 'str' + 2 );
 
     con.catch( ( err ) => { test.identical( err, 1 ); return null; });
     con.catch( ( err ) => { test.identical( err, 1 ); return null; });
-    con.give( ( err, got ) => test.identical( got, testMsg ) && test.identical( err, undefined ) );
+    con.give( ( err, got ) => test.identical( got, 'str' ) && test.identical( err, undefined ) );
 
     test.identical( con.resourcesCount(), 2 );
-    test.is( _.strHas( String( con.resourcesGet()[ 0 ].error ), testMsg + 1 ) );
-    test.is( _.strHas( String( con.resourcesGet()[ 1 ].error ), testMsg + 2 ) );
+    test.is( _.strHas( String( con.resourcesGet()[ 0 ].error ), 'str' + 1 ) );
+    test.is( _.strHas( String( con.resourcesGet()[ 1 ].error ), 'str' + 2 ) );
     test.identical( con.competitorsCount(), 0 );
 
     return arg;
@@ -3998,15 +3982,15 @@ function catchTestRoutine( test )
   {
     test.case = 'test catchTestRoutine in chain, regular resource is given after error';
     var con = new _.Consequence({ capacity : 0 });
-    con.error( testMsg + 1 );
-    con.error( testMsg + 2 );
-    con.take( testMsg );
+    con.error( 'str' + 1 );
+    con.error( 'str' + 2 );
+    con.take( 'str' );
 
-    test.is( _.strHas( String( con.resourcesGet()[ 0 ].error ), testMsg + 1 ) );
+    test.is( _.strHas( String( con.resourcesGet()[ 0 ].error ), 'str' + 1 ) );
 
-    con.catch( ( err ) => { test.is( _.strHas( String( err ), testMsg + 1 ) ); return null; });
-    con.catch( ( err ) => { test.is( _.strHas( String( err ), testMsg + 2 ) ); return null; });
-    con.give( ( err, got ) => test.identical( got, testMsg ) && test.identical( err, undefined ) );
+    con.catch( ( err ) => { test.is( _.strHas( String( err ), 'str' + 1 ) ); return null; });
+    con.catch( ( err ) => { test.is( _.strHas( String( err ), 'str' + 2 ) ); return null; });
+    con.give( ( err, got ) => test.identical( got, 'str' ) && test.identical( err, undefined ) );
 
     test.identical( con.resourcesCount(), 2 );
     test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : null } );
@@ -4117,7 +4101,7 @@ function ifNoErrorGotThrowing( test )
 function keep( test )
 {
   let context = this;
-  let testMsg = 'msg';
+
   let ready = new _.Consequence().take( null )
 
   /* common wConsequence corespondent tests. */
@@ -4126,8 +4110,8 @@ function keep( test )
   {
     test.case = 'single value in give sequence, and single taker : attached taker after value resolved';
     var con = new _.Consequence({ tag : 'con' });
-    con.take( testMsg );
-    con.then( ( got ) => { test.identical( got, testMsg ); return null; } );
+    con.take( 'str' );
+    con.then( ( got ) => { test.identical( got, 'str' ); return null; } );
     con.give( ( err, got ) => test.identical( got, null ) && test.identical( err, undefined ) );
 
     test.identical( con.competitorsCount(), 0 );
@@ -4141,9 +4125,9 @@ function keep( test )
   {
     test.case = 'single err in give sequence, and single taker : attached taker after value resolved';
     var con = new _.Consequence({ tag : 'con' });
-    con.error( testMsg );
+    con.error( 'str' );
     con.then( ( got ) => { test.identical( 0, 1 ); return null; });
-    con.give( ( err, got ) => test.is( _.strHas( String( err ), testMsg ) ) );
+    con.give( ( err, got ) => test.is( _.strHas( String( err ), 'str' ) ) );
 
     test.identical( con.competitorsCount(), 0 );
     test.identical( con.resourcesCount(), 0 );
@@ -4156,16 +4140,16 @@ function keep( test )
   {
     test.case = 'test keep in chain, regular resource is given before error';
     var con = new _.Consequence({ capacity : 0 });
-    con.take( testMsg );
-    con.take( testMsg );
-    con.error( testMsg );
+    con.take( 'str' );
+    con.take( 'str' );
+    con.error( 'str' );
 
-    con.then( ( got ) => { test.identical( got, testMsg ); return null; });
-    con.then( ( got ) => { test.identical( got, testMsg ); return null; });
+    con.then( ( got ) => { test.identical( got, 'str' ); return null; });
+    con.then( ( got ) => { test.identical( got, 'str' ); return null; });
 
     test.identical( con.resourcesCount(), 3 );
-    // test.identical( con.resourcesGet()[ 0 ].error, testMsg );
-    test.is( _.strHas( String( con.resourcesGet()[ 0 ].error ), testMsg ) );
+    // test.identical( con.resourcesGet()[ 0 ].error, 'str' );
+    test.is( _.strHas( String( con.resourcesGet()[ 0 ].error ), 'str' ) );
     test.identical( con.resourcesGet()[ 1 ], { error : undefined, argument : null } );
     test.identical( con.resourcesGet()[ 2 ], { error : undefined, argument : null } );
     test.identical( con.competitorsCount(), 0 );
@@ -4178,18 +4162,18 @@ function keep( test )
   {
     test.case = 'test keep in chain, regular resource is given after error';
     var con = new _.Consequence({ capacity : 0 });
-    con.error( testMsg );
-    con.take( testMsg );
-    con.take( testMsg );
+    con.error( 'str' );
+    con.take( 'str' );
+    con.take( 'str' );
 
     con.then( ( got ) => { test.identical( 0, 1 ); return null; });
     con.then( ( got ) => { test.identical( 0, 1 ); return null; });
 
     test.identical( con.resourcesCount(), 3 );
-    // test.identical( con.resourcesGet()[ 0 ].error, testMsg );
-    test.is( _.strHas( String( con.resourcesGet()[ 0 ].error ), testMsg ) );
-    test.identical( con.resourcesGet()[ 1 ], { error : undefined, argument : testMsg } );
-    test.identical( con.resourcesGet()[ 2 ], { error : undefined, argument : testMsg } );
+    // test.identical( con.resourcesGet()[ 0 ].error, 'str' );
+    test.is( _.strHas( String( con.resourcesGet()[ 0 ].error ), 'str' ) );
+    test.identical( con.resourcesGet()[ 1 ], { error : undefined, argument : 'str' } );
+    test.identical( con.resourcesGet()[ 2 ], { error : undefined, argument : 'str' } );
     test.identical( con.competitorsCount(), 0 );
     return null;
   })
@@ -4200,11 +4184,11 @@ function keep( test )
   {
     test.case = 'test keep in chain serveral resources';
     var con = new _.Consequence({ capacity : 0 });
-    con.take( testMsg );
-    con.take( testMsg );
+    con.take( 'str' );
+    con.take( 'str' );
 
-    con.then( ( got ) => { test.identical( got, testMsg ); return null; });
-    con.then( ( got ) => { test.identical( got, testMsg ); return null; });
+    con.then( ( got ) => { test.identical( got, 'str' ); return null; });
+    con.then( ( got ) => { test.identical( got, 'str' ); return null; });
 
     test.identical( con.resourcesCount(), 2 );
     test.identical( con.resourcesGet()[ 0 ], { error : undefined, argument : null } );
@@ -4318,7 +4302,7 @@ function notDeadLock1( test )
 function timeOut( test )
 {
   let context = this;
-  let testMsg = 'msg';
+
   let ready = new _.Consequence().take( null )
 
   /* */
@@ -4341,7 +4325,7 @@ function timeOut( test )
     test.identical( visited, [] );
     visited.push( 'context' )
 
-    con.take( testMsg );
+    con.take( 'str' );
     visited.push( 'd' )
 
     test.identical( con.competitorsCount(), 1 );
@@ -4378,7 +4362,7 @@ function timeOut( test )
     test.identical( visited, [] );
     visited.push( 'context' )
 
-    con.take( testMsg );
+    con.take( 'str' );
     visited.push( 'd' )
 
     test.identical( con.competitorsCount(), 1 );
@@ -4533,7 +4517,7 @@ function timeLimitSplit( test )
 
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
-    test.identical( con.competitorsCount(), 3 );
+    test.identical( con.competitorsCount(), 2 );
     test.identical( con2.argumentsCount(), 0 );
     test.identical( con2.errorsCount(), 0 );
     test.identical( con2.competitorsCount(), 2 );
@@ -4584,12 +4568,12 @@ function timeLimitSplit( test )
   {
     test.case = 'timeOutError, not enough time';
 
-    var con = _.time.outError( t*8, 'a' );
+    var con = _.time.outError( t*8 );
     var con2 = con.timeLimitSplit( t*4 );
 
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
-    test.identical( con.competitorsCount(), 3 );
+    test.identical( con.competitorsCount(), 2 );
     test.identical( con2.argumentsCount(), 0 );
     test.identical( con2.errorsCount(), 0 );
     test.identical( con2.competitorsCount(), 2 );
@@ -4614,7 +4598,7 @@ function timeLimitSplit( test )
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 0 );
-      test.identical( con.competitorsCount(), 3 );
+      test.identical( con.competitorsCount(), 2 );
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.competitorsCount(), 0 );
@@ -4641,7 +4625,7 @@ function timeLimitSplit( test )
 
 //
 
-function timeLimitThrowingSplit( test )
+function timeLimitErrorSplit( test )
 {
   let context = this;
   let t = context.t1/2;
@@ -4654,7 +4638,7 @@ function timeLimitThrowingSplit( test )
     test.case = 'timeOut, enough time';
 
     var con = _.time.out( t, 'a' );
-    var con2 = con.timeLimitThrowingSplit( t*3 );
+    var con2 = con.timeLimitErrorSplit( t*3 );
 
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
@@ -4702,7 +4686,7 @@ function timeLimitThrowingSplit( test )
     test.case = 'timeOut, not enough time';
 
     var con = _.time.out( t*8, 'a' );
-    var con2 = con.timeLimitThrowingSplit( t*4 );
+    var con2 = con.timeLimitErrorSplit( t*4 );
 
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
@@ -4750,11 +4734,11 @@ function timeLimitThrowingSplit( test )
     test.case = 'timeOutError, enough time';
 
     var con = _.time.outError( t );
-    var con2 = con.timeLimitThrowingSplit( t*3 );
+    var con2 = con.timeLimitErrorSplit( t*3 );
 
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
-    test.identical( con.competitorsCount(), 3 );
+    test.identical( con.competitorsCount(), 2 );
     test.identical( con2.argumentsCount(), 0 );
     test.identical( con2.errorsCount(), 0 );
     test.identical( con2.competitorsCount(), 2 );
@@ -4805,12 +4789,12 @@ function timeLimitThrowingSplit( test )
   {
     test.case = 'timeOutError, not enough time';
 
-    var con = _.time.outError( t*8, 'a' );
-    var con2 = con.timeLimitThrowingSplit( t*4 );
+    var con = _.time.outError( t*8 );
+    var con2 = con.timeLimitErrorSplit( t*4 );
 
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
-    test.identical( con.competitorsCount(), 3 );
+    test.identical( con.competitorsCount(), 2 );
     test.identical( con2.argumentsCount(), 0 );
     test.identical( con2.errorsCount(), 0 );
     test.identical( con2.competitorsCount(), 2 );
@@ -4835,7 +4819,7 @@ function timeLimitThrowingSplit( test )
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 0 );
-      test.identical( con.competitorsCount(), 3 );
+      test.identical( con.competitorsCount(), 2 );
       test.identical( con2.argumentsCount(), 0 );
       test.identical( con2.errorsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
@@ -4999,12 +4983,12 @@ function timeLimitConsequence( test )
     test.case = 'timeOut a-timeOutError timeLimit-enough';
 
     var con = _.time.out( t*3 );
-    var con0 = _.time.outError( t*5, 'a' );
+    var con0 = _.time.outError( t*5 );
     con.timeLimit( t*10, con0 );
 
     test.identical( con0.argumentsCount(), 0 );
     test.identical( con0.errorsCount(), 0 );
-    test.identical( con0.competitorsCount(), 3 );
+    test.identical( con0.competitorsCount(), 2 );
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
     test.identical( con.competitorsCount(), 4 );
@@ -5021,7 +5005,7 @@ function timeLimitConsequence( test )
     {
       test.identical( con0.argumentsCount(), 0 );
       test.identical( con0.errorsCount(), 0 );
-      test.identical( con0.competitorsCount(), 3 );
+      test.identical( con0.competitorsCount(), 2 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 0 );
       test.identical( con.competitorsCount(), 5 );
@@ -5062,7 +5046,7 @@ function timeLimitConsequence( test )
 
     test.identical( con0.argumentsCount(), 0 );
     test.identical( con0.errorsCount(), 0 );
-    test.identical( con0.competitorsCount(), 3 );
+    test.identical( con0.competitorsCount(), 2 );
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
     test.identical( con.competitorsCount(), 4 );
@@ -5087,7 +5071,7 @@ function timeLimitConsequence( test )
     {
       test.identical( con0.argumentsCount(), 0 );
       test.identical( con0.errorsCount(), 0 );
-      test.identical( con0.competitorsCount(), 4 );
+      test.identical( con0.competitorsCount(), 3 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 0 );
       test.identical( con.competitorsCount(), 5 );
@@ -5097,7 +5081,7 @@ function timeLimitConsequence( test )
     {
       test.identical( con0.argumentsCount(), 0 );
       test.identical( con0.errorsCount(), 0 );
-      test.identical( con0.competitorsCount(), 4 );
+      test.identical( con0.competitorsCount(), 3 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 0 );
       test.identical( con.competitorsCount(), 3 );
@@ -5107,7 +5091,7 @@ function timeLimitConsequence( test )
     {
       test.identical( con0.argumentsCount(), 0 );
       test.identical( con0.errorsCount(), 0 );
-      test.identical( con0.competitorsCount(), 3 );
+      test.identical( con0.competitorsCount(), 2 );
       test.identical( con.argumentsCount(), 1 );
       test.identical( con.errorsCount(), 0 );
       test.identical( con.competitorsCount(), 0 );
@@ -5141,7 +5125,7 @@ function timeLimitConsequence( test )
     test.identical( con0.competitorsCount(), 2 );
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
-    test.identical( con.competitorsCount(), 5 );
+    test.identical( con.competitorsCount(), 4 );
 
     con.tap( ( err, arg ) =>
     {
@@ -5158,7 +5142,7 @@ function timeLimitConsequence( test )
       test.identical( con0.competitorsCount(), 2 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 0 );
-      test.identical( con.competitorsCount(), 6 );
+      test.identical( con.competitorsCount(), 5 );
     });
 
     _.time.out( t*6, function()
@@ -5199,14 +5183,14 @@ function timeLimitConsequence( test )
     test.identical( con0.competitorsCount(), 2 );
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
-    test.identical( con.competitorsCount(), 5 );
+    test.identical( con.competitorsCount(), 4 );
 
     con0.tap( ( err, arg ) =>
     {
       if( err )
       _.errAttend( err );
       test.is( err === undefined );
-      test.is( arg === _.time.out );
+      test.is( _.timerIs( arg ) );
     });
 
     con.tap( ( err, arg ) =>
@@ -5224,7 +5208,7 @@ function timeLimitConsequence( test )
       test.identical( con0.competitorsCount(), 3 );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 0 );
-      test.identical( con.competitorsCount(), 6 );
+      test.identical( con.competitorsCount(), 5 );
     });
 
     _.time.out( t*3, function()
@@ -5413,7 +5397,7 @@ function timeLimitRoutine( test )
 
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
-    test.identical( con.competitorsCount(), 6 );
+    test.identical( con.competitorsCount(), 5 );
 
     con.tap( ( err, arg ) =>
     {
@@ -5459,7 +5443,7 @@ function timeLimitRoutine( test )
 
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
-    test.identical( con.competitorsCount(), 6 );
+    test.identical( con.competitorsCount(), 5 );
 
     con.tap( ( err, arg ) =>
     {
@@ -5505,7 +5489,7 @@ function timeLimitRoutine( test )
 
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
-    test.identical( con.competitorsCount(), 5 );
+    test.identical( con.competitorsCount(), 4 );
 
     con.tap( ( err, arg ) =>
     {
@@ -5519,7 +5503,7 @@ function timeLimitRoutine( test )
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 0 );
-      test.identical( con.competitorsCount(), 6 );
+      test.identical( con.competitorsCount(), 5 );
     });
 
     _.time.out( t*20, function()
@@ -5547,7 +5531,7 @@ function timeLimitRoutine( test )
 
 //
 
-function timeLimitThrowingRoutine( test )
+function timeLimitErrorRoutine( test )
 {
   let context = this;
   let t = context.t1/4;
@@ -5560,7 +5544,7 @@ function timeLimitThrowingRoutine( test )
     test.case = 'timeOut timeLimit a timeLimitOut';
 
     var con = _.time.out( t );
-    con.timeLimitThrowing( t*6, () => _.time.out( t*3, 'a' ) );
+    con.timeLimitError( t*6, () => _.time.out( t*3, 'a' ) );
 
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
@@ -5603,7 +5587,7 @@ function timeLimitThrowingRoutine( test )
     test.case = 'timeOut timeLimit timeLimitOut a';
 
     var con = _.time.out( t );
-    con.timeLimitThrowing( t*5, () => _.time.out( t*10, 'a' ) );
+    con.timeLimitError( t*5, () => _.time.out( t*10, 'a' ) );
 
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
@@ -5648,7 +5632,7 @@ function timeLimitThrowingRoutine( test )
     test.case = 'timeOut-long timeLimit timeLimitOut a';
 
     var con = _.time.out( t*20 );
-    con.timeLimitThrowing( t*5, () => _.time.out( t*10, 'a' ) );
+    con.timeLimitError( t*5, () => _.time.out( t*10, 'a' ) );
 
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
@@ -5693,11 +5677,11 @@ function timeLimitThrowingRoutine( test )
     test.case = 'timeOutError timeLimit a timeLimitOut';
 
     var con = _.time.outError( t );
-    con.timeLimitThrowing( t*6, () => _.time.out( t*3, 'a' ) );
+    con.timeLimitError( t*6, () => _.time.out( t*3, 'a' ) );
 
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
-    test.identical( con.competitorsCount(), 5 );
+    test.identical( con.competitorsCount(), 4 );
 
     con.tap( ( err, arg ) =>
     {
@@ -5738,11 +5722,11 @@ function timeLimitThrowingRoutine( test )
     test.case = 'timeOutError timeLimit timeLimitOut a';
 
     var con = _.time.outError( t );
-    con.timeLimitThrowing( t*5, () => _.time.out( t*10, 'a' ) );
+    con.timeLimitError( t*5, () => _.time.out( t*10, 'a' ) );
 
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
-    test.identical( con.competitorsCount(), 5 );
+    test.identical( con.competitorsCount(), 4 );
 
     con.tap( ( err, arg ) =>
     {
@@ -5783,11 +5767,11 @@ function timeLimitThrowingRoutine( test )
     test.case = 'timeOutError-long timeLimit timeLimitOut a';
 
     var con = _.time.outError( t*20 );
-    con.timeLimitThrowing( t*5, () => _.time.out( t*10, 'a' ) );
+    con.timeLimitError( t*5, () => _.time.out( t*10, 'a' ) );
 
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
-    test.identical( con.competitorsCount(), 5 );
+    test.identical( con.competitorsCount(), 4 );
 
     con.tap( ( err, arg ) =>
     {
@@ -5801,7 +5785,7 @@ function timeLimitThrowingRoutine( test )
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 0 );
-      test.identical( con.competitorsCount(), 6 );
+      test.identical( con.competitorsCount(), 5 );
     });
 
     _.time.out( t*20, function()
@@ -5828,10 +5812,9 @@ function timeLimitThrowingRoutine( test )
 
 //
 
-function timeLimitThrowingConsequence( test )
+function timeLimitErrorConsequence( test )
 {
   let context = this;
-  let testMsg = 'value';
   let ready = new _.Consequence().take( null )
 
   /* */
@@ -5839,8 +5822,8 @@ function timeLimitThrowingConsequence( test )
   .then( function( arg )
   {
     test.case = 'passing value';
-    var con = _.now().timeLimitThrowing( 0, testMsg );
-    test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
+    var con = _.now().timeLimitError( 0, 'str' );
+    test.identical( con.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
     test.identical( con.argumentsCount(), 1 );
     test.identical( con.errorsCount(), 0 );
     test.identical( con.competitorsCount(), 0 );
@@ -5852,8 +5835,8 @@ function timeLimitThrowingConsequence( test )
   .then( function( arg )
   {
     test.case = 'passing an error';
-    var err = _.errAttend( testMsg );
-    var con = _.now().timeLimitThrowing( 0, err );
+    var err = _.errAttend( 'str' );
+    var con = _.now().timeLimitError( 0, err );
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 1 );
     test.identical( con.competitorsCount(), 0 );
@@ -5865,8 +5848,8 @@ function timeLimitThrowingConsequence( test )
   .then( function( arg )
   {
     test.case = 'passing consequence';
-    var src = new _.Consequence().take( testMsg );
-    var con = _.now().timeLimitThrowing( 0, src );
+    var src = new _.Consequence().take( 'str' );
+    var con = _.now().timeLimitError( 0, src );
     test.is( src !== con );
     test.identical( con.argumentsCount(), 1 );
     test.identical( con.errorsCount(), 0 );
@@ -5879,15 +5862,15 @@ function timeLimitThrowingConsequence( test )
   .then( function( arg )
   {
     test.case = 'passing consequence with error';
-    var src = new _.Consequence().error( testMsg );
-    var con = _.now().timeLimitThrowing( 0, src );
+    var src = new _.Consequence().error( 'str' );
+    var con = _.now().timeLimitError( 0, src );
     test.is( src !== con );
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 1 );
     test.identical( con.competitorsCount(), 0 );
     con.catch( ( err ) =>
     {
-      test.is( _.strHas( String( err ), testMsg ) );
+      test.is( _.strHas( String( err ), 'str' ) );
       return null;
     });
     return con;
@@ -5898,11 +5881,11 @@ function timeLimitThrowingConsequence( test )
   .then( function( arg )
   {
     test.case = 'passing resolved promise';
-    var src = Promise.resolve( testMsg );
-    var con = _.now().timeLimitThrowing( 10, src );
+    var src = Promise.resolve( 'str' );
+    var con = _.now().timeLimitError( 10, src );
     return _.time.out( context.t1, function()
     {
-      test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
+      test.identical( con.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
       test.identical( con.argumentsCount(), 1 );
       test.identical( con.errorsCount(), 0 );
       test.identical( con.competitorsCount(), 0 );
@@ -5915,8 +5898,8 @@ function timeLimitThrowingConsequence( test )
   .then( function( arg )
   {
     test.case = 'passing resolved promise';
-    var src = Promise.resolve( testMsg );
-    var con = _.now().timeLimitThrowing( 0, src );
+    var src = Promise.resolve( 'str' );
+    var con = _.now().timeLimitError( 0, src );
     con.tap( ( err, arg ) =>
     {
       err ? _.errAttend( err ) : null;
@@ -5936,15 +5919,15 @@ function timeLimitThrowingConsequence( test )
   .then( function( arg )
   {
     test.case = 'passing rejected promise';
-    var src = Promise.reject( testMsg );
-    var con = _.now().timeLimitThrowing( 10, src );
+    var src = Promise.reject( 'str' );
+    var con = _.now().timeLimitError( 10, src );
     con.tap( ( err, arg ) =>
     {
       err ? _.errAttend( err ) : null;
     });
     return _.time.out( context.t1, function()
     {
-      test.is( _.strHas( String( con.errorsGet()[ 0 ] ), testMsg ) );
+      test.is( _.strHas( String( con.errorsGet()[ 0 ] ), 'str' ) );
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 1 );
       test.identical( con.competitorsCount(), 0 );
@@ -5957,8 +5940,8 @@ function timeLimitThrowingConsequence( test )
   .then( function( arg )
   {
     test.case = 'passing rejected promise';
-    var src = Promise.reject( _.errAttend( testMsg ) );
-    var con = _.now().timeLimitThrowing( 0, src );
+    var src = Promise.reject( _.errAttend( 'str' ) );
+    var con = _.now().timeLimitError( 0, src );
     con.tap( ( err, arg ) =>
     {
       err ? _.errAttend( err ) : null;
@@ -5978,9 +5961,9 @@ function timeLimitThrowingConsequence( test )
   .then( function( arg )
   {
     test.case = 'sync, resolved promise, timeout';
-    var src = Promise.resolve( testMsg );
-    var con = _.now().timeLimitThrowing( context.t1*5, src );
-    con.give( ( err, got ) => test.identical( got, testMsg ) && test.identical( err, undefined ) );
+    var src = Promise.resolve( 'str' );
+    var con = _.now().timeLimitError( context.t1*5, src );
+    con.give( ( err, got ) => test.identical( got, 'str' ) && test.identical( err, undefined ) );
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
     test.identical( con.competitorsCount(), 3 );
@@ -6000,9 +5983,9 @@ function timeLimitThrowingConsequence( test )
     test.case = 'sync, promise resolved with timeout';
     var src = new Promise( ( resolve ) =>
     {
-      setTimeout( () => resolve( testMsg ), context.t1*2 );
+      setTimeout( () => resolve( 'str' ), context.t1*2 );
     })
-    var con = _.now().timeLimitThrowing( context.t1, src );
+    var con = _.now().timeLimitError( context.t1, src );
     con.finally( ( err, got ) =>
     {
       test.is( _.errIs( err ) );
@@ -6028,11 +6011,11 @@ function timeLimitThrowingConsequence( test )
   .then( function( arg )
   {
     test.case = 'sync, timeout, src is a consequence';
-    var con = new _.Consequence({ tag : 'con' }).take( testMsg );
-    con = _.now().timeLimitThrowing( context.t1, con );
+    var con = new _.Consequence({ tag : 'con' }).take( 'str' );
+    con = _.now().timeLimitError( context.t1, con );
     con.give( ( err, got ) =>
     {
-      test.identical( got, testMsg );
+      test.identical( got, 'str' );
       test.identical( err, undefined );
     });
     test.identical( con.argumentsCount(), 0 );
@@ -6046,9 +6029,9 @@ function timeLimitThrowingConsequence( test )
   .then( function( arg )
   {
     test.case = 'sync, timeout, src is a consequence';
-    var con = _.time.out( context.t1*2, () => testMsg );
+    var con = _.time.out( context.t1*2, () => 'str' );
     con.tag = 'con1';
-    con = _.now().timeLimitThrowing( context.t1, con );
+    con = _.now().timeLimitError( context.t1, con );
     con.tag = 'con2';
     con.give( ( err, got ) =>
     {
@@ -6073,7 +6056,7 @@ function timeLimitThrowingConsequence( test )
   return ready;
 }
 
-timeLimitThrowingConsequence.timeOut = 30000;
+timeLimitErrorConsequence.timeOut = 30000;
 
 // --
 // procedure
@@ -6984,7 +6967,7 @@ function andKeepDuplicates( test )
 function andKeepInstant( test )
 {
   let context = this;
-  let testMsg = 'msg';
+
   let ready = new _.Consequence().take( null )
 
   /*
@@ -7014,7 +6997,7 @@ function andKeepInstant( test )
     var con3 = new _.Consequence({ tag : 'con3', capacity : 3 });
     var srcs = [ con3, con1, con2  ];
 
-    mainCon.take( testMsg );
+    mainCon.take( 'str' );
 
     con1.take( 'con1a' );
     con1.take( 'con1b' );
@@ -7036,7 +7019,7 @@ function andKeepInstant( test )
     mainCon.andKeep( srcs );
     mainCon.finally( function( err, got )
     {
-      test.identical( got, [ 'con3a', 'con1a', 'con2a', testMsg ] );
+      test.identical( got, [ 'con3a', 'con1a', 'con2a', 'str' ] );
       test.identical( err, undefined );
       checkFinally();
       return null;
@@ -7144,7 +7127,7 @@ function andKeepInstant( test )
 function andKeep( test )
 {
   let context = this;
-  let testMsg = 'msg';
+
   let ready = new _.Consequence().take( null )
 
   /* */
@@ -7156,13 +7139,13 @@ function andKeep( test )
     var mainCon = new _.Consequence({ tag : 'mainCon' });
     var con = new _.Consequence({ tag : 'con', capacity : 2 });
 
-    mainCon.take( testMsg );
+    mainCon.take( 'str' );
 
     mainCon.andKeep( con );
 
     mainCon.finally( function( err, got )
     {
-      test.identical( got, [ delay, testMsg ] );
+      test.identical( got, [ delay, 'str' ] );
       test.identical( err, undefined );
       test.identical( mainCon.resourcesCount(), 0 );
       test.identical( con.resourcesGet(), [ { error : undefined, argument : delay } ] );
@@ -7190,13 +7173,13 @@ function andKeep( test )
     var mainCon = new _.Consequence({ tag : 'mainCon' });
     var con = new _.Consequence({ tag : 'con', capacity : 2 });
 
-    mainCon.take( testMsg );
+    mainCon.take( 'str' );
 
     mainCon.andKeep( () => con );
 
     mainCon.finally( function( err, got )
     {
-      test.identical( got, [ delay, testMsg ] );
+      test.identical( got, [ delay, 'str' ] );
       test.identical( err, undefined );
       test.identical( mainCon.resourcesCount(), 0 );
       test.identical( con.resourcesCount(), 1 );
@@ -7229,13 +7212,13 @@ function andKeep( test )
 
     var srcs = [ con1, con2, con3 ];
 
-    mainCon.take( testMsg );
+    mainCon.take( 'str' );
 
     mainCon.andKeep( srcs );
 
     mainCon.finally( function( err, got )
     {
-      test.identical( got, [ delay, delay * 2, testMsg + testMsg, testMsg ] )
+      test.identical( got, [ delay, delay * 2, 'str' + 'str', 'str' ] )
       test.identical( mainCon.resourcesCount(), 0 );
       test.identical( err, undefined );
 
@@ -7245,7 +7228,7 @@ function andKeep( test )
       test.identical( con2.resourcesGet(), [ { error : undefined, argument : delay * 2 } ]);
       test.identical( con2.competitorsEarlyGet().length, 0 );
 
-      test.identical( con3.resourcesGet(), [ { error : undefined, argument : testMsg + testMsg } ]);
+      test.identical( con3.resourcesGet(), [ { error : undefined, argument : 'str' + 'str' } ]);
       test.identical( con3.competitorsEarlyGet().length, 0 );
 
       return null;
@@ -7253,7 +7236,7 @@ function andKeep( test )
 
     _.time.out( delay, () => { con1.take( delay );return null; });
     _.time.out( delay * 2, () => { con2.take( delay * 2 );return null; });
-    con3.take( testMsg + testMsg );
+    con3.take( 'str' + 'str' );
 
     return mainCon;
   })
@@ -7270,13 +7253,13 @@ function andKeep( test )
     var con3 = new _.Consequence({ tag : 'con3', capacity : 3 });
     var srcs = [ con3, con1, con2  ];
 
-    mainCon.take( testMsg );
+    mainCon.take( 'str' );
 
     mainCon.andKeep( srcs );
 
     mainCon.finally( function( err, got )
     {
-      test.identical( got, [ 'con3', 'con1', 'con2', testMsg ] );
+      test.identical( got, [ 'con3', 'con1', 'con2', 'str' ] );
       test.identical( mainCon.resourcesCount(), 0 );
       test.identical( err, undefined );
 
@@ -7332,13 +7315,13 @@ function andKeep( test )
 
     var srcs = [ con3, con1, con2  ];
 
-    mainCon.take( testMsg );
+    mainCon.take( 'str' );
 
     mainCon.andKeep( srcs );
 
     mainCon.finally( function( err, got )
     {
-      test.identical( got, [ 'con3', 'con1', 'con2', testMsg ] );
+      test.identical( got, [ 'con3', 'con1', 'con2', 'str' ] );
       test.identical( mainCon.resourcesCount(), 0 );
       test.identical( err, undefined );
 
@@ -7397,13 +7380,13 @@ function andKeep( test )
     con1.finally( () => con2 );
     con1.finally( () => 'con1' );
 
-    mainCon.take( testMsg );
+    mainCon.take( 'str' );
 
     mainCon.andTake( srcs );
 
     mainCon.finally( function( err, got )
     {
-      test.identical( got, [ 'con1', 'con2', testMsg ] );
+      test.identical( got, [ 'con1', 'con2', 'str' ] );
       test.identical( err, undefined );
 
       test.identical( mainCon.resourcesCount(), 0 );
@@ -7436,7 +7419,7 @@ function andKeep( test )
 
     var srcs = [ con1, con2  ];
 
-    mainCon.take( testMsg );
+    mainCon.take( 'str' );
 
     mainCon.andKeep( srcs );
 
@@ -7541,7 +7524,7 @@ function andKeep( test )
 
     var srcs = [ con1, con2, con3 ];
 
-    mainCon.take( testMsg );
+    mainCon.take( 'str' );
 
     mainCon.andKeep( srcs );
 
@@ -7588,7 +7571,7 @@ function andKeep( test )
 function andTake( test )
 {
   let context = this;
-  let testMsg = 'msg';
+
   let ready = new _.Consequence().take( null )
 
   /* */
@@ -7600,13 +7583,13 @@ function andTake( test )
     var mainCon = new _.Consequence({ tag : 'mainCon' });
     var con = new _.Consequence({ tag : 'con' });
 
-    mainCon.take( testMsg );
+    mainCon.take( 'str' );
 
     mainCon.andTake( con );
 
     mainCon.finally( function( err, got )
     {
-      test.identical( got, [ delay, testMsg ] )
+      test.identical( got, [ delay, 'str' ] )
       test.identical( err, undefined );
       test.identical( mainCon.resourcesCount(), 0 );
       test.identical( con.resourcesCount(), 0 );
@@ -7634,13 +7617,13 @@ function andTake( test )
     var mainCon = new _.Consequence({ tag : 'mainCon' });
     var con = new _.Consequence({ tag : 'con' });
 
-    mainCon.take( testMsg );
+    mainCon.take( 'str' );
 
     mainCon.andTake( () => con );
 
     mainCon.finally( function( err, got )
     {
-      test.identical( got, [ delay, testMsg ] );
+      test.identical( got, [ delay, 'str' ] );
       test.identical( err, undefined );
       test.identical( mainCon.resourcesCount(), 0 );
       test.identical( con.resourcesCount(), 0 );
@@ -7666,13 +7649,13 @@ function andTake( test )
 
     var srcs = [ con1, con2, con3 ];
 
-    mainCon.take( testMsg );
+    mainCon.take( 'str' );
 
     mainCon.andTake( srcs );
 
     mainCon.finally( function( err, got )
     {
-      test.identical( got, [ delay, delay * 2, testMsg + testMsg, testMsg ] );
+      test.identical( got, [ delay, delay * 2, 'str' + 'str', 'str' ] );
       test.identical( err, undefined );
 
       test.identical( mainCon.resourcesCount(), 0 );
@@ -7691,7 +7674,7 @@ function andTake( test )
 
     _.time.out( delay, () => { con1.take( delay ); return null; });
     _.time.out( delay * 2, () => { con2.take( delay * 2 ); return null; });
-    con3.take( testMsg + testMsg );
+    con3.take( 'str' + 'str' );
 
     return mainCon;
   })
@@ -7709,13 +7692,13 @@ function andTake( test )
 
     var srcs = [ con3, con1, con2  ];
 
-    mainCon.take( testMsg );
+    mainCon.take( 'str' );
 
     mainCon.andTake( srcs );
 
     mainCon.finally( function( err, got )
     {
-      test.identical( got, [ 'con3', 'con1', 'con2', testMsg ] );
+      test.identical( got, [ 'con3', 'con1', 'con2', 'str' ] );
       test.identical( err, undefined );
 
       test.identical( mainCon.resourcesCount(), 0 );
@@ -7775,13 +7758,13 @@ function andTake( test )
     con1.finally( () => con2 );
     con1.finally( () => 'con1' );
 
-    mainCon.take( testMsg );
+    mainCon.take( 'str' );
 
     mainCon.andTake( srcs );
 
     mainCon.finally( function( err, got )
     {
-      test.identical( got, [ 'con1', 'con2', testMsg ] );
+      test.identical( got, [ 'con1', 'con2', 'str' ] );
       test.identical( err, undefined );
 
       test.identical( mainCon.resourcesCount(), 0 );
@@ -7811,7 +7794,7 @@ function andTake( test )
 
     var srcs = [ con1, con2  ];
 
-    mainCon.take( testMsg );
+    mainCon.take( 'str' );
 
     mainCon.andTake( srcs );
 
@@ -7916,7 +7899,7 @@ function andTake( test )
 
     var srcs = [ con1, con2, con3 ];
 
-    mainCon.take( testMsg );
+    mainCon.take( 'str' );
 
     mainCon.andTake( srcs );
     mainCon.finally( () => { test.identical( 0, 1); return null; });
@@ -8494,7 +8477,7 @@ function alsoKeepThrowingAfterAsync( test )
 function _and( test )
 {
   let context = this;
-  let testMsg = 'msg';
+
   let delay = context.t1*5;
   let ready = new _.Consequence().take( null )
 
@@ -8508,7 +8491,7 @@ function _and( test )
     var con1 = new _.Consequence({ tag : 'con1' });
     var con2 = new _.Consequence({ tag : 'con2' });
 
-    mainCon.take( testMsg );
+    mainCon.take( 'str' );
 
     mainCon._and
     ({
@@ -8540,7 +8523,7 @@ function _and( test )
       test.identical( con1.competitorsEarlyGet().length, 0 );
       test.identical( con2.resourcesCount(), 0 );
       test.identical( con2.competitorsEarlyGet().length, 0 );
-      test.identical( got, [ delay, delay * 2, testMsg ] );
+      test.identical( got, [ delay, delay * 2, 'str' ] );
       test.identical( err, undefined );
       return null;
     });
@@ -8561,7 +8544,7 @@ function _and( test )
     var con1 = new _.Consequence({ tag : 'con1' });
     var con2 = new _.Consequence({ tag : 'con2' });
 
-    mainCon.take( testMsg );
+    mainCon.take( 'str' );
 
     mainCon._and
     ({
@@ -8593,7 +8576,7 @@ function _and( test )
       test.identical( con1.competitorsEarlyGet().length, 1 );
       test.identical( con2.resourcesCount(), 0 );
       test.identical( con2.competitorsEarlyGet().length, 1 );
-      test.identical( got, [ delay, delay * 2, testMsg ] );
+      test.identical( got, [ delay, delay * 2, 'str' ] );
       test.identical( err, undefined );
       return null;
     });
@@ -10063,7 +10046,7 @@ function orKeepingWithSimple( test )
       return null;
     });
 
-    return _.time.out( context.t2, function( err, arg )
+    return _.time.out( context.t2, function( timer )
     {
       test.identical( got, 0 );
       test.identical( con.errorsCount(), 0 );
@@ -10077,7 +10060,7 @@ function orKeepingWithSimple( test )
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
       test.identical( con2.resourcesGet( 0 ), { argument : 2, error : undefined } );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
       con.competitorsCancel();
     });
   })
@@ -10172,7 +10155,7 @@ function orKeepingWithSimple( test )
       return arg;
     });
 
-    return _.time.out( context.t2, function( err, arg )
+    return _.time.out( context.t2, function( timer )
     {
       test.identical( got, 101 );
       test.identical( con.errorsCount(), 0 );
@@ -10190,9 +10173,7 @@ function orKeepingWithSimple( test )
       test.identical( con2.competitorsCount(), 0 );
       test.identical( con2.resourcesGet( 0 ), { argument : 2, error : undefined } );
 
-      test.identical( err, undefined );
-
-      // con.competitorsCancel();
+      test.is( _.timerIs( timer ) );
     });
   })
 
@@ -10254,7 +10235,7 @@ function orKeepingWithSimple( test )
       return arg;
     });
 
-    return _.time.out( context.t2, function( err, arg )
+    return _.time.out( context.t2, function( timer )
     {
       test.identical( got, 1 );
       test.identical( con.errorsCount(), 0 );
@@ -10272,7 +10253,7 @@ function orKeepingWithSimple( test )
       test.identical( con2.competitorsCount(), 0 );
       test.identical( con2.resourcesGet( 0 ), { argument : 2, error : undefined } );
 
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
     });
   })
 
@@ -10348,7 +10329,7 @@ function orKeepingWithLater( test )
       return null;
     });
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 0 );
       test.identical( con.errorsCount(), 0 );
@@ -10365,7 +10346,7 @@ function orKeepingWithLater( test )
       test.identical( con2.competitorsCount(), 0 );
       test.identical( con2.resourcesGet( 0 ), { argument : 2, error : undefined } );
 
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
 
       con.competitorsCancel();
     });
@@ -10432,7 +10413,7 @@ function orKeepingWithLater( test )
 
     con.take( 0 );
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 0 );
       test.identical( con.errorsCount(), 0 );
@@ -10444,7 +10425,7 @@ function orKeepingWithLater( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
       con.competitorsCancel();
     });
   })
@@ -10521,7 +10502,7 @@ function orKeepingWithLater( test )
 
     con.takeLater( context.t1*3/2, 0 );
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 102 );
       test.identical( con.errorsCount(), 0 );
@@ -10533,7 +10514,7 @@ function orKeepingWithLater( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
       con.competitorsCancel();
     });
   })
@@ -10623,7 +10604,7 @@ function orKeepingWithNow( test )
       got = arg;
     });
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 0 );
       test.identical( con.errorsCount(), 0 );
@@ -10635,7 +10616,7 @@ function orKeepingWithNow( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
     });
   })
 
@@ -10712,7 +10693,7 @@ function orKeepingWithNow( test )
       got = arg;
     });
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 0 );
       test.identical( con.errorsCount(), 0 );
@@ -10724,7 +10705,7 @@ function orKeepingWithNow( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
     });
   })
 
@@ -10802,7 +10783,7 @@ function orTakingWithSimple( test )
       return null;
     });
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 0 );
       test.identical( con.errorsCount(), 0 );
@@ -10816,7 +10797,7 @@ function orTakingWithSimple( test )
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
       test.identical( con2.resourcesGet( 0 ), { argument : 2, error : undefined } );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
       con.competitorsCancel();
     });
   })
@@ -10908,7 +10889,7 @@ function orTakingWithSimple( test )
       return arg;
     });
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 101 );
       test.identical( con.errorsCount(), 0 );
@@ -10925,7 +10906,7 @@ function orTakingWithSimple( test )
       test.identical( con2.competitorsCount(), 0 );
       test.identical( con2.resourcesGet( 0 ), { argument : 2, error : undefined } );
 
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
 
       // con.competitorsCancel();
     });
@@ -10986,7 +10967,7 @@ function orTakingWithSimple( test )
       return arg;
     });
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 1 );
       test.identical( con.errorsCount(), 0 );
@@ -11003,7 +10984,7 @@ function orTakingWithSimple( test )
       test.identical( con2.competitorsCount(), 0 );
       test.identical( con2.resourcesGet( 0 ), { argument : 2, error : undefined } );
 
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
     });
   })
 
@@ -11080,7 +11061,7 @@ function orTakingWithLater( test )
       return null;
     });
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 0 );
       test.identical( con.errorsCount(), 0 );
@@ -11097,7 +11078,7 @@ function orTakingWithLater( test )
       test.identical( con2.competitorsCount(), 0 );
       test.identical( con2.resourcesGet( 0 ), { argument : 2, error : undefined } );
 
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
 
       con.competitorsCancel();
     });
@@ -11164,7 +11145,7 @@ function orTakingWithLater( test )
 
     con.take( 0 );
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 0 );
       test.identical( con.errorsCount(), 0 );
@@ -11176,7 +11157,7 @@ function orTakingWithLater( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
       con.competitorsCancel();
     });
   })
@@ -11253,7 +11234,7 @@ function orTakingWithLater( test )
 
     con.takeLater( context.t1*3/2, 0 );
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 102 );
       test.identical( con.errorsCount(), 0 );
@@ -11265,7 +11246,7 @@ function orTakingWithLater( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 0 );
       test.identical( con2.competitorsCount(), 0 );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
       con.competitorsCancel();
     });
   })
@@ -11355,7 +11336,7 @@ function orTakingWithNow( test )
       got = arg;
     });
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 0 );
       test.identical( con.errorsCount(), 0 );
@@ -11367,7 +11348,7 @@ function orTakingWithNow( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
     });
   })
 
@@ -11443,7 +11424,7 @@ function orTakingWithNow( test )
       got = arg;
     });
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 0 );
       test.identical( con.errorsCount(), 0 );
@@ -11455,7 +11436,7 @@ function orTakingWithNow( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
     });
   })
 
@@ -11482,7 +11463,8 @@ function orKeepingSplitCanceled( test )
     let con0 = new _.Consequence();
     let con1 = new _.Consequence();
     let con2 = new _.Consequence();
-    let con00 = con0.orKeepingSplit([ con1, con2 ]);
+    // let con00 = con0.orKeepingSplit([ con1, con2 ]);
+    let con00 = _.Consequence.OrKeep( con0, con1, con2 );
 
     _.time.out( context.t1/4, () =>
     {
@@ -11588,7 +11570,8 @@ function orKeepingSplitCanceled( test )
     let con0 = new _.Consequence();
     let con1 = new _.Consequence();
     let con2 = new _.Consequence();
-    let con00 = con0.orKeepingSplit([ con1, con2 ]);
+    // let con00 = con0.orKeepingSplit([ con1, con2 ]);
+    let con00 = _.Consequence.OrKeep( con0, con1, con2 );
 
     _.time.out( context.t1/4, () =>
     {
@@ -11694,7 +11677,8 @@ function orKeepingSplitCanceled( test )
     let con0 = new _.Consequence();
     let con1 = new _.Consequence();
     let con2 = new _.Consequence();
-    let con00 = con0.orKeepingSplit([ con1, con2 ]);
+    // let con00 = con0.orKeepingSplit([ con1, con2 ]);
+    let con00 = _.Consequence.OrKeep( con0, con1, con2 );
 
     _.time.out( context.t1/4, () =>
     {
@@ -11891,7 +11875,8 @@ function orKeepingSplitCanceledProcedure( test )
     test.identical( con2.argumentsCount(), 0 );
     test.identical( con2.competitorsCount(), 0 );
 
-    let con00 = con0.orKeepingSplit([ con2 ]);
+    // let con00 = con0.orKeepingSplit([ con2 ]);
+    let con00 = _.Consequence.OrKeep( con0, con2 );
 
     test.identical( con0.errorsCount(), 0 );
     test.identical( con0.argumentsCount(), 0 );
@@ -11939,9 +11924,6 @@ function orKeepingSplitCanceledProcedure( test )
     });
 
   });
-
-    // ready.then( () => suite.onSuiteEnd.call( suite.context, suite ) || null );
-    // ready = ready.orKeepingSplit([ timeLimitErrorCon, wTester._cancelCon ])
 
   /* */
 
@@ -12309,7 +12291,7 @@ function afterOrKeepingNotFiring( test )
       return null;
     });
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 10 );
       test.identical( con.errorsCount(), 0 );
@@ -12321,7 +12303,7 @@ function afterOrKeepingNotFiring( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 0 );
       test.identical( con2.competitorsCount(), 1 );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
       con.competitorsCancel();
       con1.competitorsCancel();
       con2.competitorsCancel();
@@ -12388,7 +12370,7 @@ function afterOrKeepingNotFiring( test )
 
     _.time.begin( 1, () => con.take( 10 ) );
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 10 );
       test.identical( con.errorsCount(), 0 );
@@ -12400,7 +12382,7 @@ function afterOrKeepingNotFiring( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 0 );
       test.identical( con2.competitorsCount(), 1 );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
       con.competitorsCancel();
       con1.competitorsCancel();
       con2.competitorsCancel();
@@ -12480,7 +12462,7 @@ function afterOrKeepingWithSimple( test )
       return null;
     });
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 1 );
       test.identical( con.errorsCount(), 0 );
@@ -12492,7 +12474,7 @@ function afterOrKeepingWithSimple( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
       con.competitorsCancel();
     });
   })
@@ -12558,7 +12540,7 @@ function afterOrKeepingWithSimple( test )
       return null;
     });
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.is( _.strHas( String( got ), 'error1' ) );
       test.identical( con.errorsCount(), 0 );
@@ -12570,7 +12552,7 @@ function afterOrKeepingWithSimple( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
       con.competitorsCancel();
     });
   })
@@ -12646,7 +12628,7 @@ function afterOrKeepingWithSimple( test )
       return null;
     });
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 1 );
       test.identical( con.errorsCount(), 0 );
@@ -12663,7 +12645,7 @@ function afterOrKeepingWithSimple( test )
       test.identical( con2.competitorsCount(), 0 );
       test.identical( con2.resourcesGet( 0 ), { argument : 2, error : undefined } );
 
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
 
       con.competitorsCancel();
     });
@@ -12744,7 +12726,7 @@ function afterOrKeepingWithLater( test )
       return null;
     });
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 2 );
       test.identical( con.errorsCount(), 0 );
@@ -12756,7 +12738,7 @@ function afterOrKeepingWithLater( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
       con.competitorsCancel();
     });
   })
@@ -12822,7 +12804,7 @@ function afterOrKeepingWithLater( test )
 
     con.take( 0 );
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 2 );
       test.identical( con.errorsCount(), 0 );
@@ -12834,7 +12816,7 @@ function afterOrKeepingWithLater( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
       con.competitorsCancel();
     });
   })
@@ -12900,7 +12882,7 @@ function afterOrKeepingWithLater( test )
 
     con.takeLater( context.t1*3/2, 0 );
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 1 );
       test.identical( con.errorsCount(), 0 );
@@ -12912,7 +12894,7 @@ function afterOrKeepingWithLater( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
       con.competitorsCancel();
     });
   })
@@ -13001,7 +12983,7 @@ function afterOrKeepingWithTwoTake0( test )
       got = arg;
     });
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 1 );
       test.identical( con.errorsCount(), 0 );
@@ -13013,7 +12995,7 @@ function afterOrKeepingWithTwoTake0( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
     });
   })
 
@@ -13089,7 +13071,7 @@ function afterOrKeepingWithTwoTake0( test )
       got = arg;
     });
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 1 );
       test.identical( con.errorsCount(), 0 );
@@ -13101,7 +13083,7 @@ function afterOrKeepingWithTwoTake0( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
     });
   })
 
@@ -13172,13 +13154,13 @@ function afterOrTakingWithSimple( test )
       got = arg;
     });
 
-    con.finally( () =>
+    con.finally( ( err, arg ) =>
     {
-      test.is( false );
+      test.is( err === _.dont );
       return null;
     });
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 1 );
       test.identical( con.errorsCount(), 0 );
@@ -13190,8 +13172,8 @@ function afterOrTakingWithSimple( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
-      test.identical( err, undefined );
-      con.competitorsCancel();
+      test.is( _.timerIs( timer ) );
+      con.error( _.dont );
     });
   })
 
@@ -13250,13 +13232,13 @@ function afterOrTakingWithSimple( test )
       got = err;
     });
 
-    con.finally( () =>
+    con.finally( ( err, arg ) =>
     {
-      test.is( false );
+      test.is( err === _.dont );
       return null;
     });
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.is( _.strHas( String( got ), 'error1' ) );
       test.identical( con.errorsCount(), 0 );
@@ -13268,8 +13250,8 @@ function afterOrTakingWithSimple( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
-      test.identical( err, undefined );
-      con.competitorsCancel();
+      test.is( _.timerIs( timer ) );
+      con.error( _.dont );
     });
   })
 
@@ -13344,7 +13326,7 @@ function afterOrTakingWithSimple( test )
       return null;
     });
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 1 );
       test.identical( con.errorsCount(), 0 );
@@ -13360,7 +13342,7 @@ function afterOrTakingWithSimple( test )
       test.identical( con2.competitorsCount(), 0 );
       test.identical( con2.resourcesGet( 0 ), { argument : 2, error : undefined } );
 
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
 
       con.competitorsCancel();
     });
@@ -13439,7 +13421,7 @@ function afterOrTakingWithLater( test )
       return null;
     });
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 2 );
       test.identical( con.errorsCount(), 0 );
@@ -13451,7 +13433,7 @@ function afterOrTakingWithLater( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 0 );
       test.identical( con2.competitorsCount(), 0 );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
       con.competitorsCancel();
     });
   })
@@ -13517,7 +13499,7 @@ function afterOrTakingWithLater( test )
 
     con.take( 0 );
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 2 );
       test.identical( con.errorsCount(), 0 );
@@ -13529,7 +13511,7 @@ function afterOrTakingWithLater( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 0 );
       test.identical( con2.competitorsCount(), 0 );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
       con.competitorsCancel();
     });
   })
@@ -13595,7 +13577,7 @@ function afterOrTakingWithLater( test )
 
     con.takeLater( context.t1*3/2, 0 );
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 1 );
       test.identical( con.errorsCount(), 0 );
@@ -13607,7 +13589,7 @@ function afterOrTakingWithLater( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
       con.competitorsCancel();
     });
   })
@@ -13696,7 +13678,7 @@ function afterOrTakingWithTwoTake0( test )
       got = arg;
     });
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 1 );
       test.identical( con.errorsCount(), 0 );
@@ -13708,7 +13690,7 @@ function afterOrTakingWithTwoTake0( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
     });
   })
 
@@ -13785,7 +13767,7 @@ function afterOrTakingWithTwoTake0( test )
       got = arg;
     });
 
-    return _.time.out( context.t1*2, function( err, arg )
+    return _.time.out( context.t1*2, function( timer )
     {
       test.identical( got, 1 );
       test.identical( con.errorsCount(), 0 );
@@ -13797,7 +13779,7 @@ function afterOrTakingWithTwoTake0( test )
       test.identical( con2.errorsCount(), 0 );
       test.identical( con2.argumentsCount(), 1 );
       test.identical( con2.competitorsCount(), 0 );
-      test.identical( err, undefined );
+      test.is( _.timerIs( timer ) );
     });
   })
 
@@ -14353,15 +14335,14 @@ function firstAsyncMode00( test )
 {
   let context = this;
   let amode = _.Consequence.AsyncModeGet();
-  let testMsg = 'msg';
   let ready = new _.Consequence().take( null )
 
-  .finally( () =>
-  {
-    _.Consequence.AsyncModeSet([ 0, 0 ]);
-    test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
-    return null;
-  })
+  // .finally( () =>
+  // {
+  //   _.Consequence.AsyncModeSet([ 0, 0 ]);
+  //   test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+  //   return null;
+  // })
 
   /* */
 
@@ -14370,12 +14351,12 @@ function firstAsyncMode00( test )
     test.case = 'simplest, empty routine';
     var con = new _.Consequence({ tag : 'con', capacity : 2 });
     con.first( () => null );
-    con.take( testMsg );
+    con.take( 'str' );
     con.finally( function( err, got )
     {
       test.identical( got, null );
       test.identical( err, undefined );
-      test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
+      test.identical( con.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
       return null;
     })
     return con;
@@ -14387,13 +14368,13 @@ function firstAsyncMode00( test )
   {
     test.case = 'routine returns something';
     var con = new _.Consequence({ tag : 'con', capacity : 2 });
-    con.first( () => testMsg );
-    con.take( testMsg + 2 );
+    con.first( () => 'str' );
+    con.take( 'str' + 2 );
     con.finally( function( err, got )
     {
-      test.identical( got, testMsg );
+      test.identical( got, 'str' );
       test.identical( err, undefined );
-      test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg + 2 } ] );
+      test.identical( con.resourcesGet(), [ { error : undefined, argument : 'str' + 2 } ] );
       return null;
     })
     return con;
@@ -14405,7 +14386,7 @@ function firstAsyncMode00( test )
   {
     test.case = 'routine throws error';
     var con = new _.Consequence({ tag : 'con' });
-    con.first( () => { throw _.errAttend( testMsg ) });
+    con.first( () => { throw _.errAttend( 'str' ) });
     con.finally( function( err, got )
     {
       test.is( _.errIs( err ) );
@@ -14424,11 +14405,11 @@ function firstAsyncMode00( test )
   {
     test.case = 'routine returns consequence with resource';
     var con = new _.Consequence({ tag : 'con' });
-    con.first( () => new _.Consequence().take( testMsg ));
+    con.first( () => new _.Consequence().take( 'str' ));
     con.finally( function( err, got )
     {
       test.identical( err, undefined );
-      test.identical( got, testMsg );
+      test.identical( got, 'str' );
       test.identical( con.resourcesGet(), [] );
       return null;
     })
@@ -14441,10 +14422,10 @@ function firstAsyncMode00( test )
   {
     test.case = 'routine returns consequence with err resource';
     var con = new _.Consequence({ tag : 'con' });
-    con.first( () => new _.Consequence().error( testMsg ));
+    con.first( () => new _.Consequence().error( 'str' ));
     con.finally( function( err, got )
     {
-      test.is( _.strHas( String( err ), testMsg ) );
+      test.is( _.strHas( String( err ), 'str' ) );
       test.identical( got, undefined );
       test.identical( con.resourcesGet(), [] );
       return null;
@@ -14480,7 +14461,7 @@ function firstAsyncMode00( test )
   {
     test.case = 'passed consequence shares own resource';
     var con = new _.Consequence({ tag : 'con' });
-    var con2 = new _.Consequence({ tag : 'con2' }).take( testMsg );
+    var con2 = new _.Consequence({ tag : 'con2' }).take( 'str' );
 
     test.identical( con.errorsCount(), 0 );
     test.identical( con.argumentsCount(), 0 );
@@ -14503,9 +14484,9 @@ function firstAsyncMode00( test )
       test.identical( con2.argumentsCount(), 1 );
 
       test.identical( err, undefined );
-      test.identical( got, testMsg );
+      test.identical( got, 'str' );
       test.identical( con.resourcesGet(), [] );
-      test.identical( con2.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
+      test.identical( con2.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
       return null;
     })
 
@@ -14518,7 +14499,7 @@ function firstAsyncMode00( test )
   {
     test.case = 'passed consequence shares own resource with timeout';
     var con = new _.Consequence({ tag : 'con' });
-    var con2 = _.time.out( context.t1*3, () => testMsg );
+    var con2 = _.time.out( context.t1*3, () => 'str' );
     var timeBefore = _.time.now();
     con.first( con2 );
     con.finally( function( err, got )
@@ -14528,832 +14509,830 @@ function firstAsyncMode00( test )
       test.ge( delay, context.t1*3 - context.timeAccuracy );
       test.case = description;
       test.identical( err, undefined );
-      test.identical( got, testMsg );
+      test.identical( got, 'str' );
       test.identical( con.resourcesGet(), [] );
-      test.identical( con2.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
+      test.identical( con2.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
       return null;
     })
     return con;
   })
 
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+  // .finally( ( err, arg ) =>
+  // {
+  //   test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 0' );
+  //   _.Consequence.AsyncModeSet( amode );
+  //   if( err )
+  //   throw err;
+  //   return arg;
+  // })
 
-    _.Consequence.AsyncModeSet( amode );
-
-
-    if( err )
-    throw err;
-    return arg;
-
-  })
   return ready;
 }
 
+// //
 //
-
-function firstAsyncMode10( test )
-{
-  let context = this;
-  let amode = _.Consequence.AsyncModeGet();
-  let testMsg = 'msg';
-  let ready = new _.Consequence().take( null )
-
-  .finally( () =>
-  {
-    _.Consequence.AsyncModeSet([ 1, 0 ]);
-    test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
-    return null;
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'simplest, empty routine';
-    var con = new _.Consequence({ tag : 'con', capacity : 2 });
-    con.first( () => null );
-    con.take( testMsg );
-    con.give( function( err, got )
-    {
-      test.identical( got, null );
-      test.identical( err, undefined );
-      test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
-      return null;
-    })
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 1 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'routine returns something';
-    var con = new _.Consequence({ tag : 'con', capacity : 2 });
-    con.first( () => testMsg );
-    con.take( testMsg + 2 );
-    con.give( function( err, got )
-    {
-      test.identical( got, testMsg );
-      test.identical( err, undefined );
-    })
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg + 2 } ] );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'routine throws error';
-    var con = new _.Consequence({ tag : 'con' });
-    con.first( () => { throw _.errAttend( testMsg ) });
-    con.give( function( err, got )
-    {
-      test.is( _.errIs( err ) );
-      if( err )
-      _.errAttend( err );
-      test.identical( got, undefined );
-      test.identical( con.resourcesGet(), [] );
-    })
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'routine returns consequence with resource';
-    var con = new _.Consequence({ tag : 'con' });
-    con.first( () => new _.Consequence().take( testMsg ));
-    con.give( function( err, got )
-    {
-      test.identical( err, undefined );
-      test.identical( got, testMsg );
-    })
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'routine returns consequence with err resource';
-    var con = new _.Consequence({ tag : 'con' });
-    con.first( () => new _.Consequence().error( testMsg ));
-    con.give( function( err, got )
-    {
-      test.is( _.strHas( String( err ), testMsg ) );
-      test.identical( got, undefined );
-      test.identical( con.resourcesGet(), [] );
-    })
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'routine returns consequence that gives resource with timeout';
-    var con = new _.Consequence({ tag : 'con' });
-    var timeBefore = _.time.now();
-    con.first( () => _.time.out( context.t1*3, () => null ));
-    con.give( function( err, got )
-    {
-      let delay = _.time.now() - timeBefore;
-      var description = test.case = 'delay ' + delay;
-      test.ge( delay, context.t1*3 - context.timeAccuracy );
-      test.case = description;
-      test.identical( err, undefined );
-      test.identical( got, null );
-      test.identical( con.resourcesGet(), [] );
-    })
-    return _.time.out( context.t1*3+1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'passed consequence shares own resource';
-    var con = new _.Consequence({ tag : 'con' });
-    var con2 = new _.Consequence({ tag : 'con2' }).take( testMsg );
-
-    test.identical( con.errorsCount(), 0 );
-    test.identical( con.argumentsCount(), 0 );
-    test.identical( con2.errorsCount(), 0 );
-    test.identical( con2.argumentsCount(), 1 );
-
-    con.first( con2 );
-
-    test.identical( con.errorsCount(), 0 );
-    test.identical( con.argumentsCount(), 0 );
-    test.identical( con2.errorsCount(), 0 );
-    test.identical( con2.argumentsCount(), 1 );
-
-    con.give( function( err, got )
-    {
-
-      test.identical( con.errorsCount(), 0 );
-      test.identical( con.argumentsCount(), 0 );
-      test.identical( con2.errorsCount(), 0 );
-      test.identical( con2.argumentsCount(), 1 );
-
-      test.identical( err, undefined );
-      test.identical( got, testMsg );
-      test.identical( con.resourcesGet(), [] );
-      test.identical( con2.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
-
-    })
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'passed consequence shares own resource with timeout';
-    var con = new _.Consequence({ tag : 'con' });
-    var con2 = _.time.out( context.t1*3, () => testMsg );
-    var timeBefore = _.time.now();
-    con.first( con2 );
-    con.give( function( err, got )
-    {
-      let delay = _.time.now() - timeBefore;
-      var description = test.case = 'delay ' + delay;
-      test.ge( delay, context.t1*3 - context.timeAccuracy );
-      test.case = description;
-      test.identical( err, undefined );
-      test.identical( got, testMsg );
-      test.identical( con.resourcesGet(), [] );
-      test.identical( con2.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
-    })
-    return _.time.out( context.t1*3+1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
-
-    _.Consequence.AsyncModeSet( amode );
-
-
-    if( err )
-    throw err;
-    return arg;
-
-  })
-  return ready;
-}
-
+// function firstAsyncMode10( test )
+// {
+//   let context = this;
+//   let amode = _.Consequence.AsyncModeGet();
 //
-
-function firstAsyncMode01( test )
-{
-  let context = this;
-  let amode = _.Consequence.AsyncModeGet();
-  let testMsg = 'msg';
-  let ready = new _.Consequence().take( null )
-
-  .finally( () =>
-  {
-    _.Consequence.AsyncModeSet([ 0, 1 ]);
-    test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
-    return null;
-  })
-
-  .then( function( arg )
-  {
-    test.case = 'simplest, empty routine';
-    var con = new _.Consequence({ tag : 'con', capacity : 2 });
-    con.give( function( err, got )
-    {
-      test.identical( err, undefined );
-      test.identical( got, null );
-    });
-
-    test.identical( con.resourcesCount(), 0 );
-    test.identical( con.competitorsCount(), 1 );
-
-    con.first( () => null );
-
-    test.identical( con.resourcesCount(), 1 );
-    test.identical( con.competitorsCount(), 1 );
-
-    con.take( testMsg );
-
-    test.identical( con.resourcesCount(), 2 );
-    test.identical( con.competitorsCount(), 1 );
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
-      return null;
-    });
-
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'routine returns something';
-    var con = new _.Consequence({ tag : 'con', capacity : 2 });
-    con.give( function( err, got )
-    {
-      test.identical( got, testMsg );
-      test.identical( err, undefined );
-    })
-    con.first( () => testMsg );
-
-    con.take( testMsg + 2 );
-
-    test.identical( con.resourcesCount(), 2 );
-    test.identical( con.competitorsCount(), 1 );
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg + 2 } ] );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'routine throws error';
-    var con = new _.Consequence({ tag : 'con' });
-
-    con.first( () => { throw _.errAttend( testMsg ) } );
-    test.identical( con.resourcesCount(), 1 );
-    test.identical( con.errorsCount(), 1 );
-    test.identical( con.argumentsCount(), 0 );
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesCount(), 1 );
-      con.give( function( err, got )
-      {
-        test.is( _.errIs( err ) );
-        if( err )
-        _.errAttend( err );
-        test.identical( got, undefined );
-      });
-    })
-    .then( function( arg )
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'routine returns consequence with resource';
-    var con = new _.Consequence({ tag : 'con' });
-    con.first( () => new _.Consequence().take( testMsg ) );
-
-    test.identical( con.resourcesCount(), 1 );
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesCount(), 1 );
-
-      con.give( function( err, got )
-      {
-        test.identical( err, undefined );
-        test.identical( got, testMsg );
-      })
-      return null;
-    })
-    .then( function( arg )
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'routine returns consequence with err resource';
-    var con = new _.Consequence({ tag : 'con' });
-    con.first( () => new _.Consequence().error( testMsg ));
-
-    test.identical( con.resourcesCount(), 1 );
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.resourcesCount(), 1 );
-
-
-      con.give( function( err, got )
-      {
-        test.is( _.strHas( String( err ), testMsg ) );
-        test.identical( got, undefined );
-      })
-      return null;
-    })
-    .then( function( arg )
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'routine returns consequence that gives resource with timeout';
-    var con = new _.Consequence({ tag : 'con' });
-    var timeBefore = _.time.now();
-    con.first( () => _.time.out( context.t1, () => null ));
-
-    test.identical( con.resourcesCount(), 0 );
-
-    return _.time.out( context.t1*3, function()
-    {
-      test.identical( con.resourcesCount(), 1 );
-
-      con.give( function( err, got )
-      {
-        let delay = _.time.now() - timeBefore;
-        var description = test.case = 'delay ' + delay;
-        test.ge( delay, context.t1*3 - context.timeAccuracy );
-        test.case = description;
-        test.identical( err, undefined );
-        test.identical( got, null );
-      })
-      return null;
-    })
-    .then( function( arg )
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'passed consequence shares own resource';
-    var con = new _.Consequence({ tag : 'con' });
-    var con2 = new _.Consequence({ tag : 'con2' }).take( testMsg );
-
-    test.identical( con.errorsCount(), 0 );
-    test.identical( con.argumentsCount(), 0 );
-    test.identical( con2.errorsCount(), 0 );
-    test.identical( con2.argumentsCount(), 1 );
-
-    con.first( con2 );
-
-    test.identical( con.errorsCount(), 0 );
-    test.identical( con.argumentsCount(), 1 );
-    test.identical( con2.errorsCount(), 0 );
-    test.identical( con2.argumentsCount(), 1 );
-
-    return _.time.out( 1, function()
-    {
-
-      test.identical( con.errorsCount(), 0 );
-      test.identical( con.argumentsCount(), 1 );
-      test.identical( con2.errorsCount(), 0 );
-      test.identical( con2.argumentsCount(), 1 );
-
-      test.identical( con.resourcesCount(), 1 );
-
-      con.give( function( err, got )
-      {
-        test.identical( err, undefined );
-        test.identical( got, testMsg );
-      })
-      return null;
-    })
-    .then( function( arg )
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 0 );
-      test.identical( con2.resourcesCount(), 1 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'passed consequence shares own resource with timeout';
-    var con = new _.Consequence({ tag : 'con' });
-    var con2 = _.time.out( context.t1, () => testMsg );
-    var timeBefore = _.time.now();
-    con.first( con2 );
-
-    return _.time.out( context.t1*3, function()
-    {
-      test.identical( con.resourcesCount(), 1 );
-
-      con.give( function( err, got )
-      {
-        let delay = _.time.now() - timeBefore;
-        var description = test.case = 'delay ' + delay;
-        test.ge( delay, context.t1*3 - context.timeAccuracy );
-        test.case = description;
-        test.identical( err, undefined );
-        test.identical( got, testMsg );
-      })
-      return null;
-    })
-    .then( function( arg )
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesCount(), 0 );
-      test.identical( con2.resourcesCount(), 1 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
-
-    _.Consequence.AsyncModeSet( amode );
-
-
-    if( err )
-    throw err;
-    return arg;
-
-  })
-  return ready;
-}
-
+//   let ready = new _.Consequence().take( null )
 //
-
-function firstAsyncMode11( test )
-{
-  let context = this;
-  let amode = _.Consequence.AsyncModeGet();
-  let testMsg = 'msg';
-  let ready = new _.Consequence().take( null )
-
-  .finally( () =>
-  {
-    _.Consequence.AsyncModeSet([ 1, 1 ]);
-    test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
-    return null;
-  })
-
-  .then( function( arg )
-  {
-    test.case = 'simplest, empty routine';
-    var con = new _.Consequence({ tag : 'con', capacity : 2 });
-    con.give( function( err, got )
-    {
-      test.identical( got, null );
-      test.identical( err, undefined );
-    });
-    con.first( () => null );
-    con.take( testMsg );
-
-    test.identical( con.argumentsCount(), 2 );
-    test.identical( con.errorsCount(), 0 );
-    test.identical( con.competitorsCount(), 1 );
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg } ] );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'routine returns something';
-    var con = new _.Consequence({ tag : 'con', capacity : 2 });
-    con.give( function( err, got )
-    {
-      test.identical( got, testMsg );
-      test.identical( err, undefined );
-    })
-    con.first( () => testMsg );
-
-    con.take( testMsg + 2 );
-
-    test.identical( con.argumentsCount(), 2 );
-    test.identical( con.errorsCount(), 0 );
-    test.identical( con.competitorsCount(), 1 );
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.resourcesGet(), [ { error : undefined, argument : testMsg + 2 } ] );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'routine throws error';
-    var con = new _.Consequence({ tag : 'con' });
-    con.first( () => { throw _.errAttend( testMsg ) });
-    con.give( function( err, got )
-    {
-      test.is( _.errIs( err ) );
-      if( err )
-      _.errAttend( err );
-      test.identical( got, undefined );
-    });
-
-    test.identical( con.argumentsCount(), 0 );
-    test.identical( con.errorsCount(), 0 );
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.argumentsCount(), 0 );
-      test.identical( con.errorsCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'routine returns consequence with resource';
-    var con = new _.Consequence({ tag : 'con' });
-    con.first( () => new _.Consequence().take( testMsg ));
-    con.give( function( err, got )
-    {
-      test.identical( err, undefined );
-      test.identical( got, testMsg );
-    })
-    test.identical( con.argumentsCount(), 0 );
-    test.identical( con.errorsCount(), 0 );
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.argumentsCount(), 0 );
-      test.identical( con.errorsCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'routine returns consequence with err resource';
-    var con = new _.Consequence({ tag : 'con' });
-    con.first( () => new _.Consequence().error( testMsg ));
-    con.give( function( err, got )
-    {
-      test.is( _.strHas( String( err ), testMsg ) );
-      test.identical( got, undefined );
-    })
-    test.identical( con.argumentsCount(), 0 );
-    test.identical( con.errorsCount(), 0 );
-
-    return _.time.out( 1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.argumentsCount(), 0 );
-      test.identical( con.errorsCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'routine returns consequence that gives resource with timeout';
-    var con = new _.Consequence({ tag : 'con' });
-    var timeBefore = _.time.now();
-    con.first( () => _.time.out( context.t1*3, () => null ));
-    con.give( function( err, got )
-    {
-      let delay = _.time.now() - timeBefore;
-      var description = test.case = 'delay ' + delay;
-      test.ge( delay, context.t1*3 - context.timeAccuracy );
-      test.case = description;
-      test.identical( err, undefined );
-      test.identical( got, null );
-    })
-    test.identical( con.argumentsCount(), 0 );
-    test.identical( con.errorsCount(), 0 );
-
-    return _.time.out( context.t1*3+1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.argumentsCount(), 0 );
-      test.identical( con.errorsCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'passed consequence shares own resource';
-    var con = new _.Consequence({ tag : 'con' });
-    var con2 = new _.Consequence({ tag : 'con2' }).take( testMsg );
-
-    test.identical( con.errorsCount(), 0 );
-    test.identical( con.argumentsCount(), 0 );
-    test.identical( con2.errorsCount(), 0 );
-    test.identical( con2.argumentsCount(), 1 );
-
-    con.first( con2 );
-
-    test.identical( con.errorsCount(), 0 );
-    test.identical( con.argumentsCount(), 0 );
-    test.identical( con2.errorsCount(), 0 );
-    test.identical( con2.argumentsCount(), 1 );
-
-    con.finally( function( err, got )
-    {
-
-      test.identical( con.errorsCount(), 0 );
-      test.identical( con.argumentsCount(), 0 );
-      test.identical( con2.errorsCount(), 0 );
-      test.identical( con2.argumentsCount(), 1 );
-
-      test.identical( err, undefined );
-      test.identical( got, testMsg );
-
-      return got;
-    });
-
-    return _.time.out( 5, function()
-    {
-
-      test.identical( con.errorsCount(), 0 );
-      test.identical( con.argumentsCount(), 1 );
-      test.identical( con2.errorsCount(), 0 );
-      test.identical( con2.argumentsCount(), 1 );
-
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.argumentsCount(), 1 );
-      test.identical( con.errorsCount(), 0 );
-      test.identical( con2.argumentsCount(), 1 );
-      test.identical( con2.errorsCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function( arg )
-  {
-    test.case = 'passed consequence shares own resource with timeout';
-    var con = new _.Consequence({ tag : 'con' });
-    var con2 = _.time.out( context.t1*3, () => testMsg );
-    var timeBefore = _.time.now();
-    con.first( con2 );
-    con.give( function( err, got )
-    {
-      let delay = _.time.now() - timeBefore;
-      var description = test.case = 'delay ' + delay;
-      test.ge( delay, context.t1*3 - context.timeAccuracy );
-      test.case = description;
-      test.identical( err, undefined );
-      test.identical( got, testMsg );
-    })
-    return _.time.out( context.t1*3+1, function()
-    {
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con.argumentsCount(), 0 );
-      test.identical( con.errorsCount(), 0 );
-      test.identical( con2.argumentsCount(), 1 );
-      test.identical( con2.errorsCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .finally( ( err, arg ) =>
-  {
-    test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
-
-    _.Consequence.AsyncModeSet( amode );
-
-
-    if( err )
-    throw err;
-    return arg;
-
-  })
-  return ready;
-}
+//   .finally( () =>
+//   {
+//     _.Consequence.AsyncModeSet([ 1, 0 ]);
+//     test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
+//     return null;
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'simplest, empty routine';
+//     var con = new _.Consequence({ tag : 'con', capacity : 2 });
+//     con.first( () => null );
+//     con.take( 'str' );
+//     con.give( function( err, got )
+//     {
+//       test.identical( got, null );
+//       test.identical( err, undefined );
+//       test.identical( con.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
+//       return null;
+//     })
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 1 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'routine returns something';
+//     var con = new _.Consequence({ tag : 'con', capacity : 2 });
+//     con.first( () => 'str' );
+//     con.take( 'str' + 2 );
+//     con.give( function( err, got )
+//     {
+//       test.identical( got, 'str' );
+//       test.identical( err, undefined );
+//     })
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesGet(), [ { error : undefined, argument : 'str' + 2 } ] );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'routine throws error';
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.first( () => { throw _.errAttend( 'str' ) });
+//     con.give( function( err, got )
+//     {
+//       test.is( _.errIs( err ) );
+//       if( err )
+//       _.errAttend( err );
+//       test.identical( got, undefined );
+//       test.identical( con.resourcesGet(), [] );
+//     })
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'routine returns consequence with resource';
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.first( () => new _.Consequence().take( 'str' ));
+//     con.give( function( err, got )
+//     {
+//       test.identical( err, undefined );
+//       test.identical( got, 'str' );
+//     })
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'routine returns consequence with err resource';
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.first( () => new _.Consequence().error( 'str' ));
+//     con.give( function( err, got )
+//     {
+//       test.is( _.strHas( String( err ), 'str' ) );
+//       test.identical( got, undefined );
+//       test.identical( con.resourcesGet(), [] );
+//     })
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'routine returns consequence that gives resource with timeout';
+//     var con = new _.Consequence({ tag : 'con' });
+//     var timeBefore = _.time.now();
+//     con.first( () => _.time.out( context.t1*3, () => null ));
+//     con.give( function( err, got )
+//     {
+//       let delay = _.time.now() - timeBefore;
+//       var description = test.case = 'delay ' + delay;
+//       test.ge( delay, context.t1*3 - context.timeAccuracy );
+//       test.case = description;
+//       test.identical( err, undefined );
+//       test.identical( got, null );
+//       test.identical( con.resourcesGet(), [] );
+//     })
+//     return _.time.out( context.t1*3+1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'passed consequence shares own resource';
+//     var con = new _.Consequence({ tag : 'con' });
+//     var con2 = new _.Consequence({ tag : 'con2' }).take( 'str' );
+//
+//     test.identical( con.errorsCount(), 0 );
+//     test.identical( con.argumentsCount(), 0 );
+//     test.identical( con2.errorsCount(), 0 );
+//     test.identical( con2.argumentsCount(), 1 );
+//
+//     con.first( con2 );
+//
+//     test.identical( con.errorsCount(), 0 );
+//     test.identical( con.argumentsCount(), 0 );
+//     test.identical( con2.errorsCount(), 0 );
+//     test.identical( con2.argumentsCount(), 1 );
+//
+//     con.give( function( err, got )
+//     {
+//
+//       test.identical( con.errorsCount(), 0 );
+//       test.identical( con.argumentsCount(), 0 );
+//       test.identical( con2.errorsCount(), 0 );
+//       test.identical( con2.argumentsCount(), 1 );
+//
+//       test.identical( err, undefined );
+//       test.identical( got, 'str' );
+//       test.identical( con.resourcesGet(), [] );
+//       test.identical( con2.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
+//
+//     })
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'passed consequence shares own resource with timeout';
+//     var con = new _.Consequence({ tag : 'con' });
+//     var con2 = _.time.out( context.t1*3, () => 'str' );
+//     var timeBefore = _.time.now();
+//     con.first( con2 );
+//     con.give( function( err, got )
+//     {
+//       let delay = _.time.now() - timeBefore;
+//       var description = test.case = 'delay ' + delay;
+//       test.ge( delay, context.t1*3 - context.timeAccuracy );
+//       test.case = description;
+//       test.identical( err, undefined );
+//       test.identical( got, 'str' );
+//       test.identical( con.resourcesGet(), [] );
+//       test.identical( con2.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
+//     })
+//     return _.time.out( context.t1*3+1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( ( err, arg ) =>
+//   {
+//     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 0' );
+//
+//     _.Consequence.AsyncModeSet( amode );
+//
+//
+//     if( err )
+//     throw err;
+//     return arg;
+//
+//   })
+//   return ready;
+// }
+//
+// //
+//
+// function firstAsyncMode01( test )
+// {
+//   let context = this;
+//   let amode = _.Consequence.AsyncModeGet();
+//
+//   let ready = new _.Consequence().take( null )
+//
+//   .tap( () =>
+//   {
+//     _.Consequence.AsyncModeSet([ 0, 1 ]);
+//     test.open( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'simplest, empty routine';
+//     var con = new _.Consequence({ tag : 'con', capacity : 2 });
+//     con.give( function( err, got )
+//     {
+//       test.identical( err, undefined );
+//       test.identical( got, null );
+//     });
+//
+//     test.identical( con.resourcesCount(), 0 );
+//     test.identical( con.competitorsCount(), 1 );
+//
+//     con.first( () => null );
+//
+//     test.identical( con.resourcesCount(), 1 );
+//     test.identical( con.competitorsCount(), 1 );
+//
+//     con.take( 'str' );
+//
+//     test.identical( con.resourcesCount(), 2 );
+//     test.identical( con.competitorsCount(), 1 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
+//       return null;
+//     });
+//
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'routine returns something';
+//     var con = new _.Consequence({ tag : 'con', capacity : 2 });
+//     con.give( function( err, got )
+//     {
+//       test.identical( got, 'str' );
+//       test.identical( err, undefined );
+//     })
+//     con.first( () => 'str' );
+//
+//     con.take( 'str' + 2 );
+//
+//     test.identical( con.resourcesCount(), 2 );
+//     test.identical( con.competitorsCount(), 1 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesGet(), [ { error : undefined, argument : 'str' + 2 } ] );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'routine throws error';
+//     var con = new _.Consequence({ tag : 'con' });
+//
+//     con.first( () => { throw _.errAttend( 'str' ) } );
+//     test.identical( con.resourcesCount(), 1 );
+//     test.identical( con.errorsCount(), 1 );
+//     test.identical( con.argumentsCount(), 0 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesCount(), 1 );
+//       con.give( function( err, got )
+//       {
+//         test.is( _.errIs( err ) );
+//         if( err )
+//         _.errAttend( err );
+//         test.identical( got, undefined );
+//       });
+//     })
+//     .then( function( arg )
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'routine returns consequence with resource';
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.first( () => new _.Consequence().take( 'str' ) );
+//
+//     test.identical( con.resourcesCount(), 1 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesCount(), 1 );
+//
+//       con.give( function( err, got )
+//       {
+//         test.identical( err, undefined );
+//         test.identical( got, 'str' );
+//       })
+//       return null;
+//     })
+//     .then( function( arg )
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'routine returns consequence with err resource';
+//     var con = new _.Consequence({ tag : 'con' });
+//     debugger;
+//     con.first( () => new _.Consequence().error( 'str' ));
+//
+//     test.identical( con.resourcesCount(), 1 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.resourcesCount(), 1 );
+//
+//       con.give( function( err, got )
+//       {
+//         test.is( _.strHas( String( err ), 'str' ) );
+//         _.errAttend( err );
+//         test.identical( got, undefined );
+//       })
+//       return null;
+//     })
+//     .then( function( arg )
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'routine returns consequence that gives resource with timeout';
+//     var con = new _.Consequence({ tag : 'con' });
+//     var timeBefore = _.time.now();
+//     con.first( () => _.time.out( context.t1, () => null ));
+//
+//     test.identical( con.resourcesCount(), 0 );
+//
+//     return _.time.out( context.t1*3, function()
+//     {
+//       test.identical( con.resourcesCount(), 1 );
+//
+//       con.give( function( err, got )
+//       {
+//         let delay = _.time.now() - timeBefore;
+//         var description = test.case = 'delay ' + delay;
+//         test.ge( delay, context.t1*3 - context.timeAccuracy );
+//         test.case = description;
+//         test.identical( err, undefined );
+//         test.identical( got, null );
+//       })
+//       return null;
+//     })
+//     .then( function( arg )
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'passed consequence shares own resource';
+//     var con = new _.Consequence({ tag : 'con' });
+//     var con2 = new _.Consequence({ tag : 'con2' }).take( 'str' );
+//
+//     test.identical( con.errorsCount(), 0 );
+//     test.identical( con.argumentsCount(), 0 );
+//     test.identical( con2.errorsCount(), 0 );
+//     test.identical( con2.argumentsCount(), 1 );
+//
+//     con.first( con2 );
+//
+//     test.identical( con.errorsCount(), 0 );
+//     test.identical( con.argumentsCount(), 1 );
+//     test.identical( con2.errorsCount(), 0 );
+//     test.identical( con2.argumentsCount(), 1 );
+//
+//     return _.time.out( 1, function()
+//     {
+//
+//       test.identical( con.errorsCount(), 0 );
+//       test.identical( con.argumentsCount(), 1 );
+//       test.identical( con2.errorsCount(), 0 );
+//       test.identical( con2.argumentsCount(), 1 );
+//
+//       test.identical( con.resourcesCount(), 1 );
+//
+//       con.give( function( err, got )
+//       {
+//         test.identical( err, undefined );
+//         test.identical( got, 'str' );
+//       })
+//       return null;
+//     })
+//     .then( function( arg )
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 0 );
+//       test.identical( con2.resourcesCount(), 1 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'passed consequence shares own resource with timeout';
+//     var con = new _.Consequence({ tag : 'con' });
+//     var con2 = _.time.out( context.t1, () => 'str' );
+//     var timeBefore = _.time.now();
+//     con.first( con2 );
+//
+//     return _.time.out( context.t1*3, function()
+//     {
+//       test.identical( con.resourcesCount(), 1 );
+//
+//       con.give( function( err, got )
+//       {
+//         let delay = _.time.now() - timeBefore;
+//         var description = test.case = 'delay ' + delay;
+//         test.ge( delay, context.t1*3 - context.timeAccuracy );
+//         test.case = description;
+//         test.identical( err, undefined );
+//         test.identical( got, 'str' );
+//       })
+//       return null;
+//     })
+//     .then( function( arg )
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesCount(), 0 );
+//       test.identical( con2.resourcesCount(), 1 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( ( err, arg ) =>
+//   {
+//     test.close( 'AsyncCompetitorHanding : 0, AsyncResourceAdding : 1' );
+//     _.Consequence.AsyncModeSet( amode );
+//     if( err )
+//     throw err;
+//     return arg;
+//   })
+//
+//   /* */
+//
+//   return ready;
+// }
+//
+// //
+//
+// function firstAsyncMode11( test )
+// {
+//   let context = this;
+//   let amode = _.Consequence.AsyncModeGet();
+//
+//   let ready = new _.Consequence().take( null )
+//
+//   .finally( () =>
+//   {
+//     _.Consequence.AsyncModeSet([ 1, 1 ]);
+//     test.open( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
+//     return null;
+//   })
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'simplest, empty routine';
+//     var con = new _.Consequence({ tag : 'con', capacity : 2 });
+//     con.give( function( err, got )
+//     {
+//       test.identical( got, null );
+//       test.identical( err, undefined );
+//     });
+//     con.first( () => null );
+//     con.take( 'str' );
+//
+//     test.identical( con.argumentsCount(), 2 );
+//     test.identical( con.errorsCount(), 0 );
+//     test.identical( con.competitorsCount(), 1 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'routine returns something';
+//     var con = new _.Consequence({ tag : 'con', capacity : 2 });
+//     con.give( function( err, got )
+//     {
+//       test.identical( got, 'str' );
+//       test.identical( err, undefined );
+//     })
+//     con.first( () => 'str' );
+//
+//     con.take( 'str' + 2 );
+//
+//     test.identical( con.argumentsCount(), 2 );
+//     test.identical( con.errorsCount(), 0 );
+//     test.identical( con.competitorsCount(), 1 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.resourcesGet(), [ { error : undefined, argument : 'str' + 2 } ] );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'routine throws error';
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.first( () => { throw _.errAttend( 'str' ) });
+//     con.give( function( err, got )
+//     {
+//       test.is( _.errIs( err ) );
+//       if( err )
+//       _.errAttend( err );
+//       test.identical( got, undefined );
+//     });
+//
+//     test.identical( con.argumentsCount(), 0 );
+//     test.identical( con.errorsCount(), 0 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.argumentsCount(), 0 );
+//       test.identical( con.errorsCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'routine returns consequence with resource';
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.first( () => new _.Consequence().take( 'str' ));
+//     con.give( function( err, got )
+//     {
+//       test.identical( err, undefined );
+//       test.identical( got, 'str' );
+//     })
+//     test.identical( con.argumentsCount(), 0 );
+//     test.identical( con.errorsCount(), 0 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.argumentsCount(), 0 );
+//       test.identical( con.errorsCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'routine returns consequence with err resource';
+//     var con = new _.Consequence({ tag : 'con' });
+//     con.first( () => new _.Consequence().error( 'str' ));
+//     con.give( function( err, got )
+//     {
+//       test.is( _.strHas( String( err ), 'str' ) );
+//       test.identical( got, undefined );
+//     })
+//     test.identical( con.argumentsCount(), 0 );
+//     test.identical( con.errorsCount(), 0 );
+//
+//     return _.time.out( 1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.argumentsCount(), 0 );
+//       test.identical( con.errorsCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'routine returns consequence that gives resource with timeout';
+//     var con = new _.Consequence({ tag : 'con' });
+//     var timeBefore = _.time.now();
+//     con.first( () => _.time.out( context.t1*3, () => null ));
+//     con.give( function( err, got )
+//     {
+//       let delay = _.time.now() - timeBefore;
+//       var description = test.case = 'delay ' + delay;
+//       test.ge( delay, context.t1*3 - context.timeAccuracy );
+//       test.case = description;
+//       test.identical( err, undefined );
+//       test.identical( got, null );
+//     })
+//     test.identical( con.argumentsCount(), 0 );
+//     test.identical( con.errorsCount(), 0 );
+//
+//     return _.time.out( context.t1*3+1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.argumentsCount(), 0 );
+//       test.identical( con.errorsCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'passed consequence shares own resource';
+//     var con = new _.Consequence({ tag : 'con' });
+//     var con2 = new _.Consequence({ tag : 'con2' }).take( 'str' );
+//
+//     test.identical( con.errorsCount(), 0 );
+//     test.identical( con.argumentsCount(), 0 );
+//     test.identical( con2.errorsCount(), 0 );
+//     test.identical( con2.argumentsCount(), 1 );
+//
+//     con.first( con2 );
+//
+//     test.identical( con.errorsCount(), 0 );
+//     test.identical( con.argumentsCount(), 0 );
+//     test.identical( con2.errorsCount(), 0 );
+//     test.identical( con2.argumentsCount(), 1 );
+//
+//     con.finally( function( err, got )
+//     {
+//
+//       test.identical( con.errorsCount(), 0 );
+//       test.identical( con.argumentsCount(), 0 );
+//       test.identical( con2.errorsCount(), 0 );
+//       test.identical( con2.argumentsCount(), 1 );
+//
+//       test.identical( err, undefined );
+//       test.identical( got, 'str' );
+//
+//       return got;
+//     });
+//
+//     return _.time.out( 5, function()
+//     {
+//
+//       test.identical( con.errorsCount(), 0 );
+//       test.identical( con.argumentsCount(), 1 );
+//       test.identical( con2.errorsCount(), 0 );
+//       test.identical( con2.argumentsCount(), 1 );
+//
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.argumentsCount(), 1 );
+//       test.identical( con.errorsCount(), 0 );
+//       test.identical( con2.argumentsCount(), 1 );
+//       test.identical( con2.errorsCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .then( function( arg )
+//   {
+//     test.case = 'passed consequence shares own resource with timeout';
+//     var con = new _.Consequence({ tag : 'con' });
+//     var con2 = _.time.out( context.t1*3, () => 'str' );
+//     var timeBefore = _.time.now();
+//     con.first( con2 );
+//     con.give( function( err, got )
+//     {
+//       let delay = _.time.now() - timeBefore;
+//       var description = test.case = 'delay ' + delay;
+//       test.ge( delay, context.t1*3 - context.timeAccuracy );
+//       test.case = description;
+//       test.identical( err, undefined );
+//       test.identical( got, 'str' );
+//     })
+//     return _.time.out( context.t1*3+1, function()
+//     {
+//       test.identical( con.competitorsCount(), 0 );
+//       test.identical( con.argumentsCount(), 0 );
+//       test.identical( con.errorsCount(), 0 );
+//       test.identical( con2.argumentsCount(), 1 );
+//       test.identical( con2.errorsCount(), 0 );
+//       return null;
+//     })
+//   })
+//
+//   /* */
+//
+//   .finally( ( err, arg ) =>
+//   {
+//     test.close( 'AsyncCompetitorHanding : 1, AsyncResourceAdding : 1' );
+//
+//     _.Consequence.AsyncModeSet( amode );
+//
+//
+//     if( err )
+//     throw err;
+//     return arg;
+//
+//   })
+//   return ready;
+// }
 
 // --
 // experimental
@@ -15586,9 +15565,9 @@ let Self =
     // from
 
     fromAsyncMode00,
-    fromAsyncMode10,
-    fromAsyncMode01,
-    fromAsyncMode11,
+    // fromAsyncMode10,
+    // fromAsyncMode01,
+    // fromAsyncMode11,
 
     fromPromiseWithUndefined,
     fromCustomPromise,
@@ -15602,26 +15581,26 @@ let Self =
     // take
 
     ordinarResourceAsyncMode00,
-    ordinarResourceAsyncMode10,
-    ordinarResourceAsyncMode01,
-    ordinarResourceAsyncMode11,
+    // ordinarResourceAsyncMode10,
+    // ordinarResourceAsyncMode01,
+    // ordinarResourceAsyncMode11,
 
     takeAll,
 
     finallyPromiseGiveAsyncMode00,
-    finallyPromiseGiveAsyncMode10,
-    finallyPromiseGiveAsyncMode01,
-    finallyPromiseGiveAsyncMode11,
+    // finallyPromiseGiveAsyncMode10,
+    // finallyPromiseGiveAsyncMode01,
+    // finallyPromiseGiveAsyncMode11,
 
     _finallyAsyncMode00,
-    _finallyAsyncMode10,
-    _finallyAsyncMode01,
-    _finallyAsyncMode11,
+    // _finallyAsyncMode10,
+    // _finallyAsyncMode01,
+    // _finallyAsyncMode11,
 
     finallyPromiseKeepAsyncMode00,
-    finallyPromiseKeepAsyncMode10,
-    finallyPromiseKeepAsyncMode01,
-    finallyPromiseKeepAsyncMode11,
+    // finallyPromiseKeepAsyncMode10,
+    // finallyPromiseKeepAsyncMode01,
+    // finallyPromiseKeepAsyncMode11,
 
     // etc
 
@@ -15644,11 +15623,11 @@ let Self =
 
     timeOut,
     timeLimitSplit,
-    timeLimitThrowingSplit,
+    timeLimitErrorSplit,
     timeLimitConsequence,
     timeLimitRoutine,
-    timeLimitThrowingRoutine,
-    timeLimitThrowingConsequence,
+    timeLimitErrorRoutine,
+    timeLimitErrorConsequence,
 
     // procedure
 
@@ -15723,9 +15702,9 @@ let Self =
     put,
 
     firstAsyncMode00,
-    firstAsyncMode10,
-    firstAsyncMode01,
-    firstAsyncMode11,
+    // firstAsyncMode10,
+    // firstAsyncMode01,
+    // firstAsyncMode11,
 
     // experimental
 
