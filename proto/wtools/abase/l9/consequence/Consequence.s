@@ -178,6 +178,14 @@ function init( o )
     _.mapExtend( self, o );
   }
 
+  if( RestrictsDebug.id === 0 )
+  {
+    self.Counter += 1;
+    self.id = self.Counter;
+    if( self.id === 2 )
+    debugger;
+  }
+
   _.assert( arguments.length === 0 || arguments.length === 1 );
 }
 
@@ -773,7 +781,7 @@ function _first( src, stack )
     }
 
   }
-  else _.assert( 0, 'first expects consequence of routine, but got', _.strType( src ) );
+  else _.assert( 0, 'Method first expects consequence of routine, but got', _.strType( src ) );
 
   return self;
 }
@@ -1520,7 +1528,7 @@ function _timeLimit( o )
   let time = o.time;
   let callback = o.callback;
   let callbackConsequence = callback;
-  let throwing = o.throwing;
+  let error = o.error;
   let timeOutConsequence = new _.Consequence();
   let done = false;
   let timer;
@@ -1585,7 +1593,7 @@ function _timeLimit( o )
     {
       if( done )
       return;
-      if( throwing )
+      if( error )
       timeOutConsequence.error( _.time._errTimeOut({ procedure, reason : 'time limit', consequnce : self }) );
       else
       timeOutConsequence.take( _.time.out );
@@ -1601,7 +1609,7 @@ _timeLimit.defaults =
 {
   time : null,
   callback : null,
-  throwing : 0,
+  error : 0,
 }
 
 _timeLimit.having =
@@ -1612,12 +1620,12 @@ _timeLimit.having =
 let timeLimit = _.routineUnite({ head : timeLimit_head, body : _timeLimit, name : 'timeLimit' });
 var defaults = timeLimit.defaults;
 defaults.kindOfResource = KindOfResource.Both;
-defaults.throwing = 0;
+defaults.error = 0;
 
-let timeLimitThrowing = _.routineUnite({ head : timeLimit_head, body : _timeLimit, name : 'timeLimitThrowing' });
-var defaults = timeLimitThrowing.defaults;
+let timeLimitError = _.routineUnite( timeLimit_head, _timeLimit, 'timeLimitError' );
+var defaults = timeLimitError.defaults;
 defaults.kindOfResource = KindOfResource.Both;
-defaults.throwing = 1;
+defaults.error = 1;
 
 //
 
@@ -1633,7 +1641,7 @@ function timeLimitSplit( time )
     time,
     callback : self,
     kindOfResource : KindOfResource.Both,
-    throwing : 0,
+    error : 0,
   });
 
   result.take( null );
@@ -1643,7 +1651,7 @@ function timeLimitSplit( time )
 
 //
 
-function timeLimitThrowingSplit( time )
+function timeLimitErrorSplit( time )
 {
   let self = this;
   let result = new _.Consequence();
@@ -1655,17 +1663,13 @@ function timeLimitThrowingSplit( time )
     time,
     callback : self,
     kindOfResource : KindOfResource.Both,
-    throwing : 1,
+    error : 1,
   });
 
   result.take( null );
 
   return result;
 }
-
-// TimeLimit,
-// TimeLimitThrowing,
-// TimeLimitSplit,
 
 //
 
@@ -1678,11 +1682,9 @@ function TimeLimit( timeLimit, consequence )
 
 //
 
-function TimeLimitThrowing( timeLimit, consequence )
+function TimeLimitError( timeLimit, consequence )
 {
-  let result = new _.Consequence().take( null )
-  .timeLimitThrowing( timeLimit, consequence );
-  return result;
+  return new _.Consequence().take( null ).timeLimitError( timeLimit, consequence );
 }
 
 // --
@@ -1718,7 +1720,7 @@ function _and( o )
   let waitingOthers = o.waitingOthers;
   let procedure = self.procedure( o.stack, 1 ).nameElse( '_and' ); /* qqq2 : cover procedure.sourcePath of each derived routine */
   let escaped = 0;
-  let errId = {};
+  let errOwner = {};
 
   _.assertRoutineOptions( _and, arguments );
 
@@ -1903,18 +1905,16 @@ function _and( o )
 
     if( !waitingOthers && op.competitor !== self && _.consequenceIs( op.competitor ) )
     {
-      if( op.err && op.err.suspended === errId )
-      op.err = _.errSuspend( op.err, false );
-      op.competitor.take( op.err, op.arg ); /* xxx : use maybe routine time.soon? */
+      op.competitor.take( op.err, op.arg );
     }
 
     _.assert( left >= 0 );
     if( left === 0 )
     {
       if( escaped && waitingResource )
-      _.time.soon( __take );
+      _.time.soon( done );
       else
-      __take();
+      done();
     }
 
   }
@@ -1926,8 +1926,8 @@ function _and( o )
     _.assert( op.index >= 0 )
     if( op.err )
     {
-      op.err = _.errSuspend( op.err, errId );
-      _.assert( op.err.suspended === errId );
+      op.err = _.errSuspend( op.err, errOwner, true );
+      // _.assert( op.err.suspended === errOwner );
     }
     errs[ op.index ] = op.err;
     args[ op.index ] = op.arg;
@@ -1936,9 +1936,16 @@ function _and( o )
 
   /* */
 
-  function __take()
+  function done()
   {
     let competitors2 = [];
+
+    for( let i = first ; i < last ; i++ )
+    {
+      let err = errs[ i ];
+      if( err )
+      err = _.errSuspend( err, errOwner, false );
+    }
 
     if( keeping && waitingOthers )
     for( let i = first ; i < last ; i++ )
@@ -1951,10 +1958,8 @@ function _and( o )
       continue;
 
       let err = errs[ i ];
-      if( err && err.suspended === errId )
-      {
-        err = _.errSuspend( err, false );
-      }
+      // if( err )
+      // err = _.errSuspend( err, errOwner, false );
 
       competitor.take( err, args[ i ] );
       competitors2.push( competitor );
@@ -1962,6 +1967,11 @@ function _and( o )
 
     if( accumulative )
     args = _.arrayFlatten( args );
+
+    if( anyErr )
+    {
+      anyErr = _.errSuspend( anyErr, errOwner, false );
+    }
 
     if( anyErr )
     self.error( anyErr );
@@ -2325,7 +2335,7 @@ function _or( o )
     }
 
     if( o.keeping )
-    if( o.waitingResource || index !== 0 ) /* xxx : should be? if( index !== 0 ) */
+    if( o.waitingResource || index !== 0 )
     competitors[ index ].take( err, arg );
 
     if( count === 1 )
@@ -2397,29 +2407,33 @@ afterOrKeeping.defaults.waitingResource = true;
 
 afterOrKeeping.having = Object.create( _or.having );
 
+/*
+con0.orKeepingSplit([ con1, con2 ]) -> _.Consequence.Or( con0, con1, con2 );
+*/
+
+// //
 //
-
-function orKeepingSplit( competitors )
-{
-  let self = this;
-  _.assert( arguments.length === 1, 'Expects single argument' );
-
-  if( _.arrayLike( competitors ) )
-  competitors = _.longSlice( competitors );
-  else
-  competitors = [ competitors ];
-
-  competitors.unshift( self );
-
-  let con = new Self().take( null );
-
-  con.procedure( 2 ).nameElse( 'orKeepingSplit' );
-  con.afterOrKeeping( competitors );
-
-  return con;
-}
-
-orKeepingSplit.having = Object.create( _or.having );
+// function orKeepingSplit( competitors )
+// {
+//   let self = this;
+//   _.assert( arguments.length === 1, 'Expects single argument' );
+//
+//   if( _.arrayLike( competitors ) )
+//   competitors = _.longSlice( competitors );
+//   else
+//   competitors = [ competitors ];
+//
+//   competitors.unshift( self );
+//
+//   let con = new Self().take( null );
+//
+//   con.procedure( 2 ).nameElse( 'orKeepingSplit' );
+//   con.afterOrKeeping( competitors );
+//
+//   return con;
+// }
+//
+// orKeepingSplit.having = Object.create( _or.having );
 
 //
 
@@ -2472,11 +2486,10 @@ orKeeping.having = Object.create( _or.having );
 function OrTake( srcs )
 {
   _.assert( !_.instanceIs( this ) )
-  return _.Consequence().orTaking( arguments )
-  .then( ( arg ) =>
-  {
-    return arg;
-  });
+  let result = new _.Consequence().take( null );
+  result.procedure( 1 ).nameElse( 'OrTake' );
+  result.afterOrTaking( arguments );
+  return result;
 }
 
 //
@@ -2484,11 +2497,10 @@ function OrTake( srcs )
 function OrKeep( srcs )
 {
   _.assert( !_.instanceIs( this ) )
-  return _.Consequence().orKeeping( arguments )
-  .then( ( arg ) =>
-  {
-    return arg;
-  });
+  let result = new _.Consequence().take( null );
+  result.procedure( 1 ).nameElse( 'OrKeep' );
+  result.afterOrKeeping( arguments );
+  return result;
 }
 
 //
@@ -2880,23 +2892,29 @@ function __handleError( err, competitor )
     });
   }
 
-  if( _.errIsAttended( err ) )
-  return err;
+  // if( _.errIsAttended( err ) )
+  // return err;
 
-  let timer = _.time._finally( self.UncaughtTimeOut, function uncaught()
-  {
-
-    if( !_.time.timerIsCancelBegun( timer ) && _.errIsSuspended( err ) )
-    return;
-
-    if( _.errIsAttended( err ) )
-    return;
-
-    _.setup._errUncaughtHandler2( err, 'uncaught asynchronous error' );
-    return null;
-  });
+  _.error._handleUncaughtAsync( err );
 
   return err;
+  // let timer = _.time._finally( self.UncaughtTimeOut, function uncaught()
+  // {
+  //
+  //   if( _.errIsAttended( err ) )
+  //   return;
+  //
+  //   // if( !_.time.timerInCancelBegun( timer ) && _.errIsSuspended( err ) ) /* yyy */
+  //   // return;
+  //
+  //   if( _.errIsSuspended( err ) )
+  //   return;
+  //
+  //   _.error._handleUncaught2( err, 'uncaught asynchronous error' );
+  //   return null;
+  // });
+  //
+  // return err;
 }
 
 //
@@ -4011,16 +4029,10 @@ function _exportString( o )
   {
     result += self.qualifiedName;
 
-    // let names = _.select( self.competitorsEarlyGet(), '*/tag' );
-    // if( self.id )
-    // result += '\n  id : ' + self.id;
-
     result += '\n  argument resources : ' + self.argumentsCount();
     result += '\n  error resources : ' + self.errorsCount();
     result += '\n  early competitors : ' + self.competitorsEarlyGet().length;
     result += '\n  late competitors : ' + self.competitorsLateGet().length;
-    // result += '\n  AsyncCompetitorHanding : ' + self.AsyncCompetitorHanding;
-    // result += '\n  AsyncResourceAdding : ' + self.AsyncResourceAdding;
 
   }
   else
@@ -4198,6 +4210,8 @@ function qualifiedNameGet()
   result = result + '::' + this.tag;
   else
   result = result + '::';
+  if( this.id !== undefined )
+  result += `#${this.id}`;
   return result;
 }
 
@@ -4269,7 +4283,7 @@ function From( src ) /* qqq : cover */
   {
     // let con2 = con;
     // if( timeLimit !== undefined )
-    // con2 = new _.Consequence().take( null ).timeLimitThrowing( timeLimit, con );
+    // con2 = new _.Consequence().take( null ).timeLimitError( timeLimit, con );
     // return con2;
     return con;
   }
@@ -4586,15 +4600,8 @@ let Aggregates =
   _procedure : null,
 }
 
-// let Input =
-// {
-//   ... Composes,
-//   ... Aggregates,
-// }
-
 let Restricts =
 {
-  // _resources : null,
   _competitorsEarly : null,
   _competitorsLate : null,
 }
@@ -4602,6 +4609,7 @@ let Restricts =
 let RestrictsDebug =
 {
   _dependsOf : null,
+  // id : 0,
 }
 
 if( Config.debug )
@@ -4626,7 +4634,7 @@ let Statics =
   Try, /* qqq : cover please */
 
   TimeLimit,
-  TimeLimitThrowing,
+  TimeLimitError,
 
   AndTake,
   AndKeep,
@@ -4651,10 +4659,11 @@ let Statics =
 
   //
 
-  UncaughtTimeOut : 100,
+  // UncaughtTimeOut : 100,
   Diagnostics : 1,
-  AsyncCompetitorHanding : 0,
-  AsyncResourceAdding : 0,
+  AsyncCompetitorHanding : 0, /* xxx : deprecate */
+  AsyncResourceAdding : 0, /* xxx : deprecate */
+  Counter : 0,
 
   shortName : 'Consequence',
 
@@ -4668,7 +4677,6 @@ let Forbids =
   resourcesCounter : 'resourcesCounter',
   _competitor : '_competitor',
   _competitorPersistent : '_competitorPersistent',
-  id : 'id',
   dependsOf : 'dependsOf',
 }
 
@@ -4781,11 +4789,11 @@ let Extension =
 
   _timeLimit,
   timeLimit,
-  timeLimitThrowing,
+  timeLimitError,
   timeLimitSplit,
-  timeLimitThrowingSplit,
+  timeLimitErrorSplit,
   TimeLimit, /* qqq : cover please */
-  TimeLimitThrowing, /* qqq : cover please */
+  TimeLimitError, /* qqq : cover please */
 
   // and
 
@@ -4810,13 +4818,13 @@ let Extension =
   _or,
   afterOrTaking,
   afterOrKeeping,
-  orKeepingSplit, /* xxx : depracate? */
+  // orKeepingSplit, /* yyy : depracate? */
   orTaking,
   orKeeping,
   or : orKeeping,
 
-  OrTake,
-  OrKeep,
+  OrTake, /* qqq : cover. separate test routine for procedure and its sourcePath checking */
+  OrKeep, /* qqq : cover. separate test routine for procedure and its sourcePath checking */
   Or : OrKeep,
 
   // adapter
@@ -4829,7 +4837,9 @@ let Extension =
   takeSoon,
   takeAll,
   take,
+  resolve : take,
   error,
+  reject : error,
   __take,
   // __onTake, /*  aaa : Dmytro : commented due to task. Maybe, need to remove */
 
