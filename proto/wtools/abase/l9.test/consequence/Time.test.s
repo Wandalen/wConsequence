@@ -113,7 +113,9 @@ function ready( test )
     var proceduresAfter = _.Procedure.Counter;
     test.identical( proceduresAfter - proceduresBefore, 2 );
 
-    return _.time.out( context.dt2, () =>
+    debugger;
+
+    return _.time.out( context.t2, () =>
     {
       test.identical( arr, [ 1 ] );
       return null;
@@ -126,12 +128,12 @@ function ready( test )
     var arr = [];
     var onReady = () => arr.push( 1 );
     var proceduresBefore = _.Procedure.Counter;
-    _.time.ready( context.dt2, onReady );
+    _.time.ready( context.t2, onReady );
     var proceduresAfter = _.Procedure.Counter;
     test.identical( proceduresAfter - proceduresBefore, 2 );
     test.identical( arr, [] );
 
-    return _.time.out( context.dt2 * 2, () =>
+    return _.time.out( context.t2 * 2, () =>
     {
       test.identical( arr, [ 1 ] );
       return null;
@@ -161,7 +163,7 @@ function ready( test )
     test.identical( proceduresAfter - proceduresBefore, 2 );
     test.identical( got.resourcesCount(), 0 );
 
-    return _.time.out( context.dt2, () =>
+    return _.time.out( context.t2, () =>
     {
       test.identical( got.resourcesCount(), 1 );
     });
@@ -177,7 +179,7 @@ function ready( test )
     var proceduresAfter = _.Procedure.Counter;
     test.identical( proceduresAfter - proceduresBefore, 2 );
 
-    return _.time.out( context.dt2, () =>
+    return _.time.out( context.t2, () =>
     {
       test.identical( arr, [ 1 ] );
       return null;
@@ -207,7 +209,7 @@ function ready( test )
     test.identical( proceduresAfter - proceduresBefore, 2 );
     test.identical( arr, [] );
 
-    return _.time.out( context.dt2 * 2, () =>
+    return _.time.out( context.t2 * 2, () =>
     {
       test.identical( arr, [ 1 ] );
       return null;
@@ -224,7 +226,7 @@ function ready( test )
     test.identical( proceduresAfter - proceduresBefore, 1 );
     test.identical( got.resourcesCount(), 0 );
 
-    return _.time.out( context.dt2 * 2, () =>
+    return _.time.out( context.t2 * 2, () =>
     {
       test.identical( got.resourcesCount(), 1 );
       return null;
@@ -243,7 +245,7 @@ function ready( test )
     test.identical( proceduresAfter - proceduresBefore, 1 );
     test.identical( arr, [] );
 
-    return _.time.out( context.dt2 * 2, () =>
+    return _.time.out( context.t2 * 2, () =>
     {
       test.identical( arr, [ 1 ] );
       return null;
@@ -262,7 +264,7 @@ function ready( test )
     test.identical( proceduresAfter - proceduresBefore, 1 );
     test.identical( arr, [] );
 
-    return _.time.out( context.dt2 * 2, () =>
+    return _.time.out( context.t2 * 2, () =>
     {
       test.identical( arr, [ 1 ] );
       return null;
