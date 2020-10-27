@@ -12157,6 +12157,141 @@ function orKeepingWithNow( test )
 
 //
 
+function orKeepingWithPromises( test )
+{
+  let context = this;
+  let ready = new _.Consequence().take( null )
+
+  /* */
+
+  .then( ( arg ) =>
+  {
+    test.case = 'resolve promise1, resolve promise2 after';
+    let t = context.t1;
+    let promise1 = new Promise( ( resolve, reject ) => { _.time.out( t / 2, () => resolve( 1 ) ) } );
+    let promise2 = new Promise( ( resolve, reject ) => { _.time.out( t, () => resolve( 2 ) ) } );
+    let con = new _.Consequence({ capacity : 2 });
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+
+    con.orKeeping([ promise1, promise2 ]);
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 1 );
+
+    con.finallyGive( ( err, arg ) =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 0 );
+
+      test.identical( err, undefined );
+      test.identical( arg, 1 );
+    });
+
+    return _.time.out( t * 2, () =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 0 );
+
+      return null;
+    });
+
+  });
+
+  //
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'reject promise1, resolve promise2 after';
+    let t = context.t1;
+    let promise1 = new Promise( ( resolve, reject ) => { _.time.out( t / 2, () => reject( _.errAttend( 'Error' ) ) ) } );
+    let promise2 = new Promise( ( resolve, reject ) => { _.time.out( t, () => resolve( 2 ) ) } );
+    let con = new _.Consequence({ capacity : 2 });
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+
+    con.orKeeping([ promise1, promise2 ]);
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 1 );
+
+    con.finallyGive( ( err, arg ) =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 0 );
+
+      test.is( _.errIs( err ) );
+      test.identical( arg, undefined );
+      _.errAttend( err );
+    });
+
+    return _.time.out( t * 2, () =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 0 );
+
+      return null;
+    });
+  })
+
+  //
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'resolve promise1 after resolve promise2';
+    let t = context.t1;
+    let promise1 = new Promise( ( resolve, reject ) => { _.time.out( t, () => resolve( 1 ) ) } );
+    let promise2 = new Promise( ( resolve, reject ) => { _.time.out( t / 2, () => resolve( 2 ) ) } );
+    let con = new _.Consequence({ capacity : 2 });
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+
+    con.orKeeping([ promise1, promise2 ]);
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 1 );
+
+    con.finallyGive( ( err, arg ) =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 0 );
+
+      test.identical( arg, 2 );
+      test.identical( err, undefined );
+      _.errAttend( err );
+    });
+
+    return _.time.out( t * 2, () =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 0 );
+
+      return null;
+    });
+  })
+
+  /* */
+
+  return ready;
+}
+
+//
+
 function orKeepingCheckProcedureSourcePath( test )
 {
   let context = this;
@@ -12188,7 +12323,7 @@ function orKeepingCheckProcedureSourcePath( test )
     test.identical( arg, 1 );
   });
 
-  return _.time.out( context.t2, ( err, arg ) =>
+  return _.time.out( context.t2, () =>
   {
     test.identical( con.errorsCount(), 0 );
     test.identical( con.argumentsCount(), 1 );
@@ -12201,7 +12336,6 @@ function orKeepingCheckProcedureSourcePath( test )
     test.identical( con2.argumentsCount(), 1 );
     test.identical( con2.competitorsCount(), 0 );
     test.identical( con2.resourcesGet( 0 ), { argument : 2, error : undefined } );
-    test.identical( err, undefined );
     con.competitorsCancel();
   });
 }
@@ -12414,7 +12548,6 @@ function orTakingWithSimple( test )
     var con = new _.Consequence({ tag : 'con' });
     var con1 = new _.Consequence({ tag : 'con1' });
     var con2 = new _.Consequence({ tag : 'con2' });
-
     con1.take( 1 );
     con2.take( 2 );
 
@@ -12939,6 +13072,141 @@ function orTakingWithNow( test )
 
 //
 
+function orTakingWithPromises( test )
+{
+  let context = this;
+  let ready = new _.Consequence().take( null )
+
+  /* */
+
+  .then( ( arg ) =>
+  {
+    test.case = 'resolve promise1, resolve promise2 after';
+    let t = context.t1;
+    let promise1 = new Promise( ( resolve, reject ) => { _.time.out( t / 2, () => resolve( 1 ) ) } );
+    let promise2 = new Promise( ( resolve, reject ) => { _.time.out( t, () => resolve( 2 ) ) } );
+    let con = new _.Consequence({ capacity : 2 });
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+
+    con.orTaking([ promise1, promise2 ]);
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 1 );
+
+    con.finallyGive( ( err, arg ) =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 0 );
+
+      test.identical( err, undefined );
+      test.identical( arg, 1 );
+    });
+
+    return _.time.out( t * 2, () =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 0 );
+
+      return null;
+    });
+
+  });
+
+  //
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'reject promise1, resolve promise2 after';
+    let t = context.t1;
+    let promise1 = new Promise( ( resolve, reject ) => { _.time.out( t / 2, () => reject( _.errAttend( 'Error' ) ) ) } );
+    let promise2 = new Promise( ( resolve, reject ) => { _.time.out( t, () => resolve( 2 ) ) } );
+    let con = new _.Consequence({ capacity : 2 });
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+
+    con.orTaking([ promise1, promise2 ]);
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 1 );
+
+    con.finallyGive( ( err, arg ) =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 0 );
+
+      test.is( _.errIs( err ) );
+      test.identical( arg, undefined );
+      _.errAttend( err );
+    });
+
+    return _.time.out( t * 2, () =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 0 );
+
+      return null;
+    });
+  })
+
+  //
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'resolve promise1 after resolve promise2';
+    let t = context.t1;
+    let promise1 = new Promise( ( resolve, reject ) => { _.time.out( t, () => resolve( 1 ) ) } );
+    let promise2 = new Promise( ( resolve, reject ) => { _.time.out( t / 2, () => resolve( 2 ) ) } );
+    let con = new _.Consequence({ capacity : 2 });
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+
+    con.orTaking([ promise1, promise2 ]);
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 1 );
+
+    con.finallyGive( ( err, arg ) =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 0 );
+
+      test.identical( arg, 2 );
+      test.identical( err, undefined );
+      _.errAttend( err );
+    });
+
+    return _.time.out( t * 2, () =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 0 );
+
+      return null;
+    });
+  })
+
+  /* */
+
+  return ready;
+}
+
+//
+
 function orTakingCheckProcedureSourcePath( test )
 {
   let context = this;
@@ -12970,7 +13238,7 @@ function orTakingCheckProcedureSourcePath( test )
     test.identical( arg, 1 );
   });
 
-  return _.time.out( context.t2, ( err, arg ) =>
+  return _.time.out( context.t2, () =>
   {
     test.identical( con.errorsCount(), 0 );
     test.identical( con.argumentsCount(), 1 );
@@ -12983,7 +13251,6 @@ function orTakingCheckProcedureSourcePath( test )
     test.identical( con2.argumentsCount(), 1 );
     test.identical( con2.competitorsCount(), 0 );
     test.identical( con2.resourcesGet( 0 ), { argument : 2, error : undefined } );
-    test.identical( err, undefined );
     con.competitorsCancel();
   });
 }
@@ -14668,7 +14935,7 @@ function afterOrKeepingCheckProcedureSourcePath( test )
     test.identical( arg, 1 );
   });
 
-  return _.time.out( context.t2, ( err, arg ) =>
+  return _.time.out( context.t2, () =>
   {
     test.identical( con.errorsCount(), 0 );
     test.identical( con.argumentsCount(), 0 );
@@ -14681,9 +14948,144 @@ function afterOrKeepingCheckProcedureSourcePath( test )
     test.identical( con2.argumentsCount(), 1 );
     test.identical( con2.competitorsCount(), 0 );
     test.identical( con2.resourcesGet( 0 ), { argument : 2, error : undefined } );
-    test.identical( err, undefined );
     con.competitorsCancel();
   });
+}
+
+//
+
+function afterOrKeepingWithPromises( test )
+{
+  let context = this;
+  let ready = new _.Consequence().take( null )
+
+  /* */
+
+  .then( ( arg ) =>
+  {
+    test.case = 'resolve promise1, resolve promise2 after';
+    let t = context.t1;
+    let promise1 = new Promise( ( resolve, reject ) => { _.time.out( t / 2, () => resolve( 1 ) ) } );
+    let promise2 = new Promise( ( resolve, reject ) => { _.time.out( t, () => resolve( 2 ) ) } );
+    let con = new _.Consequence({ capacity : 2 });
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+
+    con.afterOrKeeping([ promise1, promise2 ]);
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 1 );
+
+    con.finallyGive( ( err, arg ) =>
+    {
+      test.case = 'should not give';
+      test.is( false );
+    });
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 2 );
+
+    return _.time.out( t * 2, () =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 2 );
+      con.competitorsCancel();
+
+      return null;
+    });
+
+  });
+
+  //
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'reject promise1, resolve promise2 after';
+    let t = context.t1;
+    let promise1 = new Promise( ( resolve, reject ) => { _.time.out( t / 2, () => reject( _.errAttend( 'Error' ) ) ) } );
+    let promise2 = new Promise( ( resolve, reject ) => { _.time.out( t, () => resolve( 2 ) ) } );
+    let con = new _.Consequence({ capacity : 2 });
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+
+    con.afterOrKeeping([ promise1, promise2 ]);
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 1 );
+
+    con.finallyGive( ( err, arg ) =>
+    {
+      test.case = 'should not give';
+      test.is( false );
+    });
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 2 );
+
+    return _.time.out( t * 2, () =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 2 );
+      con.competitorsCancel();
+
+      return null;
+    });
+  })
+
+  //
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'resolve promise1 after resolve promise2';
+    let t = context.t1;
+    let promise1 = new Promise( ( resolve, reject ) => { _.time.out( t, () => resolve( 1 ) ) } );
+    let promise2 = new Promise( ( resolve, reject ) => { _.time.out( t / 2, () => resolve( 2 ) ) } );
+    let con = new _.Consequence({ capacity : 2 });
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+
+    con.afterOrKeeping([ promise1, promise2 ]);
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 1 );
+
+    con.finallyGive( ( err, arg ) =>
+    {
+      test.case = 'should not give';
+      test.is( false );
+    });
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 2 );
+
+    return _.time.out( t * 2, () =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 2 );
+      con.competitorsCancel();
+
+      return null;
+    });
+  })
+
+  /* */
+
+  return ready;
 }
 
 //
@@ -15384,6 +15786,143 @@ function afterOrTakingWithTwoTake0( test )
 
 //
 
+function afterOrTakingWithPromises( test )
+{
+  let context = this;
+  let ready = new _.Consequence().take( null )
+
+  /* */
+
+  .then( ( arg ) =>
+  {
+    test.case = 'resolve promise1, resolve promise2 after';
+    let t = context.t1;
+    let promise1 = new Promise( ( resolve, reject ) => { _.time.out( t / 2, () => resolve( 1 ) ) } );
+    let promise2 = new Promise( ( resolve, reject ) => { _.time.out( t, () => resolve( 2 ) ) } );
+    let con = new _.Consequence({ capacity : 2 });
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+
+    con.afterOrTaking([ promise1, promise2 ]);
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 1 );
+
+    con.finallyGive( ( err, arg ) =>
+    {
+      test.case = 'should not give';
+      test.is( false );
+    });
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 2 );
+
+    return _.time.out( t * 2, () =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 2 );
+      con.competitorsCancel();
+
+      return null;
+    });
+
+  });
+
+  //
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'reject promise1, resolve promise2 after';
+    let t = context.t1;
+    let promise1 = new Promise( ( resolve, reject ) => { _.time.out( t / 2, () => reject( _.errAttend( 'Error' ) ) ) } );
+    let promise2 = new Promise( ( resolve, reject ) => { _.time.out( t, () => resolve( 2 ) ) } );
+    let con = new _.Consequence({ capacity : 2 });
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+
+    con.afterOrTaking([ promise1, promise2 ]);
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 1 );
+
+    con.finallyGive( ( err, arg ) =>
+    {
+      test.case = 'should not give';
+      test.is( false );
+    });
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 2 );
+
+    return _.time.out( t * 2, () =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 2 );
+      con.competitorsCancel();
+
+      return null;
+    });
+  })
+
+  //
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'resolve promise1 after resolve promise2';
+    let t = context.t1;
+    let promise1 = new Promise( ( resolve, reject ) => { _.time.out( t, () => resolve( 1 ) ) } );
+    let promise2 = new Promise( ( resolve, reject ) => { _.time.out( t / 2, () => resolve( 2 ) ) } );
+    let con = new _.Consequence({ capacity : 2 });
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+
+    con.afterOrTaking([ promise1, promise2 ]);
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 1 );
+
+    con.finallyGive( ( err, arg ) =>
+    {
+      test.case = 'should not give';
+      test.is( false );
+    });
+
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.competitorsCount(), 2 );
+
+    return _.time.out( t * 2, () =>
+    {
+      test.identical( con.errorsCount(), 0 );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.competitorsCount(), 2 );
+      con.competitorsCancel();
+
+      return null;
+    });
+  })
+
+  /* */
+
+  return ready;
+}
+
+//
+
+
 function afterOrTakingCheckProcedureSourcePath( test )
 {
   let context = this;
@@ -15415,7 +15954,7 @@ function afterOrTakingCheckProcedureSourcePath( test )
     test.identical( arg, 1 );
   });
 
-  return _.time.out( context.t2, ( err, arg ) =>
+  return _.time.out( context.t2, () =>
   {
     test.identical( con.errorsCount(), 0 );
     test.identical( con.argumentsCount(), 0 );
@@ -15428,7 +15967,6 @@ function afterOrTakingCheckProcedureSourcePath( test )
     test.identical( con2.argumentsCount(), 1 );
     test.identical( con2.competitorsCount(), 0 );
     test.identical( con2.resourcesGet( 0 ), { argument : 2, error : undefined } );
-    test.identical( err, undefined );
     con.competitorsCancel();
   });
 }
@@ -18108,10 +18646,12 @@ let Self =
     orKeepingWithSimple,
     orKeepingWithLater,
     orKeepingWithNow,
+    orKeepingWithPromises,
     orKeepingCheckProcedureSourcePath,
     orTakingWithSimple,
     orTakingWithLater,
     orTakingWithNow,
+    orTakingWithPromises,
     orTakingCheckProcedureSourcePath,
     orKeepingSplitCanceled,
     orKeepingSplitCanceledProcedure,
@@ -18121,10 +18661,12 @@ let Self =
     afterOrKeepingWithSimple,
     afterOrKeepingWithLater,
     afterOrKeepingWithTwoTake0,
+    afterOrKeepingWithPromises,
     afterOrKeepingCheckProcedureSourcePath,
     afterOrTakingWithSimple,
     afterOrTakingWithLater,
     afterOrTakingWithTwoTake0,
+    afterOrTakingWithPromises,
     afterOrTakingCheckProcedureSourcePath,
 
     OrKeep,

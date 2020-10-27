@@ -2270,7 +2270,8 @@ function _or( o )
   {
     let competitorRoutine = competitors[ c ];
     if( _.promiseLike( competitorRoutine ) )
-    competitorRoutine = _.Consequence.From( competitorRoutine );
+    competitors[ c ] = competitorRoutine = _.Consequence.From( competitorRoutine );
+    // competitorRoutine = _.Consequence.From( competitorRoutine ); /* Dmytro : competitor should be a Consequence, see below */
     _.assert( _.consequenceIs( competitorRoutine ) || competitorRoutine === null );
     if( competitorRoutine === null )
     competitors.splice( c, 1 );
@@ -4981,3 +4982,4 @@ if( typeof module !== 'undefined' )
 module[ 'exports' ] = Self;
 
 })();
+
