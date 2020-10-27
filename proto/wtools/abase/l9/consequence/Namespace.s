@@ -39,7 +39,7 @@ function sleep( delay )
 //
 
 /**
- * Routine creates timer that executes provided routine( onReady ) after some amout of time( delay ).
+ * Routine creates timer that executes provided routine( onReady ) after some amount of time( delay ).
  * Returns wConsequence instance. {@link module:Tools/base/Consequence.wConsequence wConsequence}
  *
  * If ( onReady ) is not provided, time.out returns consequence that gives empty message after ( delay ).
@@ -505,7 +505,7 @@ function execStages( stages, o )
 
   /* validation */
 
-  _.assert( _.objectIs( stages ) || _.longIs( stages ),'Expects array or object ( stages ), but got',_.strType( stages ) );
+  _.assert( _.objectIs( stages ) || _.longIs( stages ), 'Expects array or object ( stages ), but got', _.strType( stages ) );
 
   for( let s in stages )
   {
