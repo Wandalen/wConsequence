@@ -25,6 +25,32 @@ _.assert( !_.Consequence, 'Consequence included several times' );
 // time
 // --
 
+/**
+ * The routine sleep() suspends program execution on time delay {-delay-}.
+ *
+ * @example
+ * let result = [];
+ * let periodic = _.time.periodic( 100, () => result.length < 10 ? result.push( 1 ) : undefined );
+ * let before = _.time.now();
+ *  _.time.sleep( 500 );
+ * console.log( result.length <= 1 );
+ * // log : true
+ * let after = _.time.now();
+ * let delta = after - before;
+ * console.log( delta <= 550 );
+ * // log : true
+ *
+ * @param { Number } delay - The delay to suspend program.
+ * @returns { Undefined } - Returns not a value, suspends program.
+ * @function sleep
+ * @throws { Error } If arguments.length is less then 1 or great then 2.
+ * @throws { Error } If {-delay-} is not a Number.
+ * @throws { Error } If {-delay-} is less then zero.
+ * @throws { Error } If {-delay-} has not finite value.
+ * @namespace wTools.time
+ * @extends Tools
+ */
+
 function sleep( delay )
 {
 
@@ -39,7 +65,103 @@ function sleep( delay )
 //
 
 /**
- * Routine creates timer that executes provided routine( onReady ) after some amount of time( delay ).
+ * The routine ready() executes callback {-onReady-} when web-page is loaded.
+ * If routine is executed in browser environment, then callback can be executed after
+ * loading page with specified delay {-timeOut-}.
+ * If routine is executed in NodeJS environment, then the callback is executed after
+ * specified delay {-timeOut-}.
+ *
+ * @example
+ * let result = [];
+ * let ready = _.time.ready( () => result.push( 'ready' ) );
+ * // when a page is loaded routine will push 'ready' in array `result` immediatelly
+ * _.consequenceIs( ready );
+ * // returns : true
+ *
+ * @example
+ * let result = [];
+ * let ready = _.time.ready( 500, () => result.push( 'ready' ) );
+ * // when a page is loaded routine will push 'ready' in array `result` after time out
+ * _.consequenceIs( ready );
+ * // returns : true
+ *
+ * First parameter set :
+ * @param { Number } timeOut - The time delay.
+ * @param { Function } onReady - Callback to execute.
+ * Second parameter set :
+ * @param { Map|MapLike } o - Options map.
+ * @param { Number } o.timeOut - The time delay.
+ * @param { Procedure } o.procedure - The procedure to associate with new Consequence.
+ * @param { Function } o.onReady - Callback to execute.
+ * @returns { Consequence } - Returns Consequence with result of execution.
+ * @function ready
+ * @throws { Error } If arguments.length is greater than 2.
+ * @throws { Error } If single argument call is provided without callback {-onReady-} and options
+ * map {-o-} has no option {-o.onReady-}.
+ * @throws { Error } If {-timeOut-} has defined non integer value or not finite value.
+ * @throws { Error } If {-o.procedure-} is provided and it is not a Procedure.
+ * @namespace wTools.time
+ * @extends Tools
+ */
+
+function ready_body( o )
+{
+
+  if( !o.procedure )
+  o.procedure = _.Procedure({ _stack : 1, _name : 'timeReady' });
+
+  _.assert( _.procedureIs( o.procedure ) );
+
+  if( typeof window !== 'undefined' && typeof document !== 'undefined' && document.readyState !== 'complete' )
+  {
+    let con = new _.Consequence({ tag : 'timeReady' });
+    window.addEventListener( 'load', function() { handleReady( con, ... arguments ) } );
+    return con;
+  }
+  else
+  {
+    return _.time.out( o.timeOut, o.procedure, o.onReady );
+  }
+
+  /* */
+
+  function handleReady( con )
+  {
+    return _.time.out( timeOut, procedure, onReady ).finally( con );
+  }
+
+}
+
+ready_body.defaults =
+{
+  timeOut : 0,
+  procedure : null,
+  onReady : null,
+};
+
+//
+
+let ready = _.routineUnite( _.time.ready.head, ready_body );
+
+//
+
+function readyJoin( context, routine, args )
+{
+  let joinedRoutine = _.routineJoin( context, routine, args );
+  return _timeReady;
+  function _timeReady()
+  {
+    let args = arguments;
+    let procedure = _.Procedure({ _stack : 1, _name : 'timeReadyJoin' });
+    let joinedRoutine2 = _.routineSeal( this, joinedRoutine, args );
+    return _.time.ready({ procedure, onReady : joinedRoutine2 });
+  }
+}
+
+//
+
+/**
+ * Routine creates timer that executes provided routine( onReady ) after some amout of time( delay ).
  * Returns wConsequence instance. {@link module:Tools/base/Consequence.wConsequence wConsequence}
  *
  * If ( onReady ) is not provided, time.out returns consequence that gives empty message after ( delay ).
@@ -677,10 +799,12 @@ let ToolsExtension =
 
 let TimeExtension =
 {
+  sleep,
+  ready,
+  readyJoin,
   out,
   outError,
   _errTimeOut,
-  sleep,
 };
 
 _.mapExtend( _, ToolsExtension );
@@ -698,3 +822,4 @@ if( typeof module !== 'undefined' )
 module[ 'exports' ] = _;
 
 })();
+
