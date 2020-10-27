@@ -1494,15 +1494,15 @@ _delay.having =
   consequizing : 1,
 }
 
-let finallyDelay = _.routineUnite( delay_head, _delay, 'finallyDelay' );
+let finallyDelay = _.routineUnite({ head : delay_head, body : _delay, name : 'finallyDelay' });
 var defaults = finallyDelay.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 
-let thenDelay = _.routineUnite( delay_head, _delay, 'thenDelay' );
+let thenDelay = _.routineUnite({ head : delay_head, body : _delay, name : 'thenDelay' });
 var defaults = thenDelay.defaults;
 defaults.kindOfResource = KindOfResource.ArgumentOnly;
 
-let exceptDelay = _.routineUnite( delay_head, _delay, 'exceptDelay' );
+let exceptDelay = _.routineUnite({ head : delay_head, body : _delay, name : 'exceptDelay' });
 var defaults = exceptDelay.defaults;
 defaults.kindOfResource = KindOfResource.ErrorOnly;
 
@@ -1622,7 +1622,7 @@ var defaults = timeLimit.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 defaults.error = 0;
 
-let timeLimitError = _.routineUnite( timeLimit_head, _timeLimit, 'timeLimitError' );
+let timeLimitError = _.routineUnite({ head : timeLimit_head, body : _timeLimit, name : 'timeLimitError' });
 var defaults = timeLimitError.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 defaults.error = 1;
@@ -2101,14 +2101,14 @@ defaults.keeping = true;
 
 /* qqq : jsdoc, please */
 
-let andImmediate = _.routineUnite( and_head, _and, 'andKeep' );
+let andImmediate = _.routineUnite({ head : and_head, body : _and, name : 'andKeep' });
 var defaults = andImmediate.defaults;
 defaults.keeping = true;
 defaults.waitingOthers = false;
 
 /* qqq : jsdoc, please */
 
-let andKeepAccumulative = _.routineUnite( and_head, _and, 'andKeepAccumulative' );
+let andKeepAccumulative = _.routineUnite({ head : and_head, body : _and, name : 'andKeepAccumulative' });
 var defaults = andKeepAccumulative.defaults;
 defaults.keeping = true;
 defaults.accumulative = true;
@@ -2129,7 +2129,7 @@ defaults.accumulative = true;
  * @class wConsequence
  */
 
-let alsoTake = _.routineUnite( and_head, _and, 'alsoTake' );
+let alsoTake = _.routineUnite({ head : and_head, body : _and, name : 'alsoTake' });
 var defaults = alsoTake.defaults;
 defaults.keeping = false;
 defaults.accumulative = true;
@@ -2151,7 +2151,7 @@ defaults.waitingResource = false;
  * @class wConsequence
  */
 
-let alsoKeep = _.routineUnite( and_head, _and, 'alsoKeep' );
+let alsoKeep = _.routineUnite({ head : and_head, body : _and, name : 'alsoKeep' });
 var defaults = alsoKeep.defaults;
 defaults.keeping = true;
 defaults.accumulative = true;
@@ -2161,7 +2161,7 @@ defaults.waitingResource = false;
 
 /* qqq : jsdoc please */
 
-let alsoImmediate = _.routineUnite( and_head, _and, 'alsoImmediate' );
+let alsoImmediate = _.routineUnite({ head : and_head, body : _and, name : 'alsoImmediate' });
 var defaults = alsoImmediate.defaults;
 defaults.keeping = true;
 defaults.accumulative = true;
