@@ -11798,7 +11798,7 @@ function orKeepingSplitCanceledProcedure( test )
     _.time.out( context.t3 / 4, () =>
     {
 
-      test.identical( _.Procedure.Counter - pcounter, 2 );
+      test.identical( _.Procedure.Counter - pcounter, 3 );
       pcounter = _.Procedure.Counter;
 
       test.identical( con0.errorsCount(), 0 );
