@@ -627,7 +627,7 @@ function execStages( stages, o )
 
   /* validation */
 
-  _.assert( _.objectIs( stages ) || _.longIs( stages ),'Expects array or object ( stages ), but got',_.strType( stages ) );
+  _.assert( _.objectIs( stages ) || _.longIs( stages ), 'Expects array or object ( stages ), but got', _.strType( stages ) );
 
   for( let s in stages )
   {
