@@ -30,7 +30,7 @@
     "wCopyable" : "",
     "wprocedure" : ""
   },
-  "optionalDependencies" : { "deasync" : "" },
+  "optionalDependencies" : { "wdeasync" : "" },
   "devDependencies" : { "wTesting" : "", "eslint" : "=7.1.0", "wConsequence" : "file:." },
   "keywords" :
   [
