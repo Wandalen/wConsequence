@@ -684,7 +684,7 @@ function _deasync( o )
   self.__handleResourceSoon( false );
 
   if( Deasync === null )
-  Deasync = require( 'wdeasync' );
+  Deasync = require( 'wdeasync' ); /* yyy */
   Deasync.loopWhile( () => !ready )
 
   if( result.error )
