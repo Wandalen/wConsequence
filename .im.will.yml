@@ -28,8 +28,8 @@ submodule :
     enabled : 0 # submodule
     criterion :
       development : 1
-  deasync :
-    path : npm:///deasync
+  wdeasync :
+    path : npm:///wdeasync
     enabled : 0 # submodule
     criterion :
       development : 1
