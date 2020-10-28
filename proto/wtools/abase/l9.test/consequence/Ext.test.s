@@ -648,6 +648,8 @@ function symbolAsError( test )
 
 }
 
+symbolAsError.timeOut = 10000;
+
 //
 
 function tester( test )

@@ -11280,7 +11280,8 @@ function AndUncaughtError( test )
       con2.take( 2 )
     });
 
-    return _.time.out( t * 4, function()
+    // return _.time.out( t * 8, function()
+    return _.time.out( t * 8, function()
     {
       var exp = [ 'con1.error', 'con1.tap', 'con2.take', 'con2.tap', 'con.tap', 'uncaughtError' ];
       test.identical( track, exp );
@@ -11334,7 +11335,8 @@ function AndUncaughtError( test )
       con2.error( err1 )
     });
 
-    return _.time.out( t * 4, function()
+    // return _.time.out( t * 4, function()
+    return _.time.out( t * 8, function()
     {
       var exp = [ 'con1.error', 'con1.tap', 'con2.take', 'con2.tap', 'con.tap', 'uncaughtError' ];
       test.identical( track, exp );
@@ -11387,7 +11389,8 @@ function AndUncaughtError( test )
       con2.take( 2 )
     });
 
-    return _.time.out( t * 4, function()
+    // return _.time.out( t * 4, function()
+    return _.time.out( t * 8, function() /* Dmytro : not sure than MacOS NodeJS v10 depends on this time outs */
     {
       var exp = [ 'con1.error', 'con1.tap', 'con2.take', 'con2.tap', 'con.tap', 'uncaughtError' ];
       test.identical( track, exp );
