@@ -10508,6 +10508,187 @@ function AndTakeWithPromise( test )
 
 //
 
+function AndTakeWithPromiseAndConsequence( test )
+{
+  let context = this;
+  let t = context.t1;
+  let track;
+  let ready = new _.Consequence().take( null );
+  let err1, err2;
+
+  /* */
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'promise1 - resolved, promise2 - resolved, con - take';
+    track = [];
+    let promise1 = new Promise( resolve1 );
+    let promise2 = new Promise( resolve2 );
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con = _.Consequence.AndTake( promise1, promise2, con1 );
+
+    con1.tap( ( err, got ) =>
+    {
+      track.push( 'con1.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 2 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 3 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+    });
+
+    con.tap( ( err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, [ 1, 2, 3 ] );
+      test.is( err === undefined );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 1, 2, 3 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+    });
+
+    _.time.out( t * 3, () =>
+    {
+      track.push( 'con1.take' );
+      con1.take( 3 );
+    })
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'promise1.resolve', 'promise2.resolve', 'con1.take', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 1, 2, 3 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+
+      con1.cancel();
+      return null;
+    });
+  });
+
+  /* */
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'promise1 - rejected, promise2 - resolved, con - take';
+    track = [];
+    err1 = _.errAttend( 'rejected1' );
+    let promise1 = new Promise( reject1 );
+    let promise2 = new Promise( resolve2 );
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con = _.Consequence.AndTake( promise1, promise2, con1 );
+
+    con1.tap( ( err, got ) =>
+    {
+      track.push( 'con1.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 2 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 3 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+    });
+
+    con.tap( ( err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, undefined );
+      test.is( err === err1 );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+    });
+
+    _.time.out( t * 3, () =>
+    {
+      track.push( 'con1.take' );
+      con1.take( 3 );
+    })
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'promise1.reject', 'promise2.resolve', 'con1.take', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+
+      con1.cancel();
+      return null;
+    });
+  });
+
+  /* */
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'promise1 - resolved, promise2 - resolved, con - error';
+    track = [];
+    err1 = _.errAttend( 'err1' );
+    let promise1 = new Promise( resolve1 );
+    let promise2 = new Promise( resolve2 );
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con = _.Consequence.AndTake( promise1, promise2, con1 );
+
+    con1.tap( ( err, got ) =>
+    {
+      track.push( 'con1.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 2 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+    });
+
+    con.tap( ( err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, undefined );
+      test.is( err === err1 );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+    });
+
+    _.time.out( t * 3, () =>
+    {
+      track.push( 'con1.error' );
+      con1.error( err1 );
+    })
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'promise1.resolve', 'promise2.resolve', 'con1.error', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+
+      con1.cancel();
+      return null;
+    });
+  });
+
+  /* */
+
+  return ready;
+
+  /* */
+
+  function resolve1( resolve, reject )
+  {
+    return _.time.out( t, () => { track.push( 'promise1.resolve' ); resolve( 1 ) } );
+  }
+
+  function resolve2( resolve, reject )
+  {
+    return _.time.out( t + t, () => { track.push( 'promise2.resolve' ); resolve( 2 ) } );
+  }
+
+  function reject1( resolve, reject )
+  {
+    return _.time.out( t, () => { track.push( 'promise1.reject' ); reject( err1 ) } );
+  }
+}
+
+//
+
 function AndKeep( test )
 {
   let context = this;
@@ -11421,11 +11602,6 @@ function AndWithPromiseAndConsequence( test )
   function reject1( resolve, reject )
   {
     return _.time.out( t, () => { track.push( 'promise1.reject' ); reject( err1 ) } );
-  }
-
-  function reject2( resolve, reject )
-  {
-    return _.time.out( t + t, () => { track.push( 'promise2.reject' ); reject( _.errAttend( err2 ) ) } );
   }
 }
 
@@ -19508,6 +19684,7 @@ let Self =
     _and,
     AndTake, /* aaa2 : implement very similar test for routine andTake, alsoTake */ /* Dmytro : implemented */
     AndTakeWithPromise,
+    AndTakeWithPromiseAndConsequence,
 
     AndKeep, /* aaa2 : implement very similar test for routine andKeep, alsoKeep */ /* Dmytro : implemented */
     And,
