@@ -11232,6 +11232,7 @@ function And( test )
 function AndWithPromise( test )
 {
   let context = this;
+  let t = context.t1;
   let track;
   let ready = new _.Consequence().take( null )
 
@@ -11240,16 +11241,7 @@ function AndWithPromise( test )
   .then( function( arg )
   {
     test.case = 'take take';
-    let t = context.t1*2;
     track = [];
-    let callback1 = ( resolve, reject ) =>
-    {
-      _.time.out( t / 2, () => { track.push( 'promise1.resolve' ); resolve( 1 ) } )
-    }
-    let callback2 = ( resolve, reject ) =>
-    {
-      _.time.out( t, () => { track.push( 'promise2.resolve' ); resolve( 2 ) } )
-    }
     let promise1 = new Promise( callback1 );
     let promise2 = new Promise( callback2 );
     let con = _.Consequence.And( promise1, promise2 );
@@ -11277,6 +11269,18 @@ function AndWithPromise( test )
   /* */
 
   return ready;
+
+  /* */
+
+  function callback1( resolve, reject )
+  {
+    return _.time.out( t, () => { track.push( 'promise1.resolve' ); resolve( 1 ) } )
+  }
+
+  function callback2( resolve, reject )
+  {
+    return _.time.out( t + t, () => { track.push( 'promise2.resolve' ); resolve( 2 ) } )
+  }
 }
 
 //
