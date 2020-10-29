@@ -1814,8 +1814,8 @@ function _and( o )
         competitor = competitors[ c ] = new _.Consequence().error( _.err( err ) );
       }
 
-      if( _.promiseLike( competitor ) )
-      competitor = competitors[ c ] = _.Consequence.From( competitor );
+      // if( _.promiseLike( competitor ) )
+      // competitor = competitors[ c ] = _.Consequence.From( competitor );
 
       _.assert
       (
@@ -2005,15 +2005,20 @@ function _and( o )
     for( let s = first ; s < last ; s++ )
     {
       let competitor = competitors[ s ];
+
+      if( _.promiseLike( competitor ) )
+      competitor = competitors[ s ] = _.Consequence.From( competitor )
+
       _.assert
       (
         _.consequenceIs( competitor ) || _.routineIs( competitor ) || competitor === null,
-        () => 'Consequence.and expects consequence, routine or null, but got ' + _.strType( competitor )
+        () => 'Consequence.and expects consequence, routine, promise or null, but got ' + _.strType( competitor )
       );
       if( !_.consequenceIs( competitor ) )
       continue;
       if( _.longHas( competitors2, competitor ) )
       continue;
+
       competitor.assertNoDeadLockWith( self );
       _.arrayAppendOnceStrictly( self._dependsOf, competitor );
       competitors2.push( competitor );
