@@ -1760,7 +1760,7 @@ function _and( o )
   /* */
 
   if( Config.debug && self.Diagnostics )
-  verify();
+  competitorsVerify();
 
   /* */
 
@@ -1998,22 +1998,53 @@ function _and( o )
 
   /* */
 
-  function verify()
+  function competitorsVerify()
   {
     let competitors2 = [];
+
+    let convertedPromises = new HashMap(); /* Dmytro : provide fast search, contains links and indexes, temporary container */
 
     for( let s = first ; s < last ; s++ )
     {
       let competitor = competitors[ s ];
 
-      if( _.promiseLike( competitor ) )
-      competitor = competitors[ s ] = _.Consequence.From( competitor )
+      // if( _.promiseLike( competitor ) ) /* Dmytro : base implementation */
+      // competitor = competitors[ s ] = _.Consequence.From( competitor );
 
-      _.assert
-      (
-        _.consequenceIs( competitor ) || _.routineIs( competitor ) || competitor === null,
-        () => 'Consequence.and expects consequence, routine, promise or null, but got ' + _.strType( competitor )
-      );
+      // if( _.promiseLike( competitor ) ) /- Dmytro : for array container */
+      // {
+      //   let index = _.longLeftIndex( convertedPromises, competitor );
+      //   if( index === undefined )
+      //   {
+      //     convertedPromises.push( competitor, s );
+      //     competitor = competitors[ s ] = _.Consequence.From( competitor );
+      //   }
+      //   else
+      //   {
+      //     competitor = competitors[ s ] = competitors[ index + 1 ];
+      //   }
+      // }
+
+      if( _.promiseLike( competitor ) )
+      {
+        let index = convertedPromises.get( competitor );
+        if( index === undefined )
+        {
+          convertedPromises.set( competitor, s );
+          competitor = competitors[ s ] = _.Consequence.From( competitor );
+        }
+        else
+        {
+          competitor = competitors[ s ] = competitors[ index ];
+        }
+      }
+
+      // _.assert /* Dmytro : allows to accept any type of competitors */
+      // (
+      //   _.consequenceIs( competitor ) || _.routineIs( competitor ) || competitor === null,
+      //   () => 'Consequence.and expects consequence, routine, promise or null, but got ' + _.strType( competitor )
+      // );
+
       if( !_.consequenceIs( competitor ) )
       continue;
       if( _.longHas( competitors2, competitor ) )
