@@ -4020,7 +4020,7 @@ function catchTestRoutine( test )
 
 //
 
-function ifNoErrorGotTrivial( test )
+function thenGiveTrivial( test )
 {
   let context = this;
   let con = new _.Consequence();
@@ -4030,7 +4030,7 @@ function ifNoErrorGotTrivial( test )
   con.toStr();
 
   con
-  .ifNoErrorGot( ( arg ) =>
+  .thenGive( ( arg ) =>
   {
     let result = _.Consequence().take( 1 );
     test.identical( arg, 0 );
@@ -4056,7 +4056,7 @@ function ifNoErrorGotTrivial( test )
 
 //
 
-function ifNoErrorGotThrowing( test )
+function thenGiveThrowing( test )
 {
   let context = this;
   let con = new _.Consequence();
@@ -4067,7 +4067,7 @@ function ifNoErrorGotThrowing( test )
   con.toStr();
 
   con
-  .ifNoErrorGot( ( arg ) =>
+  .thenGive( ( arg ) =>
   {
     let result = _.Consequence().take( 1 );
     test.identical( arg, 0 );
@@ -18586,8 +18586,8 @@ let Self =
     tapHandling,
 
     catchTestRoutine,
-    ifNoErrorGotTrivial,
-    ifNoErrorGotThrowing,
+    thenGiveTrivial,
+    thenGiveThrowing,
     keep,
     notDeadLock1,
 

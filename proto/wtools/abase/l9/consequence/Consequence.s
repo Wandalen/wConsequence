@@ -314,12 +314,20 @@ finallyKeep.having =
 function thenGive( competitorRoutine )
 {
   let self = this;
+  let times = 1;
 
   _.assert( arguments.length === 1, 'Expects single argument' );
+
+  if( _.numberIs( competitorRoutine ) ) /* qqq : cover */
+  {
+    times = competitorRoutine;
+    competitorRoutine = function(){};
+  }
 
   self._competitorAppend
   ({
     competitorRoutine,
+    times,
     keeping : false,
     kindOfResource : Self.KindOfResource.ArgumentOnly,
     stack : 2,
@@ -354,7 +362,7 @@ function thenKeep( competitorRoutine )
 {
   let self = this;
 
-  _.assert( arguments.length === 1 || arguments.length === 2, 'Expects single argument' );
+  _.assert( arguments.length === 1 || arguments.length === 2 );
 
   if( arguments.length === 2 )
   return self._promiseThen( arguments[ 0 ], arguments[ 1 ] );
@@ -381,12 +389,20 @@ thenKeep.having =
 function catchGive( competitorRoutine )
 {
   let self = this;
+  let times = 1;
 
   _.assert( arguments.length === 1, 'Expects single argument' );
+
+  if( _.numberIs( competitorRoutine ) )
+  {
+    times = competitorRoutine;
+    competitorRoutine = function(){};
+  }
 
   self._competitorAppend
   ({
     competitorRoutine,
+    times,
     keeping : false,
     kindOfResource : Self.KindOfResource.ErrorOnly,
     stack : 2,
@@ -3200,7 +3216,11 @@ function _competitorAppend( o )
 
   _.assert( arguments.length === 1, 'Expects single argument' );
   _.assert( _.consequenceIs( self ) );
-  _.assert( _.routineIs( competitorRoutine ) || _.consequenceIs( competitorRoutine ), () => 'Expects routine or consequence, but got ' + _.strType( competitorRoutine ) );
+  _.assert
+  (
+    _.routineIs( competitorRoutine ) || _.consequenceIs( competitorRoutine ),
+    () => 'Expects routine or consequence, but got ' + _.strType( competitorRoutine )
+  );
   _.assert( o.kindOfResource >= 1 );
   _.assert( competitorRoutine !== self, 'Consquence cant depend on itself' );
   _.assert( o.stack >= 0, 'Competitor should have stack level greater or equal to zero' );
@@ -4717,8 +4737,8 @@ let Extension =
   finally : finallyKeep,
 
   thenGive,
-  ifNoErrorGot : thenGive,
-  got : thenGive,
+  // ifNoErrorGot : thenGive,
+  // got : thenGive,
   thenKeep,
   then : thenKeep,
   ifNoErrorThen : thenKeep,
