@@ -4866,8 +4866,8 @@ let Extension =
 
   AndTake,
   AndKeep,
-  AndImmediate,
   And : AndKeep,
+  AndImmediate,
 
   // or
 
