@@ -11229,6 +11229,50 @@ function And( test )
 
 //
 
+function AndWithPromise( test )
+{
+  let context = this;
+  let track;
+  let ready = new _.Consequence().take( null )
+
+  /* */
+
+  .then( function( arg )
+  {
+    test.case = 'take take';
+    let t = context.t1*2;
+    track = [];
+    let promise1 = new Promise( ( resolve, reject ) => { _.time.out( t / 2, () => { track.push( 'promise1.resolve' ); resolve( 1 ) } ) } );
+    let promise2 = new Promise( ( resolve, reject ) => { _.time.out( t, () => { track.push( 'promise2.resolve' ); resolve( 2 ) } ) } );
+    let con = _.Consequence.And( promise1, promise2 );
+
+    con.tap( ( err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, [ 1, 2 ] );
+      test.is( err === undefined );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 1, 2 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+    });
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [  'promise1.resolve', 'promise2.resolve', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 1, 2 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      return null;
+    });
+
+  })
+
+  /* */
+
+  return ready;
+}
+
+//
+
 function AndUncaughtError( test )
 {
   let context = this;
@@ -18642,6 +18686,7 @@ let Self =
     AndTake, /* aaa2 : implement very similar test for routine andTake, alsoTake */ /* Dmytro : implemented */
     AndImmediate, /* aaa2 : implement very similar test for routine andImmediate, alsoImmediate */ /* Dmytro : implemented */
     And,
+    AndWithPromise,
     AndUncaughtError,
 
     // or
