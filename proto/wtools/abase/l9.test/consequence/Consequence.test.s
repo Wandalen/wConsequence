@@ -11242,8 +11242,16 @@ function AndWithPromise( test )
     test.case = 'take take';
     let t = context.t1*2;
     track = [];
-    let promise1 = new Promise( ( resolve, reject ) => { _.time.out( t / 2, () => { track.push( 'promise1.resolve' ); resolve( 1 ) } ) } );
-    let promise2 = new Promise( ( resolve, reject ) => { _.time.out( t, () => { track.push( 'promise2.resolve' ); resolve( 2 ) } ) } );
+    let callback1 = ( resolve, reject ) =>
+    {
+      _.time.out( t / 2, () => { track.push( 'promise1.resolve' ); resolve( 1 ) } )
+    }
+    let callback2 = ( resolve, reject ) =>
+    {
+      _.time.out( t, () => { track.push( 'promise2.resolve' ); resolve( 2 ) } )
+    }
+    let promise1 = new Promise( callback1 );
+    let promise2 = new Promise( callback2 );
     let con = _.Consequence.And( promise1, promise2 );
 
     con.tap( ( err, got ) =>
