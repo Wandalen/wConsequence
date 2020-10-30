@@ -27,7 +27,7 @@ var con1 = new _.Consequence({ capacity : 0 });
 // the passed callback in `.ifErrorThen()` is not called with passed argument in `.take()`
 con1.ifErrorThen( errorHandler )
 
-// only one passed callback in `.got()` is called for every argument passing in `.take()`
+// only one passed callback in `.thenGive()` is called for every argument passing in `.take()`
 .thenGive( gotHandler1 )
 .thenGive( gotHandler2 );
 
@@ -45,7 +45,7 @@ con1.error( _.errAttend( 'error msg' ) ).take( 14 );
 // the passed callback in `.ifErrorThen()` is called with the passed error in `.error()`
 con1.ifErrorThen( errorHandler )
 
-// the passed callback in `.got()` is called with the passed argument in `.take()`
+// the passed callback in `.thenGive()` is called with the passed argument in `.take()`
 .thenGive( gotHandler1 );
 console.log( ' ', con1.toStr() );
 

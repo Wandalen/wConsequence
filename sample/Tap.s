@@ -28,10 +28,10 @@ var con1 = new _.Consequence({ capacity : 0 });
 // the callback passed in `.tap()` is called with the argument passed in the first `.take()`
 con1.tap( tapHandler );
 
-// the callback passed in the first `.got()` after `.tap()` is called with the same argument too
+// the callback passed in the first `.thenGive()` after `.tap()` is called with the same argument too
 con1.thenGive( gotHandler2 );
 
-// the callback passed in the next `.got()` is called with the argument passed in the next `.take()`
+// the callback passed in the next `.thenGive()` is called with the argument passed in the next `.take()`
 con1.thenGive( gotHandler3 );
 
 con1.take( 1 )
@@ -46,7 +46,7 @@ var con1 = new _.Consequence({ capacity : 0 });
 // the callback passed in `.tap ()` is called with an error passed in `.error()`
 con1.tap( tapHandler );
 
-// if `.tap()` preceding `.got()` in the competitors queue received an error - the following competitors will not call
+// if `.tap()` preceding `.thenGive()` in the competitors queue received an error - the following competitors will not call
 con1.thenGive( gotHandler2 );
 con1.thenGive( gotHandler3 );
 
