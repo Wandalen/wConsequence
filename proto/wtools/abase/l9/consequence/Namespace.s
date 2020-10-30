@@ -248,6 +248,19 @@ function out_body( o )
     if( !_.time.timerInEndBegun( timer ) )
     {
       _.time.cancel( timer );
+      if( Config.debug )
+      if( !_.symbolIs( err ) )
+      {
+        let err2 = _.err
+        (
+          'Only symbol in error channel of conseqeucne should be used to cancel timer.'
+          + '\nFor example: "consequence.error( _.dont );"'
+          + ( err !== undefined ? `\nError of type ${_.strType( err )} was recieved instead` : `` )
+          + ( err !== undefined ? `` : `\nArgument of type ${_.strType( arg )} was recieved instead` )
+        );
+        _.error._handleUncaught2({ err : err2 });
+        throw err2;
+      }
     }
     else
     {
@@ -277,14 +290,6 @@ function out_body( o )
   {
     if( !con.competitorOwn( timeEnd2 ) )
     return;
-    // console.log( con.toStr() );
-    // if( con.resourcesCount() )
-    // {
-    //   console.log( 'timeEnd1' );
-    //   console.log( con.toStr() );
-    //   console.log( o.procedure._stack );
-    //   debugger;
-    // }
     if( o.error )
     con.error( errMake() );
     else

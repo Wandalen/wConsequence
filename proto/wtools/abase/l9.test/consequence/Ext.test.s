@@ -431,8 +431,9 @@ function asyncStackInConsequenceTrivial( test )
     test.notIdentical( op.exitCode, 0 );
     test.identical( _.strCount( op.output, '- uncaught asynchronous error -' ), 2 );
     test.identical( _.strCount( op.output, '= Source code from' ), 1 );
-    test.identical( _.strCount( op.output, `program.js:9` ), 1 );
+    test.identical( _.strCount( op.output, `program.js:6` ), 1 );
     test.identical( _.strCount( op.output, `at program` ), 1 );
+    test.identical( _.strCount( op.output, `Error1` ), 1 );
     return null;
   });
 
@@ -445,16 +446,11 @@ function asyncStackInConsequenceTrivial( test )
     let _ = require( toolsPath );
     _.include( 'wFiles' );
     _.include( 'wConsequence' );
-
-    var timeBefore = _.time.now();
-    var t = _.time.outError( context.t1*3 );
     _.time.out( context.t1*3/2, () =>
     {
-      t.error( 'stop' );
+      throw 'Error1';
       return null;
     });
-
-    return t;
   }
 
 }
@@ -1039,7 +1035,8 @@ function timeOutExternalMessage( test )
 `
 v1
 v2
-true
+err : Symbol
+arg : Undefined
 v3
 v6
 argumentsCount 0
@@ -1067,20 +1064,24 @@ competitorsCount 2
     _.time.out( 1, function()
     {
       console.log( 'v2' );
-      con1.take( 2 );
+      // con1.take( 2 );
+      con1.error( _.dont );
       con1.give( ( err, got ) =>
       {
-        console.log( err === undefined );
+        console.log( `err : ${_.strType( err )}` );
+        console.log( `arg : ${_.strType( got )}` );
         console.log( 'v3' );
       });
       con1.give( ( err, got ) =>
       {
-        console.log( err === undefined );
+        console.log( `err : ${_.strType( err )}` );
+        console.log( `arg : ${_.strType( got )}` );
         console.log( 'v4' );
       });
       con1.give( ( err, got ) =>
       {
-        console.log( err === undefined );
+        console.log( `err : ${_.strType( err )}` );
+        console.log( `arg : ${_.strType( got )}` );
         console.log( 'v5' );
       });
     })
@@ -1159,6 +1160,50 @@ timeBegin.description =
 - time begin leave no zombie procedures
 `
 
+//
+
+function timeOutCancelWithErrorNotSymbol( test )
+{
+  let context = this;
+  let a = context.assetFor( test, false );
+  let programPath = a.program({ routine : program1 });
+
+  /* */
+
+  a.appStartNonThrowing({ execPath : programPath })
+  .then( ( op ) =>
+  {
+    test.notIdentical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, 'Only symbol in error channel of conseqeucne should be used to cancel timer' ), 1 );
+    test.identical( _.strCount( op.output, 'Error of type Error was recieved instead' ), 1 );
+    return null;
+  });
+
+  return a.ready;
+
+  function program1()
+  {
+    let _ = require( toolsPath );
+    _.include( 'wConsequence' );
+
+    cancelErr = _.errAttend( 'Error1' );
+
+    let con1 = _.time.out( context.t1*2, function( _timer )
+    {
+      console.log( `callback` );
+    })
+    .tap( function( err, _timer )
+    {
+      console.log( `err : ${err}` );
+      console.log( `timer : ${_timer}` );
+    });
+
+    con1.error( cancelErr );
+
+  }
+
+}
+
 // --
 // declare
 // --
@@ -1213,6 +1258,7 @@ let Self =
     timeCancelAfter,
     timeOutExternalMessage,
     timeBegin,
+    timeOutCancelWithErrorNotSymbol,
 
   }
 
