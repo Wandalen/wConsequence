@@ -10,8 +10,8 @@ var t = _.time.out( 2000, function()
   var con = new _.Consequence({ capacity : 0 });
 
   con.thenDelay( 1000 )
-  .got( gotHandler1 )
-  .got( gotHandler2 );
+  .thenGive( gotHandler1 )
+  .thenGive( gotHandler2 );
 
   con.take( 90 )
   .take( 1 );

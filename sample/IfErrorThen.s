@@ -28,8 +28,8 @@ var con1 = new _.Consequence({ capacity : 0 });
 con1.ifErrorThen( errorHandler )
 
 // only one passed callback in `.got()` is called for every argument passing in `.take()`
-.got( gotHandler1 )
-.got( gotHandler2 );
+.thenGive( gotHandler1 )
+.thenGive( gotHandler2 );
 
 con1.take( 1 ).take( 4 );
 console.log( ' ', con1.toStr() );
@@ -46,7 +46,7 @@ con1.error( _.errAttend( 'error msg' ) ).take( 14 );
 con1.ifErrorThen( errorHandler )
 
 // the passed callback in `.got()` is called with the passed argument in `.take()`
-.got( gotHandler1 );
+.thenGive( gotHandler1 );
 console.log( ' ', con1.toStr() );
 
 /* aaa Artem : done. simplify */
