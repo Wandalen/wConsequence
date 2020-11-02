@@ -55,8 +55,7 @@ function sleep( delay )
 {
 
   _.assert( arguments.length === 1 );
-  _.assert( _.numberIs( delay ) && delay >= 0, 'Specify valid value {-delay-}.' );
-  _.assert( _.numberIsFinite( delay ), 'Delay should have finite value.' );
+  _.assert( _.intIs( delay ) && delay >= 0, 'Specify valid value {-delay-}.' );
 
   let con = new _.Consequence().take( null );
   con.delay( delay ).deasync();
