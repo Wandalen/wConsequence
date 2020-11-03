@@ -10695,6 +10695,250 @@ function andImmediateWithPromiseAndConsequence( test )
 
 //
 
+function andImmediateWithMixedCompetitors( test )
+{
+  let context = this;
+  let t = context.t1;
+  let track;
+  let ready = new _.Consequence().take( null );
+  let err1, err2;
+
+  /* */
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'none of async competitors';
+    track = [];
+    let con = new _.Consequence().take( 3 );
+    con.andImmediate([ 'str', null, 1 ]);
+
+    con.tap( ( err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, [ 'str', null, 1, 3 ] );
+      test.is( err === undefined );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 'str', null, 1, 3 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+    });
+
+    return _.time.out( t, () =>
+    {
+      var exp = [ 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 'str', null, 1, 3 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      return null;
+    });
+  });
+
+  /* */
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'none of async competitors and error';
+    track = [];
+    err1 = _.errAttend( 'err' );
+    let con = new _.Consequence().take( 3 );
+    con.andImmediate([ [], {}, 'str', err1 ]);
+
+    con.tap( ( err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, [ [], {}, 'str', err1, 3 ] );
+      test.is( err === undefined );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ [], {}, 'str', err1, 3 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+    });
+
+    return _.time.out( t, () =>
+    {
+      var exp = [ 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ [], {}, 'str', err1, 3 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      return null;
+    });
+  });
+
+  /* */
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'promise, routine, string, consequence';
+    track = [];
+    let promise = new Promise( resolve1 );
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con = new _.Consequence().take( 4 );
+    con.andImmediate([ promise, routineReturnsConsequence, 'str', con1 ]);
+
+    con1.tap( ( err, got ) =>
+    {
+      track.push( 'con1.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 3 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+    });
+
+    con.tap( ( err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, [ 1, null, 'str', 3, 4 ] );
+      test.is( err === undefined );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 1, null, 'str', 3, 4 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 3 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+    });
+
+    _.time.out( t * 3, () =>
+    {
+      track.push( 'con1.take' );
+      con1.take( 3 );
+    })
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'routine.con', 'promise1.resolve', 'con1.take', 'con1.tap', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 1, null, 'str', 3, 4 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      return null;
+    });
+  });
+
+  /* */
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'routine, string, consequence, promise, null';
+    track = [];
+    let promise = new Promise( resolve1 );
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con = new _.Consequence().take( 3 );
+    con.andImmediate([ routineReturnsConsequence, 'str', con1, promise, null ]);
+
+    con1.tap( ( err, got ) =>
+    {
+      track.push( 'con1.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 3 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+    });
+
+    con.tap( ( err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, [ null, 'str', 3, 1, null, 3 ] );
+      test.is( err === undefined );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ null, 'str', 3, 1, null, 3 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 3 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+    });
+
+    _.time.out( t * 3, () =>
+    {
+      track.push( 'con1.take' );
+      con1.take( 3 );
+    })
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'routine.con', 'promise1.resolve', 'con1.take', 'con1.tap', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ null, 'str', 3, 1, null, 3 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      return null;
+    });
+  });
+
+  /* */
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'routine, string, consequence, promise, null, consequence - error';
+    track = [];
+    err1 = _.errAttend( 'err' );
+    let promise = new Promise( resolve1 );
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con = new _.Consequence().take( 3 );
+    con.andImmediate([ routineReturnsConsequence, 'str', con1, promise, null ]);
+
+    con1.tap( ( err, got ) =>
+    {
+      track.push( 'con1.tap' );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 1 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+    });
+
+    con.tap( ( err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, undefined );
+      test.is( err === err1 );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+    });
+
+    _.time.out( t * 3, () =>
+    {
+      track.push( 'con1.error' );
+      con1.error( err1 );
+    })
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'routine.con', 'promise1.resolve', 'con1.error', 'con1.tap', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      return null;
+    });
+  });
+
+  /* */
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'competitor - undefined, should throw error';
+    return test.shouldThrowErrorOfAnyKind( () =>
+    {
+      new _.Consequence().take( 3 );
+      con.andImmediate([ routineReturnsConsequence, 'str', con1, promise, null ]);
+    });
+  });
+
+  /* */
+
+  return ready;
+
+  /* */
+
+  function routineReturnsConsequence()
+  {
+    track.push( 'routine.con' );
+    return _.take( null );
+  }
+
+  function resolve1( resolve, reject )
+  {
+    return _.time.out( t, () => { track.push( 'promise1.resolve' ); resolve( 1 ) } );
+  }
+
+  function reject1( resolve, reject )
+  {
+    return _.time.out( t, () => { track.push( 'promise1.reject' ); reject( err1 ) } );
+  }
+}
+
+//
+
 function alsoKeepTrivialSyncBefore( test )
 {
   let context = this;
@@ -22544,6 +22788,7 @@ let Self =
     andImmediate,
     andImmediateWithPromise,
     andImmediateWithPromiseAndConsequence,
+    andImmediateWithMixedCompetitors,
 
     alsoKeepTrivialSyncBefore,
     alsoKeepTrivialSyncAfter,
