@@ -1734,7 +1734,7 @@ function _and( o )
   let accumulative = o.accumulative;
   let waitingResource = o.waitingResource;
   let waitingOthers = o.waitingOthers;
-  let procedure = self.procedure( o.stack, 1 ).nameElse( '_and' ); /* qqq2 : cover procedure.sourcePath of each derived routine */
+  let procedure = self.procedure( o.stack, 1 ).nameElse( '_and' ); /* aaa2 : cover procedure.sourcePath of each derived routine */ /* Dmytro : covered */
   let escaped = 0;
   let errOwner = {};
 
@@ -1760,7 +1760,7 @@ function _and( o )
   /* */
 
   if( Config.debug && self.Diagnostics )
-  competitorsVerify();
+  competitorsCheck();
 
   /* */
 
@@ -1998,11 +1998,10 @@ function _and( o )
 
   /* */
 
-  function competitorsVerify()
+  function competitorsCheck()
   {
     let competitors2 = [];
-
-    let convertedPromises = new HashMap(); /* Dmytro : provide fast search, contains links and indexes, temporary container */
+    let convertedPromises;
 
     for( let s = first ; s < last ; s++ )
     {
@@ -2011,32 +2010,12 @@ function _and( o )
       // if( _.promiseLike( competitor ) ) /* Dmytro : base implementation */
       // competitor = competitors[ s ] = _.Consequence.From( competitor );
 
-      // if( _.promiseLike( competitor ) ) /- Dmytro : for array container */
-      // {
-      //   let index = _.longLeftIndex( convertedPromises, competitor );
-      //   if( index === undefined )
-      //   {
-      //     convertedPromises.push( competitor, s );
-      //     competitor = competitors[ s ] = _.Consequence.From( competitor );
-      //   }
-      //   else
-      //   {
-      //     competitor = competitors[ s ] = competitors[ index + 1 ];
-      //   }
-      // }
-
-      if( _.promiseLike( competitor ) )
+      if( _.promiseLike( competitor ) ) /* Dmytro : needs conversion, because it allows append competitor in queue */
       {
-        let index = convertedPromises.get( competitor );
-        if( index === undefined )
-        {
-          convertedPromises.set( competitor, s );
-          competitor = competitors[ s ] = _.Consequence.From( competitor );
-        }
-        else
-        {
-          competitor = competitors[ s ] = competitors[ index ];
-        }
+        if( !convertedPromises )
+        convertedPromises = new HashMap(); /* Dmytro : provide fast search, contains links and indexes, temporary container */
+
+        competitor = promiseConvert( competitor, s, convertedPromises );
       }
 
       // _.assert /* Dmytro : allows to accept any type of competitors */
@@ -2055,6 +2034,25 @@ function _and( o )
       competitors2.push( competitor );
     }
 
+  }
+
+  /* */
+
+  function promiseConvert( competitor, s, convertedPromises )
+  {
+
+    let index = convertedPromises.get( competitor );
+    if( index === undefined )
+    {
+      convertedPromises.set( competitor, s );
+      competitor = competitors[ s ] = _.Consequence.From( competitor );
+    }
+    else
+    {
+      competitor = competitors[ s ] = competitors[ index ];
+    }
+
+    return competitor;
   }
 
 }
