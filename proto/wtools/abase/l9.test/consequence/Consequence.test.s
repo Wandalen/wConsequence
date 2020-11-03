@@ -7750,6 +7750,142 @@ function andTakeWithMixedCompetitors( test )
 
 //
 
+function andTakeWithSeveralIdenticalCompetitors( test )
+{
+  let context = this;
+  let t = context.t1;
+  let track;
+  let ready = new _.Consequence().take( null );
+  let err1, err2;
+
+  /* */
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'few identical consequences in queue';
+    track = [];
+    let con1 = new _.Consequence({ tag : 'con1' });
+    let con2 = new _.Consequence({ tag : 'con2' });
+    let con = new _.Consequence().take( 3 );
+    con.andTake([ con1, con2, con1, con2 ]);
+
+    con1.tap( ( err, got ) =>
+    {
+      track.push( 'con1.tap' );
+      test.identical( got, 1 );
+      test.is( err === undefined );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 2 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 1 );
+    });
+
+    con2.tap( ( err, got ) =>
+    {
+      track.push( 'con2.tap' );
+      test.identical( got, 2 );
+      test.is( err === undefined );
+      test.identical( con.resourcesGet(), [] );
+      test.identical( con.competitorsCount(), 2 );
+      test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
+      test.identical( con1.competitorsEarlyGet().length, 0 );
+      test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
+      test.identical( con2.competitorsEarlyGet().length, 0 );
+    });
+
+    con.tap( ( err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, [ 1, 2, 1, 2, 3 ] );
+      test.is( err === undefined );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 1, 2, 1, 2, 3 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 1 );
+    });
+
+    _.time.out( t, () =>
+    {
+      track.push( 'con1.take' );
+      con1.take( 1 );
+    });
+
+    _.time.out( t + t, () =>
+    {
+      track.push( 'con2.take' );
+      con2.take( 2 );
+    });
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'con1.take', 'con2.take', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 1, 2, 1, 2, 3 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con1.resourcesGet(), [] );
+      test.identical( con1.competitorsEarlyGet().length, 1 );
+      test.identical( con2.resourcesGet(), [] );
+      test.identical( con2.competitorsEarlyGet().length, 1 );
+
+      con1.cancel();
+      con2.cancel();
+      return null;
+    });
+  });
+
+  /* */
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'few identical promises in queue';
+    track = [];
+    let promise1 = new Promise( resolve1 );
+    let promise2 = new Promise( resolve2 );
+    let con = new _.Consequence().take( 3 );
+    con.andTake([ promise2, promise1, promise1, promise2 ]);
+
+    con.tap( ( err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, [ 2, 1, 1, 2, 3 ] );
+      test.is( err === undefined );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 2, 1, 1, 2, 3 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+    });
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'promise1.resolve', 'promise2.resolve', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 2, 1, 1, 2, 3 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      return null;
+    });
+  });
+
+  /* */
+
+  return ready;
+
+  /* */
+
+  function resolve1( resolve, reject )
+  {
+    return _.time.out( t, () => { track.push( 'promise1.resolve' ); resolve( 1 ) } );
+  }
+
+  function resolve2( resolve, reject )
+  {
+    return _.time.out( t + t, () => { track.push( 'promise2.resolve' ); resolve( 2 ) } );
+  }
+}
+
+//
+
 function andNotDeadLock( test )
 {
   let ready =  new _.Consequence();
@@ -21332,6 +21468,7 @@ let Self =
     andTakeWithPromise,
     andTakeWithPromiseAndConsequence,
     andTakeWithMixedCompetitors,
+    andTakeWithSeveralIdenticalCompetitors,
 
     andNotDeadLock,
     andConcurrent,
