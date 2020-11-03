@@ -10356,6 +10356,167 @@ function andImmediate( test )
 
 //
 
+function andImmediateWithPromise( test )
+{
+  let context = this;
+  let t = context.t1;
+  let track;
+  let ready = new _.Consequence().take( null );
+  let err1, err2;
+
+  /* */
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'promise1 - resolved, promise2 - resolved';
+    track = [];
+    let promise1 = new Promise( resolve1 );
+    let promise2 = new Promise( resolve2 );
+    let con = new _.Consequence().take( 3 );
+    con.andImmediate([ promise1, promise2 ]);
+
+    con.tap( ( err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, [ 1, 2, 3 ] );
+      test.is( err === undefined );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 1, 2, 3 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+    });
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'promise1.resolve', 'promise2.resolve', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 1, 2, 3 ] } ] );
+      test.identical( con.competitorsCount(), 0 );
+      return null;
+    });
+  });
+
+  /* */
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'promise1 - rejected, promise2 - resolved';
+    track = [];
+    err1 = _.errAttend( 'reject1' );
+    let promise1 = new Promise( reject1 );
+    let promise2 = new Promise( resolve2 );
+    let con = new _.Consequence().take( 3 );
+    con.andImmediate([ promise1, promise2 ]);
+
+    con.tap( ( err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, undefined );
+      test.is( err === err1 );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+    });
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'promise1.reject', 'promise2.resolve', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      return null;
+    });
+  });
+
+  /* */
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'promise1 - resolved, promise2 - rejected';
+    track = [];
+    err2 = _.errAttend( 'reject2' );
+    let promise1 = new Promise( resolve1 );
+    let promise2 = new Promise( reject2 );
+    let con = new _.Consequence().take( 3 );
+    con.andImmediate([ promise1, promise2 ]);
+
+    con.tap( ( err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, undefined );
+      test.is( err === err2 );
+      test.identical( con.resourcesGet(), [ { 'error' : err2, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+    });
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'promise1.resolve', 'promise2.reject', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : err2, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      return null;
+    });
+  });
+
+  /* */
+
+  ready.then( ( arg ) =>
+  {
+    test.case = 'promise1 - rejected, promise2 - rejected';
+    track = [];
+    err1 = _.errAttend( 'reject1' );
+    err2 = _.errAttend( 'reject2' );
+    let promise1 = new Promise( reject1 );
+    let promise2 = new Promise( reject2 );
+    let con = new _.Consequence().take( 3 );
+    con.andImmediate([ promise1, promise2 ]);
+
+    con.tap( ( err, got ) =>
+    {
+      track.push( 'con.tap' );
+      test.identical( got, undefined );
+      test.is( err === err1 );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+    });
+
+    return _.time.out( t * 4, () =>
+    {
+      var exp = [ 'promise1.reject', 'promise2.reject', 'con.tap' ];
+      test.identical( track, exp );
+      test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
+      test.identical( con.competitorsCount(), 0 );
+      return null;
+    });
+  });
+
+  /* */
+
+  return ready;
+
+  /* */
+
+  function resolve1( resolve, reject )
+  {
+    return _.time.out( t, () => { track.push( 'promise1.resolve' ); resolve( 1 ) } );
+  }
+
+  function resolve2( resolve, reject )
+  {
+    return _.time.out( t + t, () => { track.push( 'promise2.resolve' ); resolve( 2 ) } );
+  }
+
+  function reject1( resolve, reject )
+  {
+    return _.time.out( t, () => { track.push( 'promise1.reject' ); reject( err1 ) } );
+  }
+
+  function reject2( resolve, reject )
+  {
+    return _.time.out( t + t, () => { track.push( 'promise2.reject' ); reject( _.errAttend( err2 ) ) } );
+  }
+}
+
+//
+
 function alsoKeepTrivialSyncBefore( test )
 {
   let context = this;
@@ -22203,6 +22364,7 @@ let Self =
     andKeepAccumulativeNonConsequence,
 
     andImmediate,
+    andImmediateWithPromise,
 
     alsoKeepTrivialSyncBefore,
     alsoKeepTrivialSyncAfter,
