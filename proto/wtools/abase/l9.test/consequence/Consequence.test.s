@@ -6492,266 +6492,6 @@ procedureOffOn.description =
 // and
 // --
 
-function andNotDeadLock( test )
-{
-  let ready =  new _.Consequence();
-  let prevReady = ready;
-  let readies = [];
-  let elements = [ 0, 1 ];
-  let got;
-
-  if( !Config.debug )
-  return _.dont;
-
-  for( let context = 0 ; context < elements.length ; context++ )
-  {
-    let currentReady = new _.Consequence();
-
-    test.identical( currentReady._dependsOf, [] );
-    if( context === 1 )
-    test.identical( prevReady._dependsOf, [ ready ] );
-    else
-    test.identical( prevReady._dependsOf, [] );
-
-    readies.push( currentReady );
-    prevReady.then( currentReady );
-
-    test.identical( currentReady._dependsOf, [ prevReady ] );
-    if( context === 1 )
-    test.identical( prevReady._dependsOf, [ ready ] );
-    else
-    test.identical( prevReady._dependsOf, [] );
-
-    prevReady = currentReady;
-    currentReady.then( () => context );
-  }
-
-  test.identical( ready._dependsOf, [] );
-  test.identical( readies[ 0 ]._dependsOf, [ ready ] );
-  test.identical( readies[ 1 ]._dependsOf, [ readies[ 0 ] ] );
-
-  ready.take( null );
-  ready.andKeep( readies );
-
-  test.identical( ready._dependsOf, [] );
-  test.identical( readies[ 0 ]._dependsOf, [] );
-  test.identical( readies[ 1 ]._dependsOf, [] );
-
-  ready.finally( ( err, arg ) =>
-  {
-    test.is( err === undefined );
-    test.identical( arg, [ 0, 1, null ] );
-    got = arg;
-    if( err )
-    throw err;
-    return arg;
-  });
-
-  test.identical( got, [ 0, 1, null ] );
-
-  return ready;
-}
-
-//
-
-function andConcurrent( test )
-{
-  if( !Config.debug )
-  return _.dont;
-
-  let ready = _.after();
-
-  ready.then( () =>
-  {
-    test.case = 'serial, sync';
-    return act( 0, 1 );
-  });
-
-  ready.then( () =>
-  {
-    test.case = 'serial, async';
-    return act( 0, 0 );
-  });
-
-  ready.then( () =>
-  {
-    test.case = 'concurrent, sync';
-    return act( 0, 1 );
-  });
-
-  ready.then( () =>
-  {
-    test.case = 'concurrent, async';
-    return act( 0, 0 );
-  });
-
-  /* error */
-
-  ready.then( () =>
-  {
-    test.case = 'serial, sync, error';
-    return act( 0, 1, 'Error!' );
-  });
-
-  ready.then( () =>
-  {
-    test.case = 'serial, async, error';
-    return act( 0, 0, 'Error!' );
-  });
-
-  ready.then( () =>
-  {
-    test.case = 'concurrent, sync, error';
-    return act( 1, 1, 'Error!' );
-  });
-
-  ready.then( () =>
-  {
-    test.case = 'concurrent, async, error';
-    return act( 1, 0, 'Error!' );
-  });
-
-  return ready;
-
-  function act( concurrent, sync, error )
-  {
-    let elements = [ 0, 1 ];
-    let gotError, gotArg;
-
-    /* code to use : begin */
-
-    let ready =  new _.Consequence();
-    let prevReady = ready;
-    let readies = [];
-
-    for( let context = 0 ; context < elements.length ; context++ )
-    {
-      let currentReady = new _.Consequence();
-      readies.push( currentReady );
-
-      if( concurrent )
-      {
-        prevReady.then( currentReady );
-      }
-      else
-      {
-        prevReady.finally( currentReady );
-        prevReady = currentReady;
-      }
-
-      action( currentReady, context );
-    }
-
-    /* code to use : end */
-
-    if( sync )
-    ready.take( null );
-
-    ready.andKeep( readies );
-    ready.finally( ( err, arg ) =>
-    {
-      gotError = err;
-      gotArg = arg;
-
-      if( error )
-      test.is( _.errIs( err ) );
-      else
-      test.is( err === undefined );
-
-      if( err )
-      _.errAttend( err );
-
-      if( error )
-      test.identical( readies[ 0 ].resourcesGet(), [ { 'error' : err, 'argument' : undefined } ] );
-      else
-      test.identical( readies[ 0 ].resourcesGet(), [ { 'error' : undefined, 'argument' : 10 } ] );
-      test.identical( readies[ 0 ].competitorsEarlyGet().length, 0 );
-
-      if( error && !concurrent )
-      test.identical( readies[ 1 ].resourcesGet(), [ { 'error' : err, 'argument' : undefined } ] );
-      else
-      test.identical( readies[ 1 ].resourcesGet(), [ { 'error' : undefined, 'argument' : 11 } ] );
-      test.identical( readies[ 1 ].competitorsEarlyGet().length, 0 );
-
-      test.identical( ready.resourcesGet(), [] );
-      test.identical( ready.competitorsEarlyGet().length, sync ? 0 : 1 );
-
-      if( error )
-      test.identical( arg, undefined );
-      else
-      test.identical( arg, [ 10, 11, null ] );
-
-      if( error )
-      test.identical( elements, [ 0, concurrent ? 11 : 1 ] );
-      else
-      test.identical( elements, [ 10, 11 ] );
-
-      if( err )
-      {
-        if( error )
-        return null
-        else
-        throw err;
-      }
-
-      if( err )
-      _.errAttend( err );
-
-      return arg;
-    });
-
-    if( !sync )
-    ready.take( null );
-
-    if( sync )
-    {
-
-      if( error )
-      test.identical( readies[ 0 ].resourcesGet(), [ { 'error' : gotError, 'argument' : undefined } ] );
-      else
-      test.identical( readies[ 0 ].resourcesGet(), [ { 'error' : undefined, 'argument' : 10 } ] );
-      test.identical( readies[ 0 ].competitorsEarlyGet().length, 0 );
-
-      if( error && !concurrent )
-      test.identical( readies[ 1 ].resourcesGet(), [ { 'error' : gotError, 'argument' : undefined } ] );
-      else
-      test.identical( readies[ 1 ].resourcesGet(), [ { 'error' : undefined, 'argument' : 11 } ] );
-      test.identical( readies[ 1 ].competitorsEarlyGet().length, 0 );
-
-      if( error )
-      test.identical( gotArg, undefined );
-      else
-      test.identical( gotArg, [ 10, 11, null ] );
-      test.identical( ready.competitorsEarlyGet().length, 0 );
-
-    }
-
-    return ready;
-
-    function action( currentReady, context )
-    {
-      if( sync )
-      {
-        if( error && context === 0 )
-        currentReady.then( () => { throw _.errAttend( error ) } );
-        else
-        currentReady.then( () => elements[ context ] += 10 );
-      }
-      else
-      {
-        if( error && context === 0 )
-        currentReady.then( () => _.time.out( context.t1*5/2, () => { throw _.errAttend( error ) } ) );
-        else
-        currentReady.then( () => _.time.out( context.t1*5/2, elements[ context ] += 10 ) );
-      }
-    }
-
-  }
-
-}
-
-//
-
 function andTake( test )
 {
   let context = this;
@@ -7413,6 +7153,265 @@ function andTakeExtended( test )
   return ready;
 }
 
+//
+
+function andNotDeadLock( test )
+{
+  let ready =  new _.Consequence();
+  let prevReady = ready;
+  let readies = [];
+  let elements = [ 0, 1 ];
+  let got;
+
+  if( !Config.debug )
+  return _.dont;
+
+  for( let context = 0 ; context < elements.length ; context++ )
+  {
+    let currentReady = new _.Consequence();
+
+    test.identical( currentReady._dependsOf, [] );
+    if( context === 1 )
+    test.identical( prevReady._dependsOf, [ ready ] );
+    else
+    test.identical( prevReady._dependsOf, [] );
+
+    readies.push( currentReady );
+    prevReady.then( currentReady );
+
+    test.identical( currentReady._dependsOf, [ prevReady ] );
+    if( context === 1 )
+    test.identical( prevReady._dependsOf, [ ready ] );
+    else
+    test.identical( prevReady._dependsOf, [] );
+
+    prevReady = currentReady;
+    currentReady.then( () => context );
+  }
+
+  test.identical( ready._dependsOf, [] );
+  test.identical( readies[ 0 ]._dependsOf, [ ready ] );
+  test.identical( readies[ 1 ]._dependsOf, [ readies[ 0 ] ] );
+
+  ready.take( null );
+  ready.andKeep( readies );
+
+  test.identical( ready._dependsOf, [] );
+  test.identical( readies[ 0 ]._dependsOf, [] );
+  test.identical( readies[ 1 ]._dependsOf, [] );
+
+  ready.finally( ( err, arg ) =>
+  {
+    test.is( err === undefined );
+    test.identical( arg, [ 0, 1, null ] );
+    got = arg;
+    if( err )
+    throw err;
+    return arg;
+  });
+
+  test.identical( got, [ 0, 1, null ] );
+
+  return ready;
+}
+
+//
+
+function andConcurrent( test )
+{
+  if( !Config.debug )
+  return _.dont;
+
+  let ready = _.after();
+
+  ready.then( () =>
+  {
+    test.case = 'serial, sync';
+    return act( 0, 1 );
+  });
+
+  ready.then( () =>
+  {
+    test.case = 'serial, async';
+    return act( 0, 0 );
+  });
+
+  ready.then( () =>
+  {
+    test.case = 'concurrent, sync';
+    return act( 0, 1 );
+  });
+
+  ready.then( () =>
+  {
+    test.case = 'concurrent, async';
+    return act( 0, 0 );
+  });
+
+  /* error */
+
+  ready.then( () =>
+  {
+    test.case = 'serial, sync, error';
+    return act( 0, 1, 'Error!' );
+  });
+
+  ready.then( () =>
+  {
+    test.case = 'serial, async, error';
+    return act( 0, 0, 'Error!' );
+  });
+
+  ready.then( () =>
+  {
+    test.case = 'concurrent, sync, error';
+    return act( 1, 1, 'Error!' );
+  });
+
+  ready.then( () =>
+  {
+    test.case = 'concurrent, async, error';
+    return act( 1, 0, 'Error!' );
+  });
+
+  return ready;
+
+  function act( concurrent, sync, error )
+  {
+    let elements = [ 0, 1 ];
+    let gotError, gotArg;
+
+    /* code to use : begin */
+
+    let ready =  new _.Consequence();
+    let prevReady = ready;
+    let readies = [];
+
+    for( let context = 0 ; context < elements.length ; context++ )
+    {
+      let currentReady = new _.Consequence();
+      readies.push( currentReady );
+
+      if( concurrent )
+      {
+        prevReady.then( currentReady );
+      }
+      else
+      {
+        prevReady.finally( currentReady );
+        prevReady = currentReady;
+      }
+
+      action( currentReady, context );
+    }
+
+    /* code to use : end */
+
+    if( sync )
+    ready.take( null );
+
+    ready.andKeep( readies );
+    ready.finally( ( err, arg ) =>
+    {
+      gotError = err;
+      gotArg = arg;
+
+      if( error )
+      test.is( _.errIs( err ) );
+      else
+      test.is( err === undefined );
+
+      if( err )
+      _.errAttend( err );
+
+      if( error )
+      test.identical( readies[ 0 ].resourcesGet(), [ { 'error' : err, 'argument' : undefined } ] );
+      else
+      test.identical( readies[ 0 ].resourcesGet(), [ { 'error' : undefined, 'argument' : 10 } ] );
+      test.identical( readies[ 0 ].competitorsEarlyGet().length, 0 );
+
+      if( error && !concurrent )
+      test.identical( readies[ 1 ].resourcesGet(), [ { 'error' : err, 'argument' : undefined } ] );
+      else
+      test.identical( readies[ 1 ].resourcesGet(), [ { 'error' : undefined, 'argument' : 11 } ] );
+      test.identical( readies[ 1 ].competitorsEarlyGet().length, 0 );
+
+      test.identical( ready.resourcesGet(), [] );
+      test.identical( ready.competitorsEarlyGet().length, sync ? 0 : 1 );
+
+      if( error )
+      test.identical( arg, undefined );
+      else
+      test.identical( arg, [ 10, 11, null ] );
+
+      if( error )
+      test.identical( elements, [ 0, concurrent ? 11 : 1 ] );
+      else
+      test.identical( elements, [ 10, 11 ] );
+
+      if( err )
+      {
+        if( error )
+        return null
+        else
+        throw err;
+      }
+
+      if( err )
+      _.errAttend( err );
+
+      return arg;
+    });
+
+    if( !sync )
+    ready.take( null );
+
+    if( sync )
+    {
+
+      if( error )
+      test.identical( readies[ 0 ].resourcesGet(), [ { 'error' : gotError, 'argument' : undefined } ] );
+      else
+      test.identical( readies[ 0 ].resourcesGet(), [ { 'error' : undefined, 'argument' : 10 } ] );
+      test.identical( readies[ 0 ].competitorsEarlyGet().length, 0 );
+
+      if( error && !concurrent )
+      test.identical( readies[ 1 ].resourcesGet(), [ { 'error' : gotError, 'argument' : undefined } ] );
+      else
+      test.identical( readies[ 1 ].resourcesGet(), [ { 'error' : undefined, 'argument' : 11 } ] );
+      test.identical( readies[ 1 ].competitorsEarlyGet().length, 0 );
+
+      if( error )
+      test.identical( gotArg, undefined );
+      else
+      test.identical( gotArg, [ 10, 11, null ] );
+      test.identical( ready.competitorsEarlyGet().length, 0 );
+
+    }
+
+    return ready;
+
+    function action( currentReady, context )
+    {
+      if( sync )
+      {
+        if( error && context === 0 )
+        currentReady.then( () => { throw _.errAttend( error ) } );
+        else
+        currentReady.then( () => elements[ context ] += 10 );
+      }
+      else
+      {
+        if( error && context === 0 )
+        currentReady.then( () => _.time.out( context.t1*5/2, () => { throw _.errAttend( error ) } ) );
+        else
+        currentReady.then( () => _.time.out( context.t1*5/2, elements[ context ] += 10 ) );
+      }
+    }
+
+  }
+
+}
 //
 
 function andKeepRoutinesTakeFirst( test )
@@ -20733,12 +20732,11 @@ let Self =
 
     // and
 
-    andNotDeadLock,
-    andConcurrent,
-
     andTake,
     andTakeExtended,
 
+    andNotDeadLock,
+    andConcurrent,
     andKeepRoutinesTakeFirst,
     andKeepRoutinesTakeLast,
     andKeepRoutinesDelayed,
@@ -20748,7 +20746,9 @@ let Self =
     andKeepExtended,
     andKeepAccumulative,
     andKeepAccumulativeNonConsequence,
+
     andImmediate,
+
     alsoKeepTrivialSyncBefore,
     alsoKeepTrivialSyncAfter,
     alsoKeepTrivialAsync,
