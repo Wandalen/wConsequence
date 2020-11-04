@@ -1885,9 +1885,6 @@ function _and( o )
 
     _.assert( _.consequenceIs( op.competitor ) || op.competitor === null );
 
-    if( !_.consequenceIs( op.competitor ) )
-    debugger;
-
     if( op.err && !anyErr )
     anyErr = op.err;
 
@@ -5007,4 +5004,3 @@ if( typeof module !== 'undefined' )
 module[ 'exports' ] = Self;
 
 })();
-
