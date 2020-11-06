@@ -2011,12 +2011,7 @@ function _and( o )
       // competitor = competitors[ s ] = _.Consequence.From( competitor );
 
       if( _.promiseLike( competitor ) ) /* Dmytro : needs conversion, because it allows append competitor in queue */
-      {
-        if( !convertedPromises )
-        convertedPromises = new HashMap(); /* Dmytro : provide fast search, contains links and indexes, temporary container */
-
-        competitor = promiseConvert( competitor, s, convertedPromises );
-      }
+      competitor = promiseConvert( competitor, s, convertedPromises );
 
       // _.assert /* Dmytro : allows to accept any type of competitors */
       // (
@@ -2040,6 +2035,9 @@ function _and( o )
 
   function promiseConvert( competitor, s, convertedPromises )
   {
+
+    if( !convertedPromises )
+    convertedPromises = new HashMap(); /* Dmytro : provide fast search, contains links and indexes, temporary container */
 
     let index = convertedPromises.get( competitor );
     if( index === undefined )
