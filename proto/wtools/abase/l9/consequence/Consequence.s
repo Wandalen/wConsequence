@@ -1734,7 +1734,7 @@ function _and( o )
   let accumulative = o.accumulative;
   let waitingResource = o.waitingResource;
   let waitingOthers = o.waitingOthers;
-  let procedure = self.procedure( o.stack, 1 ).nameElse( '_and' ); /* qqq2 : cover procedure.sourcePath of each derived routine */
+  let procedure = self.procedure( o.stack, 1 ).nameElse( '_and' ); /* aaa2 : cover procedure.sourcePath of each derived routine */ /* Dmytro : covered */
   let escaped = 0;
   let errOwner = {};
 
@@ -1760,7 +1760,7 @@ function _and( o )
   /* */
 
   if( Config.debug && self.Diagnostics )
-  verify();
+  competitorsCheck();
 
   /* */
 
@@ -1995,22 +1995,32 @@ function _and( o )
 
   /* */
 
-  function verify()
+  function competitorsCheck()
   {
     let competitors2 = [];
+    let convertedPromises;
 
     for( let s = first ; s < last ; s++ )
     {
       let competitor = competitors[ s ];
 
-      if( _.promiseLike( competitor ) )
-      competitor = competitors[ s ] = _.Consequence.From( competitor )
+      // if( _.promiseLike( competitor ) ) /* Dmytro : base implementation */
+      // competitor = competitors[ s ] = _.Consequence.From( competitor );
 
-      _.assert
-      (
-        _.consequenceIs( competitor ) || _.routineIs( competitor ) || competitor === null,
-        () => 'Consequence.and expects consequence, routine, promise or null, but got ' + _.strType( competitor )
-      );
+      if( _.promiseLike( competitor ) ) /* Dmytro : needs conversion, because it allows append competitor in queue */
+      {
+        if( !convertedPromises )
+        convertedPromises = new HashMap(); /* Dmytro : provide fast search, contains links and indexes, temporary container */
+
+        competitor = promiseConvert( competitor, s, convertedPromises );
+      }
+
+      // _.assert /* Dmytro : allows to accept any type of competitors */
+      // (
+      //   _.consequenceIs( competitor ) || _.routineIs( competitor ) || competitor === null,
+      //   () => 'Consequence.and expects consequence, routine, promise or null, but got ' + _.strType( competitor )
+      // );
+
       if( !_.consequenceIs( competitor ) )
       continue;
       if( _.longHas( competitors2, competitor ) )
@@ -2021,6 +2031,25 @@ function _and( o )
       competitors2.push( competitor );
     }
 
+  }
+
+  /* */
+
+  function promiseConvert( competitor, s, convertedPromises )
+  {
+
+    let index = convertedPromises.get( competitor );
+    if( index === undefined )
+    {
+      convertedPromises.set( competitor, s );
+      competitor = competitors[ s ] = _.Consequence.From( competitor );
+    }
+    else
+    {
+      competitor = competitors[ s ] = competitors[ index ];
+    }
+
+    return competitor;
   }
 
 }
@@ -4832,8 +4861,8 @@ let Extension =
 
   AndTake,
   AndKeep,
-  AndImmediate,
   And : AndKeep,
+  AndImmediate,
 
   // or
 
