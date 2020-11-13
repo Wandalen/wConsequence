@@ -756,7 +756,7 @@ function ready_body( o )
 
   function handleReady( con )
   {
-    return _.time.out( timeOut, procedure, onReady ).finally( con );
+    return _.time.out( o.timeOut, o.procedure, o.onReady ).finally( con );
   }
 
 }
