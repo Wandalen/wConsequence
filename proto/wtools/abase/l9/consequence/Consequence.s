@@ -2097,7 +2097,7 @@ having.andLike = 1;
  *
  * let conOwner = new  _.Consequence();
  *
- * conOwner.andTake( [ con1, con2 ] );
+ * conOwner.andTake([ con1, con2 ]);
  *
  * conOwner.take( 100 );
  * conOwner.finallyGive( handleGot1 );
@@ -2134,10 +2134,58 @@ defaults.keeping = false;
 //
 
 /**
- * Works like andTake() method, but unlike andTake() andKeep() take back massages to src consequences once all come.
- * @see {@link module:Tools/base/Consequence.wConsequence#andTake}
- * @param {wConsequence[]|wConsequence} competitors Array of wConsequence objects
- * @throws {Error} If missed or passed extra argument.
+ * Method andKeep() copies each resource, which resolved by competitors {-competitors-} to own resources.
+ * If Consequence-owner is ready to resolve its own resource and any of handled Consequences has unresolved resource,
+ * then it will wait until all passed competitors will be resolved. Finally, Consequence-owner resolve own resource.
+ *
+ * @example
+ * function handleGot1( err, val )
+ * {
+ *   if( err )
+ *   console.log( `handleGot1 error : ${ err }` );
+ *   else
+ *   console.log( handleGot1 value : ${ val } );
+ * };
+ *
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * con1.finallyGive( function( err, value )
+ * {
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.finallyGive( function( err, value )
+ * {
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * let conOwner = new  _.Consequence();
+ *
+ * conOwner.andKeep([ con1, con2 ]);
+ *
+ * conOwner.take( 100 );
+ * conOwner.finallyGive( handleGot1 );
+ *
+ * con1.take( 'value1' );
+ * con2.error( 'ups' );
+ * // log :
+ * // con1 competitor executed with value : value1and error : null
+ * // con2 competitor executed with value : undefinedand error : ups
+ * // handleGot1 value : 100
+ *
+ * Basic parameter set :
+ * @param { Array } competitors - Array of competitors of any type.
+ * Alternative parameter set :
+ * @param { Map } o - Options map.
+ * @param { Array } o.competitors - Array of competitors of any type.
+ * @returns { Consequence } - Returns Consequence-owner when all handled Consequences will be resolved.
+ * @throws { Error } If arguments.length is 0.
+ * @throws { Error } If arguments.length is greater than 1.
+ * @throws { Error } If {-competitors-} has not valid type.
+ * @throws { Error } If {-o-} has not valid type.
+ * @throws { Error } If {-o.competitors-} has not valid type.
+ * @throws { Error } If {-o-} has extra properties.
  * @method andKeep
  * @module Tools/base/Consequence
  * @namespace Tools
