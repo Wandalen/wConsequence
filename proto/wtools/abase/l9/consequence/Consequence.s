@@ -2069,54 +2069,58 @@ having.andLike = 1;
 //
 
 /**
- * Method accepts array of wConsequences object. If current wConsequence instance ready to resolve resource, it will be
-   wait for all passed wConsequence instances will been resolved, finally current wConsequence resolve own resource.
-   Returns current wConsequence.
- * @example
+ * Method andTake() takes each resource, which resolved by competitors {-competitors-}. If Consequence-owner is ready
+ * to resolve its own resource and any of handled Consequences has unresolved resource, then it will wait until
+ * all passed competitors will be resolved. Finally, Consequence-owner resolve own resource.
  *
-   function handleGot1(err, val)
-   {
-     if( err )
-     {
-       console.log( 'handleGot1 error: ' + err );
-     }
-     else
-     {
-       console.log( 'handleGot1 value: ' + val );
-     }
-   };
-
-   let con1 = new _.Consequence();
-   let con2 = new _.Consequence();
-
-   con1.finallyGive( function( err, value )
-   {
-     console.log( 'con1 competitor executed with value: ' + value + 'and error: ' + err );
-   } );
-
-   con2.finallyGive( function( err, value )
-   {
-     console.log( 'con2 competitor executed with value: ' + value + 'and error: ' + err );
-   } );
-
-   let conOwner = new  _.Consequence();
-
-   conOwner.andTake( [ con1, con2 ] );
-
-   conOwner.take( 100 );
-   conOwner.finallyGive( handleGot1 );
-
-   con1.take( 'value1' );
-   con2.error( 'ups' );
-   // prints
-   // con1 competitor executed with value: value1and error: null
-   // con2 competitor executed with value: undefinedand error: ups
-   // handleGot1 value: 100
-
- * @param {wConsequence[]|wConsequence} competitors array of wConsequence
- * @returns {wConsequence}
- * @throws {Error} if missed arguments.
- * @throws {Error} if passed extra arguments.
+ * @example
+ * function handleGot1( err, val )
+ * {
+ *   if( err )
+ *   console.log( `handleGot1 error : ${ err }` );
+ *   else
+ *   console.log( handleGot1 value : ${ val } );
+ * };
+ *
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * con1.finallyGive( function( err, value )
+ * {
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.finallyGive( function( err, value )
+ * {
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * let conOwner = new  _.Consequence();
+ *
+ * conOwner.andTake( [ con1, con2 ] );
+ *
+ * conOwner.take( 100 );
+ * conOwner.finallyGive( handleGot1 );
+ *
+ * con1.take( 'value1' );
+ * con2.error( 'ups' );
+ * // log :
+ * // con1 competitor executed with value : value1and error: null
+ * // con2 competitor executed with value : undefinedand error: ups
+ * // handleGot1 value : 100
+ *
+ * Basic parameter set :
+ * @param { Array } competitors - Array of competitors of any type.
+ * Alternative parameter set :
+ * @param { Map } o - Options map.
+ * @param { Array } o.competitors - Array of competitors of any type.
+ * @returns { Consequence } - Returns Consequence-owner when all handled Consequences will be resolved.
+ * @throws { Error } If arguments.length is 0.
+ * @throws { Error } If arguments.length is greater than 1.
+ * @throws { Error } If {-competitors-} has not valid type.
+ * @throws { Error } If {-o-} has not valid type.
+ * @throws { Error } If {-o.competitors-} has not valid type.
+ * @throws { Error } If {-o-} has extra properties.
  * @method andTake
  * @module Tools/base/Consequence
  * @namespace Tools
@@ -2309,7 +2313,7 @@ function _or( o )
   else
   competitors = [ competitors ];
 
-  /* qqq2 : implement tests : arguments are promises */
+  /* aaa2 : implement tests : arguments are promises */ /* Dmytro : implemented */
 
   for( let c = competitors.length-1 ; c >= 0 ; c-- )
   {
