@@ -2221,6 +2221,8 @@ let andKeep = _.routineUnite({ head : and_head, body : _and, name : 'andKeep' })
 var defaults = andKeep.defaults;
 defaults.keeping = true;
 
+//
+
 /* aaa : jsdoc, please */ /* Dmytro : documented */
 
 /**
@@ -2302,7 +2304,83 @@ var defaults = andImmediate.defaults;
 defaults.keeping = true;
 defaults.waitingOthers = false;
 
-/* qqq : jsdoc, please */
+//
+
+/* aaa : jsdoc, please */ /* Dmytro : documented */
+
+/**
+ * Method andKeepAccumulative() copies each resource, which received by competitors {-competitors-} to own resources.
+ * If Consequence-owner is ready to resolve its own resource and any of handled Consequences received no resource,
+ * then it will wait until all passed competitors will have resource. Finally, competitors resolve own resources in order
+ * of receiving and Consequence-owner resolve all resources.
+ *
+ * @example
+ * let track = [];
+ * let conOwner = new  _.Consequence();
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * conOwner.andKeepAccumulative([ con1, con2 ]);
+ *
+ * conOwner.take( 100 );
+ * _.time.out( 50, () =>
+ * {
+ *   track.push( 'con1 take' );
+ *   con1.take( 'value1' );
+ * });
+ * _.time.out( 200, () =>
+ * {
+ *   track.push( 'con2 take' );
+ *   con2.take( 'value2' );
+ * });
+ *
+ * con1.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con1 tap' );
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con2 tap' );
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * conOwner.finallyGive( ( err, val ) =>
+ * {
+ *   con1.cancel();
+ *   con2.cancel();
+ *
+ *   console.log( _.toStr( track ) );
+ *   if( err )
+ *   console.log( `Error : ${ err }` );
+ *   else
+ *   console.log( `Value : ${ _.toStr( val ) }` );
+ * });
+ *
+ * // log :
+ * // con1 competitor executed with value : value1 and error : undefined
+ * // con2 competitor executed with value : value2 and error : undefined
+ * // [ 'con1 take', 'con1 tap', 'con2 take', 'con2 tap' ]
+ * // Value : [ 'value1', 'value2', 100 ]
+ *
+ * Basic parameter set :
+ * @param { Array } competitors - Array of competitors of any type.
+ * Alternative parameter set :
+ * @param { Map } o - Options map.
+ * @param { Array } o.competitors - Array of competitors of any type.
+ * @returns { Consequence } - Returns Consequence-owner when all handled Consequences will be resolved.
+ * @throws { Error } If arguments.length is 0.
+ * @throws { Error } If arguments.length is greater than 1.
+ * @throws { Error } If {-competitors-} has not valid type.
+ * @throws { Error } If {-o-} has not valid type.
+ * @throws { Error } If {-o.competitors-} has not valid type.
+ * @throws { Error } If {-o-} has extra properties.
+ * @method andKeepAccumulative
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
+ */
 
 let andKeepAccumulative = _.routineUnite({ head : and_head, body : _and, name : 'andKeepAccumulative' });
 var defaults = andKeepAccumulative.defaults;
