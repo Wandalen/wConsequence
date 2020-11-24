@@ -2686,7 +2686,7 @@ defaults.waitingOthers = false;
  *
  * // log :
  * // [ 'con1 take', 'con2 take' ]
- * // Value : [ 'value1', 'value2', 100 ]
+ * // Value : [ 'value1', 'value2' ]
  *
  * @param { * } ... arguments - Unlimited number of competitors of any type in arguments.
  * @returns { Consequence } - Returns new Consequence when all passed competitors will be resolved.
@@ -2767,7 +2767,7 @@ function AndTake()
  * // con1 competitor executed with value : value1 and error : undefined
  * // con2 competitor executed with value : value2 and error : undefined
  * // [ 'con1 take', 'con1.tap', 'con2 take', 'con2.tap' ]
- * // Value : [ 'value1', 'value2', 100 ]
+ * // Value : [ 'value1', 'value2' ]
  *
  * @param { * } ... arguments - Unlimited number of competitors of any type in arguments.
  * @returns { Consequence } - Returns new Consequence when all passed competitors will be resolved.
@@ -2797,8 +2797,70 @@ function AndKeep()
 
 //
 
-/* qqq : jsdoc please */
-/* qqq : cover please */
+/* aaa : jsdoc please */ /* Dmytro : documented */
+
+/* aaa : cover please */ /* Dmytro : covered */
+
+/**
+ * Static routine AndImmediate() copies each resource, which is received by competitors provided in arguments. The competitors
+ * resolve resources immediatelly after receiving. The routine returns resulted Consequence when all passed competitors will
+ * receive resource.
+ *
+ * @example
+ * let track = [];
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * let conOwner = _.Consequence.AndImmediate( con1, con2 );
+ *
+ * _.time.out( 50, () =>
+ * {
+ *   track.push( 'con1 take' );
+ *   con1.take( 'value1' );
+ * });
+ * _.time.out( 200, () =>
+ * {
+ *   track.push( 'con2 take' );
+ *   con2.take( 'value2' );
+ * });
+ *
+ * con1.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con1 tap' );
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con2 tap' );
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * conOwner.finallyGive( ( err, val ) =>
+ * {
+ *   console.log( _.toStr( track ) );
+ *   if( err )
+ *   console.log( `Error : ${ err }` );
+ *   else
+ *   console.log( `Value : ${ _.toStr( val ) }` );
+ * });
+ *
+ * // log :
+ * // con1 competitor executed with value : value1 and error : undefined
+ * // con2 competitor executed with value : value2 and error : undefined
+ * // [ 'con1 take', 'con1.tap', 'con2 take', 'con2.tap' ]
+ * // Value : [ 'value1', 'value2' ]
+ *
+ * @param { * } ... arguments - Unlimited number of competitors of any type in arguments.
+ * @returns { Consequence } - Returns new Consequence when all passed competitors will be resolved.
+ * @throws { Error } If routine calls by instance of Consequence.
+ * @static
+ * @function AndImmediate
+ * @module Tools/base/Consequence
+ * @namespace wTools.Consequence
+ * @class wConsequence
+ */
+
 function AndImmediate()
 {
   _.assert( !_.instanceIs( this ) )
