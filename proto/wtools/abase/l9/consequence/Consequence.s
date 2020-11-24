@@ -3100,6 +3100,80 @@ con0.orKeepingSplit([ con1, con2 ]) -> _.Consequence.Or( con0, con1, con2 );
 //   });
 // }
 
+/**
+ * Method orTaking() takes first received resource and resolve it - its own resource or any of resource received by
+ * competitors {-competitors-}. The competitor, which is received resource does not resolve it.
+ * If Consequence-owner receives resource before any of competitors {-competitors-} receives resource, then Consequence-
+ * owner resolves received resource immediately.
+ *
+ * @example
+ * let track = [];
+ * let conOwner = new  _.Consequence();
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * conOwner.orTaking([ con1, con2 ]);
+ *
+ * _.time.out( 50, () =>
+ * {
+ *   track.push( 'con1 take' );
+ *   con1.take( 'value1' );
+ * });
+ * _.time.out( 200, () =>
+ * {
+ *   track.push( 'con2 take' );
+ *   con2.take( 'value2' );
+ * });
+ *
+ * con1.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con1 tap' );
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con2 tap' );
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * conOwner.finallyGive( ( err, val ) =>
+ * {
+ *   con1.cancel();
+ *
+ *   console.log( _.toStr( track ) );
+ *   if( err )
+ *   console.log( `Error : ${ err }` );
+ *   else
+ *   console.log( `Value : ${ _.toStr( val ) }` );
+ * });
+ *
+ * // log :
+ * // con1 competitor executed with value : value1 and error : undefined
+ * // [ 'con1 take' ]
+ * // Value : 'value1'
+ * // con2 competitor executed with value : value2 and error : undefined
+ *
+ * Basic parameter set :
+ * @param { Array } competitors - Array of competitors. A competitor can be a Consequences, a Promise or Null.
+ * Alternative parameter set :
+ * @param { Map } o - Options map.
+ * @param { Array } o.competitors - Array of competitors. A competitor can be a Consequences, a Promise or Null.
+ * @returns { Consequence } - Returns Consequence-owner when any of competitors received its resource.
+ * @throws { Error } If arguments.length is 0.
+ * @throws { Error } If arguments.length is greater than 1.
+ * @throws { Error } If {-competitors-} has not valid type.
+ * @throws { Error } If any of elements of {-competitors-} has not valid type.
+ * @throws { Error } If {-o-} has not valid type.
+ * @throws { Error } If {-o.competitors-} has not valid type.
+ * @throws { Error } If any of elements of {-o.competitors-} has not valid type.
+ * @throws { Error } If {-o-} has extra properties.
+ * @method orTaking
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
+ */
+
 let orTaking = _.routineUnite({ head : or_head, body : _or, name : 'orTaking' });
 
 orTaking.defaults = Object.create( _or.defaults );
@@ -3125,7 +3199,7 @@ orTaking.having = Object.create( _or.having );
 
 /**
  * Method orKeeping() resolve first received resource - its own resource or any of resource received by
- * competitors {-competitors-}. The competitor, which is received resource resolve it immediately.
+ * competitors {-competitors-}. The competitor, which is received resource resolves it immediately.
  * If Consequence-owner receives resource before any of competitors {-competitors-} receives resource, then Consequence-
  * owner resolves received resource immediately.
  *
@@ -3174,6 +3248,7 @@ orTaking.having = Object.create( _or.having );
  * // [ 'con1 take', 'con1 tap' ]
  * // Value : 'value1'
  * // con2 competitor executed with value : value2 and error : undefined
+ *
  * Basic parameter set :
  * @param { Array } competitors - Array of competitors. A competitor can be a Consequences, a Promise or Null.
  * Alternative parameter set :
