@@ -448,7 +448,7 @@ function asyncStackInConsequenceTrivial( test )
     _.include( 'wConsequence' );
     _.time.out( context.t1*3/2, () =>
     {
-      throw 'Error1';
+      throw _.err( 'Error1' );
       return null;
     });
   }

@@ -1700,7 +1700,9 @@ function TimeLimit( timeLimit, consequence )
 
 function TimeLimitError( timeLimit, consequence )
 {
-  return new _.Consequence().take( null ).timeLimitError( timeLimit, consequence );
+  let result = new _.Consequence().take( null )
+  .timeLimitError( timeLimit, consequence );
+  return result;
 }
 
 // --
