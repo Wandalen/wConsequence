@@ -42,7 +42,7 @@ function ready( test )
     var got = _.process.ready();
     var proceduresAfter = _.Procedure.Counter;
     test.identical( proceduresAfter - proceduresBefore, 2 );
-    test.is( _.consequenceIs( got ) );
+    test.true( _.consequenceIs( got ) );
 
     return null;
   });
@@ -91,7 +91,7 @@ function ready( test )
     var got = _.process.ready( {} );
     var proceduresAfter = _.Procedure.Counter;
     test.identical( proceduresAfter - proceduresBefore, 2 );
-    test.is( _.consequenceIs( got ) );
+    test.true( _.consequenceIs( got ) );
 
     return null;
   });

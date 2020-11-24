@@ -681,7 +681,7 @@ function tester( test )
 
     function routine1( test )
     {
-      test.is( true );
+      test.true( true );
     }
 
     let Self =
