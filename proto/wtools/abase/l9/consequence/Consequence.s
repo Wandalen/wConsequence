@@ -60,8 +60,8 @@ let KindOfResource =
 /**
  * Function that accepts result of wConsequence value computation. Used as parameter in methods such as finallyGive(), finally(), etc.
  * @param {*} err Error object, or any other type, that represent or describe an error reason. If during resolving
-    value no exception occurred, it will be set to null;
-   @param {*} value resolved by wConsequence value;
+ *  value no exception occurred, it will be set to null;
+ * @param {*} value resolved by wConsequence value;
  * @callback Competitor
  * @class wConsequence
  * @namespace Tools
@@ -79,11 +79,11 @@ let KindOfResource =
  * Creates instance of wConsequence
  * @param {Object|Function|wConsequence} [o] initialization options
  * @example
-   let con = new _.Consequence();
-   con.take( 'hello' ).finallyGive( function( err, value) { console.log( value ); } ); // hello
-
-   let con = _.Consequence();
-   con.finallyGive( function( err, value) { console.log( value ); } ).take('world'); // world
+ * let con = new _.Consequence();
+ * con.take( 'hello' ).finallyGive( function( err, value) { console.log( value ); } ); // hello
+ *
+ * let con = _.Consequence();
+ * con.finallyGive( function( err, value) { console.log( value ); } ).take('world'); // world
  * @constructor wConsequence
  * @class wConsequence
  * @module Tools/base/Consequence
@@ -2390,18 +2390,78 @@ defaults.accumulative = true;
 //
 
 /**
- * Call passed callback without waiting for resource and collect result of the call into an array.
- * To convert serial code to parallel replace methods {then}/{finally} by methods {also*}, without need to change structure of the code, what methods {and*} require.
- * First element of returned array has a resource which the consequence have had before call of ${also} or the first which the consequence will get later.
- * Returned by callback passed to ${also*} put into returned array in the same sequence as ${also*} were called.
+ * Method alsoTake() calls passed callback with waiting for resource and takes result of the call into an array.
+ * To convert serial code to parallel replace methods {then}/{finally} by methods {also*}, without need to change
+ * structure of the code, what methods {and*} require.
+ * First element of returned array has a resource which the Consequence-owner have had before call of ${also}
+ * or the first which the Consequence will get later.
  *
- * @see {@link module:Tools/base/Consequence.wConsequence#alsoKeep}
- * @param {Anything} callbacks Single callback or element to put in result array or array of such things.
+ * @example
+ * let track = [];
+ * let conOwner = new  _.Consequence();
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * conOwner.alsoTake([ con1, con2 ]);
+ *
+ * conOwner.take( 100 );
+ * _.time.out( 50, () =>
+ * {
+ *   track.push( 'con1 take' );
+ *   con1.take( 'value1' );
+ * });
+ * _.time.out( 200, () =>
+ * {
+ *   track.push( 'con2 take' );
+ *   con2.take( 'value2' );
+ * });
+ *
+ * con1.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con1 tap' );
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con2 tap' );
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * conOwner.finallyGive( ( err, val ) =>
+ * {
+ *   con1.cancel();
+ *   con2.cancel();
+ *
+ *   console.log( _.toStr( track ) );
+ *   if( err )
+ *   console.log( `Error : ${ err }` );
+ *   else
+ *   console.log( `Value : ${ _.toStr( val ) }` );
+ * });
+ *
+ * // log :
+ * // [ 'con1 take', 'con2 take' ]
+ * // Value : [ 100, 'value1', 'value2' ]
+ *
+ * Basic parameter set :
+ * @param { Array } competitors - Array of competitors of any type.
+ * Alternative parameter set :
+ * @param { Map } o - Options map.
+ * @param { Array } o.competitors - Array of competitors of any type.
+ * @returns { Consequence } - Returns Consequence-owner when all handled Consequences will be resolved.
+ * @throws { Error } If arguments.length is 0.
+ * @throws { Error } If arguments.length is greater than 1.
+ * @throws { Error } If {-competitors-} has not valid type.
+ * @throws { Error } If {-o-} has not valid type.
+ * @throws { Error } If {-o.competitors-} has not valid type.
+ * @throws { Error } If {-o-} has extra properties.
  * @method alsoTake
  * @module Tools/base/Consequence
  * @namespace Tools
  * @class wConsequence
  */
+
 
 let alsoTake = _.routineUnite({ head : and_head, body : _and, name : 'alsoTake' });
 var defaults = alsoTake.defaults;
