@@ -2390,7 +2390,7 @@ defaults.accumulative = true;
 //
 
 /**
- * Method alsoTake() calls passed callback with waiting for resource and takes result of the call into an array.
+ * Method alsoTake() calls passed callback without waiting for resource and takes result of the call into an array.
  * To convert serial code to parallel replace methods {then}/{finally} by methods {also*}, without need to change
  * structure of the code, what methods {and*} require.
  * First element of returned array has a resource which the Consequence-owner have had before call of ${also}
@@ -2472,7 +2472,7 @@ defaults.waitingResource = false;
 //
 
 /**
- * Method alsoKeep() calls passed callback with waiting for resource and copies result of the call into an array.
+ * Method alsoKeep() calls passed callback without waiting for resource and copies result of the call into an array.
  * To convert serial code to parallel replace methods {then}/{finally} by methods {also*}, without need to change
  * structure of the code, what methods {and*} require.
  * First element of returned array has a resource which the Consequence-owner have had before call of ${also}
@@ -2520,7 +2520,9 @@ defaults.waitingResource = false;
  * });
  *
  * // log :
- * // [ 'con1 take', 'con2 take' ]
+ * // con1 competitor executed with value : value1 and error : undefined
+ * // con2 competitor executed with value : value2 and error : undefined
+ * // [ 'con1 take', 'con2 take', 'con1.tap', 'con2.tap' ]
  * // Value : [ 100, 'value1', 'value2' ]
  *
  * Basic parameter set :
@@ -2549,7 +2551,79 @@ defaults.waitingResource = false;
 
 //
 
-/* qqq : jsdoc please */
+/* aaa : jsdoc please */ /* Dmytro : documented */
+
+/**
+ * Method alsoImmediate() calls passed callback without waiting for resource and immediatelly receive resource from the result.
+ * The resource copies to array. To convert serial code to parallel replace methods {then}/{finally} by methods {also*}, without
+ * need to change * structure of the code, what methods {and*} require.
+ * First element of returned array has a resource which the Consequence-owner have had before call of ${also}
+ * or the first which the Consequence will get later.
+ *
+ * @example
+ * let track = [];
+ * let conOwner = new  _.Consequence();
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * conOwner.alsoImmediate([ con1, con2 ]);
+ *
+ * conOwner.take( 100 );
+ * _.time.out( 50, () =>
+ * {
+ *   track.push( 'con1 take' );
+ *   con1.take( 'value1' );
+ * });
+ * _.time.out( 200, () =>
+ * {
+ *   track.push( 'con2 take' );
+ *   con2.take( 'value2' );
+ * });
+ *
+ * con1.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con1 tap' );
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con2 tap' );
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * conOwner.finallyGive( ( err, val ) =>
+ * {
+ *   console.log( _.toStr( track ) );
+ *   if( err )
+ *   console.log( `Error : ${ err }` );
+ *   else
+ *   console.log( `Value : ${ _.toStr( val ) }` );
+ * });
+ *
+ * // log :
+ * // con1 competitor executed with value : value1 and error : undefined
+ * // con2 competitor executed with value : value2 and error : undefined
+ * // [ 'con1 take', 'con1.tap', 'con2 take', 'con2.tap' ]
+ * // Value : [ 100, 'value1', 'value2' ]
+ *
+ * Basic parameter set :
+ * @param { Array } competitors - Array of competitors of any type.
+ * Alternative parameter set :
+ * @param { Map } o - Options map.
+ * @param { Array } o.competitors - Array of competitors of any type.
+ * @returns { Consequence } - Returns Consequence-owner when all handled Consequences will be resolved.
+ * @throws { Error } If arguments.length is 0.
+ * @throws { Error } If arguments.length is greater than 1.
+ * @throws { Error } If {-competitors-} has not valid type.
+ * @throws { Error } If {-o-} has not valid type.
+ * @throws { Error } If {-o.competitors-} has not valid type.
+ * @throws { Error } If {-o-} has extra properties.
+ * @method alsoImmediate
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
+ */
 
 let alsoImmediate = _.routineUnite({ head : and_head, body : _and, name : 'alsoImmediate' });
 var defaults = alsoImmediate.defaults;
@@ -2560,7 +2634,68 @@ defaults.waitingOthers = false;
 
 //
 
-/* qqq : jsdoc please */
+/* aaa : jsdoc please */ /* Dmytro : documented */
+
+/**
+ * Static routine AndTake() takes each resource, which is received by competitors provided in arguments. The competitors
+ * does not resolve resources. The routine returns resulted Consequence when all passed competitors will receive resource.
+ *
+ * @example
+ * let track = [];
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * let conOwner = _.Consequence.AndTake( con1, con2 );
+ *
+ * _.time.out( 50, () =>
+ * {
+ *   track.push( 'con1 take' );
+ *   con1.take( 'value1' );
+ * });
+ * _.time.out( 200, () =>
+ * {
+ *   track.push( 'con2 take' );
+ *   con2.take( 'value2' );
+ * });
+ *
+ * con1.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con1 tap' );
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con2 tap' );
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * conOwner.finallyGive( ( err, val ) =>
+ * {
+ *   con1.cancel();
+ *   con2.cancel();
+ *
+ *   console.log( _.toStr( track ) );
+ *   if( err )
+ *   console.log( `Error : ${ err }` );
+ *   else
+ *   console.log( `Value : ${ _.toStr( val ) }` );
+ * });
+ *
+ * // log :
+ * // [ 'con1 take', 'con2 take' ]
+ * // Value : [ 'value1', 'value2', 100 ]
+ *
+ * @param { * } ... arguments - Unlimited number of competitors of any type in arguments.
+ * @returns { Consequence } - Returns new Consequence when all passed competitors will be resolved.
+ * @throws { Error } If routine calls by instance of Consequence.
+ * @static
+ * @function AndTake
+ * @module Tools/base/Consequence
+ * @namespace wTools.Consequence
+ * @class wConsequence
+ */
+
 function AndTake()
 {
   _.assert( !_.instanceIs( this ) )
