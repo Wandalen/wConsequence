@@ -3077,7 +3077,6 @@ _or.having =
  * });
  *
  * // log :
- * // con1 competitor executed with value : value1 and error : undefined
  * // [ 'con1 take' ]
  * // Value : 'value1'
  * // con2 competitor executed with value : value2 and error : undefined
@@ -3101,7 +3100,6 @@ _or.having =
  * @namespace Tools
  * @class wConsequence
  */
-
 
 let afterOrTaking = _.routineUnite({ head : or_head, body : _or, name : 'afterOrTaking' });
 
@@ -3300,7 +3298,6 @@ con0.orKeepingSplit([ con1, con2 ]) -> _.Consequence.Or( con0, con1, con2 );
  * });
  *
  * // log :
- * // con1 competitor executed with value : value1 and error : undefined
  * // [ 'con1 take' ]
  * // Value : 'value1'
  * // con2 competitor executed with value : value2 and error : undefined
@@ -3429,6 +3426,67 @@ orKeeping.defaults.waitingResource = false;
 orKeeping.having = Object.create( _or.having );
 
 //
+
+/**
+ * Static routine OrTake() takes first received resource from any of passed competitors and resolve it.
+ * The competitor, which received a resource, does not resolve resource.
+ *
+ * @example
+ * let track = [];
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * let conOwner = _.Consequence.OrTake( con1, con2 );
+ *
+ * _.time.out( 50, () =>
+ * {
+ *   track.push( 'con1 take' );
+ *   con1.take( 'value1' );
+ * });
+ * _.time.out( 200, () =>
+ * {
+ *   track.push( 'con2 take' );
+ *   con2.take( 'value2' );
+ * });
+ *
+ * con1.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con1 tap' );
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con2 tap' );
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * conOwner.finallyGive( ( err, val ) =>
+ * {
+ *   con1.cancel();
+ *
+ *   console.log( _.toStr( track ) );
+ *   if( err )
+ *   console.log( `Error : ${ err }` );
+ *   else
+ *   console.log( `Value : ${ _.toStr( val ) }` );
+ * });
+ *
+ * // log :
+ * // [ 'con1 take' ]
+ * // Value : 'value1'
+ * // con2 competitor executed with value : value2 and error : undefined
+ *
+ * @param { Consequence|Promise|Null } ... arguments - Competitors to handle.
+ * @returns { Consequence } - Returns new Consequence when any of competitors received its resource.
+ * @throws { Error } If any of elements of {-arguments-} has not valid type.
+ * @throws { Error } If routine calls by instance of Consequence.
+ * static
+ * @method OrTake
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
+ */
 
 function OrTake( srcs )
 {
