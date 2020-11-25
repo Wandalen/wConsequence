@@ -2400,6 +2400,9 @@ _or.defaults =
   stack : 2,
 }
 
+/* xxx : implement option::cenceling for consequence? */
+/* xxx : remove map having? */
+
 _or.having =
 {
   consequizing : 1,
