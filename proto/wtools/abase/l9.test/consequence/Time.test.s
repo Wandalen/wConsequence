@@ -84,13 +84,23 @@ sleep.timeOut = 30000;
 
 //
 
-function execStages( test )
+function stagesRun( test )
 {
   let self = this;
 
   test.case = 'trivial';
 
   var src1Result, src2Result;
+
+  var o = { a : 1, b : 2 };
+  var got = _.stagesRun( [ src1, src2 ], { args : [ o ] });
+
+  return got.thenKeep( ( arg ) =>
+  {
+    test.identical( src1Result, 1 );
+    test.identical( src2Result, 2 );
+    return arg;
+  })
 
   function src1( o )
   {
@@ -104,15 +114,6 @@ function execStages( test )
     return o.b;
   }
 
-  var o = { a : 1, b : 2 };
-  var got = _.execStages( [ src1, src2 ], { args : [ o ] });
-
-  return got.thenKeep( ( arg ) =>
-  {
-    test.identical( src1Result, 1 );
-    test.identical( src2Result, 2 );
-    return arg;
-  })
 }
 
 // --
@@ -2884,7 +2885,7 @@ let Self =
     // etc
 
     sleep,
-    execStages,
+    stagesRun,
 
     // time out
 
