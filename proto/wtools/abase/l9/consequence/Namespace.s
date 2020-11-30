@@ -53,10 +53,8 @@ _.assert( !_.Consequence, 'Consequence included several times' );
 
 function sleep( delay )
 {
-
   _.assert( arguments.length === 1 );
   _.assert( _.intIs( delay ) && delay >= 0, 'Specify valid value {-delay-}.' );
-
   let con = new _.Consequence().take( null );
   con.delay( delay ).deasync();
 }
@@ -478,11 +476,11 @@ function take()
 
 //
 
-function Now()
-{
-  _.assert( arguments.length === 0, 'Expects no arguments' );
-  return new _.Consequence().take( null );
-}
+// function Now()
+// {
+//   _.assert( arguments.length === 0, 'Expects no arguments' );
+//   return new _.Consequence().take( null );
+// }
 
 //
 
@@ -695,7 +693,7 @@ function sessionsRun_head( routine, args )
   return o;
 }
 
-/* xxx : abstract algorithm for consequence */
+/* qqq for Yevhen : cover please */
 function sessionsRun_body( o )
 {
   let firstReady = new _.Consequence().take( null );
@@ -933,8 +931,8 @@ function readyJoin( context, routine, args )
 let ToolsExtension =
 {
   take,
-  now : Now,
-  async : Now,
+  // now : Now, yyy
+  // async : Now, yyy
   after : After,
   // before : Before,
   stagesRun,
@@ -956,11 +954,11 @@ let ProcessExtension =
 };
 
 _.mapExtend( _, ToolsExtension );
-_.mapExtend( _realGlobal_.wTools, ToolsExtension );
+_.mapExtend( _global.wTools, ToolsExtension );
 _.time = _.mapExtend( _.time || null, TimeExtension );
-_realGlobal_.wTools.time = _.mapExtend( _realGlobal_.wTools.time || null, TimeExtension );
+_global.wTools.time = _.mapExtend( _global.wTools.time || null, TimeExtension );
 _.process = _.mapExtend( _.process || null, ProcessExtension );
-_realGlobal_.wTools.process = _.mapExtend( _realGlobal_.wTools.process || null, ProcessExtension );
+_global.wTools.process = _.mapExtend( _global.wTools.process || null, ProcessExtension );
 
 require( './Consequence.s' );
 

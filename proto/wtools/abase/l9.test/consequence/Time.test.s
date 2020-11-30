@@ -2807,7 +2807,7 @@ stop timer with error
 function asyncStackTimeOutError( test )
 {
   let context = this;
-  let ready = _.now();
+  let ready = _.take( null );
   let track = [];
 
   ready.then( function case1()
@@ -2834,7 +2834,7 @@ function asyncStackTimeOutError( test )
 function asyncStackTimeOut( test )
 {
   let context = this;
-  let ready = _.now();
+  let ready = _.take( null );
   let track = [];
 
   ready.then( () =>
