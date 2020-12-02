@@ -5696,8 +5696,8 @@ let Medials =
 let Statics =
 {
 
-  Now : _.now,
-  Async : _.now,
+  // Now : _.now,
+  // Async : _.now,
   After : _.after,
   From, /* qqq : cover please */
   FromCalling,

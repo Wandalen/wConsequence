@@ -21,6 +21,8 @@ let _ = _global_.wTools;
 // inter
 // --
 
+/* qqq : extend test for Consequence from different global namespace */
+/* qqq : extend test for custom Consequence */
 function consequenceIs( test )
 {
   test.case = 'instance of Consequence';
@@ -3550,7 +3552,7 @@ function fields( test )
 function deasync( test )
 {
   let context = this;
-  let ready = _.now();
+  let ready = _.take( null );
   let t = context.t1;
 
   /* */
@@ -4405,7 +4407,7 @@ function timeOut( test )
 function timeLimitSplit( test )
 {
   let context = this;
-  let ready = _.now();
+  let ready = _.take( null );
   let t = context.t1;
 
   ready
@@ -5822,7 +5824,7 @@ function timeLimitErrorConsequence( test )
   .then( function( arg )
   {
     test.case = 'passing value';
-    var con = _.now().timeLimitError( 0, 'str' );
+    var con = _.take( null ).timeLimitError( 0, 'str' );
     test.identical( con.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
     test.identical( con.argumentsCount(), 1 );
     test.identical( con.errorsCount(), 0 );
@@ -5836,7 +5838,7 @@ function timeLimitErrorConsequence( test )
   {
     test.case = 'passing an error';
     var err = _.errAttend( 'str' );
-    var con = _.now().timeLimitError( 0, err );
+    var con = _.take( null ).timeLimitError( 0, err );
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 1 );
     test.identical( con.competitorsCount(), 0 );
@@ -5849,7 +5851,7 @@ function timeLimitErrorConsequence( test )
   {
     test.case = 'passing consequence';
     var src = new _.Consequence().take( 'str' );
-    var con = _.now().timeLimitError( 0, src );
+    var con = _.take( null ).timeLimitError( 0, src );
     test.true( src !== con );
     test.identical( con.argumentsCount(), 1 );
     test.identical( con.errorsCount(), 0 );
@@ -5863,7 +5865,7 @@ function timeLimitErrorConsequence( test )
   {
     test.case = 'passing consequence with error';
     var src = new _.Consequence().error( 'str' );
-    var con = _.now().timeLimitError( 0, src );
+    var con = _.take( null ).timeLimitError( 0, src );
     test.true( src !== con );
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 1 );
@@ -5882,7 +5884,7 @@ function timeLimitErrorConsequence( test )
   {
     test.case = 'passing resolved promise';
     var src = Promise.resolve( 'str' );
-    var con = _.now().timeLimitError( 10, src );
+    var con = _.take( null ).timeLimitError( 10, src );
     return _.time.out( context.t1, function()
     {
       test.identical( con.resourcesGet(), [ { error : undefined, argument : 'str' } ] );
@@ -5899,7 +5901,7 @@ function timeLimitErrorConsequence( test )
   {
     test.case = 'passing resolved promise';
     var src = Promise.resolve( 'str' );
-    var con = _.now().timeLimitError( 0, src );
+    var con = _.take( null ).timeLimitError( 0, src );
     con.tap( ( err, arg ) =>
     {
       err ? _.errAttend( err ) : null;
@@ -5919,8 +5921,8 @@ function timeLimitErrorConsequence( test )
   .then( function( arg )
   {
     test.case = 'passing rejected promise';
-    var src = Promise.reject( _.err( 'str' ) );
-    var con = _.now().timeLimitError( 10, src );
+    var src = Promise.reject( 'str' );
+    var con = _.take( null ).timeLimitError( 10, src );
     con.tap( ( err, arg ) =>
     {
       err ? _.errAttend( err ) : null;
@@ -5941,7 +5943,7 @@ function timeLimitErrorConsequence( test )
   {
     test.case = 'passing rejected promise';
     var src = Promise.reject( _.errAttend( 'str' ) );
-    var con = _.now().timeLimitError( 0, src );
+    var con = _.take( null ).timeLimitError( 0, src );
     con.tap( ( err, arg ) =>
     {
       err ? _.errAttend( err ) : null;
@@ -5962,7 +5964,7 @@ function timeLimitErrorConsequence( test )
   {
     test.case = 'sync, resolved promise, timeout';
     var src = Promise.resolve( 'str' );
-    var con = _.now().timeLimitError( context.t1*5, src );
+    var con = _.take( null ).timeLimitError( context.t1*5, src );
     con.give( ( err, got ) => test.identical( got, 'str' ) && test.identical( err, undefined ) );
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
@@ -5985,7 +5987,7 @@ function timeLimitErrorConsequence( test )
     {
       setTimeout( () => resolve( 'str' ), context.t1*2 );
     })
-    var con = _.now().timeLimitError( context.t1, src );
+    var con = _.take( null ).timeLimitError( context.t1, src );
     con.finally( ( err, got ) =>
     {
       test.true( _.errIs( err ) );
@@ -6012,7 +6014,7 @@ function timeLimitErrorConsequence( test )
   {
     test.case = 'sync, timeout, src is a consequence';
     var con = new _.Consequence({ tag : 'con' }).take( 'str' );
-    con = _.now().timeLimitError( context.t1, con );
+    con = _.take( null ).timeLimitError( context.t1, con );
     con.give( ( err, got ) =>
     {
       test.identical( got, 'str' );
@@ -6031,7 +6033,7 @@ function timeLimitErrorConsequence( test )
     test.case = 'sync, timeout, src is a consequence';
     var con = _.time.out( context.t1*2, () => 'str' );
     con.tag = 'con1';
-    con = _.now().timeLimitError( context.t1, con );
+    con = _.take( null ).timeLimitError( context.t1, con );
     con.tag = 'con2';
     con.give( ( err, got ) =>
     {
@@ -17545,7 +17547,7 @@ function orTakingCheckProcedureSourcePath( test )
 function orKeepingSplitCanceled( test )
 {
   let context = this;
-  let ready = _.async();
+  let ready = _.take( null );
 
   /* */
 
@@ -17881,7 +17883,7 @@ function orKeepingSplitCanceled( test )
 function orKeepingSplitCanceledProcedure( test )
 {
   let context = this;
-  let ready = _.async();
+  let ready = _.take( null );
 
   /* */
 
@@ -18035,7 +18037,7 @@ orKeepingSplitCanceledProcedure.description =
 function orKeepingCanceled( test )
 {
   let context = this;
-  let ready = _.async();
+  let ready = _.take( null );
 
   /* */
 

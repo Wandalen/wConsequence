@@ -53,10 +53,8 @@ _.assert( !_.Consequence, 'Consequence included several times' );
 
 function sleep( delay )
 {
-
   _.assert( arguments.length === 1 );
   _.assert( _.intIs( delay ) && delay >= 0, 'Specify valid value {-delay-}.' );
-
   let con = new _.Consequence().take( null );
   con.delay( delay ).deasync();
 }
@@ -478,11 +476,11 @@ function take()
 
 //
 
-function Now()
-{
-  _.assert( arguments.length === 0, 'Expects no arguments' );
-  return new _.Consequence().take( null );
-}
+// function Now()
+// {
+//   _.assert( arguments.length === 0, 'Expects no arguments' );
+//   return new _.Consequence().take( null );
+// }
 
 //
 
@@ -520,13 +518,13 @@ function After( resource )
 
 //
 
-function execStages( stages, o )
+function stagesRun( stages, o )
 {
   let logger = _global.logger || _global.console;
 
   o = o || Object.create( null );
 
-  _.routineOptionsPreservingUndefines( execStages, o );
+  _.routineOptionsPreservingUndefines( stagesRun, o );
 
   o.stages = stages;
   o.stack = _.introspector.stackRelative( o.stack, 1 );
@@ -545,7 +543,7 @@ function execStages( stages, o )
     if( o.onRoutine )
     routine = o.onRoutine( routine );
 
-    // _.assert( routine || routine === null,'execStages :','#'+s,'stage is not defined' );
+    // _.assert( routine || routine === null,'stagesRun :','#'+s,'stage is not defined' );
     _.assert( _.routineIs( routine ) || routine === null, () => 'stage' + '#'+s + ' does not have routine to execute' );
 
   }
@@ -660,7 +658,7 @@ function execStages( stages, o )
 
 }
 
-execStages.defaults =
+stagesRun.defaults = /* qqq : make head and body. refactor maybe */
 {
   delay : 1,
   stack : null,
@@ -674,6 +672,145 @@ execStages.defaults =
   onEnd : null,
   onRoutine : null,
 }
+
+//
+
+function sessionsRun_head( routine, args )
+{
+  let o;
+
+  if( _.longIs( args[ 0 ] ) )
+  o = { sessions : args[ 0 ] };
+  else
+  o = args[ 0 ];
+
+  o = _.routineOptions( routine, o );
+
+  _.assert( arguments.length === 2 );
+  _.assert( args.length === 1, 'Expects single argument' );
+  _.assert( _.longIs( o.sessions ) );
+
+  return o;
+}
+
+/* qqq for Yevhen : cover please */
+function sessionsRun_body( o )
+{
+  let firstReady = new _.Consequence().take( null );
+  let prevReady = firstReady;
+  let readies = [];
+  let begins = [];
+  let ends = [];
+  let readyRoutine = null;
+
+  if( !o.ready )
+  {
+    o.ready = _.take( null );
+  }
+  else if( !_.consequenceIs( o.ready ) )
+  {
+    readyRoutine = o.ready;
+    o.ready = _.take( null );
+  }
+
+  o.ready.thenGive( () =>
+  {
+
+    o.sessions.forEach( ( session, i ) =>
+    {
+
+      if( o.concurrent )
+      {
+        prevReady.then( session.ready );
+      }
+      else
+      {
+        prevReady.finally( session.ready );
+        prevReady = session.ready;
+      }
+
+      try
+      {
+        o.onRun( session );
+      }
+      catch( err )
+      {
+        o.error = o.error || err;
+        session.ready.error( err );
+      }
+
+      _.assert( _.consequenceIs( session[ o.conBeginName ] ) );
+      _.assert( _.consequenceIs( session[ o.conEndName ] ) );
+      _.assert( _.consequenceIs( session[ o.readyName ] ) );
+
+      begins.push( session[ o.conBeginName ] );
+      ends.push( session[ o.conEndName ] );
+      readies.push( session[ o.readyName ] );
+
+      if( !o.concurrent )
+      session.ready.catch( ( err ) =>
+      {
+        o.error = o.error || err;
+        if( o.onError )
+        o.onError( err );
+        else
+        throw err;
+      });
+
+    });
+
+    let onBegin;
+    if( o.concurrent )
+    onBegin = _.Consequence.AndImmediate( ... begins );
+    else
+    onBegin = _.Consequence.OrKeep( ... begins );
+    let onEnd = _.Consequence.AndImmediate( ... ends );
+    let ready = _.Consequence.AndImmediate( ... readies );
+
+    o.onBegin = direct( onBegin, o.onBegin );
+    o.onEnd = direct( onEnd, o.onEnd );
+
+    ready.finally( o.ready );
+
+  });
+
+  if( readyRoutine )
+  o.ready.finally( readyRoutine );
+
+  return o;
+
+  function direct( icon, ocon )
+  {
+    if( _.consequenceIs( ocon ) )
+    icon.finally( ocon );
+    else if( ocon )
+    icon.tap( ( err, arg ) =>
+    {
+      ocon( err, err ? undefined : o );
+    });
+    else
+    ocon = icon;
+    return ocon;
+  }
+
+}
+
+sessionsRun_body.defaults =
+{
+  concurrent : 1,
+  sessions : null,
+  error : null,
+  conBeginName : 'conBegin',
+  conEndName : 'conEnd',
+  readyName : 'ready',
+  onRun : null,
+  onBegin : null,
+  onEnd : null,
+  onError : null,
+  ready : null,
+}
+
+let sessionsRun = _.routineUnite( sessionsRun_head, sessionsRun_body ); /* qqq for Yevhen : cover */
 
 // --
 // meta
@@ -794,11 +931,12 @@ function readyJoin( context, routine, args )
 let ToolsExtension =
 {
   take,
-  now : Now,
-  async : Now,
+  // now : Now, yyy
+  // async : Now, yyy
   after : After,
   // before : Before,
-  execStages,
+  stagesRun,
+  sessionsRun,
 };
 
 let TimeExtension =
@@ -816,11 +954,11 @@ let ProcessExtension =
 };
 
 _.mapExtend( _, ToolsExtension );
-_.mapExtend( _realGlobal_.wTools, ToolsExtension );
+_.mapExtend( _global.wTools, ToolsExtension );
 _.time = _.mapExtend( _.time || null, TimeExtension );
-_realGlobal_.wTools.time = _.mapExtend( _realGlobal_.wTools.time || null, TimeExtension );
+_global.wTools.time = _.mapExtend( _global.wTools.time || null, TimeExtension );
 _.process = _.mapExtend( _.process || null, ProcessExtension );
-_realGlobal_.wTools.process = _.mapExtend( _realGlobal_.wTools.process || null, ProcessExtension );
+_global.wTools.process = _.mapExtend( _global.wTools.process || null, ProcessExtension );
 
 require( './Consequence.s' );
 
