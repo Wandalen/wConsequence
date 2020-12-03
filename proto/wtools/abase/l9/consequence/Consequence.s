@@ -3929,7 +3929,7 @@ function argumentsGet( index )
   if( index !== undefined )
   return self._resources[ index ].argument;
   else
-  return _.filter( self._resources, ( r ) => r.argument ? r.argument : undefined );
+  return _.filter_( null, self._resources, ( r ) => r.argument ? r.argument : undefined );
 }
 
 //
@@ -3942,7 +3942,7 @@ function errorsGet( index )
   if( index !== undefined )
   return self._resources[ index ].error;
   else
-  return _.filter( self._resources, ( r ) => r.error ? r.error : undefined );
+  return _.filter_( null, self._resources, ( r ) => r.error ? r.error : undefined );
 }
 
 //
