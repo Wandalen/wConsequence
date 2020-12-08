@@ -1476,9 +1476,15 @@ function _delay( o )
 
   /**/
 
+  /* qqq for Dmytro : ! */
   function __delayFinally( err, arg )
   {
-    _.time.begin( o.time, () => self.take( err, arg ) );
+    // console.log( '__delayFinally:1' );
+    _.time.begin( o.time, () =>
+    {
+      // console.log( '__delayFinally:2' );
+      self.take( err, arg )
+    });
   }
 
   /**/
