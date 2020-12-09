@@ -22795,15 +22795,37 @@ function thenSequenceAsync( test )
 function bugFromProcessExperiment( test )
 {
   let context = this;
-  let ready = new _.Consequence();
+  let con = _.take( null );
 
-  ready.delay( context.t3 );
-  ready.thenGive( ( arg ) => arg );
+  con.then( () =>
+  {
+    let ready = new _.Consequence().take( null );
+  
+    console.log( ready );
+    ready.delay( context.t3 );
+    console.log( ready );
+    ready.thenGive( ( arg ) => ready.take( arg ) );
+  
+    let got = ready;
+    test.identical( got.toStr(), 'Consequence:: 0 / 1' );
+    return ready;
+  })
 
-  ready.take( null );
+  con.then( ( op ) =>
+  {
+    let ready = new _.Consequence().take( null );
 
-  let got = ready.deasync();
-  test.identical( got.toStr(), 'Consequence:: 1 / 0' );
+    console.log( ready );
+    ready.delay( context.t3 );
+    console.log( ready );
+    ready.thenGive( ( arg ) => ready.take( arg ) );
+
+    let got = ready.deasync();
+    test.identical( got.toStr(), 'Consequence:: 1 / 0' );
+    return ready;
+  })
+
+  return con;
 }
 
 bugFromProcessExperiment.experimental = 1;
