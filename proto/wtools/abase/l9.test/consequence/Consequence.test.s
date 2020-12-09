@@ -22790,6 +22790,24 @@ function thenSequenceAsync( test )
 
 }
 
+//
+
+function bugFromProcessExperiment( test )
+{
+  let context = this;
+  let ready = new _.Consequence();
+
+  ready.delay( context.t3 );
+  ready.thenGive( ( arg ) => arg );
+
+  ready.take( null );
+
+  let got = ready.deasync();
+  test.identical( got.toStr(), 'Consequence:: 1 / 0' );
+}
+
+bugFromProcessExperiment.experimental = 1;
+
 // --
 // declare
 // --
@@ -23028,6 +23046,8 @@ let Self =
     // thenSequenceAsync,
 
     // experiment,
+
+    bugFromProcessExperiment,
 
   },
 
