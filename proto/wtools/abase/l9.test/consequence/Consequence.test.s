@@ -22795,24 +22795,80 @@ function thenSequenceAsync( test )
 function bugFromProcessExperiment( test )
 {
   let context = this;
-  let ready = new _.Consequence();
+  let con = _.take( null );
 
-  console.log( '1' );
-  ready.take( null );
-  console.log( '2' );
-  ready.delay( context.t3 );
-  console.log( '3' );
-  ready.thenGive( ( arg ) =>
+  con.then( () =>
   {
-    console.log( 'thenGive' );
-    return arg;
-  });
+    let ready = new _.Consequence().take( null );
 
-  let got = ready.deasync();
-  test.identical( got.toStr(), 'Consequence:: 1 / 0' );
+    console.log( ready );
+    ready.delay( context.t3 );
+    console.log( ready );
+    ready.thenGive( ( arg ) => ready.take( arg ) );
+
+    let got = ready;
+    test.identical( got.toStr(), 'Consequence:: 0 / 1' );
+    return ready;
+  })
+
+  con.then( ( op ) =>
+  {
+    let ready = new _.Consequence().take( null );
+
+    console.log( ready );
+    ready.delay( context.t3 );
+    console.log( ready );
+    ready.thenGive( ( arg ) => ready.take( arg ) );
+
+    let got = ready.deasync();
+    test.identical( got.toStr(), 'Consequence:: 1 / 0' );
+    return ready;
+  })
+
+  return con;
 }
 
 bugFromProcessExperiment.experimental = 1;
+
+//
+
+function bugFromProcessParallelExperiment( test )
+{
+  let context = this;
+  let con1 = _.take( null );
+  let con2 = _.take( null );
+
+  con1.then( () =>
+  {
+    let ready = new _.Consequence().take( null );
+
+    console.log( ready );
+    ready.delay( context.t3 );
+    console.log( ready );
+    ready.thenGive( ( arg ) => ready.take( arg ) );
+
+    let got = ready;
+    test.identical( got.toStr(), 'Consequence:: 0 / 1' );
+    return ready;
+  })
+
+  con2.then( () =>
+  {
+    let ready = new _.Consequence().take( null );
+
+    console.log( ready );
+    ready.delay( context.t3 );
+    console.log( ready );
+    ready.thenGive( ( arg ) => ready.take( arg ) );
+
+    let got = ready.deasync();
+    test.identical( got.toStr(), 'Consequence:: 1 / 0' );
+    return ready;
+  })
+
+  return _.Consequence.And( con1, con2 );}
+
+bugFromProcessParallelExperiment.experimental = 1;
 
 // --
 // declare
@@ -23054,6 +23110,7 @@ let Self =
     // experiment,
 
     bugFromProcessExperiment,
+    bugFromProcessParallelExperiment,
 
   },
 
