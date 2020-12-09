@@ -1476,9 +1476,15 @@ function _delay( o )
 
   /**/
 
+  /* qqq for Dmytro : ! */
   function __delayFinally( err, arg )
   {
-    _.time.begin( o.time, () => self.take( err, arg ) );
+    // console.log( '__delayFinally:1' );
+    _.time.begin( o.time, () =>
+    {
+      // console.log( '__delayFinally:2' );
+      self.take( err, arg )
+    });
   }
 
   /**/
@@ -4949,7 +4955,7 @@ function argumentsGet( index )
   if( index !== undefined )
   return self._resources[ index ].argument;
   else
-  return _.filter( self._resources, ( r ) => r.argument ? r.argument : undefined );
+  return _.filter_( null, self._resources, ( r ) => r.argument ? r.argument : undefined );
 }
 
 //
@@ -4962,7 +4968,7 @@ function errorsGet( index )
   if( index !== undefined )
   return self._resources[ index ].error;
   else
-  return _.filter( self._resources, ( r ) => r.error ? r.error : undefined );
+  return _.filter_( null, self._resources, ( r ) => r.error ? r.error : undefined );
 }
 
 //
