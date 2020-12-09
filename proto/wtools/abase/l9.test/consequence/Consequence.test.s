@@ -22804,7 +22804,7 @@ function bugFromProcessExperiment( test )
   console.log( '3' );
   ready.thenGive( ( arg ) =>
   {
-    console.log( 'then' );
+    console.log( 'thenGive' );
     return arg;
   });
 
