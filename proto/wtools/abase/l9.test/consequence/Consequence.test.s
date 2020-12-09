@@ -185,7 +185,7 @@ function fromAsyncMode00( test )
   .then( function( arg )
   {
     test.case = 'passing rejected promise';
-    var src = Promise.reject( _.err( 'str' ) );
+    var src = Promise.reject( 'str' );
     var con = _.Consequence.From( src );
     return _.time.out( 1, function()
     {
