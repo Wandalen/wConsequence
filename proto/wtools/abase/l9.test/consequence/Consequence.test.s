@@ -22797,10 +22797,16 @@ function bugFromProcessExperiment( test )
   let context = this;
   let ready = new _.Consequence();
 
-  ready.delay( context.t3 );
-  ready.thenGive( ( arg ) => arg );
-
+  console.log( '1' );
   ready.take( null );
+  console.log( '2' );
+  ready.delay( context.t3 );
+  console.log( '3' );
+  ready.thenGive( ( arg ) =>
+  {
+    console.log( 'then' );
+    return arg;
+  });
 
   let got = ready.deasync();
   test.identical( got.toStr(), 'Consequence:: 1 / 0' );
