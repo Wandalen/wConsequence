@@ -22832,6 +22832,126 @@ bugFromProcessExperiment.experimental = 1;
 
 //
 
+function bugFromProcessExperimentReversed( test )
+{
+  let context = this;
+  let con = _.take( null );
+
+  con.then( ( op ) =>
+  {
+    let ready = new _.Consequence().take( null );
+
+    console.log( ready );
+    ready.delay( context.t3 );
+    console.log( ready );
+    ready.thenGive( ( arg ) => ready.take( arg ) );
+
+    let got = ready.deasync();
+    test.identical( got.toStr(), 'Consequence:: 1 / 0' );
+    return ready;
+  });
+
+  con.then( () =>
+  {
+    let ready = new _.Consequence().take( null );
+
+    console.log( ready );
+    ready.delay( context.t3 );
+    console.log( ready );
+    ready.thenGive( ( arg ) => ready.take( arg ) );
+
+    let got = ready;
+    test.identical( got.toStr(), 'Consequence:: 0 / 1' );
+    return ready;
+  });
+
+  return con;
+}
+
+bugFromProcessExperimentReversed.experimental = 1;
+
+//
+
+function bugFromProcessExperimentWithoutDeasync( test )
+{
+  let context = this;
+  let con = _.take( null );
+
+  con.then( ( op ) =>
+  {
+    let ready = new _.Consequence().take( null );
+
+    console.log( ready );
+    ready.delay( context.t3 );
+    console.log( ready );
+    ready.thenGive( ( arg ) => ready.take( arg ) );
+
+    let got = ready;
+    test.identical( got.toStr(), 'Consequence:: 0 / 1' );
+    return ready;
+  });
+
+  con.then( () =>
+  {
+    let ready = new _.Consequence().take( null );
+
+    console.log( ready );
+    ready.delay( context.t3 );
+    console.log( ready );
+    ready.thenGive( ( arg ) => ready.take( arg ) );
+
+    let got = ready;
+    test.identical( got.toStr(), 'Consequence:: 0 / 1' );
+    return ready;
+  });
+
+  return con;
+}
+
+bugFromProcessExperimentWithoutDeasync.experimental = 1;
+
+//
+
+function bugFromProcessExperimentWithDeasync( test )
+{
+  let context = this;
+  let con = _.take( null );
+
+  con.then( ( op ) =>
+  {
+    let ready = new _.Consequence().take( null );
+
+    console.log( ready );
+    ready.delay( context.t3 );
+    console.log( ready );
+    ready.thenGive( ( arg ) => ready.take( arg ) );
+
+    let got = ready.deasync();
+    test.identical( got.toStr(), 'Consequence:: 1 / 0' );
+    return ready;
+  });
+
+  con.then( () =>
+  {
+    let ready = new _.Consequence().take( null );
+
+    console.log( ready );
+    ready.delay( context.t3 );
+    console.log( ready );
+    ready.thenGive( ( arg ) => ready.take( arg ) );
+
+    let got = ready.deasync();
+    test.identical( got.toStr(), 'Consequence:: 1 / 0' );
+    return ready;
+  });
+
+  return con;
+}
+
+bugFromProcessExperimentWithDeasync.experimental = 1;
+
+//
+
 function bugFromProcessParallelExperiment( test )
 {
   let context = this;
@@ -23110,6 +23230,9 @@ let Self =
     // experiment,
 
     bugFromProcessExperiment,
+    bugFromProcessExperimentReversed,
+    bugFromProcessExperimentWithoutDeasync,
+    bugFromProcessExperimentWithDeasync,
     bugFromProcessParallelExperiment,
 
   },
