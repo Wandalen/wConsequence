@@ -60,8 +60,8 @@ let KindOfResource =
 /**
  * Function that accepts result of wConsequence value computation. Used as parameter in methods such as finallyGive(), finally(), etc.
  * @param {*} err Error object, or any other type, that represent or describe an error reason. If during resolving
-    value no exception occurred, it will be set to null;
-   @param {*} value resolved by wConsequence value;
+ *  value no exception occurred, it will be set to null;
+ * @param {*} value resolved by wConsequence value;
  * @callback Competitor
  * @class wConsequence
  * @namespace Tools
@@ -79,11 +79,11 @@ let KindOfResource =
  * Creates instance of wConsequence
  * @param {Object|Function|wConsequence} [o] initialization options
  * @example
-   let con = new _.Consequence();
-   con.take( 'hello' ).finallyGive( function( err, value) { console.log( value ); } ); // hello
-
-   let con = _.Consequence();
-   con.finallyGive( function( err, value) { console.log( value ); } ).take('world'); // world
+ * let con = new _.Consequence();
+ * con.take( 'hello' ).finallyGive( function( err, value) { console.log( value ); } ); // hello
+ *
+ * let con = _.Consequence();
+ * con.finallyGive( function( err, value) { console.log( value ); } ).take('world'); // world
  * @constructor wConsequence
  * @class wConsequence
  * @module Tools/base/Consequence
@@ -1706,7 +1706,9 @@ function TimeLimit( timeLimit, consequence )
 
 function TimeLimitError( timeLimit, consequence )
 {
-  return new _.Consequence().take( null ).timeLimitError( timeLimit, consequence );
+  let result = new _.Consequence().take( null )
+  .timeLimitError( timeLimit, consequence );
+  return result;
 }
 
 // --
@@ -2075,54 +2077,71 @@ having.andLike = 1;
 //
 
 /**
- * Method accepts array of wConsequences object. If current wConsequence instance ready to resolve resource, it will be
-   wait for all passed wConsequence instances will been resolved, finally current wConsequence resolve own resource.
-   Returns current wConsequence.
- * @example
+ * Method andTake() takes each resource, which is received by competitors {-competitors-}. The competitors does not
+ * resolve resources. If Consequence-owner is ready to resolve its own resource and any of handled Consequences
+ * receives not resource, then it will wait until all passed competitors will receive resource. Finally,
+ * Consequence-owner resolve all received resources and its own resource.
  *
-   function handleGot1(err, val)
-   {
-     if( err )
-     {
-       console.log( 'handleGot1 error: ' + err );
-     }
-     else
-     {
-       console.log( 'handleGot1 value: ' + val );
-     }
-   };
-
-   let con1 = new _.Consequence();
-   let con2 = new _.Consequence();
-
-   con1.finallyGive( function( err, value )
-   {
-     console.log( 'con1 competitor executed with value: ' + value + 'and error: ' + err );
-   } );
-
-   con2.finallyGive( function( err, value )
-   {
-     console.log( 'con2 competitor executed with value: ' + value + 'and error: ' + err );
-   } );
-
-   let conOwner = new  _.Consequence();
-
-   conOwner.andTake( [ con1, con2 ] );
-
-   conOwner.take( 100 );
-   conOwner.finallyGive( handleGot1 );
-
-   con1.take( 'value1' );
-   con2.error( 'ups' );
-   // prints
-   // con1 competitor executed with value: value1and error: null
-   // con2 competitor executed with value: undefinedand error: ups
-   // handleGot1 value: 100
-
- * @param {wConsequence[]|wConsequence} competitors array of wConsequence
- * @returns {wConsequence}
- * @throws {Error} if missed arguments.
- * @throws {Error} if passed extra arguments.
+ * @example
+ * let track = [];
+ * let conOwner = new  _.Consequence();
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * conOwner.andTake([ con1, con2 ]);
+ *
+ * conOwner.take( 100 );
+ * _.time.out( 50, () =>
+ * {
+ *   track.push( 'con1 take' );
+ *   con1.take( 'value1' );
+ * });
+ * _.time.out( 200, () =>
+ * {
+ *   track.push( 'con2 take' );
+ *   con2.take( 'value2' );
+ * });
+ *
+ * con1.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con1 tap' );
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con2 tap' );
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * conOwner.finallyGive( ( err, val ) =>
+ * {
+ *   con1.cancel();
+ *   con2.cancel();
+ *
+ *   console.log( _.toStr( track ) );
+ *   if( err )
+ *   console.log( `Error : ${ err }` );
+ *   else
+ *   console.log( `Value : ${ _.toStr( val ) }` );
+ * });
+ *
+ * // log :
+ * // [ 'con1 take', 'con2 take' ]
+ * // Value : [ 'value1', 'value2', 100 ]
+ *
+ * Basic parameter set :
+ * @param { Array } competitors - Array of competitors of any type.
+ * Alternative parameter set :
+ * @param { Map } o - Options map.
+ * @param { Array } o.competitors - Array of competitors of any type.
+ * @returns { Consequence } - Returns Consequence-owner when all handled Consequences will be resolved.
+ * @throws { Error } If arguments.length is 0.
+ * @throws { Error } If arguments.length is greater than 1.
+ * @throws { Error } If {-competitors-} has not valid type.
+ * @throws { Error } If {-o-} has not valid type.
+ * @throws { Error } If {-o.competitors-} has not valid type.
+ * @throws { Error } If {-o-} has extra properties.
  * @method andTake
  * @module Tools/base/Consequence
  * @namespace Tools
@@ -2136,10 +2155,70 @@ defaults.keeping = false;
 //
 
 /**
- * Works like andTake() method, but unlike andTake() andKeep() take back massages to src consequences once all come.
- * @see {@link module:Tools/base/Consequence.wConsequence#andTake}
- * @param {wConsequence[]|wConsequence} competitors Array of wConsequence objects
- * @throws {Error} If missed or passed extra argument.
+ * Method andKeep() copies each resource, which is received by competitors {-competitors-} to own resources.
+ * Each handled competitor resolve its resources. If Consequence-owner is ready to resolve its own resource
+ * and any of handled Consequences resolve not resource, then it will wait until all passed competitors will
+ * receive and resolve resource. Finally, Consequence-owner resolve all received resources and its own resource.
+ *
+ * @example
+ * let track = [];
+ * let conOwner = new  _.Consequence();
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * conOwner.andKeep([ con1, con2 ]);
+ *
+ * conOwner.take( 100 );
+ * _.time.out( 50, () =>
+ * {
+ *   track.push( 'con1 take' );
+ *   con1.take( 'value1' );
+ * });
+ * _.time.out( 200, () =>
+ * {
+ *   track.push( 'con2 take' );
+ *   con2.take( 'value2' );
+ * });
+ *
+ * con1.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con1 tap' );
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con2 tap' );
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * conOwner.finallyGive( ( err, val ) =>
+ * {
+ *   console.log( _.toStr( track ) );
+ *   if( err )
+ *   console.log( `Error : ${ err }` );
+ *   else
+ *   console.log( `Value : ${ _.toStr( val ) }` );
+ * });
+ *
+ * // log :
+ * // con1 competitor executed with value : value1 and error : undefined
+ * // con2 competitor executed with value : value2 and error : undefined
+ * // [ 'con1 take', 'con1 tap', 'con2 take', 'con2 tap' ]
+ * // Value : [ 'value1', 'value2', 100 ]
+ *
+ * Basic parameter set :
+ * @param { Array } competitors - Array of competitors of any type.
+ * Alternative parameter set :
+ * @param { Map } o - Options map.
+ * @param { Array } o.competitors - Array of competitors of any type.
+ * @returns { Consequence } - Returns Consequence-owner when all handled Consequences will be resolved.
+ * @throws { Error } If arguments.length is 0.
+ * @throws { Error } If arguments.length is greater than 1.
+ * @throws { Error } If {-competitors-} has not valid type.
+ * @throws { Error } If {-o-} has not valid type.
+ * @throws { Error } If {-o.competitors-} has not valid type.
+ * @throws { Error } If {-o-} has extra properties.
  * @method andKeep
  * @module Tools/base/Consequence
  * @namespace Tools
@@ -2150,14 +2229,166 @@ let andKeep = _.routineUnite({ head : and_head, body : _and, name : 'andKeep' })
 var defaults = andKeep.defaults;
 defaults.keeping = true;
 
-/* qqq : jsdoc, please */
+//
+
+/* aaa : jsdoc, please */ /* Dmytro : documented */
+
+/**
+ * Method andImmediate() copies each resource, which resolved by competitors {-competitors-} to own resources.
+ * If Consequence-owner is ready to resolve its own resource and any of handled Consequences has unresolved resource,
+ * then it will wait until all passed competitors will be resolved. Finally, Consequence-owner resolve own resources.
+ * If any of competitors was rejected, then Consequence-owner resolve not own resource and get only rejected error.
+ *
+ * @example
+ * let track = [];
+ * let conOwner = new  _.Consequence();
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * conOwner.andImmediate([ con1, con2 ]);
+ *
+ * conOwner.take( 100 );
+ * _.time.out( 50, () =>
+ * {
+ *   track.push( 'con1 take' );
+ *   con1.take( 'value1' );
+ * });
+ * _.time.out( 200, () =>
+ * {
+ *   track.push( 'con2 take' );
+ *   con2.take( 'value2' );
+ * });
+ *
+ * con1.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con1 tap' );
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con2 tap' );
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * conOwner.finallyGive( ( err, val ) =>
+ * {
+ *   con1.cancel();
+ *   con2.cancel();
+ *
+ *   console.log( _.toStr( track ) );
+ *   if( err )
+ *   console.log( `Error : ${ err }` );
+ *   else
+ *   console.log( `Value : ${ _.toStr( val ) }` );
+ * });
+ *
+ * // log :
+ * // con1 competitor executed with value : value1 and error : undefined
+ * // con2 competitor executed with value : value2 and error : undefined
+ * // [ 'con1 take', 'con1 tap', 'con2 take', 'con2 tap' ]
+ * // Value : [ 'value1', 'value2', 100 ]
+ *
+ * Basic parameter set :
+ * @param { Array } competitors - Array of competitors of any type.
+ * Alternative parameter set :
+ * @param { Map } o - Options map.
+ * @param { Array } o.competitors - Array of competitors of any type.
+ * @returns { Consequence } - Returns Consequence-owner when all handled Consequences will be resolved.
+ * @throws { Error } If arguments.length is 0.
+ * @throws { Error } If arguments.length is greater than 1.
+ * @throws { Error } If {-competitors-} has not valid type.
+ * @throws { Error } If {-o-} has not valid type.
+ * @throws { Error } If {-o.competitors-} has not valid type.
+ * @throws { Error } If {-o-} has extra properties.
+ * @method andImmediate
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
+ */
 
 let andImmediate = _.routineUnite({ head : and_head, body : _and, name : 'andKeep' });
 var defaults = andImmediate.defaults;
 defaults.keeping = true;
 defaults.waitingOthers = false;
 
-/* qqq : jsdoc, please */
+//
+
+/* aaa : jsdoc, please */ /* Dmytro : documented */
+
+/**
+ * Method andKeepAccumulative() copies each resource, which received by competitors {-competitors-} to own resources.
+ * If Consequence-owner is ready to resolve its own resource and any of handled Consequences received no resource,
+ * then it will wait until all passed competitors will have resource. Finally, competitors resolve own resources in order
+ * of receiving and Consequence-owner resolve all resources.
+ *
+ * @example
+ * let track = [];
+ * let conOwner = new  _.Consequence();
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * conOwner.andKeepAccumulative([ con1, con2 ]);
+ *
+ * conOwner.take( 100 );
+ * _.time.out( 50, () =>
+ * {
+ *   track.push( 'con1 take' );
+ *   con1.take( 'value1' );
+ * });
+ * _.time.out( 200, () =>
+ * {
+ *   track.push( 'con2 take' );
+ *   con2.take( 'value2' );
+ * });
+ *
+ * con1.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con1 tap' );
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con2 tap' );
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * conOwner.finallyGive( ( err, val ) =>
+ * {
+ *   con1.cancel();
+ *   con2.cancel();
+ *
+ *   console.log( _.toStr( track ) );
+ *   if( err )
+ *   console.log( `Error : ${ err }` );
+ *   else
+ *   console.log( `Value : ${ _.toStr( val ) }` );
+ * });
+ *
+ * // log :
+ * // con1 competitor executed with value : value1 and error : undefined
+ * // con2 competitor executed with value : value2 and error : undefined
+ * // [ 'con1 take', 'con1 tap', 'con2 take', 'con2 tap' ]
+ * // Value : [ 'value1', 'value2', 100 ]
+ *
+ * Basic parameter set :
+ * @param { Array } competitors - Array of competitors of any type.
+ * Alternative parameter set :
+ * @param { Map } o - Options map.
+ * @param { Array } o.competitors - Array of competitors of any type.
+ * @returns { Consequence } - Returns Consequence-owner when all handled Consequences will be resolved.
+ * @throws { Error } If arguments.length is 0.
+ * @throws { Error } If arguments.length is greater than 1.
+ * @throws { Error } If {-competitors-} has not valid type.
+ * @throws { Error } If {-o-} has not valid type.
+ * @throws { Error } If {-o.competitors-} has not valid type.
+ * @throws { Error } If {-o-} has extra properties.
+ * @method andKeepAccumulative
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
+ */
 
 let andKeepAccumulative = _.routineUnite({ head : and_head, body : _and, name : 'andKeepAccumulative' });
 var defaults = andKeepAccumulative.defaults;
@@ -2167,18 +2398,78 @@ defaults.accumulative = true;
 //
 
 /**
- * Call passed callback without waiting for resource and collect result of the call into an array.
- * To convert serial code to parallel replace methods {then}/{finally} by methods {also*}, without need to change structure of the code, what methods {and*} require.
- * First element of returned array has a resource which the consequence have had before call of ${also} or the first which the consequence will get later.
- * Returned by callback passed to ${also*} put into returned array in the same sequence as ${also*} were called.
+ * Method alsoTake() calls passed callback without waiting for resource and takes result of the call into an array.
+ * To convert serial code to parallel replace methods {then}/{finally} by methods {also*}, without need to change
+ * structure of the code, what methods {and*} require.
+ * First element of returned array has a resource which the Consequence-owner have had before call of ${also}
+ * or the first which the Consequence will get later.
  *
- * @see {@link module:Tools/base/Consequence.wConsequence#alsoKeep}
- * @param {Anything} callbacks Single callback or element to put in result array or array of such things.
+ * @example
+ * let track = [];
+ * let conOwner = new  _.Consequence();
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * conOwner.alsoTake([ con1, con2 ]);
+ *
+ * conOwner.take( 100 );
+ * _.time.out( 50, () =>
+ * {
+ *   track.push( 'con1 take' );
+ *   con1.take( 'value1' );
+ * });
+ * _.time.out( 200, () =>
+ * {
+ *   track.push( 'con2 take' );
+ *   con2.take( 'value2' );
+ * });
+ *
+ * con1.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con1 tap' );
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con2 tap' );
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * conOwner.finallyGive( ( err, val ) =>
+ * {
+ *   con1.cancel();
+ *   con2.cancel();
+ *
+ *   console.log( _.toStr( track ) );
+ *   if( err )
+ *   console.log( `Error : ${ err }` );
+ *   else
+ *   console.log( `Value : ${ _.toStr( val ) }` );
+ * });
+ *
+ * // log :
+ * // [ 'con1 take', 'con2 take' ]
+ * // Value : [ 100, 'value1', 'value2' ]
+ *
+ * Basic parameter set :
+ * @param { Array } competitors - Array of competitors of any type.
+ * Alternative parameter set :
+ * @param { Map } o - Options map.
+ * @param { Array } o.competitors - Array of competitors of any type.
+ * @returns { Consequence } - Returns Consequence-owner when all handled Consequences will be resolved.
+ * @throws { Error } If arguments.length is 0.
+ * @throws { Error } If arguments.length is greater than 1.
+ * @throws { Error } If {-competitors-} has not valid type.
+ * @throws { Error } If {-o-} has not valid type.
+ * @throws { Error } If {-o.competitors-} has not valid type.
+ * @throws { Error } If {-o-} has extra properties.
  * @method alsoTake
  * @module Tools/base/Consequence
  * @namespace Tools
  * @class wConsequence
  */
+
 
 let alsoTake = _.routineUnite({ head : and_head, body : _and, name : 'alsoTake' });
 var defaults = alsoTake.defaults;
@@ -2189,13 +2480,71 @@ defaults.waitingResource = false;
 //
 
 /**
- * Call passed callback without waiting for resource and collect result of the call into an array.
- * To convert serial code to parallel replace methods {then}/{finally} by methods {also*}, without need to change structure of the code, what methods {and*} require.
- * First element of returned array has a resource which the consequence have had before call of ${also} or the first which the consequence will get later.
- * Returned by callback passed to ${also*} put into returned array in the same sequence as ${also*} were called.
+ * Method alsoKeep() calls passed callback without waiting for resource and copies result of the call into an array.
+ * To convert serial code to parallel replace methods {then}/{finally} by methods {also*}, without need to change
+ * structure of the code, what methods {and*} require.
+ * First element of returned array has a resource which the Consequence-owner have had before call of ${also}
+ * or the first which the Consequence will get later.
  *
- * @see {@link module:Tools/base/Consequence.wConsequence#alsoTake}
- * @param {Anything} callbacks Single callback or element to put in result array or array of such things.
+ * @example
+ * let track = [];
+ * let conOwner = new  _.Consequence();
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * conOwner.alsoKeep([ con1, con2 ]);
+ *
+ * conOwner.take( 100 );
+ * _.time.out( 50, () =>
+ * {
+ *   track.push( 'con1 take' );
+ *   con1.take( 'value1' );
+ * });
+ * _.time.out( 200, () =>
+ * {
+ *   track.push( 'con2 take' );
+ *   con2.take( 'value2' );
+ * });
+ *
+ * con1.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con1 tap' );
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con2 tap' );
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * conOwner.finallyGive( ( err, val ) =>
+ * {
+ *   console.log( _.toStr( track ) );
+ *   if( err )
+ *   console.log( `Error : ${ err }` );
+ *   else
+ *   console.log( `Value : ${ _.toStr( val ) }` );
+ * });
+ *
+ * // log :
+ * // con1 competitor executed with value : value1 and error : undefined
+ * // con2 competitor executed with value : value2 and error : undefined
+ * // [ 'con1 take', 'con2 take', 'con1.tap', 'con2.tap' ]
+ * // Value : [ 100, 'value1', 'value2' ]
+ *
+ * Basic parameter set :
+ * @param { Array } competitors - Array of competitors of any type.
+ * Alternative parameter set :
+ * @param { Map } o - Options map.
+ * @param { Array } o.competitors - Array of competitors of any type.
+ * @returns { Consequence } - Returns Consequence-owner when all handled Consequences will be resolved.
+ * @throws { Error } If arguments.length is 0.
+ * @throws { Error } If arguments.length is greater than 1.
+ * @throws { Error } If {-competitors-} has not valid type.
+ * @throws { Error } If {-o-} has not valid type.
+ * @throws { Error } If {-o.competitors-} has not valid type.
+ * @throws { Error } If {-o-} has extra properties.
  * @method alsoKeep
  * @module Tools/base/Consequence
  * @namespace Tools
@@ -2210,7 +2559,79 @@ defaults.waitingResource = false;
 
 //
 
-/* qqq : jsdoc please */
+/* aaa : jsdoc please */ /* Dmytro : documented */
+
+/**
+ * Method alsoImmediate() calls passed callback without waiting for resource and immediatelly receive resource from the result.
+ * The resource copies to array. To convert serial code to parallel replace methods {then}/{finally} by methods {also*}, without
+ * need to change * structure of the code, what methods {and*} require.
+ * First element of returned array has a resource which the Consequence-owner have had before call of ${also}
+ * or the first which the Consequence will get later.
+ *
+ * @example
+ * let track = [];
+ * let conOwner = new  _.Consequence();
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * conOwner.alsoImmediate([ con1, con2 ]);
+ *
+ * conOwner.take( 100 );
+ * _.time.out( 50, () =>
+ * {
+ *   track.push( 'con1 take' );
+ *   con1.take( 'value1' );
+ * });
+ * _.time.out( 200, () =>
+ * {
+ *   track.push( 'con2 take' );
+ *   con2.take( 'value2' );
+ * });
+ *
+ * con1.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con1 tap' );
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con2 tap' );
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * conOwner.finallyGive( ( err, val ) =>
+ * {
+ *   console.log( _.toStr( track ) );
+ *   if( err )
+ *   console.log( `Error : ${ err }` );
+ *   else
+ *   console.log( `Value : ${ _.toStr( val ) }` );
+ * });
+ *
+ * // log :
+ * // con1 competitor executed with value : value1 and error : undefined
+ * // con2 competitor executed with value : value2 and error : undefined
+ * // [ 'con1 take', 'con1.tap', 'con2 take', 'con2.tap' ]
+ * // Value : [ 100, 'value1', 'value2' ]
+ *
+ * Basic parameter set :
+ * @param { Array } competitors - Array of competitors of any type.
+ * Alternative parameter set :
+ * @param { Map } o - Options map.
+ * @param { Array } o.competitors - Array of competitors of any type.
+ * @returns { Consequence } - Returns Consequence-owner when all handled Consequences will be resolved.
+ * @throws { Error } If arguments.length is 0.
+ * @throws { Error } If arguments.length is greater than 1.
+ * @throws { Error } If {-competitors-} has not valid type.
+ * @throws { Error } If {-o-} has not valid type.
+ * @throws { Error } If {-o.competitors-} has not valid type.
+ * @throws { Error } If {-o-} has extra properties.
+ * @method alsoImmediate
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
+ */
 
 let alsoImmediate = _.routineUnite({ head : and_head, body : _and, name : 'alsoImmediate' });
 var defaults = alsoImmediate.defaults;
@@ -2221,7 +2642,68 @@ defaults.waitingOthers = false;
 
 //
 
-/* qqq : jsdoc please */
+/* aaa : jsdoc please */ /* Dmytro : documented */
+
+/**
+ * Static routine AndTake() takes each resource, which is received by competitors provided in arguments. The competitors
+ * does not resolve resources. The routine returns resulted Consequence when all passed competitors will receive resource.
+ *
+ * @example
+ * let track = [];
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * let conOwner = _.Consequence.AndTake( con1, con2 );
+ *
+ * _.time.out( 50, () =>
+ * {
+ *   track.push( 'con1 take' );
+ *   con1.take( 'value1' );
+ * });
+ * _.time.out( 200, () =>
+ * {
+ *   track.push( 'con2 take' );
+ *   con2.take( 'value2' );
+ * });
+ *
+ * con1.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con1 tap' );
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con2 tap' );
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * conOwner.finallyGive( ( err, val ) =>
+ * {
+ *   con1.cancel();
+ *   con2.cancel();
+ *
+ *   console.log( _.toStr( track ) );
+ *   if( err )
+ *   console.log( `Error : ${ err }` );
+ *   else
+ *   console.log( `Value : ${ _.toStr( val ) }` );
+ * });
+ *
+ * // log :
+ * // [ 'con1 take', 'con2 take' ]
+ * // Value : [ 'value1', 'value2' ]
+ *
+ * @param { * } ... arguments - Unlimited number of competitors of any type in arguments.
+ * @returns { Consequence } - Returns new Consequence when all passed competitors will be resolved.
+ * @throws { Error } If routine calls by instance of Consequence.
+ * @static
+ * @function AndTake
+ * @module Tools/base/Consequence
+ * @namespace wTools.Consequence
+ * @class wConsequence
+ */
+
 function AndTake()
 {
   _.assert( !_.instanceIs( this ) )
@@ -2240,8 +2722,69 @@ function AndTake()
 
 //
 
-/* qqq : cover that procedures of AndTake and AndKeep has correct sourcePath */
-/* qqq : jsdoc please */
+/* aaa : cover that procedures of AndTake and AndKeep has correct sourcePath */ /* Dmytro : covered */
+
+/* qqq : jsdoc please */ /* Dmytro : documented */
+
+/**
+ * Static routine AndKeep() copies each resource, which is received by competitors provided in arguments. The competitors
+ * resolve resources. The routine returns resulted Consequence when all passed competitors will receive resource.
+ *
+ * @example
+ * let track = [];
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * let conOwner = _.Consequence.AndKeep( con1, con2 );
+ *
+ * _.time.out( 50, () =>
+ * {
+ *   track.push( 'con1 take' );
+ *   con1.take( 'value1' );
+ * });
+ * _.time.out( 200, () =>
+ * {
+ *   track.push( 'con2 take' );
+ *   con2.take( 'value2' );
+ * });
+ *
+ * con1.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con1 tap' );
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con2 tap' );
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * conOwner.finallyGive( ( err, val ) =>
+ * {
+ *   console.log( _.toStr( track ) );
+ *   if( err )
+ *   console.log( `Error : ${ err }` );
+ *   else
+ *   console.log( `Value : ${ _.toStr( val ) }` );
+ * });
+ *
+ * // log :
+ * // con1 competitor executed with value : value1 and error : undefined
+ * // con2 competitor executed with value : value2 and error : undefined
+ * // [ 'con1 take', 'con1.tap', 'con2 take', 'con2.tap' ]
+ * // Value : [ 'value1', 'value2' ]
+ *
+ * @param { * } ... arguments - Unlimited number of competitors of any type in arguments.
+ * @returns { Consequence } - Returns new Consequence when all passed competitors will be resolved.
+ * @throws { Error } If routine calls by instance of Consequence.
+ * @static
+ * @function AndKeep
+ * @module Tools/base/Consequence
+ * @namespace wTools.Consequence
+ * @class wConsequence
+ */
+
 function AndKeep()
 {
   _.assert( !_.instanceIs( this ) )
@@ -2260,8 +2803,70 @@ function AndKeep()
 
 //
 
-/* qqq : jsdoc please */
-/* qqq : cover please */
+/* aaa : jsdoc please */ /* Dmytro : documented */
+
+/* aaa : cover please */ /* Dmytro : covered */
+
+/**
+ * Static routine AndImmediate() copies each resource, which is received by competitors provided in arguments. The competitors
+ * resolve resources immediatelly after receiving. The routine returns resulted Consequence when all passed competitors will
+ * receive resource.
+ *
+ * @example
+ * let track = [];
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * let conOwner = _.Consequence.AndImmediate( con1, con2 );
+ *
+ * _.time.out( 50, () =>
+ * {
+ *   track.push( 'con1 take' );
+ *   con1.take( 'value1' );
+ * });
+ * _.time.out( 200, () =>
+ * {
+ *   track.push( 'con2 take' );
+ *   con2.take( 'value2' );
+ * });
+ *
+ * con1.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con1 tap' );
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con2 tap' );
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * conOwner.finallyGive( ( err, val ) =>
+ * {
+ *   console.log( _.toStr( track ) );
+ *   if( err )
+ *   console.log( `Error : ${ err }` );
+ *   else
+ *   console.log( `Value : ${ _.toStr( val ) }` );
+ * });
+ *
+ * // log :
+ * // con1 competitor executed with value : value1 and error : undefined
+ * // con2 competitor executed with value : value2 and error : undefined
+ * // [ 'con1 take', 'con1.tap', 'con2 take', 'con2.tap' ]
+ * // Value : [ 'value1', 'value2' ]
+ *
+ * @param { * } ... arguments - Unlimited number of competitors of any type in arguments.
+ * @returns { Consequence } - Returns new Consequence when all passed competitors will be resolved.
+ * @throws { Error } If routine calls by instance of Consequence.
+ * @static
+ * @function AndImmediate
+ * @module Tools/base/Consequence
+ * @namespace wTools.Consequence
+ * @class wConsequence
+ */
+
 function AndImmediate()
 {
   _.assert( !_.instanceIs( this ) )
@@ -2315,7 +2920,7 @@ function _or( o )
   else
   competitors = [ competitors ];
 
-  /* qqq2 : implement tests : arguments are promises */
+  /* aaa2 : implement tests : arguments are promises */ /* Dmytro : implemented */
 
   for( let c = competitors.length-1 ; c >= 0 ; c-- )
   {
@@ -2430,6 +3035,81 @@ _or.having =
 //   });
 // }
 
+/**
+ * Method afterOrTaking() takes first received resource and resolve it - any of resource received by competitors {-competitors-}.
+ * The competitor, which is received resource does not resolve it.
+ * If Consequence-owner receives resource before any of competitors {-competitors-} receives resource, then Consequence-
+ * owner resolves resource received by another competitor after it receives resource.
+ * If Consequence-owner receives no resource after all competitors {-competitors-} receive resources, then Consequence-
+ * owner waits for resource.
+ *
+ * @example
+ * let track = [];
+ * let conOwner = new  _.Consequence();
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * conOwner.afterOrKeeping([ con1, con2 ]);
+ *
+ * _.time.out( 50, () =>
+ * {
+ *   track.push( 'con1 take' );
+ *   con1.take( 'value1' );
+ * });
+ * _.time.out( 200, () =>
+ * {
+ *   track.push( 'con2 take' );
+ *   con2.take( 'value2' );
+ * });
+ *
+ * con1.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con1 tap' );
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con2 tap' );
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * conOwner.finallyGive( ( err, val ) =>
+ * {
+ *   con1.cancel();
+ *
+ *   console.log( _.toStr( track ) );
+ *   if( err )
+ *   console.log( `Error : ${ err }` );
+ *   else
+ *   console.log( `Value : ${ _.toStr( val ) }` );
+ * });
+ *
+ * // log :
+ * // [ 'con1 take' ]
+ * // Value : 'value1'
+ * // con2 competitor executed with value : value2 and error : undefined
+ *
+ * Basic parameter set :
+ * @param { Array } competitors - Array of competitors. A competitor can be a Consequences, a Promise or Null.
+ * Alternative parameter set :
+ * @param { Map } o - Options map.
+ * @param { Array } o.competitors - Array of competitors. A competitor can be a Consequences, a Promise or Null.
+ * @returns { Consequence } - Returns Consequence-owner when any of competitors received its resource.
+ * @throws { Error } If arguments.length is 0.
+ * @throws { Error } If arguments.length is greater than 1.
+ * @throws { Error } If {-competitors-} has not valid type.
+ * @throws { Error } If any of elements of {-competitors-} has not valid type.
+ * @throws { Error } If {-o-} has not valid type.
+ * @throws { Error } If {-o.competitors-} has not valid type.
+ * @throws { Error } If any of elements of {-o.competitors-} has not valid type.
+ * @throws { Error } If {-o-} has extra properties.
+ * @method afterOrKeeping
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
+ */
+
 let afterOrTaking = _.routineUnite({ head : or_head, body : _or, name : 'afterOrTaking' });
 
 afterOrTaking.defaults = Object.create( _or.defaults );
@@ -2452,6 +3132,80 @@ afterOrTaking.having = Object.create( _or.having );
 //     stack : 2,
 //   });
 // }
+
+/**
+ * Method afterOrKeeping() takes first received resource and resolve it - any of resource received by competitors {-competitors-}.
+ * The competitor, which is received resource resolves it.
+ * If Consequence-owner receives resource before any of competitors {-competitors-} receives resource, then Consequence-
+ * owner resolves resource received by another competitor after it receives resource.
+ * If Consequence-owner receives no resource after all competitors {-competitors-} receive resources, then Consequence-
+ * owner waits for resource.
+ *
+ * @example
+ * let track = [];
+ * let conOwner = new  _.Consequence();
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * conOwner.afterOrKeeping([ con1, con2 ]);
+ *
+ * _.time.out( 50, () =>
+ * {
+ *   track.push( 'con1 take' );
+ *   con1.take( 'value1' );
+ * });
+ * _.time.out( 200, () =>
+ * {
+ *   track.push( 'con2 take' );
+ *   con2.take( 'value2' );
+ * });
+ *
+ * con1.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con1 tap' );
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con2 tap' );
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * conOwner.finallyGive( ( err, val ) =>
+ * {
+ *   console.log( _.toStr( track ) );
+ *   if( err )
+ *   console.log( `Error : ${ err }` );
+ *   else
+ *   console.log( `Value : ${ _.toStr( val ) }` );
+ * });
+ *
+ * // log :
+ * // con1 competitor executed with value : value1 and error : undefined
+ * // [ 'con1 take', 'con1.tap' ]
+ * // Value : 'value1'
+ * // con2 competitor executed with value : value2 and error : undefined
+ *
+ * Basic parameter set :
+ * @param { Array } competitors - Array of competitors. A competitor can be a Consequences, a Promise or Null.
+ * Alternative parameter set :
+ * @param { Map } o - Options map.
+ * @param { Array } o.competitors - Array of competitors. A competitor can be a Consequences, a Promise or Null.
+ * @returns { Consequence } - Returns Consequence-owner when any of competitors received its resource.
+ * @throws { Error } If arguments.length is 0.
+ * @throws { Error } If arguments.length is greater than 1.
+ * @throws { Error } If {-competitors-} has not valid type.
+ * @throws { Error } If any of elements of {-competitors-} has not valid type.
+ * @throws { Error } If {-o-} has not valid type.
+ * @throws { Error } If {-o.competitors-} has not valid type.
+ * @throws { Error } If any of elements of {-o.competitors-} has not valid type.
+ * @throws { Error } If {-o-} has extra properties.
+ * @method afterOrKeeping
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
+ */
 
 let afterOrKeeping = _.routineUnite({ head : or_head, body : _or, name : 'afterOrKeeping' });
 
@@ -2504,6 +3258,79 @@ con0.orKeepingSplit([ con1, con2 ]) -> _.Consequence.Or( con0, con1, con2 );
 //   });
 // }
 
+/**
+ * Method orTaking() takes first received resource and resolve it - its own resource or any of resource received by
+ * competitors {-competitors-}. The competitor, which is received resource does not resolve it.
+ * If Consequence-owner receives resource before any of competitors {-competitors-} receives resource, then Consequence-
+ * owner resolves received resource immediately.
+ *
+ * @example
+ * let track = [];
+ * let conOwner = new  _.Consequence();
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * conOwner.orTaking([ con1, con2 ]);
+ *
+ * _.time.out( 50, () =>
+ * {
+ *   track.push( 'con1 take' );
+ *   con1.take( 'value1' );
+ * });
+ * _.time.out( 200, () =>
+ * {
+ *   track.push( 'con2 take' );
+ *   con2.take( 'value2' );
+ * });
+ *
+ * con1.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con1 tap' );
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con2 tap' );
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * conOwner.finallyGive( ( err, val ) =>
+ * {
+ *   con1.cancel();
+ *
+ *   console.log( _.toStr( track ) );
+ *   if( err )
+ *   console.log( `Error : ${ err }` );
+ *   else
+ *   console.log( `Value : ${ _.toStr( val ) }` );
+ * });
+ *
+ * // log :
+ * // [ 'con1 take' ]
+ * // Value : 'value1'
+ * // con2 competitor executed with value : value2 and error : undefined
+ *
+ * Basic parameter set :
+ * @param { Array } competitors - Array of competitors. A competitor can be a Consequences, a Promise or Null.
+ * Alternative parameter set :
+ * @param { Map } o - Options map.
+ * @param { Array } o.competitors - Array of competitors. A competitor can be a Consequences, a Promise or Null.
+ * @returns { Consequence } - Returns Consequence-owner when any of competitors received its resource.
+ * @throws { Error } If arguments.length is 0.
+ * @throws { Error } If arguments.length is greater than 1.
+ * @throws { Error } If {-competitors-} has not valid type.
+ * @throws { Error } If any of elements of {-competitors-} has not valid type.
+ * @throws { Error } If {-o-} has not valid type.
+ * @throws { Error } If {-o.competitors-} has not valid type.
+ * @throws { Error } If any of elements of {-o.competitors-} has not valid type.
+ * @throws { Error } If {-o-} has extra properties.
+ * @method orTaking
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
+ */
+
 let orTaking = _.routineUnite({ head : or_head, body : _or, name : 'orTaking' });
 
 orTaking.defaults = Object.create( _or.defaults );
@@ -2527,6 +3354,78 @@ orTaking.having = Object.create( _or.having );
 //   });
 // }
 
+/**
+ * Method orKeeping() resolve first received resource - its own resource or any of resource received by
+ * competitors {-competitors-}. The competitor, which is received resource resolves it immediately.
+ * If Consequence-owner receives resource before any of competitors {-competitors-} receives resource, then Consequence-
+ * owner resolves received resource immediately.
+ *
+ * @example
+ * let track = [];
+ * let conOwner = new  _.Consequence();
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * conOwner.orKeeping([ con1, con2 ]);
+ *
+ * _.time.out( 50, () =>
+ * {
+ *   track.push( 'con1 take' );
+ *   con1.take( 'value1' );
+ * });
+ * _.time.out( 200, () =>
+ * {
+ *   track.push( 'con2 take' );
+ *   con2.take( 'value2' );
+ * });
+ *
+ * con1.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con1 tap' );
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con2 tap' );
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * conOwner.finallyGive( ( err, val ) =>
+ * {
+ *   console.log( _.toStr( track ) );
+ *   if( err )
+ *   console.log( `Error : ${ err }` );
+ *   else
+ *   console.log( `Value : ${ _.toStr( val ) }` );
+ * });
+ *
+ * // log :
+ * // con1 competitor executed with value : value1 and error : undefined
+ * // [ 'con1 take', 'con1 tap' ]
+ * // Value : 'value1'
+ * // con2 competitor executed with value : value2 and error : undefined
+ *
+ * Basic parameter set :
+ * @param { Array } competitors - Array of competitors. A competitor can be a Consequences, a Promise or Null.
+ * Alternative parameter set :
+ * @param { Map } o - Options map.
+ * @param { Array } o.competitors - Array of competitors. A competitor can be a Consequences, a Promise or Null.
+ * @returns { Consequence } - Returns Consequence-owner when any of competitors resolve its resource.
+ * @throws { Error } If arguments.length is 0.
+ * @throws { Error } If arguments.length is greater than 1.
+ * @throws { Error } If {-competitors-} has not valid type.
+ * @throws { Error } If any of elements of {-competitors-} has not valid type.
+ * @throws { Error } If {-o-} has not valid type.
+ * @throws { Error } If {-o.competitors-} has not valid type.
+ * @throws { Error } If any of elements of {-o.competitors-} has not valid type.
+ * @throws { Error } If {-o-} has extra properties.
+ * @method orKeeping
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
+ */
+
 let orKeeping = _.routineUnite({ head : or_head, body : _or, name : 'orKeeping' });
 
 orKeeping.defaults = Object.create( _or.defaults );
@@ -2536,6 +3435,67 @@ orKeeping.defaults.waitingResource = false;
 orKeeping.having = Object.create( _or.having );
 
 //
+
+/**
+ * Static routine OrTake() takes first received resource from any of passed competitors and resolve it.
+ * The competitor, which received a resource, does not resolve resource.
+ *
+ * @example
+ * let track = [];
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * let conOwner = _.Consequence.OrTake( con1, con2 );
+ *
+ * _.time.out( 50, () =>
+ * {
+ *   track.push( 'con1 take' );
+ *   con1.take( 'value1' );
+ * });
+ * _.time.out( 200, () =>
+ * {
+ *   track.push( 'con2 take' );
+ *   con2.take( 'value2' );
+ * });
+ *
+ * con1.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con1 tap' );
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con2 tap' );
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * conOwner.finallyGive( ( err, val ) =>
+ * {
+ *   con1.cancel();
+ *
+ *   console.log( _.toStr( track ) );
+ *   if( err )
+ *   console.log( `Error : ${ err }` );
+ *   else
+ *   console.log( `Value : ${ _.toStr( val ) }` );
+ * });
+ *
+ * // log :
+ * // [ 'con1 take' ]
+ * // Value : 'value1'
+ * // con2 competitor executed with value : value2 and error : undefined
+ *
+ * @param { Consequence|Promise|Null } ... arguments - Competitors to handle.
+ * @returns { Consequence } - Returns new Consequence when any of competitors received its resource.
+ * @throws { Error } If any of elements of {-arguments-} has not valid type.
+ * @throws { Error } If routine calls by instance of Consequence.
+ * static
+ * @method OrTake
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
+ */
 
 function OrTake( srcs )
 {
@@ -2547,6 +3507,66 @@ function OrTake( srcs )
 }
 
 //
+
+/**
+ * Static routine OrKeep() takes first received resource from any of passed competitors and resolve it.
+ * The competitor, which received a resource, resolves resource before.
+ *
+ * @example
+ * let track = [];
+ * let con1 = new _.Consequence();
+ * let con2 = new _.Consequence();
+ *
+ * let conOwner = _.Consequence.OrKeep( con1, con2 );
+ *
+ * _.time.out( 50, () =>
+ * {
+ *   track.push( 'con1 take' );
+ *   con1.take( 'value1' );
+ * });
+ * _.time.out( 200, () =>
+ * {
+ *   track.push( 'con2 take' );
+ *   con2.take( 'value2' );
+ * });
+ *
+ * con1.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con1 tap' );
+ *   console.log( `con1 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * con2.tap( ( err, value ) =>
+ * {
+ *   track.push( 'con2 tap' );
+ *   console.log( `con2 competitor executed with value : ${ value } and error : ${ err }` );
+ * });
+ *
+ * conOwner.finallyGive( ( err, val ) =>
+ * {
+ *   console.log( _.toStr( track ) );
+ *   if( err )
+ *   console.log( `Error : ${ err }` );
+ *   else
+ *   console.log( `Value : ${ _.toStr( val ) }` );
+ * });
+ *
+ * // log :
+ * // con1 competitor executed with value : value1 and error : undefined
+ * // [ 'con1 take', 'con1.tap' ]
+ * // Value : 'value1'
+ * // con2 competitor executed with value : value2 and error : undefined
+ *
+ * @param { Consequence|Promise|Null } ... arguments - Competitors to handle.
+ * @returns { Consequence } - Returns new Consequence when any of competitors received its resource.
+ * @throws { Error } If any of elements of {-arguments-} has not valid type.
+ * @throws { Error } If routine calls by instance of Consequence.
+ * static
+ * @method OrKeep
+ * @module Tools/base/Consequence
+ * @namespace Tools
+ * @class wConsequence
+ */
 
 function OrKeep( srcs )
 {
@@ -4321,6 +5341,7 @@ function __call__()
 
 /* aaa : remove second argument */
 // function From( src, timeLimit )
+
 function From( src ) /* qqq : cover */
 {
   let con = src;

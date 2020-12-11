@@ -6881,7 +6881,7 @@ function andTakeExtended( test )
     let con = new _.Consequence().take( 3 );
     con.andTake([ con1, con2 ]);
 
-    con1.tap( ( _err, arg ) =>
+    con1.tap( ( err, arg ) =>
     {
       track.push( 'con1.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -6892,7 +6892,7 @@ function andTakeExtended( test )
       test.identical( con2.competitorsEarlyGet().length, 1 );
     });
 
-    con2.tap( ( _err, arg ) =>
+    con2.tap( ( err, arg ) =>
     {
       track.push( 'con2.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -6903,11 +6903,11 @@ function andTakeExtended( test )
       test.identical( con2.competitorsEarlyGet().length, 0 );
     });
 
-    con.tap( ( _err, got ) =>
+    con.tap( ( err, got ) =>
     {
       track.push( 'con.tap' );
       test.identical( got, [ 1, 2, 3 ] );
-      test.true( _err === undefined );
+      test.true( err === undefined );
       test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 1, 2, 3 ] } ] );
       test.identical( con.competitorsCount(), 0 );
       test.identical( con1.resourcesGet(), [] );
@@ -6975,7 +6975,7 @@ function andTakeExtended( test )
     con.andTake([ con1, con2 ]);
     let err1 = _.errAttend( 'Error1' );
 
-    con1.tap( ( _err, arg ) =>
+    con1.tap( ( err, arg ) =>
     {
       track.push( 'con1.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -6986,7 +6986,7 @@ function andTakeExtended( test )
       test.identical( con2.competitorsEarlyGet().length, 1 );
     });
 
-    con2.tap( ( _err, arg ) =>
+    con2.tap( ( err, arg ) =>
     {
       track.push( 'con2.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -6997,11 +6997,11 @@ function andTakeExtended( test )
       test.identical( con2.competitorsEarlyGet().length, 1 );
     });
 
-    con.tap( ( _err, got ) =>
+    con.tap( ( err, got ) =>
     {
       track.push( 'con.tap' );
       test.identical( got, undefined );
-      test.true( _err === err1 );
+      test.true( err === err1 );
       test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
       test.identical( con.competitorsCount(), 0 );
       test.identical( con1.resourcesGet(), [] );
@@ -7069,7 +7069,7 @@ function andTakeExtended( test )
     con.andTake([ con1, con2 ]);
     let err1 = _.errAttend( 'Error1' );
 
-    con1.tap( ( _err, arg ) =>
+    con1.tap( ( err, arg ) =>
     {
       track.push( 'con1.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -7080,7 +7080,7 @@ function andTakeExtended( test )
       test.identical( con2.competitorsEarlyGet().length, 1 );
     });
 
-    con2.tap( ( _err, arg ) =>
+    con2.tap( ( err, arg ) =>
     {
       track.push( 'con2.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -7091,11 +7091,11 @@ function andTakeExtended( test )
       test.identical( con2.competitorsEarlyGet().length, 1 );
     });
 
-    con.tap( ( _err, got ) =>
+    con.tap( ( err, got ) =>
     {
       track.push( 'con.tap' );
       test.identical( got, undefined );
-      test.true( _err === err1 );
+      test.true( err === err1 );
       test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
       test.identical( con.competitorsCount(), 0 );
       test.identical( con1.resourcesGet(), [] );
@@ -8980,7 +8980,7 @@ function andKeepExtended( test )
     let con = new _.Consequence().take( 3 );
     con.andKeep([ con1, con2 ]);
 
-    con1.tap( ( _err, arg ) =>
+    con1.tap( ( err, arg ) =>
     {
       track.push( 'con1.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -8991,7 +8991,7 @@ function andKeepExtended( test )
       test.identical( con2.competitorsEarlyGet().length, 1 );
     });
 
-    con2.tap( ( _err, arg ) =>
+    con2.tap( ( err, arg ) =>
     {
       track.push( 'con2.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -9002,11 +9002,11 @@ function andKeepExtended( test )
       test.identical( con2.competitorsEarlyGet().length, 0 );
     });
 
-    con.tap( ( _err, got ) =>
+    con.tap( ( err, got ) =>
     {
       track.push( 'con.tap' );
       test.identical( got, [ 1, 2, 3 ] );
-      test.true( _err === undefined );
+      test.true( err === undefined );
       test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 1, 2, 3 ] } ] );
       test.identical( con.competitorsCount(), 0 );
       test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
@@ -9072,7 +9072,7 @@ function andKeepExtended( test )
     con.andKeep([ con1, con2 ]);
     let err1 = _.errAttend( 'Error1' );
 
-    con1.tap( ( _err, arg ) =>
+    con1.tap( ( err, arg ) =>
     {
       track.push( 'con1.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -9083,7 +9083,7 @@ function andKeepExtended( test )
       test.identical( con2.competitorsEarlyGet().length, 1 );
     });
 
-    con2.tap( ( _err, arg ) =>
+    con2.tap( ( err, arg ) =>
     {
       track.push( 'con2.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -9094,11 +9094,11 @@ function andKeepExtended( test )
       test.identical( con2.competitorsEarlyGet().length, 0 );
     });
 
-    con.tap( ( _err, got ) =>
+    con.tap( ( err, got ) =>
     {
       track.push( 'con.tap' );
       test.identical( got, undefined );
-      test.true( _err === err1 );
+      test.true( err === err1 );
       test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
       test.identical( con.competitorsCount(), 0 );
       test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
@@ -9164,7 +9164,7 @@ function andKeepExtended( test )
     con.andKeep([ con1, con2 ]);
     let err1 = _.errAttend( 'Error1' );
 
-    con1.tap( ( _err, arg ) =>
+    con1.tap( ( err, arg ) =>
     {
       track.push( 'con1.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -9175,7 +9175,7 @@ function andKeepExtended( test )
       test.identical( con2.competitorsEarlyGet().length, 1 );
     });
 
-    con2.tap( ( _err, arg ) =>
+    con2.tap( ( err, arg ) =>
     {
       track.push( 'con2.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -9186,11 +9186,11 @@ function andKeepExtended( test )
       test.identical( con2.competitorsEarlyGet().length, 0 );
     });
 
-    con.tap( ( _err, got ) =>
+    con.tap( ( err, got ) =>
     {
       track.push( 'con.tap' );
       test.identical( got, undefined );
-      test.true( _err === err1 );
+      test.true( err === err1 );
       test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
       test.identical( con.competitorsCount(), 0 );
       test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
@@ -10088,7 +10088,7 @@ function andImmediate( test )
     let con = _.Consequence().take( 3 );
     con.andImmediate([ con1, con2 ]);
 
-    con1.tap( ( _err, arg ) =>
+    con1.tap( ( err, arg ) =>
     {
       track.push( 'con1.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -10099,7 +10099,7 @@ function andImmediate( test )
       test.identical( con2.competitorsEarlyGet().length, 2 );
     });
 
-    con2.tap( ( _err, arg ) =>
+    con2.tap( ( err, arg ) =>
     {
       track.push( 'con2.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -10110,11 +10110,11 @@ function andImmediate( test )
       test.identical( con2.competitorsEarlyGet().length, 0 );
     });
 
-    con.tap( ( _err, got ) =>
+    con.tap( ( err, got ) =>
     {
       track.push( 'con.tap' );
       test.identical( got, [ 1, 2, 3 ] );
-      test.true( _err === undefined );
+      test.true( err === undefined );
       test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 1, 2, 3 ] } ] );
       test.identical( con.competitorsCount(), 0 );
       test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
@@ -10180,7 +10180,7 @@ function andImmediate( test )
     con.andImmediate([ con1, con2 ]);
     let err1 = _.errAttend( 'Error1' );
 
-    con1.tap( ( _err, arg ) =>
+    con1.tap( ( err, arg ) =>
     {
       track.push( 'con1.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -10191,7 +10191,7 @@ function andImmediate( test )
       test.identical( con2.competitorsEarlyGet().length, 2 );
     });
 
-    con2.tap( ( _err, arg ) =>
+    con2.tap( ( err, arg ) =>
     {
       track.push( 'con2.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -10202,11 +10202,11 @@ function andImmediate( test )
       test.identical( con2.competitorsEarlyGet().length, 0 );
     });
 
-    con.tap( ( _err, got ) =>
+    con.tap( ( err, got ) =>
     {
       track.push( 'con.tap' );
       test.identical( got, undefined );
-      test.true( _err === err1 );
+      test.true( err === err1 );
       test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
       test.identical( con.competitorsCount(), 0 );
       test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
@@ -10272,7 +10272,7 @@ function andImmediate( test )
     con.andImmediate([ con1, con2 ]);
     let err1 = _.errAttend( 'Error1' );
 
-    con1.tap( ( _err, arg ) =>
+    con1.tap( ( err, arg ) =>
     {
       track.push( 'con1.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -10283,7 +10283,7 @@ function andImmediate( test )
       test.identical( con2.competitorsEarlyGet().length, 2 );
     });
 
-    con2.tap( ( _err, arg ) =>
+    con2.tap( ( err, arg ) =>
     {
       track.push( 'con2.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -10294,11 +10294,11 @@ function andImmediate( test )
       test.identical( con2.competitorsEarlyGet().length, 0 );
     });
 
-    con.tap( ( _err, got ) =>
+    con.tap( ( err, got ) =>
     {
       track.push( 'con.tap' );
       test.identical( got, undefined );
-      test.true( _err === err1 );
+      test.true( err === err1 );
       test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
       test.identical( con.competitorsCount(), 0 );
       test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
@@ -11256,7 +11256,7 @@ function alsoKeepExtended( test )
     let con = new _.Consequence().take( 3 );
     con.alsoKeep([ con1, con2 ]);
 
-    con1.tap( ( _err, arg ) =>
+    con1.tap( ( err, arg ) =>
     {
       track.push( 'con1.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -11267,7 +11267,7 @@ function alsoKeepExtended( test )
       test.identical( con2.competitorsEarlyGet().length, 1 );
     });
 
-    con2.tap( ( _err, arg ) =>
+    con2.tap( ( err, arg ) =>
     {
       track.push( 'con2.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -11278,11 +11278,11 @@ function alsoKeepExtended( test )
       test.identical( con2.competitorsEarlyGet().length, 0 );
     });
 
-    con.tap( ( _err, got ) =>
+    con.tap( ( err, got ) =>
     {
       track.push( 'con.tap' );
       test.identical( got, [ 3, 1, 2 ] );
-      test.true( _err === undefined );
+      test.true( err === undefined );
       test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 3, 1, 2 ] } ] );
       test.identical( con.competitorsCount(), 0 );
       test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
@@ -11348,7 +11348,7 @@ function alsoKeepExtended( test )
     con.alsoKeep([ con1, con2 ]);
     let err1 = _.errAttend( 'Error1' );
 
-    con1.tap( ( _err, arg ) =>
+    con1.tap( ( err, arg ) =>
     {
       track.push( 'con1.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -11359,7 +11359,7 @@ function alsoKeepExtended( test )
       test.identical( con2.competitorsEarlyGet().length, 1 );
     });
 
-    con2.tap( ( _err, arg ) =>
+    con2.tap( ( err, arg ) =>
     {
       track.push( 'con2.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -11370,11 +11370,11 @@ function alsoKeepExtended( test )
       test.identical( con2.competitorsEarlyGet().length, 0 );
     });
 
-    con.tap( ( _err, got ) =>
+    con.tap( ( err, got ) =>
     {
       track.push( 'con.tap' );
       test.identical( got, undefined );
-      test.true( _err === err1 );
+      test.true( err === err1 );
       test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
       test.identical( con.competitorsCount(), 0 );
       test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
@@ -11440,7 +11440,7 @@ function alsoKeepExtended( test )
     con.alsoKeep([ con1, con2 ]);
     let err1 = _.errAttend( 'Error1' );
 
-    con1.tap( ( _err, arg ) =>
+    con1.tap( ( err, arg ) =>
     {
       track.push( 'con1.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -11451,7 +11451,7 @@ function alsoKeepExtended( test )
       test.identical( con2.competitorsEarlyGet().length, 1 );
     });
 
-    con2.tap( ( _err, arg ) =>
+    con2.tap( ( err, arg ) =>
     {
       track.push( 'con2.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -11462,11 +11462,11 @@ function alsoKeepExtended( test )
       test.identical( con2.competitorsEarlyGet().length, 0 );
     });
 
-    con.tap( ( _err, got ) =>
+    con.tap( ( err, got ) =>
     {
       track.push( 'con.tap' );
       test.identical( got, undefined );
-      test.true( _err === err1 );
+      test.true( err === err1 );
       test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
       test.identical( con.competitorsCount(), 0 );
       test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
@@ -11809,7 +11809,7 @@ function alsoImmediate( test )
     let con = _.Consequence().take( 3 );
     con.alsoImmediate([ con1, con2 ]);
 
-    con1.tap( ( _err, arg ) =>
+    con1.tap( ( err, arg ) =>
     {
       track.push( 'con1.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -11820,7 +11820,7 @@ function alsoImmediate( test )
       test.identical( con2.competitorsEarlyGet().length, 2 );
     });
 
-    con2.tap( ( _err, arg ) =>
+    con2.tap( ( err, arg ) =>
     {
       track.push( 'con2.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -11831,11 +11831,11 @@ function alsoImmediate( test )
       test.identical( con2.competitorsEarlyGet().length, 0 );
     });
 
-    con.tap( ( _err, got ) =>
+    con.tap( ( err, got ) =>
     {
       track.push( 'con.tap' );
       test.identical( got, [ 3, 1, 2 ] );
-      test.true( _err === undefined );
+      test.true( err === undefined );
       test.identical( con.resourcesGet(), [ { 'error' : undefined, 'argument' : [ 3, 1, 2 ] } ] );
       test.identical( con.competitorsCount(), 0 );
       test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );
@@ -11901,7 +11901,7 @@ function alsoImmediate( test )
     con.alsoImmediate([ con1, con2 ]);
     let err1 = _.errAttend( 'Error1' );
 
-    con1.tap( ( _err, arg ) =>
+    con1.tap( ( err, arg ) =>
     {
       track.push( 'con1.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -11912,7 +11912,7 @@ function alsoImmediate( test )
       test.identical( con2.competitorsEarlyGet().length, 2 );
     });
 
-    con2.tap( ( _err, arg ) =>
+    con2.tap( ( err, arg ) =>
     {
       track.push( 'con2.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -11923,11 +11923,11 @@ function alsoImmediate( test )
       test.identical( con2.competitorsEarlyGet().length, 0 );
     });
 
-    con.tap( ( _err, got ) =>
+    con.tap( ( err, got ) =>
     {
       track.push( 'con.tap' );
       test.identical( got, undefined );
-      test.true( _err === err1 );
+      test.true( err === err1 );
       test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
       test.identical( con.competitorsCount(), 0 );
       test.identical( con1.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
@@ -11993,7 +11993,7 @@ function alsoImmediate( test )
     con.alsoImmediate([ con1, con2 ]);
     let err1 = _.errAttend( 'Error1' );
 
-    con1.tap( ( _err, arg ) =>
+    con1.tap( ( err, arg ) =>
     {
       track.push( 'con1.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -12004,7 +12004,7 @@ function alsoImmediate( test )
       test.identical( con2.competitorsEarlyGet().length, 2 );
     });
 
-    con2.tap( ( _err, arg ) =>
+    con2.tap( ( err, arg ) =>
     {
       track.push( 'con2.tap' );
       test.identical( con.resourcesGet(), [] );
@@ -12015,11 +12015,11 @@ function alsoImmediate( test )
       test.identical( con2.competitorsEarlyGet().length, 0 );
     });
 
-    con.tap( ( _err, got ) =>
+    con.tap( ( err, got ) =>
     {
       track.push( 'con.tap' );
       test.identical( got, undefined );
-      test.true( _err === err1 );
+      test.true( err === err1 );
       test.identical( con.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
       test.identical( con.competitorsCount(), 0 );
       test.identical( con1.resourcesGet(), [ { 'error' : undefined, 'argument' : 1 } ] );

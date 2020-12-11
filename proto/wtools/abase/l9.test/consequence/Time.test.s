@@ -124,9 +124,7 @@ function timeOutStructural( test )
 {
   let context = this;
   let ready = _.take( null );
-  let track;
-  let pcounter;
-  let timer;
+  let track, pcounter, timer;
 
   ready.then( () => run( 0 ) );
   ready.then( () => run( 1 ) );
@@ -448,9 +446,7 @@ function timeOutThrowingStructural( test )
 {
   let context = this;
   let ready = _.take( null );
-  let track;
-  let pcounter;
-  let timer;
+  let track, pcounter, timer;
 
   ready.then( () => run() );
 
@@ -542,8 +538,7 @@ function timeOutErrorStructural( test )
 {
   let context = this;
   let ready = _.take( null );
-  let track;
-  let pcounter;
+  let track, pcounter;
 
   ready.then( () => run( 0 ) );
   ready.then( () => run( 1 ) );
@@ -640,8 +635,7 @@ function timeOutErrorThrowingStructural( test )
 {
   let context = this;
   let ready = _.take( null );
-  let track;
-  let pcounter;
+  let track, pcounter;
 
   ready.then( () => run() );
 
@@ -720,8 +714,7 @@ function timeOutErrorThrowingUnattended( test )
 {
   let context = this;
   let ready = _.take( null );
-  let track;
-  let pcounter;
+  let track, pcounter;
 
   ready.then( () => run() );
 
@@ -800,10 +793,7 @@ function timeOutCancelWithCancel( test )
 {
   let context = this;
   let ready = _.take( null );
-  let track;
-  let pcounter;
-  let timer;
-
+  let track, pcounter, timer;
   ready.then( () => run() );
 
   return ready;
@@ -867,10 +857,7 @@ function timeOutCancelWithErrorSymbol( test )
 {
   let context = this;
   let ready = _.take( null );
-  let track;
-  let pcounter;
-  let timer;
-
+  let track, pcounter, timer;
   ready.then( () => run( _.dont ) );
   ready.then( () => run( Symbol.for( 'symbol1' ) ) );
 

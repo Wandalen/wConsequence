@@ -433,7 +433,7 @@ function asyncStackInConsequenceTrivial( test )
     test.identical( _.strCount( op.output, '= Source code from' ), 1 );
     test.identical( _.strCount( op.output, `program.js:6` ), 1 );
     test.identical( _.strCount( op.output, `at program` ), 1 );
-    test.identical( _.strCount( op.output, `Error1` ), 1 );
+    test.identical( _.strCount( op.output, `Error1` ), 2 );
     return null;
   });
 
@@ -448,7 +448,7 @@ function asyncStackInConsequenceTrivial( test )
     _.include( 'wConsequence' );
     _.time.out( context.t1*3/2, () =>
     {
-      throw 'Error1';
+      throw _.err( 'Error1' );
       return null;
     });
   }
