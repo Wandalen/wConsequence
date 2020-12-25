@@ -237,6 +237,18 @@ function ready( test )
 
 ready.timeOut = 10000;
 
+//
+
+function sessionsRun( test )
+{
+  test.case = 'empty sessions';
+  var errCallback = ( err, arg ) =>
+  {
+    test.identical( arg, undefined );
+    test.identical( _.strCount( err.message, 'Expects sessions' ), 2 );
+  };
+  test.shouldThrowErrorSync( () => _.sessionsRun({ concurrent : 1, sessions : [] }), errCallback );
+}
 
 // --
 // declare
@@ -253,6 +265,7 @@ let Self =
   {
 
     ready,
+    sessionsRun,
 
   }
 
