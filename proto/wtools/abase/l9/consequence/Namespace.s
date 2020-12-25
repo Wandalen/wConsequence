@@ -689,6 +689,7 @@ function sessionsRun_head( routine, args )
   _.assert( arguments.length === 2 );
   _.assert( args.length === 1, 'Expects single argument' );
   _.assert( _.longIs( o.sessions ) );
+  _.assert( o.sessions.length > 0, 'Expects sessions' );
 
   return o;
 }
