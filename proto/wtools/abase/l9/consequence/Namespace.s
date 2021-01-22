@@ -143,7 +143,8 @@ function out_head( routine, args )
   if( _.procedureIs( args[ 1 ] ) )
   {
     procedure = args[ 1 ];
-    args = _.longBut( args, [ 1, 2 ] );
+    args = _.longBut_( args, [ 1, 1 ] );
+    // args = _.longBut( args, [ 1, 2 ] );
   }
 
   // if( !_.mapIs( args[ 0 ] ) || args.length === 2 )
