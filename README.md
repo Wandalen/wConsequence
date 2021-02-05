@@ -9,7 +9,7 @@ Algorithmically speaking Consequence is 2 queues ( FIFO ) and a customizable arb
 git clone https://github.com/Wandalen/wConsequence
 cd wConsequence
 npm install
-node sample/Sample.s
+node sample/trivial/Sample.s
 ```
 
 ## To add to your project
