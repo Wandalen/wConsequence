@@ -714,6 +714,7 @@ function sessionsRun_body( o )
     o.ready = _.take( null );
   }
 
+  if( o.sessions.length )
   o.ready.thenGive( () =>
   {
 
