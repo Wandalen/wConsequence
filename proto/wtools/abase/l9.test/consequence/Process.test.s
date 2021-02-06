@@ -239,7 +239,7 @@ ready.timeOut = 10000;
 
 //
 
-function sessionsRunExperiment( test )
+function sessionsRunWithEmptySessions( test )
 {
   test.case = 'empty sessions';
   var o =
@@ -268,19 +268,9 @@ function sessionsRunExperiment( test )
     ready : null,
   };
   var got = _.sessionsRun( o );
-  console.log( got );
-  test.true( true );
+  test.true( got === o );
+  test.true( _.consequenceIs( got.ready ) );
 }
-sessionsRunExperiment.experimental = 1;
-sessionsRunExperiment.description =
-`
-if sessions length is 0, then created consequence cannot take any resource
-so this test routine never ends
-
-possible solutions :
-- throw error if sessions.length === 0
-- return null or default consequence - ready.take( null );
-`
 
 // --
 // declare
@@ -297,7 +287,7 @@ let Self =
   {
 
     ready,
-    sessionsRunExperiment,
+    sessionsRunWithEmptySessions,
 
   }
 
