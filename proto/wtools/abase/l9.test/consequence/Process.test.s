@@ -241,35 +241,58 @@ ready.timeOut = 10000;
 
 function sessionsRunWithEmptySessions( test )
 {
-  test.case = 'empty sessions';
-  var o =
+  let ready = _.take( null );
+  let o;
+  /* */
+
+  ready.then( () =>
   {
-    conBeginName: 'conStart',
-    conEndName: 'conTerminate',
-    concurrent: 0,
-    error: null,
-    onBegin: ( err, o2 ) =>
+    test.case = 'empty sessions';
+    o =
     {
-      if( o2 )
-      return o2;
-      throw err;
-    },
-    onEnd: ( err, o2 ) =>
-    {
-      if( o2 )
-      return o2;
-      throw err;
-    },
-    onError: ( err ) => { throw err },
-    onRun: ( session ) => { return session },
-    ready: null,
-    readyName: 'ready',
-    sessions : [],
-    ready : null,
-  };
-  var got = _.sessionsRun( o );
-  test.true( got === o );
-  test.true( _.consequenceIs( got.ready ) );
+      conBeginName: 'conStart',
+      conEndName: 'conTerminate',
+      concurrent: 0,
+      error: null,
+      onBegin: ( err, o2 ) =>
+      {
+        if( o2 )
+        return o2;
+        throw err;
+      },
+      onEnd: ( err, o2 ) =>
+      {
+        if( o2 )
+        return o2;
+        throw err;
+      },
+      onError: ( err ) => { throw err },
+      onRun: ( session ) => { return session },
+      readyName: 'ready',
+      sessions : [],
+      ready : null,
+    };
+    return _.sessionsRun( o );
+  });
+  ready.then( ( op ) =>
+  {
+    test.true( _.mapIs( op ) );
+    test.true( op === o );
+    test.identical( op.conBeginName, 'conStart' );
+    test.identical( op.conEndName, 'conTerminate' );
+    test.identical( op.concurrent, 0 );
+    test.identical( op.error, null );
+    test.true( _.routineIs( op.onBegin ) );
+    test.true( _.routineIs( op.onEnd ) );
+    test.true( _.routineIs( op.onError ) );
+    test.true( _.routineIs( op.onRun ) );
+    test.true( _.consequenceIs( op.ready ) );
+    test.identical( op.readyName, 'ready' );
+    test.identical( op.sessions, [] );
+    return null;
+  });
+
+  return ready;
 }
 
 // --
