@@ -26,7 +26,7 @@ about :
   - 'Ihor O. <iostashvxi@gmail.com>'
   npm.name : 'wConsequence'
   npm.scripts :
-    test : 'wtest .run proto/**'
+    test : 'wtest .run proto/** rapidity:-3'
     docgen : 'wdocgen .build proto'
 
 path :
