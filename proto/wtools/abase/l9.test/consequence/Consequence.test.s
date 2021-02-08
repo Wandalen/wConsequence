@@ -22986,7 +22986,8 @@ function bugFromProcessParallelExperiment( test )
     return ready;
   })
 
-  return _.Consequence.And( con1, con2 );}
+  return _.Consequence.And( con1, con2 );
+}
 
 bugFromProcessParallelExperiment.experimental = 1;
 

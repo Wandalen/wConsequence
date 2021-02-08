@@ -251,25 +251,25 @@ function sessionsRunWithEmptySessions( test )
     test.case = 'empty sessions';
     o =
     {
-      conBeginName: 'conStart',
-      conEndName: 'conTerminate',
-      concurrent: 0,
-      error: null,
-      onBegin: ( err, o2 ) =>
+      conBeginName : 'conStart',
+      conEndName : 'conTerminate',
+      concurrent : 0,
+      error : null,
+      onBegin : ( err, o2 ) =>
       {
         if( o2 )
         return o2;
         throw err;
       },
-      onEnd: ( err, o2 ) =>
+      onEnd : ( err, o2 ) =>
       {
         if( o2 )
         return o2;
         throw err;
       },
-      onError: ( err ) => { throw err },
-      onRun: ( session ) => { return session },
-      readyName: 'ready',
+      onError : ( err ) => { throw err },
+      onRun : ( session ) => { return session },
+      readyName : 'ready',
       sessions : [],
       ready : null,
     };
