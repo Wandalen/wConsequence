@@ -243,6 +243,7 @@ function sessionsRunWithEmptySessions( test )
 {
   let ready = _.take( null );
   let o;
+
   /* */
 
   ready.then( () =>
