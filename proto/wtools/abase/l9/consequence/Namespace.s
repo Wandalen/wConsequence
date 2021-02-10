@@ -147,8 +147,11 @@ function out_head( routine, args )
     // args = _.longBut( args, [ 1, 2 ] );
   }
 
-  // if( !_.mapIs( args[ 0 ] ) || args.length === 2 )
-  if( !_.mapIs( args[ 0 ] ) )
+  if( _.mapIs( args[ 0 ] ) )
+  {
+    o = args[ 0 ];
+  }
+  else
   {
     if( args.length === 1 || args.length === 2 )
     {
@@ -165,29 +168,12 @@ function out_head( routine, args )
           return returnOnEnd;
         }
       }
-      // else if( _.routineIs( onEnd ) && !_.consequenceIs( onEnd ) )
-      // {
-      //   let _onEnd = onEnd;
-      //   onEnd = function timeOutEnd( timer )
-      //   {
-      //     let result = _onEnd.apply( this, arguments );
-      //     return result === undefined ? timer : result;
-      //   }
-      // }
 
       o = { delay, onEnd }
     }
     else
     {
-
       _.assert( args.length <= 4 );
-
-      // if( args[ 1 ] !== undefined && args[ 2 ] === undefined && args[ 3 ] === undefined )
-      // _.assert( _.routineIs( onEnd ) || _.consequenceIs( onEnd ) );
-      // else if( args[ 2 ] !== undefined || args[ 3 ] !== undefined )
-      // _.assert( _.routineIs( args[ 2 ] ) );
-      //
-      // if( args[ 2 ] !== undefined || args[ 3 ] !== undefined )
 
       let delay = args[ 0 ];
       let onEnd = _.routineJoin.call( _, args[ 1 ], args[ 2 ], args[ 3 ] );  /* qqq : cover by separate test routine */
@@ -195,10 +181,60 @@ function out_head( routine, args )
       o = { delay, onEnd }
     }
   }
-  else
-  {
-    o = args[ 0 ];
-  }
+
+
+  // if( !_.mapIs( args[ 0 ] ) || args.length === 2 )
+  // if( !_.mapIs( args[ 0 ] ) )
+  // {
+  //   if( args.length === 1 || args.length === 2 )
+  //   {
+  //     let delay = args[ 0 ];
+  //     let onEnd = args[ 1 ];
+  //
+  //     if( onEnd !== undefined && !_.routineIs( onEnd ) && !_.consequenceIs( onEnd ) )
+  //     {
+  //       _.assert( args.length === 2, 'Expects two arguments if second one is not callable' );
+  //       _.assert( !routine.defaults.error, 'Time out throwing error should have callback to attend it' ); /* qqq : cover */
+  //       let returnOnEnd = args[ 1 ];
+  //       onEnd = function onEnd()
+  //       {
+  //         return returnOnEnd;
+  //       }
+  //     }
+  //     // else if( _.routineIs( onEnd ) && !_.consequenceIs( onEnd ) )
+  //     // {
+  //     //   let _onEnd = onEnd;
+  //     //   onEnd = function timeOutEnd( timer )
+  //     //   {
+  //     //     let result = _onEnd.apply( this, arguments );
+  //     //     return result === undefined ? timer : result;
+  //     //   }
+  //     // }
+  //
+  //     o = { delay, onEnd }
+  //   }
+  //   else
+  //   {
+  //
+  //     _.assert( args.length <= 4 );
+  //
+  //     // if( args[ 1 ] !== undefined && args[ 2 ] === undefined && args[ 3 ] === undefined )
+  //     // _.assert( _.routineIs( onEnd ) || _.consequenceIs( onEnd ) );
+  //     // else if( args[ 2 ] !== undefined || args[ 3 ] !== undefined )
+  //     // _.assert( _.routineIs( args[ 2 ] ) );
+  //     //
+  //     // if( args[ 2 ] !== undefined || args[ 3 ] !== undefined )
+  //
+  //     let delay = args[ 0 ];
+  //     let onEnd = _.routineJoin.call( _, args[ 1 ], args[ 2 ], args[ 3 ] );  /* qqq : cover by separate test routine */
+  //
+  //     o = { delay, onEnd }
+  //   }
+  // }
+  // else
+  // {
+  //   o = args[ 0 ];
+  // }
 
   _.assert( _.mapIs( o ) );
 
@@ -243,24 +279,7 @@ function out_body( o )
 
   function timeEnd2( err, arg )
   {
-    if( !_.time.timerInEndBegun( timer ) )
-    {
-      _.time.cancel( timer );
-      if( Config.debug )
-      if( !_.symbolIs( err ) )
-      {
-        let err2 = _.err
-        (
-          'Only symbol in error channel of conseqeucne should be used to cancel timer.'
-          + '\nFor example: "consequence.error( _.dont );"'
-          + ( err !== undefined ? `\nError of type ${_.strType( err )} was recieved instead` : `` )
-          + ( err !== undefined ? `` : `\nArgument of type ${_.strType( arg )} was recieved instead` )
-        );
-        _.error._handleUncaught2({ err : err2 });
-        throw err2;
-      }
-    }
-    else
+    if( _.time.timerInEndBegun( timer ) )
     {
       if( _.consequenceIs( o.onEnd ) )
       {
@@ -277,6 +296,59 @@ function out_body( o )
         err = undefined;
       }
     }
+    else
+    {
+      _.time.cancel( timer );
+      if( Config.debug )
+      if( !_.symbolIs( err ) )
+      {
+        let err2 = _.err
+        (
+          'Only symbol in error channel of conseqeucne should be used to cancel timer.'
+          + '\nFor example: "consequence.error( _.dont );"'
+          + ( err === undefined ? `` : `\nError of type ${_.strType( err )} was recieved instead` )
+          + ( err === undefined ? `\nArgument of type ${_.strType( arg )} was recieved instead` : `` )
+        );
+        _.error._handleUncaught2({ err : err2 });
+        throw err2;
+      }
+    }
+
+    // if( !_.time.timerInEndBegun( timer ) )
+    // {
+    //   _.time.cancel( timer );
+    //   if( Config.debug )
+    //   if( !_.symbolIs( err ) )
+    //   {
+    //     let err2 = _.err
+    //     (
+    //       'Only symbol in error channel of conseqeucne should be used to cancel timer.'
+    //       + '\nFor example: "consequence.error( _.dont );"'
+    //       + ( err !== undefined ? `\nError of type ${_.strType( err )} was recieved instead` : `` )
+    //       + ( err !== undefined ? `` : `\nArgument of type ${_.strType( arg )} was recieved instead` )
+    //     );
+    //     _.error._handleUncaught2({ err : err2 });
+    //     throw err2;
+    //   }
+    // }
+    // else
+    // {
+    //   if( _.consequenceIs( o.onEnd ) )
+    //   {
+    //     arg = o.onEnd;
+    //     err = undefined;
+    //   }
+    //   else
+    //   {
+    //     if( o.onEnd )
+    //     arg = o.onEnd.call( timer, err ? err : arg );
+    //     if( arg === undefined )
+    //     arg = timer;
+    //     else
+    //     err = undefined;
+    //   }
+    // }
+
     if( err )
     throw err;
     return arg;
@@ -469,10 +541,15 @@ _errTimeOut.defaults =
 
 function take()
 {
-  if( !arguments.length )
-  return new _.Consequence().take( null );
-  else
+  if( arguments.length )
   return new _.Consequence().take( ... arguments );
+  else
+  return new _.Consequence().take( null );
+
+  // if( !arguments.length )
+  // return new _.Consequence().take( null );
+  // else
+  // return new _.Consequence().take( ... arguments );
 }
 
 //
@@ -490,11 +567,15 @@ function After( resource )
   _.assert( arguments.length === 0 || arguments.length === 1 );
   _.assert( arguments.length === 0 || resource !== undefined );
 
-  if( resource !== undefined )
-  return _.Consequence.From( resource );
-  else
+  if( resource === undefined )
   return new _.Consequence().take( null );
+  else
+  return _.Consequence.From( resource );
 
+  // if( resource !== undefined )
+  // return _.Consequence.From( resource );
+  // else
+  // return new _.Consequence().take( null );
 }
 
 // //
@@ -714,6 +795,7 @@ function sessionsRun_body( o )
     o.ready = _.take( null );
   }
 
+  if( o.sessions.length )
   o.ready.thenGive( () =>
   {
 

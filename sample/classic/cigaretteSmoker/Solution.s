@@ -37,16 +37,7 @@ function status()
 
 function putItems( justFinishedSmoker )
 {
-  if( !justFinishedSmoker )
-  {
-    con.then( () =>
-    {
-      items.push( smokers[ 1 ].item, smokers[ 2 ].item );
-      console.log( `agent puts items on the table - ${status()}` );
-      return smoke( smokers[ 0 ] );
-    });
-  }
-  else
+  if( justFinishedSmoker )
   {
     con.then( () =>
     {
@@ -71,6 +62,50 @@ function putItems( justFinishedSmoker )
       }
     });
   }
+  else
+  {
+    con.then( () =>
+    {
+      items.push( smokers[ 1 ].item, smokers[ 2 ].item );
+      console.log( `agent puts items on the table - ${status()}` );
+      return smoke( smokers[ 0 ] );
+    });
+  }
+
+  // if( !justFinishedSmoker )
+  // {
+  //   con.then( () =>
+  //   {
+  //     items.push( smokers[ 1 ].item, smokers[ 2 ].item );
+  //     console.log( `agent puts items on the table - ${status()}` );
+  //     return smoke( smokers[ 0 ] );
+  //   });
+  // }
+  // else
+  // {
+  //   con.then( () =>
+  //   {
+  //     const nextSmokers = smokers.filter( ( s ) => s.id !== justFinishedSmoker.id );
+  //     if( nextSmokers[ 0 ].id === 1 && nextSmokers[ 1 ].id === 2 )
+  //     {
+  //       items.push( justFinishedSmoker.item, nextSmokers[ 1 ].item );
+  //       console.log( `agent puts items on the table - ${status()}` );
+  //       return smoke( nextSmokers[ 0 ] );
+  //     }
+  //     else if( nextSmokers[ 0 ].id === 1 && nextSmokers[ 1 ].id === 3 )
+  //     {
+  //       items.push( justFinishedSmoker.item, nextSmokers[ 0 ].item );
+  //       console.log( `agent puts items on the table - ${status()}` );
+  //       return smoke( nextSmokers[ 1 ] );
+  //     }
+  //     else
+  //     {
+  //       items.push( justFinishedSmoker.item, nextSmokers[ 1 ].item );
+  //       console.log( `agent puts items on the table - ${status()}` );
+  //       return smoke( nextSmokers[ 0 ] );
+  //     }
+  //   });
+  // }
 }
 
 //

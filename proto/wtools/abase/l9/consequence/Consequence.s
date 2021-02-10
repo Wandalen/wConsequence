@@ -1141,16 +1141,28 @@ function syncMaybe()
   if( self._resources.length === 1 )
   {
     let resource = self._resources[ 0 ];
-    if( resource.error !== undefined )
+    if( resource.error === undefined )
     {
-      _.assert( resource.argument === undefined );
-      throw _.err( resource.error );
+      // _.assert( resource.error === undefined ); /* Dmytro : has no sense for this condition */
+      _.assert( resource.argument !== undefined );
+      return resource.argument;
     }
     else
     {
-      _.assert( resource.error === undefined );
-      return resource.argument;
+      // _.assert( resource.argument === undefined ); /* Dmytro : has no sense for this condition */
+      _.assert( resource.error !== undefined );
+      throw _.err( resource.error );
     }
+    // if( resource.error !== undefined )
+    // {
+    //   _.assert( resource.argument === undefined );
+    //   throw _.err( resource.error );
+    // }
+    // else
+    // {
+    //   _.assert( resource.error === undefined );
+    //   return resource.argument;
+    // }
   }
 
   return self;
@@ -1302,10 +1314,16 @@ function _put( o )
 
   function __onPutWithKey( err, arg )
   {
-    if( err !== undefined )
-    container[ key ] = err;
-    else
+    if( err === undefined )
     container[ key ] = arg;
+    else
+    container[ key ] = err;
+
+    // if( err !== undefined )
+    // container[ key ] = err;
+    // else
+    // container[ key ] = arg;
+
     if( !keeping )
     return;
     if( err )
@@ -1317,12 +1335,18 @@ function _put( o )
 
   function __onPutToArray( err, arg )
   {
-    debugger;
     _.assert( 0, 'not tested' );
-    if( err !== undefined )
-    container.push( err );
-    else
+
+    if( err === undefined )
     container.push( arg );
+    else
+    container.push( err );
+
+    // if( err !== undefined )
+    // container.push( err );
+    // else
+    // container.push( arg );
+
     if( !keeping )
     return;
     if( err )
@@ -1561,10 +1585,15 @@ function _timeLimit( o )
 
   if( !_.consequenceIs( callbackConsequence ) )
   {
-    if( !_.routineIs( callbackConsequence ) )
-    callback = callbackConsequence = _.Consequence.From( callbackConsequence );
-    else
+    if( _.routineIs( callbackConsequence ) )
     callbackConsequence = new _.Consequence();
+    else
+    callback = callbackConsequence = _.Consequence.From( callbackConsequence );
+
+    // if( !_.routineIs( callbackConsequence ) )
+    // callback = callbackConsequence = _.Consequence.From( callbackConsequence );
+    // else
+    // callbackConsequence = new _.Consequence();
   }
 
   let c = self._competitorAppend
@@ -4939,10 +4968,15 @@ function resourcesGet( index )
   let self = this;
   _.assert( arguments.length === 0 || arguments.length === 1 )
   _.assert( index === undefined || _.numberIs( index ) );
-  if( index !== undefined )
-  return self._resources[ index ];
-  else
+  if( index === undefined )
   return self._resources;
+  else
+  return self._resources[ index ];
+
+  // if( index !== undefined )
+  // return self._resources[ index ];
+  // else
+  // return self._resources;
 }
 
 //
@@ -4952,10 +4986,15 @@ function argumentsGet( index )
   let self = this;
   _.assert( arguments.length === 0 || arguments.length === 1 )
   _.assert( index === undefined || _.numberIs( index ) );
-  if( index !== undefined )
-  return self._resources[ index ].argument;
-  else
+  if( index === undefined )
   return _.filter_( null, self._resources, ( r ) => r.argument ? r.argument : undefined );
+  else
+  return self._resources[ index ].argument;
+
+  // if( index !== undefined )
+  // return self._resources[ index ].argument;
+  // else
+  // return _.filter_( null, self._resources, ( r ) => r.argument ? r.argument : undefined );
 }
 
 //
@@ -4965,10 +5004,15 @@ function errorsGet( index )
   let self = this;
   _.assert( arguments.length === 0 || arguments.length === 1 )
   _.assert( index === undefined || _.numberIs( index ) );
-  if( index !== undefined )
-  return self._resources[ index ].error;
-  else
+  if( index === undefined )
   return _.filter_( null, self._resources, ( r ) => r.error ? r.error : undefined );
+  else
+  return self._resources[ index ].error;
+
+  // if( index !== undefined )
+  // return self._resources[ index ].error;
+  // else
+  // return _.filter_( null, self._resources, ( r ) => r.error ? r.error : undefined );
 }
 
 //

@@ -41,15 +41,26 @@ function event( o )
   }
   else
   {
-    if( !isWriting )
-    {
-      read( o );
-    }
-    else
+
+    if( isWriting )
     {
       console.log( `  op_${o.id}_${o.type} cannot access the buffer, op_${o.id}_${o.type} will try later - ${status()}` );
       proceduresQueue.push( o );
     }
+    else
+    {
+      read( o );
+    }
+
+    // if( !isWriting )
+    // {
+    //   read( o );
+    // }
+    // else
+    // {
+    //   console.log( `  op_${o.id}_${o.type} cannot access the buffer, op_${o.id}_${o.type} will try later - ${status()}` );
+    //   proceduresQueue.push( o );
+    // }
   }
 }
 
