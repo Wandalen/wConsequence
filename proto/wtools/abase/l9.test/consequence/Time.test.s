@@ -734,7 +734,8 @@ function timeOutErrorThrowingUnattended( test )
 
     track.push( 'a' );
 
-    let con1 = _.time.outError( context.t2, _.time.out( context.t2 * 2 ) )
+    // let con1 = _.time.outError( context.t2, _.time.out( context.t2 * 2 ) )
+    let con1 = _.time.outError( context.t2 / 2, _.time.out( context.t2 * 2 ) )
     .tap( function( err, arg )
     {
       test.identical( arguments.length, 2 );
@@ -775,7 +776,6 @@ function timeOutErrorThrowingUnattended( test )
   {
     return function uncaughtError( e )
     {
-      debugger;
       console.log( 'uncaughtError' );
       test.identical( e.err.originalMessage, 'Time out!' );
       test.identical( e.err.reason, 'time out' );
