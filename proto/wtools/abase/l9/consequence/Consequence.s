@@ -3815,7 +3815,7 @@ function error( error )
 
   _.assert( arguments.length === 1 || arguments.length === 0 );
 
-  if( arguments.length === 0  )
+  if( arguments.length === 0 )
   error = _.err();
 
   if( error !== undefined )
@@ -5987,7 +5987,7 @@ let Extension =
 
   competitorOwn, /* aaa2 : cover */ /* Dmytro : covered, _competitorsLate restricted and not used */
   competitorHas,
-  competitorsCount,  /* aaa2 : cover */ /* Dmytro : covered, _competitorsLate restricted and not used */
+  competitorsCount, /* aaa2 : cover */ /* Dmytro : covered, _competitorsLate restricted and not used */
   competitorsEarlyGet,
   competitorsLateGet,
   competitorsGet,

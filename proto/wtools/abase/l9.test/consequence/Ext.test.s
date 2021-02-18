@@ -25,7 +25,7 @@ let path = fileProvider.path;
 function onSuiteBegin()
 {
   let self = this;
-  self.suiteTempPath = path.tempOpen( path.join( __dirname, '../..'  ), 'ConsequenceExternal' );
+  self.suiteTempPath = path.tempOpen( path.join( __dirname, '../..' ), 'ConsequenceExternal' );
   self.assetsOriginalPath = path.join( __dirname, '_asset' );
 }
 
