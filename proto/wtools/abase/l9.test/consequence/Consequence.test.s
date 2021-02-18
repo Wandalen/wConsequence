@@ -6616,7 +6616,7 @@ function andTake( test )
     var con2 = new _.Consequence({ tag : 'con2', capacity : 3 });
     var con3 = new _.Consequence({ tag : 'con3', capacity : 3 });
 
-    var srcs = [ con3, con1, con2  ];
+    var srcs = [ con3, con1, con2 ];
 
     mainCon.take( 'str' );
 
@@ -6678,7 +6678,7 @@ function andTake( test )
     var con1 = new _.Consequence({ tag : 'con1' });
     var con2 = new _.Consequence({ tag : 'con2' });
 
-    var srcs = [ con1, con2  ];
+    var srcs = [ con1, con2 ];
 
     con1.take( null );
     con1.finally( () => con2 );
@@ -6718,7 +6718,7 @@ function andTake( test )
     var con1 = new _.Consequence({ tag : 'con1' });
     var con2 = new _.Consequence({ tag : 'con2' });
 
-    var srcs = [ con1, con2  ];
+    var srcs = [ con1, con2 ];
 
     mainCon.take( 'str' );
 
@@ -6740,8 +6740,8 @@ function andTake( test )
       return null;
     });
 
-    _.time.out( delay, () => { con1.error( 'con1' );return null;  } )
-    var t = _.time.out( delay * 2, () => { con2.take( 'con2' );return null;  } )
+    _.time.out( delay, () => { con1.error( 'con1' );return null; } )
+    var t = _.time.out( delay * 2, () => { con2.take( 'con2' );return null; } )
 
     t.finally( () =>
     {
@@ -8390,7 +8390,7 @@ function andKeepInstant( test )
     var con1 = new _.Consequence({ tag : 'con1', capacity : 3 });
     var con2 = new _.Consequence({ tag : 'con2', capacity : 3 });
     var con3 = new _.Consequence({ tag : 'con3', capacity : 3 });
-    var srcs = [ con3, con1, con2  ];
+    var srcs = [ con3, con1, con2 ];
 
     mainCon.take( 'str' );
 
@@ -8646,7 +8646,7 @@ function andKeep( test )
     var con1 = new _.Consequence({ tag : 'con1', capacity : 3 });
     var con2 = new _.Consequence({ tag : 'con2', capacity : 3 });
     var con3 = new _.Consequence({ tag : 'con3', capacity : 3 });
-    var srcs = [ con3, con1, con2  ];
+    var srcs = [ con3, con1, con2 ];
 
     mainCon.take( 'str' );
 
@@ -8708,7 +8708,7 @@ function andKeep( test )
     var con2 = new _.Consequence({ tag : 'con2', capacity : 3 });
     var con3 = new _.Consequence({ tag : 'con3', capacity : 3 });
 
-    var srcs = [ con3, con1, con2  ];
+    var srcs = [ con3, con1, con2 ];
 
     mainCon.take( 'str' );
 
@@ -8769,7 +8769,7 @@ function andKeep( test )
     var con1 = new _.Consequence({ tag : 'con1' });
     var con2 = new _.Consequence({ tag : 'con2' });
 
-    var srcs = [ con1, con2  ];
+    var srcs = [ con1, con2 ];
 
     con1.take( null );
     con1.finally( () => con2 );
@@ -8794,7 +8794,7 @@ function andKeep( test )
       return null;
     });
 
-    _.time.out( delay * 2, () => { con2.take( 'con2' ); return null;  } )
+    _.time.out( delay * 2, () => { con2.take( 'con2' ); return null; } )
 
     return mainCon;
   })
@@ -8812,7 +8812,7 @@ function andKeep( test )
     var con1 = new _.Consequence({ tag : 'con1' });
     var con2 = new _.Consequence({ tag : 'con2' });
 
-    var srcs = [ con1, con2  ];
+    var srcs = [ con1, con2 ];
 
     mainCon.take( 'str' );
 
@@ -8833,8 +8833,8 @@ function andKeep( test )
       return null;
     });
 
-    _.time.out( delay, () => { con1.error( 'con1' );return null;  } )
-    var t = _.time.out( delay * 2, () => { con2.take( 'con2' );return null;  } )
+    _.time.out( delay, () => { con1.error( 'con1' );return null; } )
+    var t = _.time.out( delay * 2, () => { con2.take( 'con2' );return null; } )
 
     t.finally( () =>
     {
