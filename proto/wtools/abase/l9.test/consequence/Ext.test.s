@@ -590,7 +590,7 @@ function symbolAsError( test )
     .then( ( op ) =>
     {
       test.notIdentical( op.exitCode, 0 );
-      test.identical( _.strCount( op.output, 'con1.tap Error Undefined' ), 1 );
+      test.identical( _.strCount( op.output, 'con1.tap Error.constructible Undefined' ), 1 );
       test.identical( _.strCount( op.output, 'Error1' ), 3 );
       test.identical( _.strCount( op.output, 'uncaught asynchronous error' ), 2 );
       return null;
@@ -1175,7 +1175,7 @@ function timeOutCancelWithErrorNotSymbol( test )
   {
     test.notIdentical( op.exitCode, 0 );
     test.identical( _.strCount( op.output, 'Only symbol in error channel of conseqeucne should be used to cancel timer' ), 1 );
-    test.identical( _.strCount( op.output, 'Error of type Error was recieved instead' ), 1 );
+    test.identical( _.strCount( op.output, 'Error of type Error.constructible was recieved instead' ), 1 );
     return null;
   });
 
