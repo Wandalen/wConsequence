@@ -1175,7 +1175,7 @@ function timeOutCancelWithErrorNotSymbol( test )
   {
     test.notIdentical( op.exitCode, 0 );
     test.identical( _.strCount( op.output, 'Only symbol in error channel of conseqeucne should be used to cancel timer' ), 1 );
-    test.identical( _.strCount( op.output, 'Error of type Error was recieved instead' ), 1 );
+    test.identical( _.strCount( op.output, 'Error of type Error.constructible was recieved instead' ), 1 );
     return null;
   });
 
