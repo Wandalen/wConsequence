@@ -898,7 +898,7 @@ function toStr( test )
   test.case = 'toStrFine';
   var con1 = _.Consequence();
   var exp = 'Consequence:: 0 / 0';
-  var got = _.toStrFine( con1 );
+  var got = _.entity.exportStringFine( con1 );
   test.identical( got, exp );
 
   act( 'toStr' );

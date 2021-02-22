@@ -630,7 +630,7 @@ function symbolAsError( test )
 
     con1.tap( ( err, arg ) =>
     {
-      console.log( `con1.tap ${_.strType( err )} ${_.strType( arg )}` );
+      console.log( `con1.tap ${_.entity.strType( err )} ${_.entity.strType( arg )}` );
     });
 
     _.time.begin( context.t1, () =>
@@ -1068,20 +1068,20 @@ competitorsCount 2
       con1.error( _.dont );
       con1.give( ( err, got ) =>
       {
-        console.log( `err : ${_.strType( err )}` );
-        console.log( `arg : ${_.strType( got )}` );
+        console.log( `err : ${_.entity.strType( err )}` );
+        console.log( `arg : ${_.entity.strType( got )}` );
         console.log( 'v3' );
       });
       con1.give( ( err, got ) =>
       {
-        console.log( `err : ${_.strType( err )}` );
-        console.log( `arg : ${_.strType( got )}` );
+        console.log( `err : ${_.entity.strType( err )}` );
+        console.log( `arg : ${_.entity.strType( got )}` );
         console.log( 'v4' );
       });
       con1.give( ( err, got ) =>
       {
-        console.log( `err : ${_.strType( err )}` );
-        console.log( `arg : ${_.strType( got )}` );
+        console.log( `err : ${_.entity.strType( err )}` );
+        console.log( `arg : ${_.entity.strType( got )}` );
         console.log( 'v5' );
       });
     })

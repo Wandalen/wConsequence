@@ -867,7 +867,7 @@ function timeOutCancelWithErrorSymbol( test )
 
   function run( cancelErr )
   {
-    test.case = `${_.strType( cancelErr )}`;
+    test.case = `${_.entity.strType( cancelErr )}`;
 
     track = [];
     pcounter = _.Procedure.Counter;
@@ -938,7 +938,7 @@ function timeOutCancelWithErrorSymbol( test )
 //
 //   function run( cancelArg )
 //   {
-//     test.case = `${_.strType( cancelArg )}`;
+//     test.case = `${_.entity.strType( cancelArg )}`;
 //
 //     track = [];
 //     pcounter = _.Procedure.Counter;

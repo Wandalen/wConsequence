@@ -306,8 +306,8 @@ function out_body( o )
         (
           'Only symbol in error channel of conseqeucne should be used to cancel timer.'
           + '\nFor example: "consequence.error( _.dont );"'
-          + ( err === undefined ? `` : `\nError of type ${_.strType( err )} was recieved instead` )
-          + ( err === undefined ? `\nArgument of type ${_.strType( arg )} was recieved instead` : `` )
+          + ( err === undefined ? `` : `\nError of type ${_.entity.strType( err )} was recieved instead` )
+          + ( err === undefined ? `\nArgument of type ${_.entity.strType( arg )} was recieved instead` : `` )
         );
         _.error._handleUncaught2({ err : err2 });
         throw err2;
@@ -324,8 +324,8 @@ function out_body( o )
     //     (
     //       'Only symbol in error channel of conseqeucne should be used to cancel timer.'
     //       + '\nFor example: "consequence.error( _.dont );"'
-    //       + ( err !== undefined ? `\nError of type ${_.strType( err )} was recieved instead` : `` )
-    //       + ( err !== undefined ? `` : `\nArgument of type ${_.strType( arg )} was recieved instead` )
+    //       + ( err !== undefined ? `\nError of type ${_.entity.strType( err )} was recieved instead` : `` )
+    //       + ( err !== undefined ? `` : `\nArgument of type ${_.entity.strType( arg )} was recieved instead` )
     //     );
     //     _.error._handleUncaught2({ err : err2 });
     //     throw err2;
@@ -615,7 +615,7 @@ function stagesRun( stages, o )
 
   /* validation */
 
-  _.assert( _.objectIs( stages ) || _.longIs( stages ), 'Expects array or object ( stages ), but got', _.strType( stages ) );
+  _.assert( _.objectIs( stages ) || _.longIs( stages ), 'Expects array or object ( stages ), but got', _.entity.strType( stages ) );
 
   for( let s in stages )
   {

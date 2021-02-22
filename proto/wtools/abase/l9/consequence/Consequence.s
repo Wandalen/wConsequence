@@ -797,7 +797,7 @@ function _first( src, stack )
     }
 
   }
-  else _.assert( 0, 'Method first expects consequence of routine, but got', _.strType( src ) );
+  else _.assert( 0, 'Method first expects consequence of routine, but got', _.entity.strType( src ) );
 
   return self;
 }
@@ -1278,7 +1278,7 @@ function _put( o )
   let keeping = o.keeping;
 
   _.assert( !_.primitiveIs( o.container ), 'Expects one or two argument, container for resource or key and container' );
-  _.assert( o.key === null || _.numberIs( o.key ) || _.strIs( o.key ), () => 'Key should be number or string, but it is ' + _.strType( o.key ) );
+  _.assert( o.key === null || _.numberIs( o.key ) || _.strIs( o.key ), () => 'Key should be number or string, but it is ' + _.entity.strType( o.key ) );
 
   if( o.key !== null )
   {
@@ -1857,7 +1857,7 @@ function _and( o )
       _.assert
       (
         competitor !== undefined
-        , () => `Expects defined value, but got ${_.strType( competitor )}`
+        , () => `Expects defined value, but got ${_.entity.strType( competitor )}`
         + `${ _.routineIs( originalCompetitor ) ? '\n' + originalCompetitor.toString() : ''}`
       );
 
@@ -2050,7 +2050,7 @@ function _and( o )
       // _.assert /* Dmytro : allows to accept any type of competitors */
       // (
       //   _.consequenceIs( competitor ) || _.routineIs( competitor ) || competitor === null,
-      //   () => 'Consequence.and expects consequence, routine, promise or null, but got ' + _.strType( competitor )
+      //   () => 'Consequence.and expects consequence, routine, promise or null, but got ' + _.entity.strType( competitor )
       // );
 
       if( !_.consequenceIs( competitor ) )
@@ -2148,11 +2148,11 @@ having.andLike = 1;
  *   con1.cancel();
  *   con2.cancel();
  *
- *   console.log( _.toStr( track ) );
+ *   console.log( _.entity.exportString( track ) );
  *   if( err )
  *   console.log( `Error : ${ err }` );
  *   else
- *   console.log( `Value : ${ _.toStr( val ) }` );
+ *   console.log( `Value : ${ _.entity.exportString( val ) }` );
  * });
  *
  * // log :
@@ -2223,11 +2223,11 @@ defaults.keeping = false;
  *
  * conOwner.finallyGive( ( err, val ) =>
  * {
- *   console.log( _.toStr( track ) );
+ *   console.log( _.entity.exportString( track ) );
  *   if( err )
  *   console.log( `Error : ${ err }` );
  *   else
- *   console.log( `Value : ${ _.toStr( val ) }` );
+ *   console.log( `Value : ${ _.entity.exportString( val ) }` );
  * });
  *
  * // log :
@@ -2305,11 +2305,11 @@ defaults.keeping = true;
  *   con1.cancel();
  *   con2.cancel();
  *
- *   console.log( _.toStr( track ) );
+ *   console.log( _.entity.exportString( track ) );
  *   if( err )
  *   console.log( `Error : ${ err }` );
  *   else
- *   console.log( `Value : ${ _.toStr( val ) }` );
+ *   console.log( `Value : ${ _.entity.exportString( val ) }` );
  * });
  *
  * // log :
@@ -2388,11 +2388,11 @@ defaults.waitingOthers = false;
  *   con1.cancel();
  *   con2.cancel();
  *
- *   console.log( _.toStr( track ) );
+ *   console.log( _.entity.exportString( track ) );
  *   if( err )
  *   console.log( `Error : ${ err }` );
  *   else
- *   console.log( `Value : ${ _.toStr( val ) }` );
+ *   console.log( `Value : ${ _.entity.exportString( val ) }` );
  * });
  *
  * // log :
@@ -2470,11 +2470,11 @@ defaults.accumulative = true;
  *   con1.cancel();
  *   con2.cancel();
  *
- *   console.log( _.toStr( track ) );
+ *   console.log( _.entity.exportString( track ) );
  *   if( err )
  *   console.log( `Error : ${ err }` );
  *   else
- *   console.log( `Value : ${ _.toStr( val ) }` );
+ *   console.log( `Value : ${ _.entity.exportString( val ) }` );
  * });
  *
  * // log :
@@ -2549,11 +2549,11 @@ defaults.waitingResource = false;
  *
  * conOwner.finallyGive( ( err, val ) =>
  * {
- *   console.log( _.toStr( track ) );
+ *   console.log( _.entity.exportString( track ) );
  *   if( err )
  *   console.log( `Error : ${ err }` );
  *   else
- *   console.log( `Value : ${ _.toStr( val ) }` );
+ *   console.log( `Value : ${ _.entity.exportString( val ) }` );
  * });
  *
  * // log :
@@ -2631,11 +2631,11 @@ defaults.waitingResource = false;
  *
  * conOwner.finallyGive( ( err, val ) =>
  * {
- *   console.log( _.toStr( track ) );
+ *   console.log( _.entity.exportString( track ) );
  *   if( err )
  *   console.log( `Error : ${ err }` );
  *   else
- *   console.log( `Value : ${ _.toStr( val ) }` );
+ *   console.log( `Value : ${ _.entity.exportString( val ) }` );
  * });
  *
  * // log :
@@ -2712,11 +2712,11 @@ defaults.waitingOthers = false;
  *   con1.cancel();
  *   con2.cancel();
  *
- *   console.log( _.toStr( track ) );
+ *   console.log( _.entity.exportString( track ) );
  *   if( err )
  *   console.log( `Error : ${ err }` );
  *   else
- *   console.log( `Value : ${ _.toStr( val ) }` );
+ *   console.log( `Value : ${ _.entity.exportString( val ) }` );
  * });
  *
  * // log :
@@ -2791,11 +2791,11 @@ function AndTake()
  *
  * conOwner.finallyGive( ( err, val ) =>
  * {
- *   console.log( _.toStr( track ) );
+ *   console.log( _.entity.exportString( track ) );
  *   if( err )
  *   console.log( `Error : ${ err }` );
  *   else
- *   console.log( `Value : ${ _.toStr( val ) }` );
+ *   console.log( `Value : ${ _.entity.exportString( val ) }` );
  * });
  *
  * // log :
@@ -2873,11 +2873,11 @@ function AndKeep()
  *
  * conOwner.finallyGive( ( err, val ) =>
  * {
- *   console.log( _.toStr( track ) );
+ *   console.log( _.entity.exportString( track ) );
  *   if( err )
  *   console.log( `Error : ${ err }` );
  *   else
- *   console.log( `Value : ${ _.toStr( val ) }` );
+ *   console.log( `Value : ${ _.entity.exportString( val ) }` );
  * });
  *
  * // log :
@@ -3107,11 +3107,11 @@ _or.having =
  * {
  *   con1.cancel();
  *
- *   console.log( _.toStr( track ) );
+ *   console.log( _.entity.exportString( track ) );
  *   if( err )
  *   console.log( `Error : ${ err }` );
  *   else
- *   console.log( `Value : ${ _.toStr( val ) }` );
+ *   console.log( `Value : ${ _.entity.exportString( val ) }` );
  * });
  *
  * // log :
@@ -3203,11 +3203,11 @@ afterOrTaking.having = Object.create( _or.having );
  *
  * conOwner.finallyGive( ( err, val ) =>
  * {
- *   console.log( _.toStr( track ) );
+ *   console.log( _.entity.exportString( track ) );
  *   if( err )
  *   console.log( `Error : ${ err }` );
  *   else
- *   console.log( `Value : ${ _.toStr( val ) }` );
+ *   console.log( `Value : ${ _.entity.exportString( val ) }` );
  * });
  *
  * // log :
@@ -3328,11 +3328,11 @@ con0.orKeepingSplit([ con1, con2 ]) -> _.Consequence.Or( con0, con1, con2 );
  * {
  *   con1.cancel();
  *
- *   console.log( _.toStr( track ) );
+ *   console.log( _.entity.exportString( track ) );
  *   if( err )
  *   console.log( `Error : ${ err }` );
  *   else
- *   console.log( `Value : ${ _.toStr( val ) }` );
+ *   console.log( `Value : ${ _.entity.exportString( val ) }` );
  * });
  *
  * // log :
@@ -3422,11 +3422,11 @@ orTaking.having = Object.create( _or.having );
  *
  * conOwner.finallyGive( ( err, val ) =>
  * {
- *   console.log( _.toStr( track ) );
+ *   console.log( _.entity.exportString( track ) );
  *   if( err )
  *   console.log( `Error : ${ err }` );
  *   else
- *   console.log( `Value : ${ _.toStr( val ) }` );
+ *   console.log( `Value : ${ _.entity.exportString( val ) }` );
  * });
  *
  * // log :
@@ -3503,11 +3503,11 @@ orKeeping.having = Object.create( _or.having );
  * {
  *   con1.cancel();
  *
- *   console.log( _.toStr( track ) );
+ *   console.log( _.entity.exportString( track ) );
  *   if( err )
  *   console.log( `Error : ${ err }` );
  *   else
- *   console.log( `Value : ${ _.toStr( val ) }` );
+ *   console.log( `Value : ${ _.entity.exportString( val ) }` );
  * });
  *
  * // log :
@@ -3573,11 +3573,11 @@ function OrTake( srcs )
  *
  * conOwner.finallyGive( ( err, val ) =>
  * {
- *   console.log( _.toStr( track ) );
+ *   console.log( _.entity.exportString( track ) );
  *   if( err )
  *   console.log( `Error : ${ err }` );
  *   else
- *   console.log( `Value : ${ _.toStr( val ) }` );
+ *   console.log( `Value : ${ _.entity.exportString( val ) }` );
  * });
  *
  * // log :
@@ -3884,8 +3884,8 @@ function __take( error, argument )
       [
         '{-error-} and {-argument-} channels should not be in use simultaneously\n'
         + '{-error-} or {-argument-} should be undefined, but currently '
-        + '\n{-error-} is ' + _.strType( error )
-        + '\n{-argument-} is ' + _.strType( argument )
+        + '\n{-error-} is ' + _.entity.strType( error )
+        + '\n{-argument-} is ' + _.entity.strType( argument )
       ]
       debugger;
       throw _._err({ args, stackRemovingBeginExcluding : /\bConsequence.s\b/ });
@@ -4306,7 +4306,7 @@ function _competitorAppend( o )
   _.assert
   (
     _.routineIs( competitorRoutine ) || _.consequenceIs( competitorRoutine ),
-    () => 'Expects routine or consequence, but got ' + _.strType( competitorRoutine )
+    () => 'Expects routine or consequence, but got ' + _.entity.strType( competitorRoutine )
   );
   _.assert( o.kindOfResource >= 1 );
   _.assert( competitorRoutine !== self, 'Consquence cant depend on itself' );
@@ -5549,7 +5549,7 @@ function _Take( o )
     return o.consequence.call( context, o.error, o.args[ 0 ] );
 
   }
-  else throw _.err( 'Unknown type of consequence : ' + _.strType( o.consequence ) );
+  else throw _.err( 'Unknown type of consequence : ' + _.entity.strType( o.consequence ) );
 
 }
 
