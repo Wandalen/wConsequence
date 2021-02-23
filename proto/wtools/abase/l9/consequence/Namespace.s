@@ -938,7 +938,7 @@ let sessionsRun = _.routineUnite( sessionsRun_head, sessionsRun_body ); /* qqq f
  * @param { Number } timeOut - The time delay.
  * @param { Function } onReady - Callback to execute.
  * Second parameter set :
- * @param { Map|MapLike } o - Options map.
+ * @param { Map|Aux } o - Options map.
  * @param { Number } o.timeOut - The time delay.
  * @param { Procedure } o.procedure - The procedure to associate with new Consequence.
  * @param { Function } o.onReady - Callback to execute.
