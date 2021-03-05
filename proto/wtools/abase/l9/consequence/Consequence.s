@@ -5140,22 +5140,20 @@ function procedureDetach()
 // exporter
 // --
 
-function _exportString( o )
+function _exportString( o, it )
 {
   let self = this;
   let result = '';
 
-  _.assertRoutineOptions( _exportString, arguments );
+  _.assertRoutineOptions( _exportString, o );
 
   if( o.verbosity >= 2 )
   {
     result += self.qualifiedName;
-
     result += '\n  argument resources : ' + self.argumentsCount();
     result += '\n  error resources : ' + self.errorsCount();
     result += '\n  early competitors : ' + self.competitorsEarlyGet().length;
     result += '\n  late competitors : ' + self.competitorsLateGet().length;
-
   }
   else
   {
@@ -5170,6 +5168,7 @@ function _exportString( o )
 _exportString.defaults =
 {
   verbosity : 1,
+  it : null,
 }
 
 //
@@ -5177,7 +5176,8 @@ _exportString.defaults =
 function exportString( o )
 {
   let self = this;
-  o = _.routineOptions( exportString, arguments );
+  _.assert( arguments.length === 0 || arguments.length === 1 );
+  o = _.routineOptions( exportString, o );
   return self._exportString( o );
 }
 
