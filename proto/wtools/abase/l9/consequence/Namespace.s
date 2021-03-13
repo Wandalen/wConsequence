@@ -392,7 +392,7 @@ out_body.defaults =
   error : 0,
 }
 
-let out = _.routineUnite( out_head, out_body );
+let out = _.routine.uniteCloning_( out_head, out_body );
 out.defaults.error = 0;
 
 //
@@ -439,7 +439,7 @@ out.defaults.error = 0;
  * @namespace Tools
  */
 
-let outError = _.routineUnite( out_head, out_body );
+let outError = _.routine.uniteCloning_( out_head, out_body );
 outError.defaults.error = 1;
 
 // /* zzz : remove the body, use out_body */
@@ -489,7 +489,7 @@ outError.defaults.error = 1;
 //
 // outError_body.defaults = Object.create( out_body.defaults );
 //
-// let outError = _.routineUnite( out_head, outError_body );
+// let outError = _.routine.uniteCloning_( out_head, outError_body );
 
 //
 
@@ -893,7 +893,7 @@ sessionsRun_body.defaults =
   ready : null,
 }
 
-let sessionsRun = _.routineUnite( sessionsRun_head, sessionsRun_body ); /* qqq for Yevhen : cover */
+let sessionsRun = _.routine.uniteCloning_( sessionsRun_head, sessionsRun_body ); /* qqq for Yevhen : cover */
 
 // --
 // meta
@@ -990,7 +990,7 @@ ready_body.defaults =
 
 //
 
-let ready = _.routineUnite( _.process.ready.head, ready_body );
+let ready = _.routine.uniteCloning_( _.process.ready.head, ready_body );
 
 //
 

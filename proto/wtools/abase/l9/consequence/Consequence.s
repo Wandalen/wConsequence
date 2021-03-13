@@ -1388,22 +1388,22 @@ function put_head( routine, args )
 
 //
 
-let putGive = _.routineUnite({ head : put_head, body : _put, name : 'putGive' });
+let putGive = _.routine.uniteCloning_({ head : put_head, body : _put, name : 'putGive' });
 var defaults = putGive.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 defaults.keeping = false;
 
-let putKeep = _.routineUnite({ head : put_head, body : _put, name : 'putKeep' });
+let putKeep = _.routine.uniteCloning_({ head : put_head, body : _put, name : 'putKeep' });
 var defaults = putKeep.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 defaults.keeping = true;
 
-let thenPutGive = _.routineUnite({ head : put_head, body : _put, name : 'thenPutGive' });
+let thenPutGive = _.routine.uniteCloning_({ head : put_head, body : _put, name : 'thenPutGive' });
 var defaults = thenPutGive.defaults;
 defaults.kindOfResource = KindOfResource.ArgumentOnly;
 defaults.keeping = false;
 
-let thenPutKeep = _.routineUnite({ head : put_head, body : _put, name : 'thenPutKeep' });
+let thenPutKeep = _.routine.uniteCloning_({ head : put_head, body : _put, name : 'thenPutKeep' });
 var defaults = thenPutKeep.defaults;
 defaults.kindOfResource = KindOfResource.ArgumentOnly;
 defaults.keeping = true;
@@ -1540,15 +1540,15 @@ _delay.having =
   consequizing : 1,
 }
 
-let finallyDelay = _.routineUnite({ head : delay_head, body : _delay, name : 'finallyDelay' });
+let finallyDelay = _.routine.uniteCloning_({ head : delay_head, body : _delay, name : 'finallyDelay' });
 var defaults = finallyDelay.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 
-let thenDelay = _.routineUnite({ head : delay_head, body : _delay, name : 'thenDelay' });
+let thenDelay = _.routine.uniteCloning_({ head : delay_head, body : _delay, name : 'thenDelay' });
 var defaults = thenDelay.defaults;
 defaults.kindOfResource = KindOfResource.ArgumentOnly;
 
-let exceptDelay = _.routineUnite({ head : delay_head, body : _delay, name : 'exceptDelay' });
+let exceptDelay = _.routine.uniteCloning_({ head : delay_head, body : _delay, name : 'exceptDelay' });
 var defaults = exceptDelay.defaults;
 defaults.kindOfResource = KindOfResource.ErrorOnly;
 
@@ -1668,12 +1668,12 @@ _timeLimit.having =
   consequizing : 1,
 }
 
-let timeLimit = _.routineUnite({ head : timeLimit_head, body : _timeLimit, name : 'timeLimit' });
+let timeLimit = _.routine.uniteCloning_({ head : timeLimit_head, body : _timeLimit, name : 'timeLimit' });
 var defaults = timeLimit.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 defaults.error = 0;
 
-let timeLimitError = _.routineUnite({ head : timeLimit_head, body : _timeLimit, name : 'timeLimitError' });
+let timeLimitError = _.routine.uniteCloning_({ head : timeLimit_head, body : _timeLimit, name : 'timeLimitError' });
 var defaults = timeLimitError.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 defaults.error = 1;
@@ -2177,7 +2177,7 @@ having.andLike = 1;
  * @class wConsequence
  */
 
-let andTake = _.routineUnite({ head : and_head, body : _and, name : 'andTake' });
+let andTake = _.routine.uniteCloning_({ head : and_head, body : _and, name : 'andTake' });
 var defaults = andTake.defaults;
 defaults.keeping = false;
 
@@ -2254,7 +2254,7 @@ defaults.keeping = false;
  * @class wConsequence
  */
 
-let andKeep = _.routineUnite({ head : and_head, body : _and, name : 'andKeep' });
+let andKeep = _.routine.uniteCloning_({ head : and_head, body : _and, name : 'andKeep' });
 var defaults = andKeep.defaults;
 defaults.keeping = true;
 
@@ -2336,7 +2336,7 @@ defaults.keeping = true;
  * @class wConsequence
  */
 
-let andImmediate = _.routineUnite({ head : and_head, body : _and, name : 'andKeep' });
+let andImmediate = _.routine.uniteCloning_({ head : and_head, body : _and, name : 'andKeep' });
 var defaults = andImmediate.defaults;
 defaults.keeping = true;
 defaults.waitingOthers = false;
@@ -2419,7 +2419,7 @@ defaults.waitingOthers = false;
  * @class wConsequence
  */
 
-let andKeepAccumulative = _.routineUnite({ head : and_head, body : _and, name : 'andKeepAccumulative' });
+let andKeepAccumulative = _.routine.uniteCloning_({ head : and_head, body : _and, name : 'andKeepAccumulative' });
 var defaults = andKeepAccumulative.defaults;
 defaults.keeping = true;
 defaults.accumulative = true;
@@ -2500,7 +2500,7 @@ defaults.accumulative = true;
  */
 
 
-let alsoTake = _.routineUnite({ head : and_head, body : _and, name : 'alsoTake' });
+let alsoTake = _.routine.uniteCloning_({ head : and_head, body : _and, name : 'alsoTake' });
 var defaults = alsoTake.defaults;
 defaults.keeping = false;
 defaults.accumulative = true;
@@ -2580,7 +2580,7 @@ defaults.waitingResource = false;
  * @class wConsequence
  */
 
-let alsoKeep = _.routineUnite({ head : and_head, body : _and, name : 'alsoKeep' });
+let alsoKeep = _.routine.uniteCloning_({ head : and_head, body : _and, name : 'alsoKeep' });
 var defaults = alsoKeep.defaults;
 defaults.keeping = true;
 defaults.accumulative = true;
@@ -2662,7 +2662,7 @@ defaults.waitingResource = false;
  * @class wConsequence
  */
 
-let alsoImmediate = _.routineUnite({ head : and_head, body : _and, name : 'alsoImmediate' });
+let alsoImmediate = _.routine.uniteCloning_({ head : and_head, body : _and, name : 'alsoImmediate' });
 var defaults = alsoImmediate.defaults;
 defaults.keeping = true;
 defaults.accumulative = true;
@@ -3139,7 +3139,7 @@ _or.having =
  * @class wConsequence
  */
 
-let afterOrTaking = _.routineUnite({ head : or_head, body : _or, name : 'afterOrTaking' });
+let afterOrTaking = _.routine.uniteCloning_({ head : or_head, body : _or, name : 'afterOrTaking' });
 
 afterOrTaking.defaults = Object.create( _or.defaults );
 afterOrTaking.defaults.keeping = false;
@@ -3236,7 +3236,7 @@ afterOrTaking.having = Object.create( _or.having );
  * @class wConsequence
  */
 
-let afterOrKeeping = _.routineUnite({ head : or_head, body : _or, name : 'afterOrKeeping' });
+let afterOrKeeping = _.routine.uniteCloning_({ head : or_head, body : _or, name : 'afterOrKeeping' });
 
 afterOrKeeping.defaults = Object.create( _or.defaults );
 afterOrKeeping.defaults.keeping = true;
@@ -3360,7 +3360,7 @@ con0.orKeepingSplit([ con1, con2 ]) -> _.Consequence.Or( con0, con1, con2 );
  * @class wConsequence
  */
 
-let orTaking = _.routineUnite({ head : or_head, body : _or, name : 'orTaking' });
+let orTaking = _.routine.uniteCloning_({ head : or_head, body : _or, name : 'orTaking' });
 
 orTaking.defaults = Object.create( _or.defaults );
 orTaking.defaults.keeping = false;
@@ -3455,7 +3455,7 @@ orTaking.having = Object.create( _or.having );
  * @class wConsequence
  */
 
-let orKeeping = _.routineUnite({ head : or_head, body : _or, name : 'orKeeping' });
+let orKeeping = _.routine.uniteCloning_({ head : or_head, body : _or, name : 'orKeeping' });
 
 orKeeping.defaults = Object.create( _or.defaults );
 orKeeping.defaults.keeping = true;
