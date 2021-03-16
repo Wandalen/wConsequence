@@ -29,7 +29,6 @@ function gotHandler1( value )
 
 function gotHandler2( value )
 {
-  debugger;
   console.log( 'handler 2 : ' + value );
   value++;
   return value;

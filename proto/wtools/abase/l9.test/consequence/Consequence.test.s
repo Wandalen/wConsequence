@@ -11085,15 +11085,12 @@ function alsoKeepTrivialSyncBefore( test )
   ready.take( 0 );
   track.push( '2' );
 
-  debugger;
   ready.alsoKeep( () =>
   {
-    debugger;
     track.push( 'x' );
     return 'x';
   });
 
-  debugger;
   ready.then( ( arg ) =>
   {
     track.push( '1' );
@@ -14696,7 +14693,6 @@ function AndUncaughtError( test )
   {
     return function uncaughtError( e )
     {
-      debugger;
       test.equivalent( e.err.originalMessage, originalMessage );
       _.errAttend( e.err );
       track.push( 'uncaughtError' );

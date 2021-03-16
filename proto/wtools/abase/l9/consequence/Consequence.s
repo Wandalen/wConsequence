@@ -182,8 +182,8 @@ function init( o )
   {
     self.Counter += 1;
     self.id = self.Counter;
-    if( self.id === 2 )
-    debugger;
+    // if( self.id === 2 )
+    // debugger;
   }
 
   _.assert( arguments.length === 0 || arguments.length === 1 );
@@ -788,7 +788,6 @@ function _first( src, stack )
     }
     else if( _.promiseLike( result ) )
     {
-      debugger;
       result.finally( Self.From( result ) );
     }
     else
@@ -1233,8 +1232,6 @@ function participateGive( con )
   _.assert( _.consequenceIs( con ) );
   _.assert( arguments.length === 1 );
 
-  debugger;
-
   con.finallyGive( 1 );
   self.finallyGive( con );
   // con.take( self );
@@ -1294,7 +1291,6 @@ function _put( o )
   }
   else if( _.arrayLike( o.container ) )
   {
-    debugger;
     self._competitorAppend
     ({
       keeping,
@@ -3854,13 +3850,11 @@ function __take( error, argument )
 
   if( _.consequenceIs( argument ) )
   {
-    debugger;
     argument.finallyGive( self );
     return self;
   }
   else if( _.promiseLike( argument ) )
   {
-    debugger;
     Self.From( argument ).finallyGive( self );
     return self;
   }
@@ -3875,7 +3869,6 @@ function __take( error, argument )
         `Resource capacity of ${self.qualifiedName} set to ${self.capacity}, but got more resources.`
         + `\nConsider resetting : "{ capacity : 0 }"`
       ]
-      debugger;
       throw _._err({ args, stackRemovingBeginExcluding : /\bConsequence.s\b/ });
     }
     if( !( error === undefined || argument === undefined ) )
@@ -3887,7 +3880,6 @@ function __take( error, argument )
         + '\n{-error-} is ' + _.entity.strType( error )
         + '\n{-argument-} is ' + _.entity.strType( argument )
       ]
-      debugger;
       throw _._err({ args, stackRemovingBeginExcluding : /\bConsequence.s\b/ });
     }
   }
@@ -4234,7 +4226,6 @@ function __handleResourceNow()
       if( !throwenErr )
       if( competitor.keeping && result === undefined )
       {
-        debugger;
         let err = self.ErrNoReturn( competitor.competitorRoutine );
         throwenErr = self.__handleError( err, competitor )
       }
@@ -4544,7 +4535,6 @@ function deadLockReport( competitor )
 
   let log = '';
 
-  debugger;
   chain.forEach( ( con ) =>
   {
     if( log )
@@ -5095,7 +5085,6 @@ function procedure( arg )
   }
   else if( _.strIs( arg ) )
   {
-    debugger;
     self._procedure = _.Procedure({ _name : arg, _stack : 1 }); /* yyy : should be 1 not 2 */
   }
   else if( _.mapIs( arg ) )

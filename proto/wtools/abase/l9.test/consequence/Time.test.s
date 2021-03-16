@@ -2805,7 +2805,7 @@ function asyncStackTimeOutError( test )
 
     return _.time.out( 100, () =>
     {
-      logger.log( error ); debugger;
+      logger.log( error );
       test.identical( _.strCount( error.throwCallsStack, 'case1' ), 1 );
       test.identical( _.strCount( error.throwCallsStack, 'Time.test.s' ), 2 );
       test.identical( _.strCount( error.asyncCallsStack.join( '' ), 'Time.test.s' ), 2 );
