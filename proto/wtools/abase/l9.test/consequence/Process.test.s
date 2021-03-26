@@ -15,13 +15,13 @@ if( typeof module !== 'undefined' )
     let _ = require( '../../../wtools/Tools.s' );
   }
 
-  let _ = _global_.wTools;
+  const _ = _global_.wTools;
   _.include( 'wTesting' );
   require( '../../l9/consequence/Namespace.s' );
 }
 
-let _global = _global_;
-let _ = _global_.wTools;
+const _global = _global_;
+const _ = _global_.wTools;
 
 // --
 // test
@@ -300,7 +300,7 @@ function sessionsRunWithEmptySessions( test )
 // declare
 // --
 
-let Self =
+const Proto =
 {
 
   name : 'Tools/consequence/Process',
@@ -317,7 +317,7 @@ let Self =
 
 }
 
-Self = wTestSuite( Self );
+const Self = wTestSuite( Proto );
 if( typeof module !== 'undefined' && !module.parent )
 wTester.test( Self.name );
 

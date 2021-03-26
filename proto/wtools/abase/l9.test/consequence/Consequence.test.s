@@ -14,8 +14,8 @@ if( typeof module !== 'undefined' )
   require( '../../l9/consequence/Namespace.s' );
 }
 
-let _global = _global_;
-let _ = _global_.wTools;
+const _global = _global_;
+const _ = _global_.wTools;
 
 // --
 // inter
@@ -22995,7 +22995,7 @@ bugFromProcessParallelExperiment.experimental = 1;
 // declare
 // --
 
-let Self =
+const Proto =
 {
 
   name : 'Tools.consequence.Basic',
@@ -23240,7 +23240,7 @@ let Self =
 
 };
 
-Self = wTestSuite( Self );
+const Self = wTestSuite( Proto );
 if( typeof module !== 'undefined' && !module.parent )
 wTester.test( Self.name );
 

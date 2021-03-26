@@ -15,13 +15,13 @@ if( typeof module !== 'undefined' )
     let _ = require( '../../../wtools/Tools.s' );
   }
 
-  let _ = _global_.wTools;
+  const _ = _global_.wTools;
   _.include( 'wTesting' );
   require( '../../l9/consequence/Namespace.s' );
 }
 
-let _global = _global_;
-let _ = _global_.wTools;
+const _global = _global_;
+const _ = _global_.wTools;
 
 /* qqq : split test cases by / * * / */
 
@@ -2852,7 +2852,7 @@ function asyncStackTimeOut( test )
 // test suite
 // --
 
-let Self =
+const Proto =
 {
 
   name : 'Tools/consequence/Time',
@@ -2904,7 +2904,7 @@ let Self =
 
 }
 
-Self = wTestSuite( Self );
+const Self = wTestSuite( Proto );
 if( typeof module !== 'undefined' && !module.parent )
 wTester.test( Self.name );
 

@@ -16,8 +16,8 @@ if( typeof module !== 'undefined' )
   _.include( 'wProcedure' );
 }
 
-let _global = _global_;
-let _ = _global_.wTools;
+const _global = _global_;
+const _ = _global_.wTools;
 
 _.assert( !_.Consequence, 'Consequence included several times' );
 
@@ -904,7 +904,7 @@ let sessionsRun = _.routine.uniteCloning_( sessionsRun_head, sessionsRun_body );
 //   _.assert( _.routineIs( srcGlobal.wConsequence.After ) );
 //   _.assert( _.mapIs( srcGlobal.wConsequence.Tools ) );
 //   _.mapExtend( dstGlobal.wTools, srcGlobal.wConsequence.Tools );
-//   let Self = srcGlobal.wConsequence;
+//   const Self = srcGlobal.wConsequence;
 //   dstGlobal.wTools[ Self.shortName ] = Self;
 //   if( typeof module !== 'undefined' )
 //   module[ 'exports' ] = Self;

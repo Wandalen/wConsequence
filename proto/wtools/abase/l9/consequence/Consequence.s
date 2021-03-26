@@ -35,8 +35,8 @@ Procedure ::
 
 */
 
-let _global = _global_;
-let _ = _global_.wTools;
+const _global = _global_;
+const _ = _global_.wTools;
 let Deasync = null;
 
 _.assert( !_.Consequence, 'Consequence included several times' );
@@ -113,7 +113,7 @@ let wConsequenceProxy = new Proxy
       if( o )
       if( o instanceof Self )
       {
-        o = _.mapOnly( o, Self.FieldsOfCopyableGroups );
+        o = _.mapOnly_( null, o, Self.FieldsOfCopyableGroups );
       }
 
       if( Config.debug )
@@ -136,7 +136,7 @@ let wConsequenceProxy = new Proxy
 );
 
 let Parent = null;
-let Self = wConsequenceProxy;
+const Self = wConsequenceProxy;
 
 wConsequence.shortName = 'Consequence';
 
@@ -167,11 +167,11 @@ function init( o )
     }
     if( o instanceof Self )
     {
-      o = _.mapOnly( o, self.FieldsOfCopyableGroups );
+      o = _.mapOnly_( null, o, self.FieldsOfCopyableGroups );
     }
     else
     {
-      _.assertMapHasOnly( o, self.FieldsOfCopyableGroups );
+      _.map.assertHasOnly( o, self.FieldsOfCopyableGroups );
     }
     if( o._resources )
     o._resources = o._resources.slice();
@@ -5250,7 +5250,7 @@ function _callbacksInfoLog()
 function toStr( o )
 {
   let self = this;
-  return self.exportString( _.mapOnly( o || Object.create( null ), self.exportString.defaults ) );
+  return self.exportString( _.mapOnly_( null, o || Object.create( null ), self.exportString.defaults ) );
 }
 
 //
@@ -5258,7 +5258,7 @@ function toStr( o )
 function toString( o )
 {
   let self = this;
-  return self.exportString( _.mapOnly( o || Object.create( null ), self.exportString.defaults ) );
+  return self.exportString( _.mapOnly_( null, o || Object.create( null ), self.exportString.defaults ) );
 }
 
 //
