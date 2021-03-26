@@ -135,7 +135,7 @@ let wConsequenceProxy = new Proxy
   }
 );
 
-let Parent = null;
+const Parent = null;
 const Self = wConsequenceProxy;
 
 wConsequence.shortName = 'Consequence';
