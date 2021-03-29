@@ -563,9 +563,9 @@ function timeOutErrorStructural( test )
       test.true( _.timerIs( this ) );
 
       test.true( _.errIs( err ) );
-      test.true( !_.errIsAttended( err ) );
-      test.true( _.errIsWary( err ) );
-      test.true( !_.errIsSuspended( err ) );
+      test.true( !_.error.isAttended( err ) );
+      test.true( _.error.isWary( err ) );
+      test.true( !_.error.isSuspended( err ) );
       test.identical( err.originalMessage, 'Time out!' );
       test.identical( err.reason, 'time out' );
 
@@ -587,9 +587,9 @@ function timeOutErrorStructural( test )
       else
       {
         test.true( _.errIs( err ) );
-        test.true( !_.errIsAttended( err ) );
-        test.true( _.errIsWary( err ) );
-        test.true( !_.errIsSuspended( err ) );
+        test.true( !_.error.isAttended( err ) );
+        test.true( _.error.isWary( err ) );
+        test.true( !_.error.isSuspended( err ) );
         test.identical( err.originalMessage, 'Time out!' );
         test.identical( err.reason, 'time out' );
         _.errAttend( err );
@@ -657,9 +657,9 @@ function timeOutErrorThrowingStructural( test )
       test.identical( arguments.length, 1 );
 
       test.true( _.errIs( err ) );
-      test.true( !_.errIsAttended( err ) );
-      test.true( _.errIsWary( err ) );
-      test.true( !_.errIsSuspended( err ) );
+      test.true( !_.error.isAttended( err ) );
+      test.true( _.error.isWary( err ) );
+      test.true( !_.error.isSuspended( err ) );
       test.identical( err.originalMessage, 'Time out!' );
       test.identical( err.reason, 'time out' );
       _.errAttend( err );
@@ -672,9 +672,9 @@ function timeOutErrorThrowingStructural( test )
       test.identical( arguments.length, 2 );
       test.true( err.originalMessage === 'Error1' );
       test.true( _.errIs( err ) );
-      test.true( !_.errIsAttended( err ) );
-      test.true( _.errIsWary( err ) );
-      test.true( !_.errIsSuspended( err ) );
+      test.true( !_.error.isAttended( err ) );
+      test.true( _.error.isWary( err ) );
+      test.true( !_.error.isSuspended( err ) );
       _.errAttend( err );
       trackAdd( 'tap', err, arg );
     });

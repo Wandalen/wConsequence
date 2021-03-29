@@ -3987,7 +3987,7 @@ function __handleError( err, competitor )
   }
   else
   {
-    if( !_.errIsStandard( err ) )
+    if( !_.error.isFormed( err ) )
     err = _._err
     ({
       args : [ err ],
@@ -3995,7 +3995,7 @@ function __handleError( err, competitor )
     });
   }
 
-  // if( _.errIsAttended( err ) )
+  // if( _.error.isAttended( err ) )
   // return err;
 
   _.error._handleUncaughtAsync( err );
@@ -4004,13 +4004,13 @@ function __handleError( err, competitor )
   // let timer = _.time._finally( self.UncaughtTimeOut, function uncaught()
   // {
   //
-  //   if( _.errIsAttended( err ) )
+  //   if( _.error.isAttended( err ) )
   //   return;
   //
-  //   // if( !_.time.timerInCancelBegun( timer ) && _.errIsSuspended( err ) ) /* yyy */
+  //   // if( !_.time.timerInCancelBegun( timer ) && _.error.isSuspended( err ) ) /* yyy */
   //   // return;
   //
-  //   if( _.errIsSuspended( err ) )
+  //   if( _.error.isSuspended( err ) )
   //   return;
   //
   //   _.error._handleUncaught2( err, 'uncaught asynchronous error' );
