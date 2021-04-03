@@ -35,8 +35,8 @@ Procedure ::
 
 */
 
-let _global = _global_;
-let _ = _global_.wTools;
+const _global = _global_;
+const _ = _global_.wTools;
 let Deasync = null;
 
 _.assert( !_.Consequence, 'Consequence included several times' );
@@ -113,7 +113,7 @@ let wConsequenceProxy = new Proxy
       if( o )
       if( o instanceof Self )
       {
-        o = _.mapOnly( o, Self.FieldsOfCopyableGroups );
+        o = _.mapOnly_( null, o, Self.FieldsOfCopyableGroups );
       }
 
       if( Config.debug )
@@ -135,8 +135,8 @@ let wConsequenceProxy = new Proxy
   }
 );
 
-let Parent = null;
-let Self = wConsequenceProxy;
+const Parent = null;
+const Self = wConsequenceProxy;
 
 wConsequence.shortName = 'Consequence';
 
@@ -167,11 +167,11 @@ function init( o )
     }
     if( o instanceof Self )
     {
-      o = _.mapOnly( o, self.FieldsOfCopyableGroups );
+      o = _.mapOnly_( null, o, self.FieldsOfCopyableGroups );
     }
     else
     {
-      _.assertMapHasOnly( o, self.FieldsOfCopyableGroups );
+      _.map.assertHasOnly( o, self.FieldsOfCopyableGroups );
     }
     if( o._resources )
     o._resources = o._resources.slice();
@@ -3979,7 +3979,7 @@ function __handleError( err, competitor )
   }
   else
   {
-    if( !_.errIsStandard( err ) )
+    if( !_.error.isFormed( err ) )
     err = _._err
     ({
       args : [ err ],
@@ -3987,7 +3987,7 @@ function __handleError( err, competitor )
     });
   }
 
-  // if( _.errIsAttended( err ) )
+  // if( _.error.isAttended( err ) )
   // return err;
 
   _.error._handleUncaughtAsync( err );
@@ -3996,13 +3996,13 @@ function __handleError( err, competitor )
   // let timer = _.time._finally( self.UncaughtTimeOut, function uncaught()
   // {
   //
-  //   if( _.errIsAttended( err ) )
+  //   if( _.error.isAttended( err ) )
   //   return;
   //
-  //   // if( !_.time.timerInCancelBegun( timer ) && _.errIsSuspended( err ) ) /* yyy */
+  //   // if( !_.time.timerInCancelBegun( timer ) && _.error.isSuspended( err ) ) /* yyy */
   //   // return;
   //
-  //   if( _.errIsSuspended( err ) )
+  //   if( _.error.isSuspended( err ) )
   //   return;
   //
   //   _.error._handleUncaught2( err, 'uncaught asynchronous error' );
@@ -5239,7 +5239,7 @@ function _callbacksInfoLog()
 function toStr( o )
 {
   let self = this;
-  return self.exportString( _.mapOnly( o || Object.create( null ), self.exportString.defaults ) );
+  return self.exportString( _.mapOnly_( null, o || Object.create( null ), self.exportString.defaults ) );
 }
 
 //
@@ -5247,7 +5247,7 @@ function toStr( o )
 function toString( o )
 {
   let self = this;
-  return self.exportString( _.mapOnly( o || Object.create( null ), self.exportString.defaults ) );
+  return self.exportString( _.mapOnly_( null, o || Object.create( null ), self.exportString.defaults ) );
 }
 
 //

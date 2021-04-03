@@ -14,9 +14,10 @@ if( typeof module !== 'undefined' )
   require( '../../l9/consequence/Namespace.s' );
 }
 
-let _ = _global_.wTools;
-let fileProvider = _globals_.testing.wTools.fileProvider;
-let path = fileProvider.path;
+const _ = _global_.wTools;
+const __ = _globals_.testing.wTools;
+const fileProvider = __.fileProvider;
+const path = fileProvider.path;
 
 // --
 // context
@@ -681,7 +682,7 @@ function tester( test )
       test.true( true );
     }
 
-    let Self =
+    const Proto =
     {
       tests :
       {
@@ -689,7 +690,7 @@ function tester( test )
       }
     }
 
-    Self = wTestSuite( Self );
+    const Self = wTestSuite( Proto );
     wTester.test( Self.name );
 
   }
@@ -1205,7 +1206,7 @@ function timeOutCancelWithErrorNotSymbol( test )
 // declare
 // --
 
-let Self =
+const Proto =
 {
 
   name : 'Tools.consequence.Ext',
@@ -1261,7 +1262,7 @@ let Self =
 
 }
 
-Self = wTestSuite( Self );
+const Self = wTestSuite( Proto );
 if( typeof module !== 'undefined' && !module.parent )
 wTester.test( Self.name );
 

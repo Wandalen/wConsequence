@@ -86,6 +86,7 @@ module:
       download:
         criterion:
           predefined: 1
+        path: ../
       repository:
         path: 'git+https:///github.com/Wandalen/wConsequence.git'
       origins:
@@ -180,6 +181,8 @@ module:
         path:
           - ../proto
           - ../proto/Integration.test.ss
+          - ../proto/node_modules
+          - ../proto/node_modules/wConsequence
           - ../proto/wtools
           - ../proto/wtools/Tools.s
           - ../proto/wtools/abase
@@ -926,6 +929,7 @@ module:
       download:
         criterion:
           predefined: 1
+        path: ./
       repository:
         path: 'git+https:///github.com/Wandalen/wConsequence.git'
       origins:

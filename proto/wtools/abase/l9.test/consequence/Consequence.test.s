@@ -14,8 +14,8 @@ if( typeof module !== 'undefined' )
   require( '../../l9/consequence/Namespace.s' );
 }
 
-let _global = _global_;
-let _ = _global_.wTools;
+const _global = _global_;
+const _ = _global_.wTools;
 
 // --
 // inter
@@ -12355,9 +12355,9 @@ function AndTake( test )
       test.identical( con1.competitorsEarlyGet().length, 1 );
       test.identical( con2.resourcesGet(), [] );
       test.identical( con2.competitorsEarlyGet().length, 1 );
-      test.true( !_.errIsAttended( err ) );
-      test.true( _.errIsWary( err ) );
-      test.true( !_.errIsSuspended( err ) );
+      test.true( !_.error.isAttended( err ) );
+      test.true( _.error.isWary( err ) );
+      test.true( !_.error.isSuspended( err ) );
       _.errAttend( err );
     });
 
@@ -12452,9 +12452,9 @@ function AndTake( test )
       test.identical( con1.competitorsEarlyGet().length, 1 );
       test.identical( con2.resourcesGet(), [] );
       test.identical( con2.competitorsEarlyGet().length, 1 );
-      test.true( !_.errIsAttended( err ) );
-      test.true( _.errIsWary( err ) );
-      test.true( !_.errIsSuspended( err ) );
+      test.true( !_.error.isAttended( err ) );
+      test.true( _.error.isWary( err ) );
+      test.true( !_.error.isSuspended( err ) );
       _.errAttend( err );
     });
 
@@ -13369,9 +13369,9 @@ function AndKeep( test )
       test.identical( con1.competitorsEarlyGet().length, 0 );
       test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
       test.identical( con2.competitorsEarlyGet().length, 0 );
-      test.true( !_.errIsAttended( err ) );
-      test.true( _.errIsWary( err ) );
-      test.true( !_.errIsSuspended( err ) );
+      test.true( !_.error.isAttended( err ) );
+      test.true( _.error.isWary( err ) );
+      test.true( !_.error.isSuspended( err ) );
       _.errAttend( err );
     });
 
@@ -13464,9 +13464,9 @@ function AndKeep( test )
       test.identical( con1.competitorsEarlyGet().length, 0 );
       test.identical( con2.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
       test.identical( con2.competitorsEarlyGet().length, 0 );
-      test.true( !_.errIsAttended( err ) );
-      test.true( _.errIsWary( err ) );
-      test.true( !_.errIsSuspended( err ) );
+      test.true( !_.error.isAttended( err ) );
+      test.true( _.error.isWary( err ) );
+      test.true( !_.error.isSuspended( err ) );
       _.errAttend( err );
     });
 
@@ -13662,9 +13662,9 @@ function And( test )
       test.identical( con1.competitorsEarlyGet().length, 0 );
       test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
       test.identical( con2.competitorsEarlyGet().length, 0 );
-      test.true( !_.errIsAttended( err ) );
-      test.true( _.errIsWary( err ) );
-      test.true( !_.errIsSuspended( err ) );
+      test.true( !_.error.isAttended( err ) );
+      test.true( _.error.isWary( err ) );
+      test.true( !_.error.isSuspended( err ) );
       _.errAttend( err );
     });
 
@@ -13757,9 +13757,9 @@ function And( test )
       test.identical( con1.competitorsEarlyGet().length, 0 );
       test.identical( con2.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
       test.identical( con2.competitorsEarlyGet().length, 0 );
-      test.true( !_.errIsAttended( err ) );
-      test.true( _.errIsWary( err ) );
-      test.true( !_.errIsSuspended( err ) );
+      test.true( !_.error.isAttended( err ) );
+      test.true( _.error.isWary( err ) );
+      test.true( !_.error.isSuspended( err ) );
       _.errAttend( err );
     });
 
@@ -14550,9 +14550,9 @@ function AndUncaughtError( test )
       track.push( 'con.tap' );
       test.identical( got, undefined );
       test.true( err === err1 );
-      test.true( !_.errIsAttended( err ) );
-      test.true( _.errIsWary( err ) );
-      test.true( !_.errIsSuspended( err ) );
+      test.true( !_.error.isAttended( err ) );
+      test.true( _.error.isWary( err ) );
+      test.true( !_.error.isSuspended( err ) );
     });
 
     _.time.out( t, () =>
@@ -14605,9 +14605,9 @@ function AndUncaughtError( test )
       track.push( 'con.tap' );
       test.identical( got, undefined );
       test.true( err === err1 );
-      test.true( !_.errIsAttended( err ) );
-      test.true( _.errIsWary( err ) );
-      test.true( !_.errIsSuspended( err ) );
+      test.true( !_.error.isAttended( err ) );
+      test.true( _.error.isWary( err ) );
+      test.true( !_.error.isSuspended( err ) );
     });
 
     _.time.out( t, () =>
@@ -14659,9 +14659,9 @@ function AndUncaughtError( test )
       track.push( 'con.tap' );
       test.identical( got, undefined );
       test.true( _.errIs( err ) );
-      test.true( !_.errIsAttended( err ) );
-      test.true( _.errIsWary( err ) );
-      test.true( !_.errIsSuspended( err ) );
+      test.true( !_.error.isAttended( err ) );
+      test.true( _.error.isWary( err ) );
+      test.true( !_.error.isSuspended( err ) );
     });
 
     _.time.out( t, () =>
@@ -14846,9 +14846,9 @@ function AndImmediate( test )
       test.identical( con1.competitorsEarlyGet().length, 0 );
       test.identical( con2.resourcesGet(), [ { 'error' : undefined, 'argument' : 2 } ] );
       test.identical( con2.competitorsEarlyGet().length, 0 );
-      test.true( !_.errIsAttended( err ) );
-      test.true( _.errIsWary( err ) );
-      test.true( !_.errIsSuspended( err ) );
+      test.true( !_.error.isAttended( err ) );
+      test.true( _.error.isWary( err ) );
+      test.true( !_.error.isSuspended( err ) );
       _.errAttend( err );
     });
 
@@ -14941,9 +14941,9 @@ function AndImmediate( test )
       test.identical( con1.competitorsEarlyGet().length, 0 );
       test.identical( con2.resourcesGet(), [ { 'error' : err1, 'argument' : undefined } ] );
       test.identical( con2.competitorsEarlyGet().length, 0 );
-      test.true( !_.errIsAttended( err ) );
-      test.true( _.errIsWary( err ) );
-      test.true( !_.errIsSuspended( err ) );
+      test.true( !_.error.isAttended( err ) );
+      test.true( _.error.isWary( err ) );
+      test.true( !_.error.isSuspended( err ) );
       _.errAttend( err );
     });
 
@@ -22991,7 +22991,7 @@ bugFromProcessParallelExperiment.experimental = 1;
 // declare
 // --
 
-let Self =
+const Proto =
 {
 
   name : 'Tools.consequence.Basic',
@@ -23236,7 +23236,7 @@ let Self =
 
 };
 
-Self = wTestSuite( Self );
+const Self = wTestSuite( Proto );
 if( typeof module !== 'undefined' && !module.parent )
 wTester.test( Self.name );
 

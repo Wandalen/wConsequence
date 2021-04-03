@@ -2,12 +2,13 @@
 /_*
 /build
 /builder
+/binding
+/node_modules
 
-.warchive*
 -*
+.module
+.warchive*
 *.log
 *.db
 *.tmp
 *.build
-node_modules
-package-lock.json
