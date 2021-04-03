@@ -1574,7 +1574,7 @@ function _timeLimit( o )
   let timeOutConsequence = new _.Consequence();
   let done = false;
   let timer;
-  let procedure = self.procedureDetach() || _.Procedure( 2 );
+  let procedure = self.procedureDetach() || _.Procedure( 3 ); /* delta : 3 to not include info about `routine.unite` in the stack */
 
   _.assert( arguments.length === 1 );
   _.assert( callback !== undefined && callback !== _.nothing, 'Expects callback or consequnce to time limit it' );
@@ -1767,7 +1767,7 @@ function _and( o )
   let accumulative = o.accumulative;
   let waitingResource = o.waitingResource;
   let waitingOthers = o.waitingOthers;
-  let procedure = self.procedure( o.stack, 1 ).nameElse( '_and' ); /* aaa2 : cover procedure.sourcePath of each derived routine */ /* Dmytro : covered */
+  let procedure = self.procedure( o.stack, 2 ).nameElse( '_and' ); /* aaa2 : cover procedure.sourcePath of each derived routine */ /* Dmytro : covered */ /* delta : 2 to not include info about `routine.unite` in the stack */
   let escaped = 0;
   let errOwner = {};
 
@@ -2934,7 +2934,7 @@ function _or( o )
 {
   let self = this;
   let count = 0;
-  let procedure = self.procedure( o.stack, 1 ).nameElse( '_or' ); /* aaa2 : cover procedure.sourcePath of each derived routine */ /* Dmytro : covered */
+  let procedure = self.procedure( o.stack, 2 ).nameElse( '_or' ); /* aaa2 : cover procedure.sourcePath of each derived routine */ /* Dmytro : covered */ /* delta : 2 to not include info about `routine.unite` in the stack */
   let competitors = o.competitors;
   let competitorRoutines = [];
 
