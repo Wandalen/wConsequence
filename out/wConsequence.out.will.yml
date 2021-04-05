@@ -3,14 +3,14 @@ root:
   - wConsequence.out
 consistency:
   wConsequence.out.will.yml: &ref_0
-    hash: f9e639e8b0d4e1fd18f0f321f006329e
-    size: 41693
+    hash: d813ce32b81ec3980b40315466d5071c
+    size: 42341
   ../.ex.will.yml: &ref_1
     hash: 3ee480962983002a93760f5d2bf956f4
     size: 2949
   ../.im.will.yml: &ref_2
-    hash: b467422ee23c226e7ccd6923b2faf304
-    size: 5376
+    hash: b984770872111636f0e8ca7c18ffdc44
+    size: 5317
 module:
   wConsequence.out:
     about:
@@ -86,7 +86,7 @@ module:
       download:
         criterion:
           predefined: 1
-        path: ../
+        path: ..
       repository:
         path: 'git+https:///github.com/Wandalen/wConsequence.git'
       origins:
@@ -167,6 +167,10 @@ module:
           raw: compiled
           content: prime
         path: '{path::out.*=}/source/Index.s'
+      npm.proto.entry:
+        path:
+          - ../proto/wtools/abase/l9/consequence/Namespace.s
+          - ../proto/node_modules/wConsequence
       exported.dir.proto.export:
         criterion:
           generated: 1
@@ -929,7 +933,7 @@ module:
       download:
         criterion:
           predefined: 1
-        path: ./
+        path: .
       repository:
         path: 'git+https:///github.com/Wandalen/wConsequence.git'
       origins:
@@ -1010,6 +1014,10 @@ module:
           raw: compiled
           content: prime
         path: '{path::out.*=}/source/Index.s'
+      npm.proto.entry:
+        path:
+          - proto/wtools/abase/l9/consequence/Namespace.s
+          - proto/node_modules/wConsequence
     submodule:
       wTools:
         path: 'npm:///wTools'
@@ -1586,6 +1594,6 @@ module:
         hash: 3ee480962983002a93760f5d2bf956f4
         size: 2949
       ../.im.will.yml:
-        hash: b467422ee23c226e7ccd6923b2faf304
-        size: 5376
+        hash: b984770872111636f0e8ca7c18ffdc44
+        size: 5317
       wConsequence.out.will.yml: *ref_0

@@ -18,6 +18,7 @@ const __ = _globals_.testing.wTools;
 const fileProvider = __.fileProvider;
 const path = fileProvider.path;
 
+
 // --
 // context
 // --
@@ -406,7 +407,7 @@ function build( test )
   ({
     remotePath,
     localPath : a.routinePath,
-    verbosity : 2,
+    logger : 2,
     sync : 0
   })
 
