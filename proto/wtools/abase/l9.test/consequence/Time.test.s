@@ -1080,7 +1080,7 @@ function timeOutCancelZeroDelayOutsideOfCallback( test )
 
 function timeOut( test )
 {
-  var context = this;
+  let context = this;
   var ready = new _.Consequence().take( null )
 
   /* */
@@ -1549,7 +1549,7 @@ timeOut.timeOut = 20000;
 
 // function timeOutMode01( test )
 // {
-//   var context = this;
+//   let context = this;
 //   var mode = _.Consequence.AsyncModeGet();
 //   var ready = new _.Consequence().take( null )
 //
@@ -1899,7 +1899,7 @@ timeOut.timeOut = 20000;
 //
 // function timeOutMode10( test )
 // {
-//   var context = this;
+//   let context = this;
 //   var mode = _.Consequence.AsyncModeGet();
 //   var ready = new _.Consequence().take( null )
 //   /* AsyncCompetitorHanding : 1, AsyncResourceAdding : 0, */
@@ -2239,7 +2239,7 @@ timeOut.timeOut = 20000;
 //
 // function timeOutMode11( test )
 // {
-//   var context = this;
+//   let context = this;
 //   var mode = _.Consequence.AsyncModeGet();
 //   var ready = new _.Consequence().take( null )
 //
@@ -2579,7 +2579,7 @@ timeOut.timeOut = 20000;
 
 function timeOutError( test )
 {
-  var context = this;
+  let context = this;
   var ready = new _.Consequence().take( null );
 
   /* */
