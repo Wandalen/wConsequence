@@ -5,7 +5,7 @@
 
 if( typeof module !== 'undefined' )
 {
-  let _ = require( '../../../../wtools/Tools.s' );
+  let _ = require( '../../../../node_modules/Tools' );
 
   _.include( 'wTesting' );
   _.include( 'wLogger' );
@@ -63,7 +63,7 @@ function consequenceLike( test )
 
 function clone( test )
 {
-  var context = this;
+  let context = this;
 
   test.case = 'consequence with resource';
   var con1 = new _.Consequence({ tag : 'con1', capacity : 2 });
@@ -3423,7 +3423,7 @@ function finallyPromiseKeepAsyncMode00( test )
 
 function trivial( test )
 {
-  var context = this;
+  let context = this;
 
   /* */
 

@@ -3,14 +3,14 @@ root:
   - wConsequence.out
 consistency:
   wConsequence.out.will.yml: &ref_0
-    hash: d813ce32b81ec3980b40315466d5071c
+    hash: ea2616ef7c65a3141978b96d525d9dfa
     size: 42341
   ../.ex.will.yml: &ref_1
     hash: 3ee480962983002a93760f5d2bf956f4
     size: 2949
   ../.im.will.yml: &ref_2
-    hash: b984770872111636f0e8ca7c18ffdc44
-    size: 5317
+    hash: 73f969eaa0beb8803ebdcec49947cc84
+    size: 5267
 module:
   wConsequence.out:
     about:
@@ -186,9 +186,9 @@ module:
           - ../proto
           - ../proto/Integration.test.ss
           - ../proto/node_modules
+          - ../proto/node_modules/Tools
           - ../proto/node_modules/wConsequence
           - ../proto/wtools
-          - ../proto/wtools/Tools.s
           - ../proto/wtools/abase
           - ../proto/wtools/abase/l9
           - ../proto/wtools/abase/l9/consequence
@@ -1594,6 +1594,6 @@ module:
         hash: 3ee480962983002a93760f5d2bf956f4
         size: 2949
       ../.im.will.yml:
-        hash: b984770872111636f0e8ca7c18ffdc44
-        size: 5317
+        hash: 73f969eaa0beb8803ebdcec49947cc84
+        size: 5267
       wConsequence.out.will.yml: *ref_0

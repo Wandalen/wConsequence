@@ -91,8 +91,8 @@ path:
       raw: compiled
       content: prime
   npm.proto.entry:
-    - /pro/module/wConsequence/proto/wtools/abase/l9/consequence/Namespace.s
-    - /pro/module/wConsequence/proto/node_modules/wConsequence
+    - proto/wtools/abase/l9/consequence/Namespace.s
+    - proto/node_modules/wConsequence
 reflector:
   reflect.proto:
     inherit: predefined.*
