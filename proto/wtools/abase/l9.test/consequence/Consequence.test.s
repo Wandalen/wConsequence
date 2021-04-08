@@ -4418,19 +4418,21 @@ function timeLimitProcedure( test )
     var con0 = _.time.out( t*3, );
     con.timeLimit( t*7, con0 );
 
-    con.tap( ( err, arg ) =>
+    test.identical( con.competitorsCount(), 4 );
+    con.competitorsGet().forEach( ( competitor ) =>
     {
-      test.true( err === undefined );
-    });
+      console.log( competitor )
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'timeLimit1' ) );
+    })
 
-    _.time.out( t, function()
+    test.identical( con0.competitorsCount(), 4 );
+    con0.competitorsGet().forEach( ( competitor ) =>
     {
-      con.competitorsGet().forEach( ( competitor ) =>
-      {
-        test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
-        test.true( _.strHas( competitor.procedure._sourcePath, 'timeLimit1' ) );
-      })
-    });
+      console.log( competitor )
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'timeLimit1' ) );
+    })
 
     return _.time.out( t*10, function()
     {
