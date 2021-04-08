@@ -4404,6 +4404,45 @@ function timeOut( test )
 
 //
 
+function timeLimitProcedure( test )
+{
+  let context = this;
+  let ready = _.take( null );
+  let t = context.t1;
+
+  ready.then( function timeLimit1( arg )
+  {
+    test.case = 'timeLimit';
+
+    var con = _.time.out( t*1 );
+    var con0 = _.time.out( t*3, );
+    con.timeLimit( t*7, con0 );
+
+    con.tap( ( err, arg ) =>
+    {
+      test.true( err === undefined );
+    });
+
+    _.time.out( t, function()
+    {
+      con.competitorsGet().forEach( ( competitor ) =>
+      {
+        test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+        test.true( _.strHas( competitor.procedure._sourcePath, 'timeLimit1' ) );
+      })
+    });
+
+    return _.time.out( t*10, function()
+    {
+      return null;
+    })
+  })
+
+  return ready;
+}
+
+//
+
 function timeLimitSplit( test )
 {
   let context = this;
@@ -12206,6 +12245,123 @@ function _and( test )
       test.identical( con2.competitorsEarlyGet().length, 0 );
     });
   })
+
+  return ready;
+}
+
+//
+
+
+function _andProcedure( test )
+{
+  let context = this;
+
+  let delay = context.t1*5;
+  let ready = new _.Consequence().take( null )
+
+  ready.then( function( arg )
+  {
+    test.case = 'give back resources to src consequences';
+
+    var mainCon = new _.Consequence({ tag : 'mainCon' });
+    var con1 = new _.Consequence({ tag : 'con1' });
+    var con2 = new _.Consequence({ tag : 'con2' });
+
+    mainCon.take( 'str' );
+
+    mainCon._and
+    ({
+      competitors : [ con1, con2 ],
+      keeping : true,
+      accumulative : false,
+      waitingResource : true,
+      waitingOthers : true,
+      stack : 1,
+    });
+
+    mainCon.competitorsGet().forEach( ( competitor ) =>
+    {
+      console.log( 'HELLO' )
+      console.dir( competitor )
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'andProcedure' ) );
+    })
+
+    // con1.give( ( err, got ) =>
+    // {
+    //   test.identical( got, delay );
+    //   test.identical( err, undefined );
+    //   return null;
+    // });
+    // con2.give( ( err, got ) =>
+    // {
+    //   test.identical( got, delay * 2 );
+    //   test.identical( err, undefined );
+    //   return null;
+    // });
+
+    mainCon.finally( function andProcedure( err, got )
+    {
+      test.true( true );
+
+      // mainCon.competitorsGet().forEach( ( competitor ) =>
+      // {
+      //   console.dir( competitor )
+      //   test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      //   test.true( _.strHas( competitor.procedure._sourcePath, 'andProcedure' ) );
+      // })
+      // test.description = `at that moment all resources from srcs are processed`;
+      // test.identical( con1.resourcesCount(), 0 );
+      // test.identical( con1.competitorsEarlyGet().length, 0 );
+      // test.identical( con2.resourcesCount(), 0 );
+      // test.identical( con2.competitorsEarlyGet().length, 0 );
+      // test.identical( got, [ delay, delay * 2, 'str' ] );
+      // test.identical( err, undefined );
+      return null;
+    });
+
+    _.time.out( delay, () => { con1.take( delay );return null; } );
+    _.time.out( delay * 2, () => { con2.take( delay * 2 );return null; } );
+
+    return mainCon;
+  })
+
+//   function timeLimitProcedure( test )
+// {
+//   let context = this;
+//   let ready = _.take( null );
+//   let t = context.t1;
+
+//   ready.then( function timeLimit1( arg )
+//   {
+//     test.case = 'timeLimit';
+
+//     var con = _.time.out( t*1 );
+//     var con0 = _.time.out( t*3, );
+//     con.timeLimit( t*7, con0 );
+
+//     con.tap( ( err, arg ) =>
+//     {
+//       test.true( err === undefined );
+//     });
+
+//     _.time.out( t, function()
+//     {
+//       con.competitorsGet().forEach( ( competitor ) =>
+//       {
+//         test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+//         test.true( _.strHas( competitor.procedure._sourcePath, 'timeLimit1' ) );
+//       })
+//     });
+
+//     return _.time.out( t*10, function()
+//     {
+//       return null;
+//     })
+//   })
+
+//   return ready;
+// }
 
   return ready;
 }
@@ -23075,6 +23231,7 @@ const Proto =
     // time
 
     timeOut,
+    timeLimitProcedure,
     timeLimitSplit,
     timeLimitErrorSplit,
     timeLimitConsequence,
@@ -23137,6 +23294,7 @@ const Proto =
     // And
 
     _and,
+    _andProcedure,
     AndTake, /* aaa2 : implement very similar test for routine andTake, alsoTake */ /* Dmytro : implemented */
     AndTakeWithPromise,
     AndTakeWithPromiseAndConsequence,
