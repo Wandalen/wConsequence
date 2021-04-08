@@ -8,11 +8,11 @@ if( typeof module !== 'undefined' )
 
   try
   {
-    let _ = require( '../../../../node_modules/Tools' );
+    const _ = require( '../../../../node_modules/Tools' );
   }
   catch( err )
   {
-    let _ = require( '../../../node_modules/Tools' );
+    const _ = require( '../../../node_modules/Tools' );
   }
 
   const _ = _global_.wTools;

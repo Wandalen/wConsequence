@@ -5,7 +5,7 @@
 
 if( typeof module !== 'undefined' )
 {
-  let _ = require( '../../../../node_modules/Tools' );
+  const _ = require( '../../../../node_modules/Tools' );
 
   _.include( 'wTesting' );
   _.include( 'wLogger' );
@@ -101,7 +101,7 @@ function uncaughtSyncErrorOnExit( test )
 
   function program()
   {
-    let _ = require( toolsPath );
+    const _ = require( toolsPath );
     _.include( 'wProcess' );
     let con = new _.Consequence();
     _.process.on( 'exit', () =>
@@ -137,7 +137,7 @@ function uncaughtAsyncErrorOnExit( test )
 
   function program()
   {
-    let _ = require( toolsPath );
+    const _ = require( toolsPath );
     _.include( 'wProcess' );
     let con = new _.Consequence();
     _.process.on( 'exit', () =>
@@ -173,7 +173,7 @@ function uncaughtAsyncErrorOnExitBefore( test )
 
   function program()
   {
-    let _ = require( toolsPath );
+    const _ = require( toolsPath );
     _.include( 'wProcess' );
     let con = new _.Consequence();
     _.process.on( 'exitBefore', () =>
@@ -211,7 +211,7 @@ function AndKeepErrorAttend( test )
 
   function program()
   {
-    let _ = require( toolsPath );
+    const _ = require( toolsPath );
     _.include( 'wConsequence' );
 
     var con1 = _.time.out( context.t1, () =>
@@ -267,7 +267,7 @@ function AndKeepErrorNotAttend( test )
 
   function program()
   {
-    let _ = require( toolsPath );
+    const _ = require( toolsPath );
     _.include( 'wConsequence' );
 
     var con1 = _.time.out( context.t1, () =>
@@ -331,7 +331,7 @@ function asyncStackWithTimeOut( test )
 
   function program()
   {
-    let _ = require( toolsPath );
+    const _ = require( toolsPath );
 
     _.include( 'wConsequence' );
     _.include( 'wProcedure' );
@@ -387,7 +387,7 @@ function asyncStackWithConsequence( test )
 
   function program()
   {
-    let _ = require( toolsPath );
+    const _ = require( toolsPath );
 
     _.include( 'wConsequence' );
     _.include( 'wProcedure' );
@@ -441,7 +441,7 @@ function asyncStackInConsequenceTrivial( test )
 
   function program()
   {
-    let _ = require( toolsPath );
+    const _ = require( toolsPath );
     _.include( 'wFiles' );
     _.include( 'wConsequence' );
     _.time.out( context.t1*3/2, () =>
@@ -484,7 +484,7 @@ function asyncStackInConsequenceThen( test )
 
   function program()
   {
-    let _ = require( toolsPath );
+    const _ = require( toolsPath );
     _.include( 'wFiles' );
     _.include( 'wConsequence' );
 
@@ -549,7 +549,7 @@ function syncMaybeError( test )
 
   function program()
   {
-    let _ = require( toolsPath );
+    const _ = require( toolsPath );
     _.include( 'wConsequence' );
 
     test.case = 'syncMaybe in try/catch block, must not throw erro, error is not attended'
@@ -620,7 +620,7 @@ function symbolAsError( test )
 
   function program()
   {
-    let _ = require( toolsPath );
+    const _ = require( toolsPath );
     require( consequencePath );
     _.include( 'wProcess' );
     let input = _.process.input();
@@ -673,7 +673,7 @@ function tester( test )
   function program()
   {
 
-    let _ = require( toolsPath );
+    const _ = require( toolsPath );
     require( consequencePath );
     _.include( 'wTesting' );
 
@@ -731,7 +731,7 @@ function timeLimit( test )
 
   function program()
   {
-    let _ = require( toolsPath );
+    const _ = require( toolsPath );
     let t = 25;
     _.include( 'wConsequence' );
     _.include( 'wProcedure' );
@@ -781,7 +781,7 @@ function timeLimitWaitingEnough( test )
 
   function program()
   {
-    let _ = require( toolsPath );
+    const _ = require( toolsPath );
     _.include( 'wConsequence' );
     _.include( 'wProcedure' );
     let con = _.time.out( context.t2 );
@@ -849,7 +849,7 @@ function timeLimitWaitingNotEnough( test )
 
   function program()
   {
-    let _ = require( toolsPath );
+    const _ = require( toolsPath );
     _.include( 'wConsequence' );
     _.include( 'wProcedure' );
 
@@ -915,7 +915,7 @@ function timeCancelBefore( test )
 
   function program()
   {
-    let _ = require( toolsPath );
+    const _ = require( toolsPath );
     _.include( 'wConsequence' );
     _.include( 'wProcedure' );
 
@@ -972,7 +972,7 @@ function timeCancelAfter( test )
 
   function program()
   {
-    let _ = require( toolsPath );
+    const _ = require( toolsPath );
     _.include( 'wConsequence' );
     _.include( 'wProcedure' );
 
@@ -1052,7 +1052,7 @@ competitorsCount 2
 
   function program()
   {
-    let _ = require( toolsPath );
+    const _ = require( toolsPath );
     _.include( 'wProcedure' );
     _.include( 'wConsequence' );
 
@@ -1131,7 +1131,7 @@ function timeBegin( test )
 
   function program()
   {
-    let _ = require( toolsPath );
+    const _ = require( toolsPath );
     _.include( 'wConsequence' );
     _.include( 'wProcedure' );
 
@@ -1181,7 +1181,7 @@ function timeOutCancelWithErrorNotSymbol( test )
 
   function program1()
   {
-    let _ = require( toolsPath );
+    const _ = require( toolsPath );
     _.include( 'wConsequence' );
 
     cancelErr = _.errAttend( 'Error1' );
