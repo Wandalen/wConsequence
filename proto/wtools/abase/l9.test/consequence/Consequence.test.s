@@ -12326,43 +12326,6 @@ function _andProcedure( test )
     return mainCon;
   })
 
-//   function timeLimitProcedure( test )
-// {
-//   let context = this;
-//   let ready = _.take( null );
-//   let t = context.t1;
-
-//   ready.then( function timeLimit1( arg )
-//   {
-//     test.case = 'timeLimit';
-
-//     var con = _.time.out( t*1 );
-//     var con0 = _.time.out( t*3, );
-//     con.timeLimit( t*7, con0 );
-
-//     con.tap( ( err, arg ) =>
-//     {
-//       test.true( err === undefined );
-//     });
-
-//     _.time.out( t, function()
-//     {
-//       con.competitorsGet().forEach( ( competitor ) =>
-//       {
-//         test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
-//         test.true( _.strHas( competitor.procedure._sourcePath, 'timeLimit1' ) );
-//       })
-//     });
-
-//     return _.time.out( t*10, function()
-//     {
-//       return null;
-//     })
-//   })
-
-//   return ready;
-// }
-
   return ready;
 }
 
