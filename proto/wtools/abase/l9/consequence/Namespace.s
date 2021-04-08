@@ -260,7 +260,7 @@ function out_body( o )
   /* */
 
   if( o.procedure === null )
-  o.procedure = _.Procedure( 3 ).name( 'time.out' ); /* delta : 3 to not include info about `routine.unite` in the stack */
+  o.procedure = _.Procedure( 2 ).name( 'time.out' );
   _.assert( _.procedureIs( o.procedure ) );
 
   if( Config.debug )
