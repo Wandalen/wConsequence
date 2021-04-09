@@ -1545,6 +1545,38 @@ function timeOut( test )
 
 timeOut.timeOut = 20000;
 
+function timeOutSourcePath( test )
+{
+  let context = this;
+  var ready = new _.Consequence().take( null );
+
+  /* */
+
+  ready.then( function timeOut1()
+  {
+    test.case = '_sourcePath';
+
+    let timeOut = _.time.out( context.t2*4 );
+
+    test.identical( timeOut.competitorsCount(), 1 );
+
+    timeOut.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.false( _.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'timeOut1' ) );
+    })
+
+    return timeOut.finally( function( err, arg )
+    {
+      test.identical( timeOut.competitorsCount(), 1 );
+      return null;
+    });
+  })
+
+  return ready;
+
+}
+
 //
 
 // function timeOutMode01( test )
@@ -2893,6 +2925,7 @@ const Proto =
     timeOutCancelZeroDelayOutsideOfCallback,
 
     timeOut,
+    timeOutSourcePath,
     // timeOutMode01,
     // timeOutMode10,
     // timeOutMode11,
