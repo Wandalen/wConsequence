@@ -1,9 +1,7 @@
 
 name : push
 
-on :
-  push :
-    branches : [ master ]
+on : [ push ]
 
 jobs :
 
