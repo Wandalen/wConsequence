@@ -6600,6 +6600,59 @@ function andKeepProcedure( test )
 
 //
 
+function andKeepAccumulativeProcedure( test )
+{
+  let context = this;
+
+  let ready = new _.Consequence().take( null );
+
+  /* */
+
+  ready.then( function andKeepAccumulative1( arg )
+  {
+    test.case = 'andKeepAccumulative';
+
+    let delay = context.t1;
+    var mainCon = new _.Consequence({ tag : 'mainCon' });
+    var con = new _.Consequence({ tag : 'con' });
+
+    test.identical( mainCon.competitorsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+
+    mainCon.take( null );
+    mainCon.andKeepAccumulative( () => con );
+
+    mainCon.finally( function( err, got )
+    {
+      test.identical( con.competitorsCount(), 0 );
+      return null;
+    });
+    
+    test.identical( con.competitorsCount(), 1 );
+    test.identical( mainCon.competitorsCount(), 1 );
+
+    mainCon.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'andKeepAccumulative1' ) );
+    })
+
+    con.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'andKeepAccumulative1' ) );
+    })
+
+    _.time.out( delay, () => { con.take( delay ); return null; });
+
+    return mainCon;
+  })
+
+  return ready;
+}
+
+//
+
 function andImmediateProcedure( test )
 {
   let context = this;
@@ -23259,6 +23312,7 @@ const Proto =
 
     andTakeProcedure,
     andKeepProcedure,
+    andKeepAccumulativeProcedure,
     andImmediateProcedure,
 
     andTake,
