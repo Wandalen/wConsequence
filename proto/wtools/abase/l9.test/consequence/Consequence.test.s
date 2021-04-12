@@ -23179,7 +23179,6 @@ const Proto =
     // And
 
     _and,
-    _andProcedure,
     AndTake, /* aaa2 : implement very similar test for routine andTake, alsoTake */ /* Dmytro : implemented */
     AndTakeWithPromise,
     AndTakeWithPromiseAndConsequence,
