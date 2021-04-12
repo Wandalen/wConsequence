@@ -1597,7 +1597,7 @@ function _timeLimit( o )
     keeping : false,
     competitorRoutine : _timeLimitCallback,
     kindOfResource : KindOfResource.Both,
-    stack : 3,
+    stack : 4, /* delta : 4 to not include info about `routine.unite` in the stack */
   });
 
   self.procedure( () => procedure.clone() ).nameElse( 'timeLimit' );
