@@ -6499,6 +6499,7 @@ function andTakeProcedure( test )
   let context = this;
 
   let ready = new _.Consequence().take( null );
+
   /* */
 
   ready.then( function andTake1( arg )
@@ -6551,6 +6552,7 @@ function andKeepProcedure( test )
   let context = this;
 
   let ready = new _.Consequence().take( null );
+
   /* */
 
   ready.then( function andKeep1( arg )
@@ -6603,6 +6605,7 @@ function andImmediateProcedure( test )
   let context = this;
 
   let ready = new _.Consequence().take( null );
+
   /* */
 
   ready.then( function andImmediate1( arg )
@@ -6647,7 +6650,6 @@ function andImmediateProcedure( test )
 
   return ready;
 }
-
 
 //
 
@@ -23255,6 +23257,10 @@ const Proto =
 
     // and
 
+    andTakeProcedure,
+    andKeepProcedure,
+    andImmediateProcedure,
+
     andTake,
     andTakeExtended,
     andTakeWithPromise,
@@ -23298,9 +23304,6 @@ const Proto =
     // And
 
     _and,
-    andTakeProcedure,
-    andKeepProcedure,
-    andImmediateProcedure,
     AndTake, /* aaa2 : implement very similar test for routine andTake, alsoTake */ /* Dmytro : implemented */
     AndTakeWithPromise,
     AndTakeWithPromiseAndConsequence,
