@@ -956,7 +956,7 @@ function ready_body( o )
 {
 
   if( !o.procedure )
-  o.procedure = _.Procedure({ _stack : 2, _name : 'timeReady' }); /* delta : 2 to not include info about `routine.unite` in the stack */
+  o.procedure = _.Procedure({ _stack : 1, _name : 'timeReady' });
 
   _.assert( _.procedureIs( o.procedure ) );
 

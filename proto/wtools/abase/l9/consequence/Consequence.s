@@ -1767,7 +1767,7 @@ function _and( o )
   let accumulative = o.accumulative;
   let waitingResource = o.waitingResource;
   let waitingOthers = o.waitingOthers;
-  let procedure = self.procedure( o.stack, 2 ).nameElse( '_and' ); /* aaa2 : cover procedure.sourcePath of each derived routine */ /* Dmytro : covered */
+  let procedure = self.procedure( o.stack, 1 ).nameElse( '_and' ); /* aaa2 : cover procedure.sourcePath of each derived routine */ /* Dmytro : covered */
   let escaped = 0;
   let errOwner = {};
 
@@ -2934,7 +2934,7 @@ function _or( o )
 {
   let self = this;
   let count = 0;
-  let procedure = self.procedure( o.stack, 2 ).nameElse( '_or' ); /* aaa2 : cover procedure.sourcePath of each derived routine */ /* Dmytro : covered */
+  let procedure = self.procedure( o.stack, 1 ).nameElse( '_or' ); /* aaa2 : cover procedure.sourcePath of each derived routine */ /* Dmytro : covered */
   let competitors = o.competitors;
   let competitorRoutines = [];
 
