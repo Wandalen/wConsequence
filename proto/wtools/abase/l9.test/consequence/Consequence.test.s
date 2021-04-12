@@ -6494,6 +6494,163 @@ procedureOffOn.description =
 // and
 // --
 
+function andTakeProcedure( test )
+{
+  let context = this;
+
+  let ready = new _.Consequence().take( null );
+  /* */
+
+  ready.then( function andTake1( arg )
+  {
+    test.case = 'andTake';
+
+    let delay = context.t1;
+    var mainCon = new _.Consequence({ tag : 'mainCon' });
+    var con = new _.Consequence({ tag : 'con' });
+
+    test.identical( mainCon.competitorsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+
+    mainCon.take( null );
+    mainCon.andTake( () => con );
+
+    mainCon.finally( function( err, got )
+    {
+      test.identical( con.competitorsCount(), 0 );
+      return null;
+    });
+    
+    test.identical( con.competitorsCount(), 1 );
+    test.identical( mainCon.competitorsCount(), 1 );
+
+    mainCon.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'andTake1' ) );
+    })
+
+    con.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'andTake1' ) );
+    })
+
+    _.time.out( delay, () => { con.take( delay ); return null; });
+
+    return mainCon;
+  })
+
+  return ready;
+}
+
+//
+
+function andKeepProcedure( test )
+{
+  let context = this;
+
+  let ready = new _.Consequence().take( null );
+  /* */
+
+  ready.then( function andKeep1( arg )
+  {
+    test.case = 'andKeep';
+
+    let delay = context.t1;
+    var mainCon = new _.Consequence({ tag : 'mainCon' });
+    var con = new _.Consequence({ tag : 'con' });
+
+    test.identical( mainCon.competitorsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+
+    mainCon.take( null );
+    mainCon.andKeep( () => con );
+
+    mainCon.finally( function( err, got )
+    {
+      test.identical( con.competitorsCount(), 0 );
+      return null;
+    });
+    
+    test.identical( con.competitorsCount(), 1 );
+    test.identical( mainCon.competitorsCount(), 1 );
+
+    mainCon.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'andKeep1' ) );
+    })
+
+    con.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'andKeep1' ) );
+    })
+
+    _.time.out( delay, () => { con.take( delay ); return null; });
+
+    return mainCon;
+  })
+
+  return ready;
+}
+
+//
+
+function andImmediateProcedure( test )
+{
+  let context = this;
+
+  let ready = new _.Consequence().take( null );
+  /* */
+
+  ready.then( function andImmediate1( arg )
+  {
+    test.case = 'andImmediate';
+
+    let delay = context.t1;
+    var mainCon = new _.Consequence({ tag : 'mainCon' });
+    var con = new _.Consequence({ tag : 'con' });
+
+    test.identical( mainCon.competitorsCount(), 0 );
+    test.identical( con.competitorsCount(), 0 );
+
+    mainCon.take( null );
+    mainCon.andImmediate( () => con );
+
+    mainCon.finally( function( err, got )
+    {
+      test.identical( con.competitorsCount(), 0 );
+      return null;
+    });
+    
+    test.identical( con.competitorsCount(), 1 );
+    test.identical( mainCon.competitorsCount(), 1 );
+
+    mainCon.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'andImmediate1' ) );
+    })
+
+    con.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'andImmediate1' ) );
+    })
+
+    _.time.out( delay, () => { con.take( delay ); return null; });
+
+    return mainCon;
+  })
+
+  return ready;
+}
+
+
+//
+
 function andTake( test )
 {
   let context = this;
@@ -23141,6 +23298,9 @@ const Proto =
     // And
 
     _and,
+    andTakeProcedure,
+    andKeepProcedure,
+    andImmediateProcedure,
     AndTake, /* aaa2 : implement very similar test for routine andTake, alsoTake */ /* Dmytro : implemented */
     AndTakeWithPromise,
     AndTakeWithPromiseAndConsequence,
