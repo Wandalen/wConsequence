@@ -23154,70 +23154,70 @@ const Proto =
 
     // inter
 
-    // consequenceIs,
-    // consequenceLike,
-    // clone,
+    consequenceIs,
+    consequenceLike,
+    clone,
 
-    // // from
+    // from
 
-    // fromAsyncMode00,
-    // // fromAsyncMode10,
-    // // fromAsyncMode01,
-    // // fromAsyncMode11,
+    fromAsyncMode00,
+    // fromAsyncMode10,
+    // fromAsyncMode01,
+    // fromAsyncMode11,
 
-    // fromPromiseWithUndefined,
-    // fromCustomPromise,
-    // consequenceAwait,
+    fromPromiseWithUndefined,
+    fromCustomPromise,
+    consequenceAwait,
 
-    // // export
+    // export
 
-    // toStr,
-    // stringify,
+    toStr,
+    stringify,
 
-    // // take
+    // take
 
-    // ordinarResourceAsyncMode00,
-    // // ordinarResourceAsyncMode10,
-    // // ordinarResourceAsyncMode01,
-    // // ordinarResourceAsyncMode11,
+    ordinarResourceAsyncMode00,
+    // ordinarResourceAsyncMode10,
+    // ordinarResourceAsyncMode01,
+    // ordinarResourceAsyncMode11,
 
-    // takeAll,
+    takeAll,
 
-    // finallyPromiseGiveAsyncMode00,
-    // // finallyPromiseGiveAsyncMode10,
-    // // finallyPromiseGiveAsyncMode01,
-    // // finallyPromiseGiveAsyncMode11,
+    finallyPromiseGiveAsyncMode00,
+    // finallyPromiseGiveAsyncMode10,
+    // finallyPromiseGiveAsyncMode01,
+    // finallyPromiseGiveAsyncMode11,
 
-    // _finallyAsyncMode00,
-    // // _finallyAsyncMode10,
-    // // _finallyAsyncMode01,
-    // // _finallyAsyncMode11,
+    _finallyAsyncMode00,
+    // _finallyAsyncMode10,
+    // _finallyAsyncMode01,
+    // _finallyAsyncMode11,
 
-    // finallyPromiseKeepAsyncMode00,
-    // // finallyPromiseKeepAsyncMode10,
-    // // finallyPromiseKeepAsyncMode01,
-    // // finallyPromiseKeepAsyncMode11,
+    finallyPromiseKeepAsyncMode00,
+    // finallyPromiseKeepAsyncMode10,
+    // finallyPromiseKeepAsyncMode01,
+    // finallyPromiseKeepAsyncMode11,
 
-    // // etc
+    // etc
 
-    // trivial,
-    // fields,
+    trivial,
+    fields,
 
-    // deasync,
+    deasync,
 
-    // split,
-    // tap,
-    // tapHandling,
+    split,
+    tap,
+    tapHandling,
 
-    // catchTestRoutine,
-    // thenGiveTrivial,
-    // thenGiveThrowing,
-    // keep,
-    // notDeadLock1,
+    catchTestRoutine,
+    thenGiveTrivial,
+    thenGiveThrowing,
+    keep,
+    notDeadLock1,
 
-    // // time
+    // time
 
-    // timeOut,
+    timeOut,
     timeLimitProcedure,
     timeLimitSplitProcedure,
     timeLimitErrorProcedure,
@@ -23231,153 +23231,153 @@ const Proto =
 
     // procedure
 
-    // procedureBasic,
-    // procedureThenKeepCallback,
-    // procedureForConsequence,
-    // procedureStatesThenKeep,
-    // procedureStatesTap,
-    // procedureOff,
-    // procedureOffOn,
+    procedureBasic,
+    procedureThenKeepCallback,
+    procedureForConsequence,
+    procedureStatesThenKeep,
+    procedureStatesTap,
+    procedureOff,
+    procedureOffOn,
 
-    // // and
+    // and
 
-    // andTake,
-    // andTakeExtended,
-    // andTakeWithPromise,
-    // andTakeWithPromiseAndConsequence,
-    // andTakeWithMixedCompetitors,
-    // andTakeWithSeveralIdenticalCompetitors,
+    andTake,
+    andTakeExtended,
+    andTakeWithPromise,
+    andTakeWithPromiseAndConsequence,
+    andTakeWithMixedCompetitors,
+    andTakeWithSeveralIdenticalCompetitors,
 
-    // andNotDeadLock,
-    // andConcurrent,
-    // andKeepRoutinesTakeFirst,
-    // andKeepRoutinesTakeLast,
-    // andKeepRoutinesDelayed,
-    // andKeepDuplicates,
-    // andKeepInstant,
-    // andKeep,
-    // andKeepExtended,
-    // andKeepWithPromise,
-    // andKeepWithPromiseAndConsequence,
-    // andKeepWithMixedCompetitors,
-    // andKeepWithSeveralIdenticalCompetitors,
-    // andKeepAccumulative,
-    // andKeepAccumulativeNonConsequence,
+    andNotDeadLock,
+    andConcurrent,
+    andKeepRoutinesTakeFirst,
+    andKeepRoutinesTakeLast,
+    andKeepRoutinesDelayed,
+    andKeepDuplicates,
+    andKeepInstant,
+    andKeep,
+    andKeepExtended,
+    andKeepWithPromise,
+    andKeepWithPromiseAndConsequence,
+    andKeepWithMixedCompetitors,
+    andKeepWithSeveralIdenticalCompetitors,
+    andKeepAccumulative,
+    andKeepAccumulativeNonConsequence,
 
-    // andImmediate,
-    // andImmediateWithPromise,
-    // andImmediateWithPromiseAndConsequence,
-    // andImmediateWithMixedCompetitors,
-    // andImmediateWithSeveralIdenticalCompetitors,
+    andImmediate,
+    andImmediateWithPromise,
+    andImmediateWithPromiseAndConsequence,
+    andImmediateWithMixedCompetitors,
+    andImmediateWithSeveralIdenticalCompetitors,
 
-    // alsoKeepTrivialSyncBefore,
-    // alsoKeepTrivialSyncAfter,
-    // alsoKeepTrivialAsync,
-    // alsoKeep,
-    // alsoKeepExtended,
-    // alsoKeepThrowingBeforeSync,
-    // alsoKeepThrowingAfterSync,
-    // alsoKeepThrowingBeforeAsync,
-    // alsoKeepThrowingAfterAsync,
-    // alsoImmediate,
+    alsoKeepTrivialSyncBefore,
+    alsoKeepTrivialSyncAfter,
+    alsoKeepTrivialAsync,
+    alsoKeep,
+    alsoKeepExtended,
+    alsoKeepThrowingBeforeSync,
+    alsoKeepThrowingAfterSync,
+    alsoKeepThrowingBeforeAsync,
+    alsoKeepThrowingAfterAsync,
+    alsoImmediate,
 
-    // // And
+    // And
 
-    // _and,
-    // AndTake, /* aaa2 : implement very similar test for routine andTake, alsoTake */ /* Dmytro : implemented */
-    // AndTakeWithPromise,
-    // AndTakeWithPromiseAndConsequence,
-    // AndTakeWithMixedCompetitors,
-    // AndTakeWithSeveralIdenticalCompetitors,
+    _and,
+    AndTake, /* aaa2 : implement very similar test for routine andTake, alsoTake */ /* Dmytro : implemented */
+    AndTakeWithPromise,
+    AndTakeWithPromiseAndConsequence,
+    AndTakeWithMixedCompetitors,
+    AndTakeWithSeveralIdenticalCompetitors,
 
-    // AndKeep, /* aaa2 : implement very similar test for routine andKeep, alsoKeep */ /* Dmytro : implemented */
-    // And,
-    // AndWithPromise,
-    // AndWithPromiseAndConsequence,
-    // AndWithMixedCompetitors,
-    // AndWithSeveralIdenticalCompetitors,
-    // AndUncaughtError,
+    AndKeep, /* aaa2 : implement very similar test for routine andKeep, alsoKeep */ /* Dmytro : implemented */
+    And,
+    AndWithPromise,
+    AndWithPromiseAndConsequence,
+    AndWithMixedCompetitors,
+    AndWithSeveralIdenticalCompetitors,
+    AndUncaughtError,
 
-    // AndImmediate, /* aaa2 : implement very similar test for routine andImmediate, alsoImmediate */ /* Dmytro : implemented */
-    // AndImmediateWithPromise,
-    // AndImmediateWithPromiseAndConsequence,
-    // AndImmediateWithMixedCompetitors,
-    // AndImmediateWithSeveralIdenticalCompetitors,
+    AndImmediate, /* aaa2 : implement very similar test for routine andImmediate, alsoImmediate */ /* Dmytro : implemented */
+    AndImmediateWithPromise,
+    AndImmediateWithPromiseAndConsequence,
+    AndImmediateWithMixedCompetitors,
+    AndImmediateWithSeveralIdenticalCompetitors,
 
-    // // or
+    // or
 
-    // orKeepingWithSimple,
-    // orKeepingWithLater,
-    // orKeepingWithNow,
-    // orKeepingWithPromises,
-    // orKeepingCheckProcedureSourcePath,
-    // orTakingWithSimple,
-    // orTakingWithLater,
-    // orTakingWithNow,
-    // orTakingWithPromises,
-    // orTakingCheckProcedureSourcePath,
-    // orKeepingSplitCanceled,
-    // orKeepingSplitCanceledProcedure,
-    // orKeepingCanceled,
+    orKeepingWithSimple,
+    orKeepingWithLater,
+    orKeepingWithNow,
+    orKeepingWithPromises,
+    orKeepingCheckProcedureSourcePath,
+    orTakingWithSimple,
+    orTakingWithLater,
+    orTakingWithNow,
+    orTakingWithPromises,
+    orTakingCheckProcedureSourcePath,
+    orKeepingSplitCanceled,
+    orKeepingSplitCanceledProcedure,
+    orKeepingCanceled,
 
-    // afterOrKeepingNotFiring,
-    // afterOrKeepingWithSimple,
-    // afterOrKeepingWithLater,
-    // afterOrKeepingWithTwoTake0,
-    // afterOrKeepingWithPromises,
-    // afterOrKeepingCheckProcedureSourcePath,
-    // afterOrTakingWithSimple,
-    // afterOrTakingWithLater,
-    // afterOrTakingWithTwoTake0,
-    // afterOrTakingWithPromises,
-    // afterOrTakingCheckProcedureSourcePath,
+    afterOrKeepingNotFiring,
+    afterOrKeepingWithSimple,
+    afterOrKeepingWithLater,
+    afterOrKeepingWithTwoTake0,
+    afterOrKeepingWithPromises,
+    afterOrKeepingCheckProcedureSourcePath,
+    afterOrTakingWithSimple,
+    afterOrTakingWithLater,
+    afterOrTakingWithTwoTake0,
+    afterOrTakingWithPromises,
+    afterOrTakingCheckProcedureSourcePath,
 
-    // OrKeep,
-    // OrTake,
-    // Or,
+    OrKeep,
+    OrTake,
+    Or,
 
-    // // resource handling
+    // resource handling
 
-    // take,
-    // takeInToolsNamespace,
-    // takeSymbolInErrorChanel,
+    take,
+    takeInToolsNamespace,
+    takeSymbolInErrorChanel,
 
-    // // competitor
+    // competitor
 
-    // competitorOwn,
-    // competitorsCount,
+    competitorOwn,
+    competitorsCount,
 
-    // competitorsCancelSingle,
-    // competitorsCancel,
-    // competitorsCancel2,
+    competitorsCancelSingle,
+    competitorsCancel,
+    competitorsCancel2,
 
-    // // resources
+    // resources
 
-    // argumentsCount,
-    // errorsCount,
-    // resourcesCount,
+    argumentsCount,
+    errorsCount,
+    resourcesCount,
 
-    // // advanced
+    // advanced
 
-    // put,
+    put,
 
-    // firstAsyncMode00,
-    // // firstAsyncMode10,
-    // // firstAsyncMode01,
-    // // firstAsyncMode11,
+    firstAsyncMode00,
+    // firstAsyncMode10,
+    // firstAsyncMode01,
+    // firstAsyncMode11,
 
-    // // experimental
+    // experimental
 
-    // thenSequenceSync,
-    // // thenSequenceAsync,
+    thenSequenceSync,
+    // thenSequenceAsync,
 
-    // // experiment,
+    // experiment,
 
-    // bugFromProcessExperiment,
-    // bugFromProcessExperimentReversed,
-    // bugFromProcessExperimentWithoutDeasync,
-    // bugFromProcessExperimentWithDeasync,
-    // bugFromProcessParallelExperiment,
+    bugFromProcessExperiment,
+    bugFromProcessExperimentReversed,
+    bugFromProcessExperimentWithoutDeasync,
+    bugFromProcessExperimentWithDeasync,
+    bugFromProcessParallelExperiment,
 
   },
 

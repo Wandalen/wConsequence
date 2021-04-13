@@ -1680,6 +1680,7 @@ function timeLimitSplit( time )
 {
   let self = this;
   let result = new _.Consequence();
+  self._procedure = new _.Procedure( 1 ); /* create a procedure to later detach it in `_timeLimit` to have a proper _sourcePath */
 
   _.assert( arguments.length === 1 );
 
@@ -1702,6 +1703,7 @@ function timeLimitErrorSplit( time )
 {
   let self = this;
   let result = new _.Consequence();
+  self._procedure = new _.Procedure( 1 ); /* create a procedure to later detach it in `_timeLimit` to have a proper _sourcePath */
 
   _.assert( arguments.length === 1 );
 
