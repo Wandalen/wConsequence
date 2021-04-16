@@ -1724,7 +1724,7 @@ function timeLimitErrorSplit( time )
 
 function TimeLimit( timeLimit, consequence )
 {
-  let result = new _.Consequence().take( null )
+  let result = new _.Consequence({ _procedure : new _.Procedure( 1 ) }).take( null ) /* create a procedure to later detach it in `_timeLimit` to have a proper _sourcePath */
   .timeLimit( timeLimit, consequence );
   return result;
 }
@@ -1733,7 +1733,7 @@ function TimeLimit( timeLimit, consequence )
 
 function TimeLimitError( timeLimit, consequence )
 {
-  let result = new _.Consequence().take( null )
+  let result = new _.Consequence({ _procedure : new _.Procedure( 1 ) }).take( null ) /* create a procedure to later detach it in `_timeLimit` to have a proper _sourcePath */
   .timeLimitError( timeLimit, consequence );
   return result;
 }

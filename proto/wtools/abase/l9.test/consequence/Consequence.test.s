@@ -4544,6 +4544,81 @@ function timeLimitErrorSplitProcedure( test )
   return ready;
 }
 
+//
+
+function TimeLimitProcedure( test )
+{
+  let context = this;
+  let ready = _.take( null );
+  let t = context.t1;
+
+  ready.then( function TimeLimit1( arg )
+  {
+    test.case = 'TimeLimit';
+
+    var con0 = _.time.out( t*3 );
+    var con = _.Consequence.TimeLimit( t*7, con0 );
+
+    test.identical( con.competitorsCount(), 2 );
+    con.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'TimeLimit1' ) );
+    })
+
+    test.identical( con0.competitorsCount(), 2 );
+    con0.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'TimeLimit1' ) );
+    })
+
+    return _.time.out( t*10, function()
+    {
+      return null;
+    })
+  })
+
+  return ready;
+}
+
+//
+
+function TimeLimitErrorProcedure( test )
+{
+  let context = this;
+  let ready = _.take( null );
+  let t = context.t1;
+
+  ready.then( function TimeLimitError1( arg )
+  {
+    test.case = 'TimeLimitError';
+
+    var con0 = _.time.out( t*3 );
+    var con = _.Consequence.TimeLimitError( t*7, con0 );
+
+    test.identical( con.competitorsCount(), 2 );
+    con.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'TimeLimitError1' ) );
+    })
+
+    test.identical( con0.competitorsCount(), 2 );
+    con0.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'TimeLimitError1' ) );
+    })
+
+    return _.time.out( t*10, function()
+    {
+      return null;
+    })
+  })
+
+  return ready;
+}
 
 //
 
@@ -23218,10 +23293,14 @@ const Proto =
     // time
 
     timeOut,
+
     timeLimitProcedure,
     timeLimitSplitProcedure,
     timeLimitErrorProcedure,
     timeLimitErrorSplitProcedure,
+    TimeLimitProcedure,
+    TimeLimitErrorProcedure,
+
     timeLimitSplit,
     timeLimitErrorSplit,
     timeLimitConsequence,
