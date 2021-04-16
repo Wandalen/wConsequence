@@ -6521,7 +6521,7 @@ function andTakeProcedure( test )
       test.identical( con.competitorsCount(), 0 );
       return null;
     });
-    
+
     test.identical( con.competitorsCount(), 1 );
     test.identical( mainCon.competitorsCount(), 1 );
 
@@ -6574,7 +6574,7 @@ function andKeepProcedure( test )
       test.identical( con.competitorsCount(), 0 );
       return null;
     });
-    
+
     test.identical( con.competitorsCount(), 1 );
     test.identical( mainCon.competitorsCount(), 1 );
 
@@ -6627,7 +6627,7 @@ function andKeepAccumulativeProcedure( test )
       test.identical( con.competitorsCount(), 0 );
       return null;
     });
-    
+
     test.identical( con.competitorsCount(), 1 );
     test.identical( mainCon.competitorsCount(), 1 );
 
@@ -6680,7 +6680,7 @@ function andImmediateProcedure( test )
       test.identical( con.competitorsCount(), 0 );
       return null;
     });
-    
+
     test.identical( con.competitorsCount(), 1 );
     test.identical( mainCon.competitorsCount(), 1 );
 
@@ -6699,6 +6699,222 @@ function andImmediateProcedure( test )
     _.time.out( delay, () => { con.take( delay ); return null; });
 
     return mainCon;
+  })
+
+  return ready;
+}
+
+//
+
+function AndTakeProcedure( test )
+{
+  let context = this;
+
+  let ready = new _.Consequence().take( null );
+
+  /* */
+
+  ready.then( function AndTake1( arg )
+  {
+    test.case = 'AndTake';
+
+    let delay = context.t1;
+    var con1 = new _.Consequence({ tag : 'mainCon' });
+    var con2 = new _.Consequence({ tag : 'con' });
+
+    test.identical( con1.competitorsCount(), 0 );
+    test.identical( con2.competitorsCount(), 0 );
+
+    let conOwner = _.Consequence.AndTake( con1, con2 );
+
+    con1.take( null );
+    con2.take( null );
+
+    con1.finally( function( err, got )
+    {
+      test.identical( con1.competitorsCount(), 0 );
+      return null;
+    });
+
+    con2.finally( function( err, got )
+    {
+      test.identical( con2.competitorsCount(), 0 );
+      return null;
+    });
+
+    test.identical( con1.competitorsCount(), 1 );
+    test.identical( con2.competitorsCount(), 1 );
+    test.identical( conOwner.competitorsCount(), 1 );
+
+    con1.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'AndTake1' ) );
+    })
+
+    con2.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'AndTake1' ) );
+    })
+
+    conOwner.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'AndTake1' ) );
+    })
+
+    return _.time.out( delay * 4, function()
+    {
+      con1.cancel();
+      con2.cancel();
+      return null;
+    });
+
+  })
+
+  return ready;
+}
+
+//
+
+function AndKeepProcedure( test )
+{
+  let context = this;
+
+  let ready = new _.Consequence().take( null );
+
+  /* */
+
+  ready.then( function AndKeep1( arg )
+  {
+    test.case = 'AndKeep';
+
+    let delay = context.t1;
+    var con1 = new _.Consequence({ tag : 'mainCon' });
+    var con2 = new _.Consequence({ tag : 'con' });
+
+    test.identical( con1.competitorsCount(), 0 );
+    test.identical( con2.competitorsCount(), 0 );
+
+    let conOwner = _.Consequence.AndKeep( con1, con2 );
+
+    con1.take( null );
+    con2.take( null );
+
+    con1.finally( function( err, got )
+    {
+      test.identical( con1.competitorsCount(), 0 );
+      return null;
+    });
+
+    con2.finally( function( err, got )
+    {
+      test.identical( con2.competitorsCount(), 0 );
+      return null;
+    });
+
+    test.identical( con1.competitorsCount(), 1 );
+    test.identical( con2.competitorsCount(), 1 );
+    test.identical( conOwner.competitorsCount(), 1 );
+
+    con1.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'AndKeep1' ) );
+    })
+
+    con2.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'AndKeep1' ) );
+    })
+
+    conOwner.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'AndKeep1' ) );
+    })
+
+    return _.time.out( delay * 4, function()
+    {
+      con1.cancel();
+      con2.cancel();
+      return null;
+    });
+
+  })
+
+  return ready;
+}
+
+//
+
+function AndImmediateProcedure( test )
+{
+  let context = this;
+
+  let ready = new _.Consequence().take( null );
+
+  /* */
+
+  ready.then( function AndImmediate1( arg )
+  {
+    test.case = 'AndImmediate';
+
+    let delay = context.t1;
+    var con1 = new _.Consequence({ tag : 'mainCon' });
+    var con2 = new _.Consequence({ tag : 'con' });
+
+    test.identical( con1.competitorsCount(), 0 );
+    test.identical( con2.competitorsCount(), 0 );
+
+    let conOwner = _.Consequence.AndImmediate( con1, con2 );
+
+    con1.finally( function( err, got )
+    {
+      test.identical( con1.competitorsCount(), 0 );
+      return null;
+    });
+
+    con2.finally( function( err, got )
+    {
+      test.identical( con2.competitorsCount(), 0 );
+      return null;
+    });
+
+    test.identical( con1.competitorsCount(), 2 );
+    test.identical( con2.competitorsCount(), 2 );
+    test.identical( conOwner.competitorsCount(), 1 );
+
+    con1.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'AndImmediate1' ) );
+    })
+
+    con2.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'AndImmediate1' ) );
+    })
+
+    conOwner.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'AndImmediate1' ) );
+    })
+
+    con1.take( null );
+    con2.take( null );
+
+    return _.time.out( delay * 4, function()
+    {
+      con1.cancel();
+      con2.cancel();
+      return null;
+    });
+
   })
 
   return ready;
@@ -23314,6 +23530,9 @@ const Proto =
     andKeepProcedure,
     andKeepAccumulativeProcedure,
     andImmediateProcedure,
+    AndTakeProcedure,
+    AndKeepProcedure,
+    AndImmediateProcedure,
 
     andTake,
     andTakeExtended,
