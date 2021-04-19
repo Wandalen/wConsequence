@@ -1516,7 +1516,7 @@ function _delay( o )
     keeping : false,
     competitorRoutine,
     kindOfResource : o.kindOfResource,
-    stack : 3,
+    stack : 4, /* delta : 4 to not include info about `routine.unite` in the stack */
   });
 
   self.__handleResourceSoon( false );

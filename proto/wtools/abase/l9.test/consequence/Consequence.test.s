@@ -22928,6 +22928,103 @@ function thenSequenceAsync( test )
 
 //
 
+function thenDelayProcedure( test )
+{
+  let context = this;
+
+  let ready = new _.Consequence().take( null );
+
+  /* */
+
+  ready.then( function thenDelay1( arg )
+  {
+    var result = [];
+    var con = new _.Consequence({ tag : 'con' });
+
+    con.thenDelay( context.t1 );
+
+    test.identical( con.competitorsCount(), 1 );
+    con.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'thenDelay1' ) );
+    })
+
+    con.take( null );
+
+    return _.time.out( context.t1 * 3 );
+  })
+
+  return ready;
+}
+
+//
+
+function finallyDelayProcedure( test )
+{
+  let context = this;
+
+  let ready = new _.Consequence().take( null );
+
+  /* */
+
+  ready.then( function finallyDelay1( arg )
+  {
+    var result = [];
+    var con = new _.Consequence({ tag : 'con' });
+
+    con.finallyDelay( context.t1 );
+
+    test.identical( con.competitorsCount(), 1 );
+    con.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'finallyDelay1' ) );
+    })
+
+    con.take( null );
+
+    return _.time.out( context.t1 * 3 );
+  })
+
+  return ready;
+}
+
+//
+
+function exceptDelayProcedure( test )
+{
+  let context = this;
+
+  let ready = new _.Consequence().take( null );
+
+  /* */
+
+  ready.then( function exceptDelay1( arg )
+  {
+    var result = [];
+    var con = new _.Consequence({ tag : 'con' });
+
+    con.exceptDelay( context.t1 );
+
+    test.identical( con.competitorsCount(), 1 );
+    con.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'exceptDelay1' ) );
+    })
+
+    con.take( null );
+
+    return _.time.out( context.t1 * 3 );
+  })
+
+  return ready;
+}
+
+
+//
+
 function bugFromProcessExperiment( test )
 {
   let context = this;
@@ -23368,6 +23465,10 @@ const Proto =
 
     thenSequenceSync,
     // thenSequenceAsync,
+
+    thenDelayProcedure,
+    finallyDelayProcedure,
+    exceptDelayProcedure,
 
     // experiment,
 
