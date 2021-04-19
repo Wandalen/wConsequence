@@ -21583,6 +21583,142 @@ function put( test )
 
 put.experimental = 0;
 
+//
+
+function putKeepProcedure( test )
+{
+  let context = this;
+
+  let ready = new _.Consequence().take( null );
+
+  /* */
+
+  ready.then( function putKeep1( arg )
+  {
+    var result = [];
+    var con = new _.Consequence({ tag : 'con' });
+
+    con.putKeep( result, 1 );
+
+    test.identical( con.competitorsCount(), 1 );
+    con.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'putKeep1' ) );
+    })
+
+    con.wait()
+    .take( result );
+
+    return con.syncMaybe();
+  })
+
+  return ready;
+}
+
+//
+
+function putGiveProcedure( test )
+{
+  let context = this;
+
+  let ready = new _.Consequence().take( null );
+
+  /* */
+
+  ready.then( function putGive1( arg )
+  {
+    var result = [];
+    var con = new _.Consequence({ tag : 'con' });
+
+    con.putGive( result, 1 );
+
+    test.identical( con.competitorsCount(), 1 );
+    con.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'putGive1' ) );
+    })
+
+    con.take( null );
+
+    con.wait()
+    .take( result );
+
+    return con.syncMaybe();
+  })
+
+  return ready;
+}
+
+//
+
+function thenPutGiveProcedure( test )
+{
+  let context = this;
+
+  let ready = new _.Consequence().take( null );
+
+  /* */
+
+  ready.then( function thenPutGive1( arg )
+  {
+    var result = [];
+    var con = new _.Consequence({ tag : 'con' });
+
+    con.thenPutGive( result, 1 );
+
+    test.identical( con.competitorsCount(), 1 );
+    con.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'thenPutGive1' ) );
+    })
+
+    con.take( null );
+
+    con.wait()
+    .take( result );
+
+    return con.syncMaybe();
+  })
+
+  return ready;
+}
+
+//
+
+function thenPutKeepProcedure( test )
+{
+  let context = this;
+
+  let ready = new _.Consequence().take( null );
+
+  /* */
+
+  ready.then( function thenPutKeep1( arg )
+  {
+    var result = [];
+    var con = new _.Consequence({ tag : 'con' });
+
+    con.thenPutKeep( result, 1 );
+
+    test.identical( con.competitorsCount(), 1 );
+    con.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'thenPutKeep1' ) );
+    })
+
+    con.wait()
+    .take( result );
+
+    return con.syncMaybe();
+  })
+
+  return ready;
+}
+
 //--
 // first
 //--
@@ -23217,6 +23353,11 @@ const Proto =
     // advanced
 
     put,
+
+    putKeepProcedure,
+    putGiveProcedure,
+    thenPutGiveProcedure,
+    thenPutKeepProcedure,
 
     firstAsyncMode00,
     // firstAsyncMode10,
