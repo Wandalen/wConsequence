@@ -1794,7 +1794,7 @@ function _and( o )
   let accumulative = o.accumulative;
   let waitingResource = o.waitingResource;
   let waitingOthers = o.waitingOthers;
-  let procedure = self.procedure( o.stack, 1 ).nameElse( '_and' ); /* aaa2 : cover procedure.sourcePath of each derived routine */ /* Dmytro : covered */
+  let procedure = self.procedure( o.stack, 2 ).nameElse( '_and' ); /* aaa2 : cover procedure.sourcePath of each derived routine */ /* Dmytro : covered */ /* delta : 2 to not include info about `routine.unite` in the stack */
   let escaped = 0;
   let errOwner = {};
 
