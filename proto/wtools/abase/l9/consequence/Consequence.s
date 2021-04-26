@@ -175,7 +175,7 @@ function init( o )
     }
     if( o._resources )
     o._resources = o._resources.slice();
-    _.mapExtend( self, o );
+    _.props.extend( self, o );
   }
 
   if( RestrictsDebug.id === 0 )
@@ -490,7 +490,7 @@ function _promise( o )
   let procedure = self.procedure( 3 ).nameElse( 'promise' );
   self.procedureDetach();
 
-  _.assertRoutineOptions( _promise, arguments );
+  _.routine.assertOptions( _promise, arguments );
 
   let result = new Promise( function( resolve, reject )
   {
@@ -680,7 +680,7 @@ function _deasync( o )
   let result = Object.create( null );
   let ready = false;
 
-  _.assertRoutineOptions( _deasync, arguments );
+  _.routine.assertOptions( _deasync, arguments );
   _.assert
   (
     o.kindOfResource === 0
@@ -1292,7 +1292,7 @@ function _put( o )
     self.__handleResourceSoon( false );
     return self;
   }
-  else if( _.arrayLike( o.container ) )
+  else if( _.argumentsArray.like( o.container ) )
   {
     debugger;
     self._competitorAppend
@@ -1381,29 +1381,29 @@ function put_head( routine, args )
   }
 
   _.assert( args.length === 1 || args.length === 2, 'Expects one or two argument, container for resource or key and container' );
-  _.routineOptions( routine, o );
+  _.routine.options_( routine, o );
 
   return o;
 }
 
 //
 
-let putGive = _.routine.uniteCloning_({ head : put_head, body : _put, name : 'putGive' });
+let putGive = _.routine.uniteCloning_replaceByUnite({ head : put_head, body : _put, name : 'putGive' });
 var defaults = putGive.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 defaults.keeping = false;
 
-let putKeep = _.routine.uniteCloning_({ head : put_head, body : _put, name : 'putKeep' });
+let putKeep = _.routine.uniteCloning_replaceByUnite({ head : put_head, body : _put, name : 'putKeep' });
 var defaults = putKeep.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 defaults.keeping = true;
 
-let thenPutGive = _.routine.uniteCloning_({ head : put_head, body : _put, name : 'thenPutGive' });
+let thenPutGive = _.routine.uniteCloning_replaceByUnite({ head : put_head, body : _put, name : 'thenPutGive' });
 var defaults = thenPutGive.defaults;
 defaults.kindOfResource = KindOfResource.ArgumentOnly;
 defaults.keeping = false;
 
-let thenPutKeep = _.routine.uniteCloning_({ head : put_head, body : _put, name : 'thenPutKeep' });
+let thenPutKeep = _.routine.uniteCloning_replaceByUnite({ head : put_head, body : _put, name : 'thenPutKeep' });
 var defaults = thenPutKeep.defaults;
 defaults.kindOfResource = KindOfResource.ArgumentOnly;
 defaults.keeping = true;
@@ -1457,7 +1457,7 @@ function delay_head( routine, args )
 {
   // let o = { time : args[ 0 ], callback : args[ 1 ] };
   let o = { time : args[ 0 ] };
-  _.routineOptions( routine, o );
+  _.routine.options_( routine, o );
   _.assert( arguments.length === 2 );
   _.assert( args.length === 1, 'Expects single argument' );
   _.assert( _.numberIs( o.time ) );
@@ -1540,15 +1540,15 @@ _delay.having =
   consequizing : 1,
 }
 
-let finallyDelay = _.routine.uniteCloning_({ head : delay_head, body : _delay, name : 'finallyDelay' });
+let finallyDelay = _.routine.uniteCloning_replaceByUnite({ head : delay_head, body : _delay, name : 'finallyDelay' });
 var defaults = finallyDelay.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 
-let thenDelay = _.routine.uniteCloning_({ head : delay_head, body : _delay, name : 'thenDelay' });
+let thenDelay = _.routine.uniteCloning_replaceByUnite({ head : delay_head, body : _delay, name : 'thenDelay' });
 var defaults = thenDelay.defaults;
 defaults.kindOfResource = KindOfResource.ArgumentOnly;
 
-let exceptDelay = _.routine.uniteCloning_({ head : delay_head, body : _delay, name : 'exceptDelay' });
+let exceptDelay = _.routine.uniteCloning_replaceByUnite({ head : delay_head, body : _delay, name : 'exceptDelay' });
 var defaults = exceptDelay.defaults;
 defaults.kindOfResource = KindOfResource.ErrorOnly;
 
@@ -1559,7 +1559,7 @@ function timeLimit_head( routine, args )
   let o = { time : args[ 0 ], callback : args[ 1 ] };
   if( o.callback === undefined )
   o.callback = _.nothing;
-  _.routineOptions( routine, o );
+  _.routine.options_( routine, o );
   _.assert( arguments.length === 2 );
   _.assert( args.length === 1 || args.length === 2 );
   _.assert( _.numberIs( o.time ) );
@@ -1668,12 +1668,12 @@ _timeLimit.having =
   consequizing : 1,
 }
 
-let timeLimit = _.routine.uniteCloning_({ head : timeLimit_head, body : _timeLimit, name : 'timeLimit' });
+let timeLimit = _.routine.uniteCloning_replaceByUnite({ head : timeLimit_head, body : _timeLimit, name : 'timeLimit' });
 var defaults = timeLimit.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 defaults.error = 0;
 
-let timeLimitError = _.routine.uniteCloning_({ head : timeLimit_head, body : _timeLimit, name : 'timeLimitError' });
+let timeLimitError = _.routine.uniteCloning_replaceByUnite({ head : timeLimit_head, body : _timeLimit, name : 'timeLimitError' });
 var defaults = timeLimitError.defaults;
 defaults.kindOfResource = KindOfResource.Both;
 defaults.error = 1;
@@ -1751,7 +1751,7 @@ function and_head( routine, args )
   if( !_.mapIs( o ) )
   o = { competitors : args[ 0 ] };
 
-  _.routineOptions( routine, o );
+  _.routine.options_( routine, o );
   _.assert( arguments.length === 2 );
   _.assert( args.length === 1 );
 
@@ -1775,11 +1775,11 @@ function _and( o )
   let escaped = 0;
   let errOwner = {};
 
-  _.assertRoutineOptions( _and, arguments );
+  _.routine.assertOptions( _and, arguments );
 
   /* */
 
-  if( _.arrayLike( competitors ) )
+  if( _.argumentsArray.like( competitors ) )
   competitors = _.longSlice( competitors );
   else
   competitors = [ competitors ];
@@ -2177,7 +2177,7 @@ having.andLike = 1;
  * @class wConsequence
  */
 
-let andTake = _.routine.uniteCloning_({ head : and_head, body : _and, name : 'andTake' });
+let andTake = _.routine.uniteCloning_replaceByUnite({ head : and_head, body : _and, name : 'andTake' });
 var defaults = andTake.defaults;
 defaults.keeping = false;
 
@@ -2254,7 +2254,7 @@ defaults.keeping = false;
  * @class wConsequence
  */
 
-let andKeep = _.routine.uniteCloning_({ head : and_head, body : _and, name : 'andKeep' });
+let andKeep = _.routine.uniteCloning_replaceByUnite({ head : and_head, body : _and, name : 'andKeep' });
 var defaults = andKeep.defaults;
 defaults.keeping = true;
 
@@ -2336,7 +2336,7 @@ defaults.keeping = true;
  * @class wConsequence
  */
 
-let andImmediate = _.routine.uniteCloning_({ head : and_head, body : _and, name : 'andKeep' });
+let andImmediate = _.routine.uniteCloning_replaceByUnite({ head : and_head, body : _and, name : 'andKeep' });
 var defaults = andImmediate.defaults;
 defaults.keeping = true;
 defaults.waitingOthers = false;
@@ -2419,7 +2419,7 @@ defaults.waitingOthers = false;
  * @class wConsequence
  */
 
-let andKeepAccumulative = _.routine.uniteCloning_({ head : and_head, body : _and, name : 'andKeepAccumulative' });
+let andKeepAccumulative = _.routine.uniteCloning_replaceByUnite({ head : and_head, body : _and, name : 'andKeepAccumulative' });
 var defaults = andKeepAccumulative.defaults;
 defaults.keeping = true;
 defaults.accumulative = true;
@@ -2500,7 +2500,7 @@ defaults.accumulative = true;
  */
 
 
-let alsoTake = _.routine.uniteCloning_({ head : and_head, body : _and, name : 'alsoTake' });
+let alsoTake = _.routine.uniteCloning_replaceByUnite({ head : and_head, body : _and, name : 'alsoTake' });
 var defaults = alsoTake.defaults;
 defaults.keeping = false;
 defaults.accumulative = true;
@@ -2580,7 +2580,7 @@ defaults.waitingResource = false;
  * @class wConsequence
  */
 
-let alsoKeep = _.routine.uniteCloning_({ head : and_head, body : _and, name : 'alsoKeep' });
+let alsoKeep = _.routine.uniteCloning_replaceByUnite({ head : and_head, body : _and, name : 'alsoKeep' });
 var defaults = alsoKeep.defaults;
 defaults.keeping = true;
 defaults.accumulative = true;
@@ -2662,7 +2662,7 @@ defaults.waitingResource = false;
  * @class wConsequence
  */
 
-let alsoImmediate = _.routine.uniteCloning_({ head : and_head, body : _and, name : 'alsoImmediate' });
+let alsoImmediate = _.routine.uniteCloning_replaceByUnite({ head : and_head, body : _and, name : 'alsoImmediate' });
 var defaults = alsoImmediate.defaults;
 defaults.keeping = true;
 defaults.accumulative = true;
@@ -2925,7 +2925,7 @@ function or_head( routine, args )
   if( !_.mapIs( o ) )
   o = { competitors : args[ 0 ] };
 
-  _.routineOptions( routine, o );
+  _.routine.options_( routine, o );
   _.assert( arguments.length === 2 );
   _.assert( args.length === 1 );
 
@@ -2942,9 +2942,9 @@ function _or( o )
   let competitors = o.competitors;
   let competitorRoutines = [];
 
-  _.assertRoutineOptions( _or, arguments );
+  _.routine.assertOptions( _or, arguments );
 
-  if( _.arrayLike( competitors ) )
+  if( _.argumentsArray.like( competitors ) )
   competitors = _.longSlice( competitors );
   else
   competitors = [ competitors ];
@@ -3139,7 +3139,7 @@ _or.having =
  * @class wConsequence
  */
 
-let afterOrTaking = _.routine.uniteCloning_({ head : or_head, body : _or, name : 'afterOrTaking' });
+let afterOrTaking = _.routine.uniteCloning_replaceByUnite({ head : or_head, body : _or, name : 'afterOrTaking' });
 
 afterOrTaking.defaults = Object.create( _or.defaults );
 afterOrTaking.defaults.keeping = false;
@@ -3236,7 +3236,7 @@ afterOrTaking.having = Object.create( _or.having );
  * @class wConsequence
  */
 
-let afterOrKeeping = _.routine.uniteCloning_({ head : or_head, body : _or, name : 'afterOrKeeping' });
+let afterOrKeeping = _.routine.uniteCloning_replaceByUnite({ head : or_head, body : _or, name : 'afterOrKeeping' });
 
 afterOrKeeping.defaults = Object.create( _or.defaults );
 afterOrKeeping.defaults.keeping = true;
@@ -3255,7 +3255,7 @@ con0.orKeepingSplit([ con1, con2 ]) -> _.Consequence.Or( con0, con1, con2 );
 //   let self = this;
 //   _.assert( arguments.length === 1, 'Expects single argument' );
 //
-//   if( _.arrayLike( competitors ) )
+//   if( _.argumentsArray.like( competitors ) )
 //   competitors = _.longSlice( competitors );
 //   else
 //   competitors = [ competitors ];
@@ -3360,7 +3360,7 @@ con0.orKeepingSplit([ con1, con2 ]) -> _.Consequence.Or( con0, con1, con2 );
  * @class wConsequence
  */
 
-let orTaking = _.routine.uniteCloning_({ head : or_head, body : _or, name : 'orTaking' });
+let orTaking = _.routine.uniteCloning_replaceByUnite({ head : or_head, body : _or, name : 'orTaking' });
 
 orTaking.defaults = Object.create( _or.defaults );
 orTaking.defaults.keeping = false;
@@ -3455,7 +3455,7 @@ orTaking.having = Object.create( _or.having );
  * @class wConsequence
  */
 
-let orKeeping = _.routine.uniteCloning_({ head : or_head, body : _or, name : 'orKeeping' });
+let orKeeping = _.routine.uniteCloning_replaceByUnite({ head : or_head, body : _or, name : 'orKeeping' });
 
 orKeeping.defaults = Object.create( _or.defaults );
 orKeeping.defaults.keeping = true;
@@ -4311,13 +4311,13 @@ function _competitorAppend( o )
   _.assert( o.kindOfResource >= 1 );
   _.assert( competitorRoutine !== self, 'Consquence cant depend on itself' );
   _.assert( o.stack >= 0, 'Competitor should have stack level greater or equal to zero' );
-  _.routineOptions( _competitorAppend, o );
+  _.routine.options_( _competitorAppend, o );
 
   /* */
 
   if( o.times !== 1 )
   {
-    let o2 = _.mapExtend( null, o );
+    let o2 = _.props.extend( null, o );
     o2.times = 1;
     for( let t = 0 ; t < o.times ; t++ )
     self._competitorAppend( o2 );
@@ -5145,7 +5145,7 @@ function _exportString( o, it )
   let self = this;
   let result = '';
 
-  _.assertRoutineOptions( _exportString, o );
+  _.routine.assertOptions( _exportString, o );
 
   if( o.verbosity >= 2 )
   {
@@ -5177,7 +5177,7 @@ function exportString( o )
 {
   let self = this;
   _.assert( arguments.length === 0 || arguments.length === 1 );
-  o = _.routineOptions( exportString, o );
+  o = _.routine.options_( exportString, o );
   return self._exportString( o );
 }
 
@@ -5515,17 +5515,17 @@ function _Take( o )
 
   _.assert( arguments.length === 1, 'Expects single argument' );
   _.assert( _.objectIs( o ) );
-  _.assert( _.arrayLike( o.args ) && o.args.length <= 1, 'not tested' );
-  _.assertRoutineOptionsPreservingUndefines( _Take, arguments );
+  _.assert( _.argumentsArray.like( o.args ) && o.args.length <= 1, 'not tested' );
+  _.routine.assertOptions( _Take, arguments );
 
   /* */
 
-  if( _.arrayLike( o.consequence ) )
+  if( _.argumentsArray.like( o.consequence ) )
   {
 
     for( let i = 0 ; i < o.consequence.length ; i++ )
     {
-      let optionsGive = _.mapExtend( null, o );
+      let optionsGive = _.props.extend( null, o );
       optionsGive.consequence = o.consequence[ i ];
       _Take( optionsGive );
     }
@@ -5534,7 +5534,7 @@ function _Take( o )
   else if( _.consequenceIs( o.consequence ) )
   {
 
-    _.assert( _.arrayLike( o.args ) && o.args.length <= 1 );
+    _.assert( _.argumentsArray.like( o.args ) && o.args.length <= 1 );
 
     context = o.consequence;
 
@@ -5544,7 +5544,7 @@ function _Take( o )
   else if( _.routineIs( o.consequence ) )
   {
 
-    _.assert( _.arrayLike( o.args ) && o.args.length <= 1 );
+    _.assert( _.argumentsArray.like( o.args ) && o.args.length <= 1 );
 
     return o.consequence.call( context, o.error, o.args[ 0 ] );
 
@@ -5716,7 +5716,7 @@ let ComposesDebug =
 }
 
 if( Config.debug )
-_.mapExtend( Composes, ComposesDebug );
+_.props.extend( Composes, ComposesDebug );
 
 let Aggregates =
 {
@@ -5736,7 +5736,7 @@ let RestrictsDebug =
 }
 
 if( Config.debug )
-_.mapExtend( Restricts, RestrictsDebug );
+_.props.extend( Restricts, RestrictsDebug );
 
 let Medials =
 {
@@ -5820,7 +5820,7 @@ let DebugAccessors =
 }
 
 if( Config.debug )
-_.mapExtend( Accessors, DebugAccessors );
+_.props.extend( Accessors, DebugAccessors );
 
 // --
 // declare
@@ -6086,7 +6086,7 @@ _.assert( !!Self.FieldsOfRelationsGroupsGet );
 _.assert( !!Self.prototype.FieldsOfRelationsGroupsGet );
 _.assert( !!Self.FieldsOfRelationsGroups );
 _.assert( !!Self.prototype.FieldsOfRelationsGroups );
-_.assert( _.mapKeys( Self.FieldsOfRelationsGroups ).length );
+_.assert( _.props.keys( Self.FieldsOfRelationsGroups ).length );
 
 _.assert( _.mapIs( Self.KindOfResource ) );
 _.assert( _.mapIs( Self.prototype.KindOfResource ) );

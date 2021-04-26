@@ -169,6 +169,9 @@ function out_head( routine, args )
         }
       }
 
+      if( onEnd === undefined )
+      o = { delay }
+      else
       o = { delay, onEnd }
     }
     else
@@ -241,7 +244,7 @@ function out_head( routine, args )
   if( procedure )
   o.procedure = procedure;
 
-  _.routineOptions( routine, o );
+  _.routine.options_( routine, o );
   _.assert( _.numberIs( o.delay ) );
   _.assert( o.onEnd === null || _.routineIs( o.onEnd ) );
 
@@ -255,7 +258,7 @@ function out_body( o )
   let con = new _.Consequence();
   let timer = null;
 
-  _.assertRoutineOptions( out_body, arguments );
+  _.routine.assertOptions( out_body, arguments );
 
   /* */
 
@@ -392,7 +395,7 @@ out_body.defaults =
   error : 0,
 }
 
-let out = _.routine.uniteCloning_( out_head, out_body );
+let out = _.routine.uniteCloning_replaceByUnite( out_head, out_body );
 out.defaults.error = 0;
 
 //
@@ -439,14 +442,14 @@ out.defaults.error = 0;
  * @namespace Tools
  */
 
-let outError = _.routine.uniteCloning_( out_head, out_body );
+let outError = _.routine.uniteCloning_replaceByUnite( out_head, out_body );
 outError.defaults.error = 1;
 
 // /* zzz : remove the body, use out_body */
 // function outError_body( o )
 // {
 //   _.assert( _.routineIs( _.Consequence ) );
-//   _.assertRoutineOptions( outError_body, arguments );
+//   _.routine.assertOptions( outError_body, arguments );
 //
 //   if( _.numberIs( o.procedure ) )
 //   o.procedure += 1;
@@ -489,7 +492,7 @@ outError.defaults.error = 1;
 //
 // outError_body.defaults = Object.create( out_body.defaults );
 //
-// let outError = _.routine.uniteCloning_( out_head, outError_body );
+// let outError = _.routine.uniteCloning_replaceByUnite( out_head, outError_body );
 
 //
 
@@ -497,7 +500,7 @@ function _errTimeOut( o )
 {
   if( _.strIs( o ) )
   o = { message : o }
-  o = _.routineOptions( _errTimeOut, o );
+  o = _.routine.options_( _errTimeOut, o );
   _.assert( arguments.length === 0 || arguments.length === 1 );
 
   o.message = o.message || 'Time out!';
@@ -606,7 +609,7 @@ function stagesRun( stages, o )
 
   o = o || Object.create( null );
 
-  _.routineOptionsPreservingUndefines( stagesRun, o );
+  _.routine.options( stagesRun, o );
 
   o.stages = stages;
   o.stack = _.introspector.stackRelative( o.stack, 1 );
@@ -766,7 +769,7 @@ function sessionsRun_head( routine, args )
   else
   o = args[ 0 ];
 
-  o = _.routineOptions( routine, o );
+  o = _.routine.options_( routine, o );
 
   _.assert( arguments.length === 2 );
   _.assert( args.length === 1, 'Expects single argument' );
@@ -893,7 +896,7 @@ sessionsRun_body.defaults =
   ready : null,
 }
 
-let sessionsRun = _.routine.uniteCloning_( sessionsRun_head, sessionsRun_body ); /* qqq for Yevhen : cover */
+let sessionsRun = _.routine.uniteCloning_replaceByUnite( sessionsRun_head, sessionsRun_body ); /* qqq for Yevhen : cover */
 
 // --
 // meta
@@ -903,7 +906,7 @@ let sessionsRun = _.routine.uniteCloning_( sessionsRun_head, sessionsRun_body );
 // {
 //   _.assert( _.routineIs( srcGlobal.wConsequence.After ) );
 //   _.assert( _.mapIs( srcGlobal.wConsequence.Tools ) );
-//   _.mapExtend( dstGlobal.wTools, srcGlobal.wConsequence.Tools );
+//   _.props.extend( dstGlobal.wTools, srcGlobal.wConsequence.Tools );
 //   const Self = srcGlobal.wConsequence;
 //   dstGlobal.wTools[ Self.shortName ] = Self;
 //   if( typeof module !== 'undefined' )
@@ -990,7 +993,7 @@ ready_body.defaults =
 
 //
 
-let ready = _.routine.uniteCloning_( _.process.ready.head, ready_body );
+let ready = _.routine.uniteCloning_replaceByUnite( _.process.ready.head, ready_body );
 
 //
 
@@ -1036,12 +1039,12 @@ let ProcessExtension =
   readyJoin,
 };
 
-_.mapExtend( _, ToolsExtension );
-_.mapExtend( _global.wTools, ToolsExtension );
-_.time = _.mapExtend( _.time || null, TimeExtension );
-_global.wTools.time = _.mapExtend( _global.wTools.time || null, TimeExtension );
-_.process = _.mapExtend( _.process || null, ProcessExtension );
-_global.wTools.process = _.mapExtend( _global.wTools.process || null, ProcessExtension );
+_.props.extend( _, ToolsExtension );
+_.props.extend( _global.wTools, ToolsExtension );
+_.time = _.props.extend( _.time || null, TimeExtension );
+_global.wTools.time = _.props.extend( _global.wTools.time || null, TimeExtension );
+_.process = _.props.extend( _.process || null, ProcessExtension );
+_global.wTools.process = _.props.extend( _global.wTools.process || null, ProcessExtension );
 
 require( './Consequence.s' );
 
