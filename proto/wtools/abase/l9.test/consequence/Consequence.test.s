@@ -20706,6 +20706,162 @@ function Or( test )
   return ready;
 }
 
+//
+
+function OrTakeProcedure( test )
+{
+  let context = this;
+
+  let ready = new _.Consequence().take( null );
+
+  /* */
+
+  ready.then( function OrTake1( arg )
+  {
+    test.case = 'OrTake';
+
+    let delay = context.t1;
+    var con1 = new _.Consequence({ tag : 'mainCon' });
+    var con2 = new _.Consequence({ tag : 'con' });
+
+    test.identical( con1.competitorsCount(), 0 );
+    test.identical( con2.competitorsCount(), 0 );
+
+    let conOwner = _.Consequence.OrTake( con1, con2 );
+
+    con1.finally( function( err, got )
+    {
+      test.identical( con1.competitorsCount(), 0 );
+      return null;
+    });
+
+    con2.finally( function( err, got )
+    {
+      test.identical( con2.competitorsCount(), 0 );
+      return null;
+    });
+
+    conOwner.finally( function( err, got )
+    {
+      test.identical( conOwner.competitorsCount(), 0 );
+      return null;
+    });
+
+    test.identical( con1.competitorsCount(), 2 );
+    test.identical( con2.competitorsCount(), 2 );
+    test.identical( conOwner.competitorsCount(), 1 );
+
+    con1.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'OrTake1' ) );
+    })
+
+    con2.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'OrTake1' ) );
+    })
+
+    conOwner.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'OrTake1' ) );
+    })
+
+    con1.take( null );
+    con2.take( null );
+
+    return _.time.out( delay * 4, function()
+    {
+      con1.cancel();
+      con2.cancel();
+      return null;
+    });
+
+  })
+
+  return ready;
+}
+
+//
+
+function OrKeepProcedure( test )
+{
+  let context = this;
+
+  let ready = new _.Consequence().take( null );
+
+  /* */
+
+  ready.then( function OrKeep1( arg )
+  {
+    test.case = 'OrKeep';
+
+    let delay = context.t1;
+    var con1 = new _.Consequence({ tag : 'mainCon' });
+    var con2 = new _.Consequence({ tag : 'con' });
+
+    test.identical( con1.competitorsCount(), 0 );
+    test.identical( con2.competitorsCount(), 0 );
+
+    let conOwner = _.Consequence.OrKeep( con1, con2 );
+
+    con1.finally( function( err, got )
+    {
+      test.identical( con1.competitorsCount(), 0 );
+      return null;
+    });
+
+    con2.finally( function( err, got )
+    {
+      test.identical( con2.competitorsCount(), 0 );
+      return null;
+    });
+
+    conOwner.finally( function( err, got )
+    {
+      test.identical( conOwner.competitorsCount(), 0 );
+      return null;
+    });
+
+    test.identical( con1.competitorsCount(), 2 );
+    test.identical( con2.competitorsCount(), 2 );
+    test.identical( conOwner.competitorsCount(), 1 );
+
+    con1.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'OrKeep1' ) );
+    })
+
+    con2.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'OrKeep1' ) );
+    })
+
+    conOwner.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'OrKeep1' ) );
+    })
+
+    con1.take( null );
+    con2.take( null );
+
+    return _.time.out( delay * 4, function()
+    {
+      con1.cancel();
+      con2.cancel();
+      return null;
+    });
+
+  })
+
+  return ready;
+}
+
 // --
 // resource handling
 // --
@@ -23647,6 +23803,9 @@ const Proto =
     OrKeep,
     OrTake,
     Or,
+
+    OrTakeProcedure,
+    OrKeepProcedure,
 
     // resource handling
 
