@@ -1286,8 +1286,8 @@ function _put( o )
     ({
       keeping,
       kindOfResource : o.kindOfResource,
-      competitorRoutine : __onPutWithKey,
-      stack : 3,
+      competitorRoutine : o.kindOfResource === Self.KindOfResource.ArgumentOnly ? __onPutWithKeyArgumentOnly : __onPutWithKey,
+      stack : 4, /* delta : 4 to not include info about `routine.unite` in the stack */
     });
     self.__handleResourceSoon( false );
     return self;
@@ -1299,8 +1299,8 @@ function _put( o )
     ({
       keeping,
       kindOfResource : o.kindOfResource,
-      competitorRoutine : __onPutToArray,
-      stack : 3,
+      competitorRoutine : o.kindOfResource === Self.KindOfResource.ArgumentOnly ? __onPutToArrayArgumentOnly : __onPutToArray,
+      stack : 4, /* delta : 4 to not include info about `routine.unite` in the stack */
     });
     self.__handleResourceSoon( false );
     return self;
@@ -1333,6 +1333,18 @@ function _put( o )
 
   /* */
 
+  function __onPutWithKeyArgumentOnly( arg ) /* ArgumentOnly competitor should expect single argument */
+  {
+    container[ key ] = arg;
+
+    if( !keeping )
+    return;
+
+    return arg;
+  }
+
+  /* */
+
   function __onPutToArray( err, arg )
   {
     _.assert( 0, 'not tested' );
@@ -1351,6 +1363,19 @@ function _put( o )
     return;
     if( err )
     throw err;
+    return arg;
+  }
+
+  /* */
+
+  function __onPutToArrayArgumentOnly( arg ) /* ArgumentOnly competitor should expect single argument */
+  {
+    _.assert( 0, 'not tested' );
+
+    container.push( arg );
+
+    if( !keeping )
+    return;
     return arg;
   }
 
@@ -1491,7 +1516,7 @@ function _delay( o )
     keeping : false,
     competitorRoutine,
     kindOfResource : o.kindOfResource,
-    stack : 3,
+    stack : 4, /* delta : 4 to not include info about `routine.unite` in the stack */
   });
 
   self.__handleResourceSoon( false );
