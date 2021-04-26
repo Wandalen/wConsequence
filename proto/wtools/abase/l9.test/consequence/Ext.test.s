@@ -106,7 +106,6 @@ function uncaughtSyncErrorOnExit( test )
     let con = new _.Consequence();
     _.process.on( 'exit', () =>
     {
-      debugger
       throw _.err( 'error1' );
     })
   }
@@ -143,7 +142,6 @@ function uncaughtAsyncErrorOnExit( test )
     let con = new _.Consequence();
     _.process.on( 'exit', () =>
     {
-      debugger;
       con.error( 'error1' );
     })
   }
@@ -180,7 +178,6 @@ function uncaughtAsyncErrorOnExitBefore( test )
     let con = new _.Consequence();
     _.process.on( 'exitBefore', () =>
     {
-      debugger;
       con.error( 'error1' );
     })
   }

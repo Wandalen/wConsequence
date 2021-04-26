@@ -4404,6 +4404,224 @@ function timeOut( test )
 
 //
 
+function timeLimitProcedure( test )
+{
+  let context = this;
+  let ready = _.take( null );
+  let t = context.t1;
+
+  ready.then( function timeLimit1( arg )
+  {
+    test.case = 'timeLimit';
+
+    var con = _.time.out( t );
+    var con0 = _.time.out( t*3, );
+    con.timeLimit( t*7, con0 );
+
+    test.identical( con.competitorsCount(), 4 );
+    con.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'timeLimit1' ) );
+    })
+
+    test.identical( con0.competitorsCount(), 2 );
+    con0.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'timeLimit1' ) );
+    })
+
+    return _.time.out( t*10, function()
+    {
+      return null;
+    })
+  })
+
+  return ready;
+}
+
+//
+
+function timeLimitSplitProcedure( test )
+{
+  let context = this;
+  let ready = _.take( null );
+  let t = context.t1;
+
+  ready.then( function timeLimitSplit1( arg )
+  {
+    test.case = 'timeLimitSplit';
+
+    var con = _.time.out( t );
+    con.timeLimitSplit( t*5 );
+
+    test.identical( con.competitorsCount(), 2 );
+    con.competitorsGet().forEach( ( competitor ) =>
+    {
+      console.log( competitor )
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'timeLimitSplit1' ) );
+    })
+
+    return _.time.out( t*10, function()
+    {
+      return null;
+    })
+  })
+
+  return ready;
+}
+
+//
+
+function timeLimitErrorProcedure( test )
+{
+  let context = this;
+  let ready = _.take( null );
+  let t = context.t1;
+
+  ready.then( function timeLimitError1( arg )
+  {
+    test.case = 'timeLimitError';
+
+    var con = _.time.out( t );
+    var con0 = _.time.out( t*3, );
+    con.timeLimitError( t*7, con0 );
+
+    test.identical( con.competitorsCount(), 4 );
+    con.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'timeLimitError1' ) );
+    })
+
+    test.identical( con0.competitorsCount(), 2 );
+    con0.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'timeLimitError1' ) );
+    })
+
+    return _.time.out( t*10, function()
+    {
+      return null;
+    })
+  })
+
+  return ready;
+}
+
+//
+
+function timeLimitErrorSplitProcedure( test )
+{
+  let context = this;
+  let ready = _.take( null );
+  let t = context.t1;
+
+  ready.then( function timeLimitErrorSplit1( arg )
+  {
+    test.case = 'timeLimitErrorSplit';
+
+    var con = _.time.out( t );
+    con.timeLimitErrorSplit( t*5 );
+
+    test.identical( con.competitorsCount(), 2 );
+    con.competitorsGet().forEach( ( competitor ) =>
+    {
+      console.log( competitor )
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'timeLimitErrorSplit1' ) );
+    })
+
+    return _.time.out( t*10, function()
+    {
+      return null;
+    })
+  })
+
+  return ready;
+}
+
+//
+
+function TimeLimitProcedure( test )
+{
+  let context = this;
+  let ready = _.take( null );
+  let t = context.t1;
+
+  ready.then( function TimeLimit1( arg )
+  {
+    test.case = 'TimeLimit';
+
+    var con0 = _.time.out( t*3 );
+    var con = _.Consequence.TimeLimit( t*7, con0 );
+
+    test.identical( con.competitorsCount(), 2 );
+    con.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'TimeLimit1' ) );
+    })
+
+    test.identical( con0.competitorsCount(), 2 );
+    con0.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'TimeLimit1' ) );
+    })
+
+    return _.time.out( t*10, function()
+    {
+      return null;
+    })
+  })
+
+  return ready;
+}
+
+//
+
+function TimeLimitErrorProcedure( test )
+{
+  let context = this;
+  let ready = _.take( null );
+  let t = context.t1;
+
+  ready.then( function TimeLimitError1( arg )
+  {
+    test.case = 'TimeLimitError';
+
+    var con0 = _.time.out( t*3 );
+    var con = _.Consequence.TimeLimitError( t*7, con0 );
+
+    test.identical( con.competitorsCount(), 2 );
+    con.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'TimeLimitError1' ) );
+    })
+
+    test.identical( con0.competitorsCount(), 2 );
+    con0.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'TimeLimitError1' ) );
+    })
+
+    return _.time.out( t*10, function()
+    {
+      return null;
+    })
+  })
+
+  return ready;
+}
+
+//
+
 function timeLimitSplit( test )
 {
   let context = this;
@@ -11085,15 +11303,12 @@ function alsoKeepTrivialSyncBefore( test )
   ready.take( 0 );
   track.push( '2' );
 
-  debugger;
   ready.alsoKeep( () =>
   {
-    debugger;
     track.push( 'x' );
     return 'x';
   });
 
-  debugger;
   ready.then( ( arg ) =>
   {
     track.push( '1' );
@@ -14696,7 +14911,6 @@ function AndUncaughtError( test )
   {
     return function uncaughtError( e )
     {
-      debugger;
       test.equivalent( e.err.originalMessage, originalMessage );
       _.errAttend( e.err );
       track.push( 'uncaughtError' );
@@ -23312,6 +23526,14 @@ const Proto =
     // time
 
     timeOut,
+
+    timeLimitProcedure,
+    timeLimitSplitProcedure,
+    timeLimitErrorProcedure,
+    timeLimitErrorSplitProcedure,
+    TimeLimitProcedure,
+    TimeLimitErrorProcedure,
+
     timeLimitSplit,
     timeLimitErrorSplit,
     timeLimitConsequence,
