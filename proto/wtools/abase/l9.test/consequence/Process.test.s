@@ -239,6 +239,97 @@ ready.timeOut = 10000;
 
 //
 
+function readyProcedure( test )
+{
+  let ready =  new _.Consequence().take( null );
+
+  /* */
+
+  ready.then( function ready1()
+  {
+    test.case = 'without arguments';
+    var got = _.process.ready();
+
+    test.identical( got.competitorsCount(), 1 );
+    got.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'ready1' ) );
+    });
+
+    return null;
+  });
+
+  //
+
+  ready.then( function ready2()
+  {
+    test.case = 'procedure with delta = 0';
+    var procedure = _.Procedure( 0 );
+    var got = _.process.ready({ procedure });
+
+    test.identical( got.competitorsCount(), 1 );
+    got.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'ready2' ) );
+    })
+
+    return null;
+  });
+
+  //
+
+  ready.then( function ready3()
+  {
+    test.case = 'procedure with delta = 1';
+
+    var procedure = _.Procedure( 1 );
+    var got = _.process.ready({ procedure });
+
+    test.identical( got.competitorsCount(), 1 );
+    got.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'ready3' ) );
+    })
+
+    return null;
+  });
+
+  return ready;
+}
+
+//
+
+function readyJoinProcedure( test )
+{
+  let ready =  new _.Consequence().take( null );
+
+  /* */
+
+  ready.then( function readyJoin1()
+  {
+    test.case = 'without arguments';
+    var got = _.process.readyJoin( null, ( arg ) => 'hello ' + arg, [ 'ready' ] )();
+
+    test.identical( got.competitorsCount(), 1 );
+    got.competitorsGet().forEach( ( competitor ) =>
+    {
+      test.true( !_.strHas( competitor.procedure._sourcePath, 'Routine.s' ) );
+      test.true( _.strHas( competitor.procedure._sourcePath, 'readyJoin1' ) );
+    });
+
+    return null;
+  });
+
+  //
+
+  return ready;
+}
+
+//
+
 function sessionsRunWithEmptySessions( test )
 {
   let ready = _.take( null );
@@ -311,6 +402,8 @@ const Proto =
   {
 
     ready,
+    readyProcedure,
+    readyJoinProcedure,
     sessionsRunWithEmptySessions,
 
   }
