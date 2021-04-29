@@ -5530,7 +5530,7 @@ function _Take( o )
   let context;
 
   _.assert( arguments.length === 1, 'Expects single argument' );
-  _.assert( _.objectIs( o ) );
+  _.assert( _.object.isBasic( o ) );
   _.assert( _.argumentsArray.like( o.args ) && o.args.length <= 1, 'not tested' );
   _.routine.assertOptions( _Take, arguments );
 
@@ -6082,16 +6082,16 @@ _metaDefine( 'field', Symbol.for( 'nodejs.util.inspect.custom' ), _inspectCustom
 
 _.assert( _.routineIs( wConsequence.prototype.FinallyPass ) );
 _.assert( _.routineIs( wConsequence.FinallyPass ) );
-_.assert( _.objectIs( wConsequence.prototype.KindOfResource ) );
-_.assert( _.objectIs( wConsequence.KindOfResource ) );
+_.assert( _.object.isBasic( wConsequence.prototype.KindOfResource ) );
+_.assert( _.object.isBasic( wConsequence.KindOfResource ) );
 _.assert( _.strDefined( wConsequence.name ) );
 _.assert( _.strDefined( wConsequence.shortName ) );
 _.assert( _.routineIs( wConsequence.prototype.take ) );
 
 _.assert( _.routineIs( wConsequenceProxy.prototype.FinallyPass ) );
 _.assert( _.routineIs( wConsequenceProxy.FinallyPass ) );
-_.assert( _.objectIs( wConsequenceProxy.prototype.KindOfResource ) );
-_.assert( _.objectIs( wConsequenceProxy.KindOfResource ) );
+_.assert( _.object.isBasic( wConsequenceProxy.prototype.KindOfResource ) );
+_.assert( _.object.isBasic( wConsequenceProxy.KindOfResource ) );
 _.assert( _.strDefined( wConsequenceProxy.name ) );
 _.assert( _.strDefined( wConsequenceProxy.shortName ) );
 _.assert( _.routineIs( wConsequenceProxy.prototype.take ) );

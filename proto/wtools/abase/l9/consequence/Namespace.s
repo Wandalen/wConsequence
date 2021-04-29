@@ -618,7 +618,7 @@ function stagesRun( stages, o )
 
   /* validation */
 
-  _.assert( _.objectIs( stages ) || _.longIs( stages ), 'Expects array or object ( stages ), but got', _.entity.strType( stages ) );
+  _.assert( _.object.isBasic( stages ) || _.longIs( stages ), 'Expects array or object ( stages ), but got', _.entity.strType( stages ) );
 
   for( let s in stages )
   {

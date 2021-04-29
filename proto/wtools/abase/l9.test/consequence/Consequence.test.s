@@ -3430,8 +3430,8 @@ function trivial( test )
   test.case = 'class checks';
   test.true( _.routineIs( wConsequence.prototype.FinallyPass ) );
   test.true( _.routineIs( wConsequence.FinallyPass ) );
-  test.true( _.objectIs( wConsequence.prototype.KindOfResource ) );
-  test.true( _.objectIs( wConsequence.KindOfResource ) );
+  test.true( _.object.isBasic( wConsequence.prototype.KindOfResource ) );
+  test.true( _.object.isBasic( wConsequence.KindOfResource ) );
   test.true( wConsequence.name === 'wConsequence' );
   test.true( wConsequence.shortName === 'Consequence' );
 
