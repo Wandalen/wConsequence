@@ -777,7 +777,7 @@ function sessionsRun_head( routine, args )
   return o;
 }
 
-/* qqq for Yevhen : cover please */
+/* qqq for junior : cover please */
 function sessionsRun_body( o )
 {
   let firstReady = new _.Consequence().take( null );
@@ -895,7 +895,7 @@ sessionsRun_body.defaults =
   ready : null,
 }
 
-let sessionsRun = _.routine.uniteCloning_replaceByUnite( sessionsRun_head, sessionsRun_body ); /* qqq for Yevhen : cover */
+let sessionsRun = _.routine.uniteCloning_replaceByUnite( sessionsRun_head, sessionsRun_body ); /* qqq for junior : cover */
 
 // --
 // meta
