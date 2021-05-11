@@ -1,4 +1,4 @@
-# module::Consequence  [![status](https://github.com/Wandalen/wConsequence/workflows/publish/badge.svg)](https://github.com/Wandalen/wConsequence/actions?query=workflow%3Apublish) [![stable](https://img.shields.io/badge/stability-stable-brightgreen.svg)](https://github.com/emersion/stability-badges#stable)
+# module::Consequence  [![status](https://github.com/Wandalen/wConsequence/actions/workflows/StandardPublish.yml/badge.svg)](https://github.com/Wandalen/wConsequence/actions/workflows/StandardPublish.yml) [![stable](https://img.shields.io/badge/stability-stable-brightgreen.svg)](https://github.com/emersion/stability-badges#stable)
 
 Advanced synchronization mechanism. Asynchronous routines may use Consequence to wrap postponed result, what allows classify callback for such routines as output, not input, what improves analyzability of a program. Consequence may be used to make a queue for mutually exclusive access to a resource.
 
@@ -12,7 +12,7 @@ npm install
 node sample/trivial/Sample.s
 ```
 
-## To add to your project
+### To add to your project
 ```
 npm add 'wConsequence@alpha'
 ```
