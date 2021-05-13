@@ -2,12 +2,9 @@ format: outwillfile-2.0
 root:
   - wConsequence.out
 consistency:
-  ../.ex.will.yml: &ref_0
-    hash: 3ee480962983002a93760f5d2bf956f4
-    size: 2949
-  ../.im.will.yml: &ref_1
-    hash: 73f969eaa0beb8803ebdcec49947cc84
-    size: 5267
+  ../will.yml: &ref_0
+    hash: 01a4f4e179627b3b2769ccea23760eac
+    size: 8058
 module:
   wConsequence.out:
     about:
@@ -32,11 +29,10 @@ module:
         readability of asynchronous aspect of your application.
       enabled: 1
       version: 0.5.0
-      interpreters: &ref_2
-        - njs >= 10.0.0
-        - chrome >= 60.0.0
-        - firefox >= 60.0.0
-      keywords: &ref_3
+      license: MIT
+      npm.name: wConsequence
+      author: Kostiantyn Wandalen <wanalen@01.school>
+      keywords: &ref_1
         - wTools
         - Callback
         - Event
@@ -45,14 +41,15 @@ module:
         - Semaphore
         - Async
         - Promise
-      license: MIT
-      author: Kostiantyn Wandalen <wanalen@01.school>
-      contributors: &ref_4
+      contributors: &ref_2
         - Kostiantyn Wandalen <wanalen@01.school>
         - Volodymyr M. <volodymyr.migdal@gmail.com>
         - Ihor O. <iostashvxi@gmail.com>
-      npm.name: wConsequence
-      npm.scripts: &ref_5
+      interpreters: &ref_3
+        - njs >= 10.0.0
+        - chrome >= 60.0.0
+        - firefox >= 60.0.0
+      npm.scripts: &ref_4
         test: 'wtest .run proto/** rapidity:-3'
         docgen: wdocgen .build proto
     path:
@@ -67,15 +64,11 @@ module:
       module.original.willfiles:
         criterion:
           predefined: 1
-        path:
-          - ../.ex.will.yml
-          - ../.im.will.yml
+        path: ../will.yml
       module.peer.willfiles:
         criterion:
           predefined: 1
-        path:
-          - ../.ex.will.yml
-          - ../.im.will.yml
+        path: ../will.yml
       module.peer.in:
         criterion:
           predefined: 1
@@ -212,7 +205,7 @@ module:
         path: 'npm:///wProto'
         autoExporting: 0
         enabled: 0
-      wProcedure:
+      wprocedure:
         path: 'npm:///wprocedure'
         autoExporting: 0
         enabled: 0
@@ -227,7 +220,7 @@ module:
         autoExporting: 0
         enabled: 0
         criterion:
-          debug: 1
+          development: 1
       wTesting:
         path: 'npm:///wTesting'
         autoExporting: 0
@@ -835,8 +828,7 @@ module:
           content: proto
           export: 1
     consistency:
-      ../.ex.will.yml: *ref_0
-      ../.im.will.yml: *ref_1
+      ../will.yml: *ref_0
   ../:
     about:
       name: wConsequence
@@ -860,26 +852,22 @@ module:
         readability of asynchronous aspect of your application.
       enabled: 1
       version: 0.5.0
-      interpreters: *ref_2
-      keywords: *ref_3
       license: MIT
-      author: Kostiantyn Wandalen <wanalen@01.school>
-      contributors: *ref_4
       npm.name: wConsequence
-      npm.scripts: *ref_5
+      author: Kostiantyn Wandalen <wanalen@01.school>
+      keywords: *ref_1
+      contributors: *ref_2
+      interpreters: *ref_3
+      npm.scripts: *ref_4
     path:
       module.willfiles:
         criterion:
           predefined: 1
-        path:
-          - .ex.will.yml
-          - .im.will.yml
+        path: will.yml
       module.original.willfiles:
         criterion:
           predefined: 1
-        path:
-          - .ex.will.yml
-          - .im.will.yml
+        path: will.yml
       module.peer.willfiles:
         criterion:
           predefined: 1
@@ -993,7 +981,7 @@ module:
         path: 'npm:///wProto'
         autoExporting: 0
         enabled: 0
-      wProcedure:
+      wprocedure:
         path: 'npm:///wprocedure'
         autoExporting: 0
         enabled: 0
@@ -1008,7 +996,7 @@ module:
         autoExporting: 0
         enabled: 0
         criterion:
-          debug: 1
+          development: 1
       wTesting:
         path: 'npm:///wTesting'
         autoExporting: 0
@@ -1552,9 +1540,6 @@ module:
           - 'build::release'
           - 'build::npm'
     consistency:
-      ../.ex.will.yml:
-        hash: 3ee480962983002a93760f5d2bf956f4
-        size: 2949
-      ../.im.will.yml:
-        hash: 73f969eaa0beb8803ebdcec49947cc84
-        size: 5267
+      ../will.yml:
+        hash: 01a4f4e179627b3b2769ccea23760eac
+        size: 8058
