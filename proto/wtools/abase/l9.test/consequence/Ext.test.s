@@ -320,8 +320,8 @@ function asyncStackWithTimeOut( test )
     test.identical( _.strCount( op.output, 'nhandled' ), 0 );
     test.identical( _.strCount( op.output, 'uncaught error' ), 2 );
     test.identical( _.strCount( op.output, /v1(.|\n|\r)*v2(.|\n|\r)*error1(.|\n|\r)*/mg ), 1 );
-    test.identical( _.strCount( op.output, 'program.js:10' ), 1 );
-    test.identical( _.strCount( op.output, 'program.js:13' ), 2 );
+    test.identical( _.strCount( op.output, 'program:10' ), 1 );
+    test.identical( _.strCount( op.output, 'program:13' ), 2 );
     return null;
   });
 
@@ -376,8 +376,8 @@ function asyncStackWithConsequence( test )
     test.identical( _.strCount( op.output, 'nhandled' ), 0 );
     test.identical( _.strCount( op.output, 'uncaught asynchronous error' ), 2 );
     test.identical( _.strCount( op.output, /v1(.|\n|\r)*v2(.|\n|\r)*error1(.|\n|\r)*/mg ), 1 );
-    test.identical( _.strCount( op.output, 'program.js:11' ), 1 );
-    test.identical( _.strCount( op.output, 'program.js:14' ), 2 );
+    test.identical( _.strCount( op.output, 'program:11' ), 1 );
+    test.identical( _.strCount( op.output, 'program:14' ), 2 );
     return null;
   });
 
@@ -429,7 +429,7 @@ function asyncStackInConsequenceTrivial( test )
     test.notIdentical( op.exitCode, 0 );
     test.identical( _.strCount( op.output, '- uncaught asynchronous error -' ), 2 );
     test.identical( _.strCount( op.output, '= Source code from' ), 1 );
-    test.identical( _.strCount( op.output, `program.js:6` ), 1 );
+    test.identical( _.strCount( op.output, `program:6` ), 1 );
     test.identical( _.strCount( op.output, `at program` ), 1 );
     test.identical( _.strCount( op.output, `Error1` ), 2 );
     return null;
@@ -767,9 +767,9 @@ function timeLimitWaitingEnough( test )
     test.identical( _.strCount( op.output, 'Waiting for' ), 1 );
     test.identical( _.strCount( op.output, 'Waiting for 7 procedure(s)' ), 1 );
     test.identical( _.strCount( op.output, 'procedure::' ), 7 );
-    test.identical( _.strCount( op.output, 'program.js:10' ), 5 );
-    test.identical( _.strCount( op.output, 'program.js:13' ), 2 );
-    test.identical( _.strCount( op.output, 'program.js:' ), 7 );
+    test.identical( _.strCount( op.output, 'program:10' ), 5 );
+    test.identical( _.strCount( op.output, 'program:13' ), 2 );
+    test.identical( _.strCount( op.output, 'program:' ), 7 );
     test.identical( _.strCount( op.output, /v0(.|\n|\r)*v1(.|\n|\r)*v2(.|\n|\r)*v3(.|\n|\r)*v4/mg ), 1 );
     return null;
   });
@@ -836,9 +836,9 @@ function timeLimitWaitingNotEnough( test )
     test.identical( _.strCount( op.output, 'Waiting for' ), 1 );
     test.identical( _.strCount( op.output, 'Waiting for 2 procedure(s)' ), 1 );
     test.identical( _.strCount( op.output, 'procedure::' ), 2 );
-    test.identical( _.strCount( op.output, 'program.js:11' ), 0 );
-    test.identical( _.strCount( op.output, 'program.js:14' ), 2 );
-    test.identical( _.strCount( op.output, 'program.js:' ), 2 );
+    test.identical( _.strCount( op.output, 'program:11' ), 0 );
+    test.identical( _.strCount( op.output, 'program:14' ), 2 );
+    test.identical( _.strCount( op.output, 'program:' ), 2 );
     test.identical( _.strCount( op.output, /v0(.|\n|\r)*v1(.|\n|\r)*v2(.|\n|\r)*v3(.|\n|\r)*v4/mg ), 1 );
     return null;
   });

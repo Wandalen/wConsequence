@@ -1040,9 +1040,9 @@ let ProcessExtension =
 
 _.props.extend( _, ToolsExtension );
 _.props.extend( _global.wTools, ToolsExtension );
-_.time = _.props.extend( _.time || null, TimeExtension );
+_.time = /* _.props.extend */Object.assign( _.time || null, TimeExtension );
 _global.wTools.time = _.props.extend( _global.wTools.time || null, TimeExtension );
-_.process = _.props.extend( _.process || null, ProcessExtension );
+_.process = /* _.props.extend */Object.assign( _.process || null, ProcessExtension );
 _global.wTools.process = _.props.extend( _global.wTools.process || null, ProcessExtension );
 
 require( './Consequence.s' );

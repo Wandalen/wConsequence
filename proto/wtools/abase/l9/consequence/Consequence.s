@@ -256,7 +256,11 @@ function finallyGive( competitorRoutine )
   let self = this;
   let times = 1;
 
-  _.assert( arguments.length === 1, 'Expects none or single argument, but got', arguments.length, 'arguments' );
+  _.assert
+  (
+    arguments.length === 1,
+    () => `Expects none or single argument, but got ${arguments.length} arguments`
+  );
 
   if( _.numberIs( competitorRoutine ) )
   {
@@ -5193,7 +5197,7 @@ function exportString( o )
 {
   let self = this;
   _.assert( arguments.length === 0 || arguments.length === 1 );
-  o = _.routine.options_( exportString, o );
+  o = _.routine.options( exportString, o || null );
   return self._exportString( o );
 }
 
@@ -6102,7 +6106,7 @@ _.assert( !!Self.FieldsOfRelationsGroupsGet );
 _.assert( !!Self.prototype.FieldsOfRelationsGroupsGet );
 _.assert( !!Self.FieldsOfRelationsGroups );
 _.assert( !!Self.prototype.FieldsOfRelationsGroups );
-_.assert( _.props.keys( Self.FieldsOfRelationsGroups ).length );
+_.assert( _.props.keys( Self.FieldsOfRelationsGroups ).length > 0 );
 
 _.assert( _.mapIs( Self.KindOfResource ) );
 _.assert( _.mapIs( Self.prototype.KindOfResource ) );
