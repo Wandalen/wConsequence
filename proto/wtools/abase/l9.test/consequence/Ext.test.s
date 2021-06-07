@@ -69,8 +69,9 @@ function assetFor( test, ... args )
     _.props.supplement( o.locals.context, locals.context );
     if( !o.locals.consequencePath )
     o.locals.consequencePath = a.path.nativize( a.path.join( __dirname, '../../l9/consequence/Namespace.s' ) );
-    let programPath = a.path.nativize( oprogram.body.call( a, o ) );
-    return programPath;
+    let r = oprogram.body.call( a, o );
+    r.programPath = a.path.nativize( r.programPath );
+    return r;
   }
 
 }
