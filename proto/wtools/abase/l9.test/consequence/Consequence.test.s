@@ -4415,7 +4415,7 @@ function timeLimitProcedure( test )
     test.case = 'timeLimit';
 
     var con = _.time.out( t );
-    var con0 = _.time.out( t*3, );
+    var con0 = _.time.out( t*3 );
     con.timeLimit( t*7, con0 );
 
     test.identical( con.competitorsCount(), 4 );
@@ -4486,7 +4486,7 @@ function timeLimitErrorProcedure( test )
     test.case = 'timeLimitError';
 
     var con = _.time.out( t );
-    var con0 = _.time.out( t*3, );
+    var con0 = _.time.out( t*3 );
     con.timeLimitError( t*7, con0 );
 
     test.identical( con.competitorsCount(), 4 );
