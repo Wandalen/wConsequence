@@ -12,7 +12,7 @@
     { "name" : "Ihor O.", "email" : "iostashvxi@gmail.com" }
   ],
   "main" : "proto/node_modules/wConsequence",
-  "files" : [ "proto/wtools/abase/l9", "out", "proto/node_modules" ],
+  "files" : [ "proto/wtools/abase/l9", "out", "proto/node_modules", "proto/node_modules/Tools", "proto/node_modules/wConsequence" ],
   "scripts" : { "test" : "wtest .run 'proto/**' rapidity:-3", "docgen" : "wdocgen proto" },
   "repository" :
   {
