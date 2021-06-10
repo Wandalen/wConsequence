@@ -8,8 +8,8 @@ if( typeof module !== 'undefined' )
   const _ = require( '../../../../node_modules/Tools' );
 
   _.include( 'wTesting' );
-  _.include( 'wLogger' );
-  _.include( 'wProcess' );
+  // _.include( 'wLogger' );
+  // _.include( 'wProcess' );
 
   require( '../../l9/consequence/Namespace.s' );
 }
