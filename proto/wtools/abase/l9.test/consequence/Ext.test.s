@@ -958,8 +958,10 @@ function timeCancelAfter( test )
   a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
   {
-    test.identical( op.exitCode, 0 );
-    test.identical( _.strCount( op.output, 'ncaught' ), 0 );
+    test.notIdentical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 2 );
+    // test.identical( op.exitCode, 0 );
+    // test.identical( _.strCount( op.output, 'ncaught' ), 0 );
     test.identical( _.strCount( op.output, 'nhandled' ), 0 );
     test.identical( _.strCount( op.output, 'Waiting for' ), 0 );
     test.identical( _.strCount( op.output, 'procedure::' ), 0 );
