@@ -8,8 +8,8 @@ if( typeof module !== 'undefined' )
   const _ = require( '../../../../node_modules/Tools' );
 
   _.include( 'wTesting' );
-  _.include( 'wLogger' );
-  _.include( 'wProcess' );
+  // _.include( 'wLogger' );
+  // _.include( 'wProcess' );
 
   require( '../../l9/consequence/Namespace.s' );
 }
@@ -958,8 +958,10 @@ function timeCancelAfter( test )
   a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
   {
-    test.identical( op.exitCode, 0 );
-    test.identical( _.strCount( op.output, 'ncaught' ), 0 );
+    test.notIdentical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, 'ncaught' ), 2 );
+    // test.identical( op.exitCode, 0 );
+    // test.identical( _.strCount( op.output, 'ncaught' ), 0 );
     test.identical( _.strCount( op.output, 'nhandled' ), 0 );
     test.identical( _.strCount( op.output, 'Waiting for' ), 0 );
     test.identical( _.strCount( op.output, 'procedure::' ), 0 );
