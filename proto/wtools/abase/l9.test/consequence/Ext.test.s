@@ -84,7 +84,7 @@ function uncaughtSyncErrorOnExit( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ routine : program }).programPath;
+  let programPath = a.program({ entry : program }).programPath;
 
   a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
@@ -123,7 +123,7 @@ function uncaughtAsyncErrorOnExit( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ routine : program }).programPath;
+  let programPath = a.program({ entry : program }).programPath;
 
   a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
@@ -159,7 +159,7 @@ function uncaughtAsyncErrorOnExitBefore( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ routine : program }).programPath;
+  let programPath = a.program({ entry : program }).programPath;
 
   a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
@@ -195,7 +195,7 @@ function AndKeepErrorAttend( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ routine : program }).programPath;
+  let programPath = a.program({ entry : program }).programPath;
 
   a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
@@ -252,7 +252,7 @@ function AndKeepErrorNotAttend( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ routine : program }).programPath;
+  let programPath = a.program({ entry : program }).programPath;
 
   a.appStartNonThrowing({ execPath : programPath })
   .then( ( op ) =>
@@ -307,7 +307,7 @@ function asyncStackWithTimeOut( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ routine : program }).programPath;
+  let programPath = a.program({ entry : program }).programPath;
 
   /* */
 
@@ -363,7 +363,7 @@ function asyncStackWithConsequence( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ routine : program }).programPath;
+  let programPath = a.program({ entry : program }).programPath;
 
   /* */
 
@@ -420,7 +420,7 @@ function asyncStackInConsequenceTrivial( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ routine : program }).programPath;
+  let programPath = a.program({ entry : program }).programPath;
 
   /* */
 
@@ -466,7 +466,7 @@ function asyncStackInConsequenceThen( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ routine : program }).programPath;
+  let programPath = a.program({ entry : program }).programPath;
 
   /* */
 
@@ -525,7 +525,7 @@ function syncMaybeError( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ routine : program }).programPath;
+  let programPath = a.program({ entry : program }).programPath;
 
   /* */
 
@@ -574,7 +574,7 @@ function symbolAsError( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ routine : program }).programPath;
+  let programPath = a.program({ entry : program }).programPath;
   let ready = _.take( null );
 
   /* */
@@ -651,7 +651,7 @@ function tester( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ routine : program }).programPath;
+  let programPath = a.program({ entry : program }).programPath;
 
   /* */
 
@@ -711,7 +711,7 @@ function timeLimit( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ routine : program }).programPath;
+  let programPath = a.program({ entry : program }).programPath;
 
   /* */
 
@@ -755,7 +755,7 @@ function timeLimitWaitingEnough( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ routine : program }).programPath;
+  let programPath = a.program({ entry : program }).programPath;
 
   /* */
 
@@ -824,7 +824,7 @@ function timeLimitWaitingNotEnough( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ routine : program }).programPath;
+  let programPath = a.program({ entry : program }).programPath;
 
   /* */
 
@@ -893,7 +893,7 @@ function timeCancelBefore( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ routine : program }).programPath;
+  let programPath = a.program({ entry : program }).programPath;
 
   /* */
 
@@ -951,7 +951,7 @@ function timeCancelAfter( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ routine : program }).programPath;
+  let programPath = a.program({ entry : program }).programPath;
 
   /* */
 
@@ -1010,7 +1010,7 @@ function timeOutExternalMessage( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ routine : program }).programPath;
+  let programPath = a.program({ entry : program }).programPath;
 
   /* */
 
@@ -1112,7 +1112,7 @@ function timeBegin( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ routine : program }).programPath;
+  let programPath = a.program({ entry : program }).programPath;
 
   /* */
 
@@ -1167,7 +1167,7 @@ function timeOutCancelWithErrorNotSymbol( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ routine : program1 }).programPath;
+  let programPath = a.program({ entry : program1 }).programPath;
 
   /* */
 
