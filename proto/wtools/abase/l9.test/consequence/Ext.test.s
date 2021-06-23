@@ -98,7 +98,7 @@ function retry( test )
     }
     return arg || true;
   }
-  const onError = ( err ) => _.errAttend( err );
+  const onError = ( err ) => { _.errAttend( err ); return true };
 
   /* - */
 
@@ -188,66 +188,48 @@ function retry( test )
 
   /* */
 
-  a.ready.then( () =>
+  if( Config.debug )
   {
-    test.case = 'check option sync';
-    attempts = 0;
-    start = _.time.now();
-    var got = _.retry({ routine, onError, attemptLimit : 4, attemptDelay : 1000, sync : 1 });
-    var spent = _.time.now() - start;
-    test.ge( spent, 3000 );
-    test.identical( got, true );
-    return null;
-  });
+    a.ready.then( () =>
+    {
+      test.case = 'without arguments';
+      test.shouldThrowErrorSync( () => _.retry() );
 
-  /* */
+      test.case = 'extra arguments';
+      var o = { routine : () => 1, onError : ( err ) => _.errAttend( err ), attemptLimit : 3 };
+      test.shouldThrowErrorSync( () => _.retry( o, o ) );
 
-  a.ready.then( () =>
-  {
-    if( !Config.debug )
-    return null;
+      test.case = 'wrong type of options map';
+      var o = { routine : () => 1, onError : ( err ) => _.errAttend( err ), attemptLimit : 3 };
+      test.shouldThrowErrorSync( () => _.retry([ o ]) );
 
-    test.case = 'without arguments';
-    test.shouldThrowErrorSync( () => _.retry() );
+      test.case = 'unknown option in options map';
+      var o = { routine : () => 1, onError : ( err ) => _.errAttend( err ), attemptLimit : 3, unknown : 1 };
+      test.shouldThrowErrorSync( () => _.retry( o ) );
 
-    test.case = 'extra arguments';
-    var o = { routine : () => 1, onError : ( err ) => _.errAttend( err ), attemptLimit : 3 };
-    test.shouldThrowErrorSync( () => _.retry( o, o ) );
+      test.case = 'wrong type of o.routine';
+      var o = { routine : 'wrong', onError : ( err ) => _.errAttend( err ), attemptLimit : 3 };
+      test.shouldThrowErrorSync( () => _.retry( o ) );
 
-    test.case = 'wrong type of options map';
-    var o = { routine : () => 1, onError : ( err ) => _.errAttend( err ), attemptLimit : 3 };
-    test.shouldThrowErrorSync( () => _.retry([ o ]) );
+      test.case = 'wrong type of o.args';
+      var o = { routine : () => 1, onError : ( err ) => _.errAttend( err ), attemptLimit : 3, args : 'wrong' };
+      test.shouldThrowErrorSync( () => _.retry( o ) );
 
-    test.case = 'unknown option in options map';
-    var o = { routine : () => 1, onError : ( err ) => _.errAttend( err ), attemptLimit : 3, unknown : 1 };
-    test.shouldThrowErrorSync( () => _.retry( o ) );
+      test.case = 'wrong type of o.attemptLimit';
+      var o = { routine : () => 1, onError : ( err ) => _.errAttend( err ), attemptLimit : 'wrong' };
+      test.shouldThrowErrorSync( () => _.retry( o ) );
 
-    test.case = 'wrong type of o.routine';
-    var o = { routine : 'wrong', onError : ( err ) => _.errAttend( err ), attemptLimit : 3 };
-    test.shouldThrowErrorSync( () => _.retry( o ) );
+      test.case = 'wrong value of o.attemptLimit';
+      var o = { routine : () => 1, onError : ( err ) => _.errAttend( err ), attemptLimit : 0 };
+      test.shouldThrowErrorSync( () => _.retry( o ) );
 
-    test.case = 'wrong type of o.onError';
-    var o = { routine : () => 1, onError : 'wrong', attemptLimit : 3 };
-    test.shouldThrowErrorSync( () => _.retry( o ) );
+      test.case = 'wrong value of o.attemptDelay';
+      var o = { routine : () => 1, onError : ( err ) => _.errAttend( err ), attemptLimit : -100 };
+      test.shouldThrowErrorSync( () => _.retry( o ) );
 
-    test.case = 'wrong type of o.args';
-    var o = { routine : () => 1, onError : ( err ) => _.errAttend( err ), attemptLimit : 3, args : 'wrong' };
-    test.shouldThrowErrorSync( () => _.retry( o ) );
-
-    test.case = 'wrong type of o.attemptLimit';
-    var o = { routine : () => 1, onError : ( err ) => _.errAttend( err ), attemptLimit : 'wrong' };
-    test.shouldThrowErrorSync( () => _.retry( o ) );
-
-    test.case = 'wrong value of o.attemptLimit';
-    var o = { routine : () => 1, onError : ( err ) => _.errAttend( err ), attemptLimit : 0 };
-    test.shouldThrowErrorSync( () => _.retry( o ) );
-
-    test.case = 'wrong value of o.attemptDelay';
-    var o = { routine : () => 1, onError : ( err ) => _.errAttend( err ), attemptLimit : -100 };
-    test.shouldThrowErrorSync( () => _.retry( o ) );
-
-    return null;
-  });
+      return null;
+    });
+  }
 
   /* - */
 

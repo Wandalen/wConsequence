@@ -904,15 +904,16 @@ function retry( o )
   _.assert( arguments.length === 1, 'Expects exactly one argument.' );
   _.routine.options_( retry, o );
   _.assert( _.routine.is( o.routine ), 'Expects routine {-o.routine-} to run.' );
-  _.assert( _.routine.is( o.onError ), 'Expects callback {-o.onError-} to handle error.' );
   _.assert( o.attemptLimit > 0 );
   _.assert( o.attemptDelay >= 0 );
 
   o.args = o.args || [];
   _.assert( _.long.is( o.args ) );
 
+  let attempt = 1;
+  const con = new _.Consequence();
   const ready = _.take( null );
-  ready.then( () => _run({ routine : o.routine, attempt : 1, ready : new _.Consequence() }) );
+  ready.then( () => _run( o ) );
   ready.finally( ( err, arg ) =>
   {
     if( err )
@@ -920,45 +921,43 @@ function retry( o )
     return arg;
   });
 
-  if( o.sync )
-  {
-    ready.deasync();
-    return ready.sync();
-  }
-
   return ready;
 
   /* */
 
-  function _run( op )
+  function _run( o )
   {
-    if( op.attempt > o.attemptLimit )
-    return op.ready.error( _.err( `Attempts is exhausted, made ${ op.attempt - 1 } attempts` ) );
+    if( attempt > o.attemptLimit )
+    return con.error( _.err( o.err, `Attempts is exhausted, made ${ attempt - 1 } attempts` ) );
 
-    logger.log( ` . Attempt ${ op.attempt }.` );
-
-    _.take( null ).Try( () => o.routine.apply( null, o.args ) )
-    .tap( ( err, arg ) =>
+    con.Try( () => o.routine.apply( null, o.args ) )
+    .give( ( err, arg ) =>
     {
       if( err )
       {
-        o.onError( err );
-        return _retry( op );
+        o.err = err;
+        let shouldRetry = false;
+        if( o.onError && o.onError( err ) );
+        shouldRetry = true;
+
+        if( shouldRetry )
+        return _retry( o );
+        con.error( _.err( err ) );
       }
-      if( o.onSuccess && !o.onSuccess( result ) )
-      return _retry( op );
-      op.ready.take( arg );
+      if( o.onSuccess && !o.onSuccess( arg ) )
+      return _retry( o );
+      con.take( arg );
     });
 
-    return op.ready;
+    return con;
   }
 
   /* */
 
-  function _retry( op )
+  function _retry( o )
   {
-    op.attempt += 1;
-    _.time.begin( o.attemptDelay, () => _run( op ) );
+    attempt += 1;
+    _.time.begin( o.attemptDelay, () => _run( o ) );
   }
 }
 
@@ -968,7 +967,6 @@ retry.defaults = /* qqq : cover */
   args : null,
   onError : null,
   onSuccess : null,
-  sync : 0,
   attemptLimit : 3,
   attemptDelay : 100,
 };
