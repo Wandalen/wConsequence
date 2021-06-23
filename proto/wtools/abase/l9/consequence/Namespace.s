@@ -897,6 +897,82 @@ sessionsRun_body.defaults =
 
 let sessionsRun = _.routine.uniteCloning_replaceByUnite( sessionsRun_head, sessionsRun_body ); /* qqq for junior : cover */
 
+//
+
+function retry( o )
+{
+  _.assert( arguments.length === 1, 'Expects exactly one argument.' );
+  _.routine.options_( retry, o );
+  _.assert( _.routine.is( o.routine ), 'Expects routine {-o.routine-} to run.' );
+  _.assert( _.routine.is( o.onError ), 'Expects callback {-o.onError-} to handle error.' );
+  _.assert( o.attemptLimit > 0 );
+  _.assert( o.attemptDelay >= 0 );
+
+  o.args = o.args || [];
+  _.assert( _.long.is( o.args ) );
+
+  const ready = _.take( null );
+  ready.then( () => _run({ routine : o.routine, attempt : 1, ready : new _.Consequence() }) );
+  ready.finally( ( err, arg ) =>
+  {
+    if( err )
+    throw _.err( err );
+    return arg;
+  });
+
+  if( o.sync )
+  {
+    ready.deasync();
+    return ready.sync();
+  }
+
+  return ready;
+
+  /* */
+
+  function _run( op )
+  {
+    if( op.attempt > o.attemptLimit )
+    return op.ready.error( _.err( `Attempts is exhausted, made ${ op.attempt - 1 } attempts` ) );
+
+    logger.log( ` . Attempt ${ op.attempt }.` );
+
+    _.take( null ).Try( () => o.routine.apply( null, o.args ) )
+    .tap( ( err, arg ) =>
+    {
+      if( err )
+      {
+        o.onError( err );
+        return _retry( op );
+      }
+      if( o.onSuccess && !o.onSuccess( result ) )
+      return _retry( op );
+      op.ready.take( arg );
+    });
+
+    return op.ready;
+  }
+
+  /* */
+
+  function _retry( op )
+  {
+    op.attempt += 1;
+    _.time.begin( o.attemptDelay, () => _run( op ) );
+  }
+}
+
+retry.defaults = /* qqq : cover */
+{
+  routine : null,
+  args : null,
+  onError : null,
+  onSuccess : null,
+  sync : 0,
+  attemptLimit : 3,
+  attemptDelay : 100,
+};
+
 // --
 // meta
 // --
@@ -1022,6 +1098,7 @@ let ToolsExtension =
   // before : Before,
   stagesRun,
   sessionsRun,
+  retry,
 };
 
 let TimeExtension =
