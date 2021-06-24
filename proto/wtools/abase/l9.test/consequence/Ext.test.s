@@ -130,7 +130,7 @@ function retry( test )
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
       test.identical( _.strCount( err.message, 'Wrong attempt' ), 2 );
-      test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 0 );
+      test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 1 );
       return null;
     };
     return test.shouldThrowErrorAsync( () => _.retry({ routine : () => { throw _.err( 'Wrong attempt' ) } }), onErrorCallback );
@@ -382,16 +382,13 @@ function retryCheckOptionOnError( test )
   {
     test.case = 'attemptLimit > wrong attempts, no onError to handle error, should throw error';
     attempts = 0;
-    var onErrorCallback = ( err, arg ) =>
-    {
-      test.true( _.error.is( err ) );
-      test.identical( arg, undefined );
-      test.identical( _.strCount( err.message, 'Wrong attempt' ), 2 );
-      test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 0 );
-      test.identical( attempts, 1 );
-      return null;
-    };
-    return test.shouldThrowErrorAsync( () => _.retry({ routine : () => routine(), attemptLimit : 4 }), onErrorCallback );
+    return _.retry({ routine : () => routine(), attemptLimit : 4 });
+  });
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op, true );
+    test.identical( attempts, 3 );
+    return null;
   });
 
   a.ready.then( () =>

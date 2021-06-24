@@ -902,14 +902,12 @@ let sessionsRun = _.routine.uniteCloning_replaceByUnite( sessionsRun_head, sessi
 function retry( o )
 {
   _.assert( arguments.length === 1, 'Expects exactly one argument.' );
-  _.routine.options_( retry, o );
+  _.routine.options( retry, o );
   _.assert( _.routine.is( o.routine ), 'Expects routine {-o.routine-} to run.' );
   _.assert( o.attemptLimit > 0 );
   _.assert( o.attemptDelay >= 0 );
 
-  o.args = o.args || [];
-  _.assert( _.long.is( o.args ) );
-
+  o.onError = o.onError || onError;
   let attempt = 1;
   const con = new _.Consequence();
   const ready = _.take( null );
@@ -937,17 +935,14 @@ function retry( o )
       {
         o.err = err;
         let shouldRetry = false;
-        if( o.onError )
+        try
         {
-          try
-          {
-            if( o.onError( err ) !== false )
-            shouldRetry = true;
-          }
-          catch( _err )
-          {
-            return con.error( _.err( err, '\nThe error thown in callback {-onError-}' ) )
-          }
+          if( o.onError( err ) !== false )
+          shouldRetry = true;
+        }
+        catch( _err )
+        {
+          return con.error( _.err( err, '\nThe error thown in callback {-onError-}' ) );
         }
 
         if( shouldRetry )
@@ -968,6 +963,14 @@ function retry( o )
   {
     attempt += 1;
     _.time.begin( o.attemptDelay, () => _run( o ) );
+  }
+
+  /* */
+
+  function onError( err )
+  {
+    _.error.attend( err );
+    return true;
   }
 }
 
