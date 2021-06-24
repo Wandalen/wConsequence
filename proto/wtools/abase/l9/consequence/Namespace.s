@@ -937,7 +937,7 @@ function retry( o )
       {
         o.err = err;
         let shouldRetry = false;
-        if( o.onError && o.onError( err ) )
+        if( o.onError && o.onError( err ) !== false )
         shouldRetry = true;
 
         if( shouldRetry )
@@ -961,7 +961,7 @@ function retry( o )
   }
 }
 
-retry.defaults = /* qqq : cover */
+retry.defaults = /* aaa : cover */ /* Dmytro : covered */
 {
   routine : null,
   onError : null,

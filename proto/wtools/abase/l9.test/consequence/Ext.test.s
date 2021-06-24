@@ -113,8 +113,18 @@ function retry( test )
 
   a.ready.then( () =>
   {
-    test.case = 'attemptLimit > wrong attempts, no onError to handle error, should throw error';
-    attempts = 0;
+    test.case = 'only callback, return value';
+    return _.retry({ routine : () => 1 });
+  });
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op, 1 );
+    return null;
+  });
+
+  a.ready.then( () =>
+  {
+    test.case = 'only callback that throws errors';
     var onErrorCallback = ( err, arg ) =>
     {
       test.true( _.error.is( err ) );
@@ -123,140 +133,7 @@ function retry( test )
       test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 0 );
       return null;
     };
-    return test.shouldThrowErrorAsync( () => _.retry({ routine : () => routine(), attemptLimit : 4 }), onErrorCallback );
-  });
-
-  a.ready.then( () =>
-  {
-    test.case = 'attemptLimit > wrong attempts, onError handle error, returns false, should throw error';
-    attempts = 0;
-    var onErrorCallback = ( err, arg ) =>
-    {
-      test.true( _.error.is( err ) );
-      test.identical( arg, undefined );
-      test.identical( _.strCount( err.message, 'Wrong attempt' ), 2 );
-      test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 0 );
-      return null;
-    };
-    var o = { routine : () => routine(), onError : ( err ) => { _.errAttend( err ); return false }, attemptLimit : 4 };
-    return test.shouldThrowErrorAsync( () => _.retry( o ), onErrorCallback );
-  });
-
-  /* */
-
-  a.ready.then( () =>
-  {
-    test.case = 'attemptLimit < wrong attempts, should throw error';
-    attempts = 0;
-    var onErrorCallback = ( err, arg ) =>
-    {
-      test.true( _.error.is( err ) );
-      test.identical( arg, undefined );
-      test.identical( _.strCount( err.message, 'Wrong attempt' ), 2 );
-      test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 1 );
-      return null;
-    };
-    return test.shouldThrowErrorAsync( () => _.retry({ routine : () => routine(), onError, attemptLimit : 2 }), onErrorCallback );
-  });
-
-  a.ready.then( () =>
-  {
-    test.case = 'attemptLimit === wrong attempts, should throw error';
-    attempts = 0;
-    var onErrorCallback = ( err, arg ) =>
-    {
-      test.true( _.error.is( err ) );
-      test.identical( arg, undefined );
-      test.identical( _.strCount( err.message, 'Wrong attempt' ), 2 );
-      test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 1 );
-      return null;
-    };
-    return test.shouldThrowErrorAsync( () => _.retry({ routine : () => routine(), onError, attemptLimit : 3 }), onErrorCallback );
-  });
-
-  a.ready.then( () =>
-  {
-    test.case = 'attemptLimit > wrong attempts, should return result, no args';
-    attempts = 0;
-    return _.retry({ routine : () => routine(), onError, attemptLimit : 4 });
-  });
-  a.ready.then( ( op ) =>
-  {
-    test.identical( op, true );
-    return null;
-  });
-
-  /* */
-
-  a.ready.then( () =>
-  {
-    test.case = 'attemptLimit > wrong attempts, should return result, with args';
-    attempts = 0;
-    return _.retry({ routine : () => routine([ 1, 2 ]), onError, attemptLimit : 4 });
-  });
-  a.ready.then( ( op ) =>
-  {
-    test.identical( op, [ 1, 2 ] );
-    return null;
-  });
-
-  a.ready.then( () =>
-  {
-    test.case = 'attemptLimit > wrong attempts, should return result, with args';
-    attempts = 0;
-    return _.retry({ routine : () => routine([ 3, 4 ]), onError, attemptLimit : 4 });
-  });
-  a.ready.then( ( op ) =>
-  {
-    test.identical( op, [ 3, 4 ] );
-    return null;
-  });
-
-  /* */
-
-  let start;
-  a.ready.then( () =>
-  {
-    test.case = 'check option attemptDelay';
-    attempts = 0;
-    start = _.time.now();
-    return _.retry({ routine : () => routine(), onError, attemptLimit : 4, attemptDelay : 1000 });
-  });
-  a.ready.then( ( op ) =>
-  {
-    var spent = _.time.now() - start;
-    test.ge( spent, 3000 );
-    test.identical( op, true );
-    return null;
-  });
-
-  /* */
-
-  a.ready.then( () =>
-  {
-    test.case = 'check option onSuccess, attemptLimit === wrong attempts, should throw error';
-    attempts = 0;
-    var onErrorCallback = ( err, arg ) =>
-    {
-      test.true( _.error.is( err ) );
-      test.identical( arg, undefined );
-      test.identical( _.strCount( err.message, 'Wrong attempt' ), 2 );
-      test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 1 );
-      return null;
-    };
-    return test.shouldThrowErrorAsync( () => _.retry({ routine : () => routine(), onError, onSuccess, attemptLimit : 4 }), onErrorCallback );
-  });
-
-  a.ready.then( () =>
-  {
-    test.case = 'check option onSuccess, attemptLimit > wrong attempts, should return result';
-    attempts = 0;
-    return _.retry({ routine : () => routine( 'arg' ), onError, onSuccess, attemptLimit : 5 });
-  });
-  a.ready.then( ( op ) =>
-  {
-    test.identical( op, 'arg' );
-    return null;
+    return test.shouldThrowErrorAsync( () => _.retry({ routine : () => { throw _.err( 'Wrong attempt' ) } }), onErrorCallback );
   });
 
   /* */
@@ -305,7 +182,331 @@ function retry( test )
   return a.ready;
 }
 
-retry.timeOut = 30000;
+//
+
+function retryCheckOptionAttemptLimit( test )
+{
+  let context = this;
+  let a = context.assetFor( test, false );
+  a.fileProvider.dirMake( a.abs( '.' ) );
+
+  /* */
+
+  let attempts = 0;
+  const routine = ( arg ) =>
+  {
+    if( attempts < 3 )
+    {
+      ++attempts;
+      throw _.err( 'Wrong attempt' );
+    }
+    return arg || true;
+  }
+  const onError = ( err ) => { _.errAttend( err ); return true };
+  const onSuccess = ( arg ) =>
+  {
+    if( attempts < 4 )
+    {
+      ++attempts;
+      return false;
+    }
+    return true;
+  };
+
+  /* - */
+
+  a.ready.then( () =>
+  {
+    test.case = 'attemptLimit < wrong attempts, should throw error';
+    attempts = 0;
+    var onErrorCallback = ( err, arg ) =>
+    {
+      test.true( _.error.is( err ) );
+      test.identical( arg, undefined );
+      test.identical( _.strCount( err.message, 'Wrong attempt' ), 2 );
+      test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 1 );
+      test.identical( attempts, 2 );
+      return null;
+    };
+    return test.shouldThrowErrorAsync( () => _.retry({ routine : () => routine(), onError, attemptLimit : 2 }), onErrorCallback );
+  });
+
+  a.ready.then( () =>
+  {
+    test.case = 'attemptLimit === wrong attempts, should throw error';
+    attempts = 0;
+    var onErrorCallback = ( err, arg ) =>
+    {
+      test.true( _.error.is( err ) );
+      test.identical( arg, undefined );
+      test.identical( _.strCount( err.message, 'Wrong attempt' ), 2 );
+      test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 1 );
+      test.identical( attempts, 3 );
+      return null;
+    };
+    return test.shouldThrowErrorAsync( () => _.retry({ routine : () => routine(), onError, attemptLimit : 3 }), onErrorCallback );
+  });
+
+  a.ready.then( () =>
+  {
+    test.case = 'attemptLimit > wrong attempts, should return result, no args';
+    attempts = 0;
+    return _.retry({ routine : () => routine(), onError, attemptLimit : 4 });
+  });
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op, true );
+    return null;
+  });
+
+  /* */
+
+  a.ready.then( () =>
+  {
+    test.case = 'attemptLimit > wrong attempts, should return result, with args';
+    attempts = 0;
+    return _.retry({ routine : () => routine([ 1, 2 ]), onError, attemptLimit : 4 });
+  });
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op, [ 1, 2 ] );
+    return null;
+  });
+
+  /* - */
+
+  return a.ready;
+}
+
+//
+
+function retryCheckOptionAttemptDelay( test )
+{
+  let context = this;
+  let a = context.assetFor( test, false );
+  a.fileProvider.dirMake( a.abs( '.' ) );
+
+  /* */
+
+  let attempts = 0;
+  const routine = ( arg ) =>
+  {
+    if( attempts < 3 )
+    {
+      ++attempts;
+      throw _.err( 'Wrong attempt' );
+    }
+    return arg || true;
+  }
+  const onError = ( err ) => { _.errAttend( err ); return true };
+  const onSuccess = ( arg ) =>
+  {
+    if( attempts < 4 )
+    {
+      ++attempts;
+      return false;
+    }
+    return true;
+  };
+
+  /* - */
+
+  let start;
+  a.ready.then( () =>
+  {
+    test.case = 'check option attemptDelay';
+    attempts = 0;
+    start = _.time.now();
+    return _.retry({ routine : () => routine(), onError, attemptLimit : 4, attemptDelay : 1000 });
+  });
+  a.ready.then( ( op ) =>
+  {
+    var spent = _.time.now() - start;
+    test.ge( spent, 3000 );
+    test.identical( op, true );
+    test.identical( attempts, 3 );
+    return null;
+  });
+
+  /* - */
+
+  return a.ready;
+}
+
+//
+
+function retryCheckOptionOnError( test )
+{
+  let context = this;
+  let a = context.assetFor( test, false );
+  a.fileProvider.dirMake( a.abs( '.' ) );
+
+  /* */
+
+  let attempts = 0;
+  const routine = ( arg ) =>
+  {
+    if( attempts < 3 )
+    {
+      ++attempts;
+      throw _.err( 'Wrong attempt' );
+    }
+    return arg || true;
+  }
+  const onError = ( err ) => { _.errAttend( err ); return true };
+  const onSuccess = ( arg ) =>
+  {
+    if( attempts < 4 )
+    {
+      ++attempts;
+      return false;
+    }
+    return true;
+  };
+
+  /* - */
+
+  a.ready.then( () =>
+  {
+    test.case = 'callback returns result, no onError, should pass';
+    attempts = 0;
+    return _.retry({ routine : () => 1 });
+  });
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op, 1 );
+    return null;
+  });
+
+  a.ready.then( () =>
+  {
+    test.case = 'attemptLimit > wrong attempts, no onError to handle error, should throw error';
+    attempts = 0;
+    var onErrorCallback = ( err, arg ) =>
+    {
+      test.true( _.error.is( err ) );
+      test.identical( arg, undefined );
+      test.identical( _.strCount( err.message, 'Wrong attempt' ), 2 );
+      test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 0 );
+      test.identical( attempts, 1 );
+      return null;
+    };
+    return test.shouldThrowErrorAsync( () => _.retry({ routine : () => routine(), attemptLimit : 4 }), onErrorCallback );
+  });
+
+  a.ready.then( () =>
+  {
+    test.case = 'attemptLimit > wrong attempts, onError handle error, returns false, should throw error';
+    attempts = 0;
+    var onErrorCallback = ( err, arg ) =>
+    {
+      test.true( _.error.is( err ) );
+      test.identical( arg, undefined );
+      test.identical( _.strCount( err.message, 'Wrong attempt' ), 2 );
+      test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 0 );
+      return null;
+    };
+    var o = { routine : () => routine(), onError : ( err ) => { _.errAttend( err ); return false }, attemptLimit : 4 };
+    return test.shouldThrowErrorAsync( () => _.retry( o ), onErrorCallback );
+  });
+
+  a.ready.then( () =>
+  {
+    test.case = 'attemptLimit > wrong attempts, onError handle error, returns not false, should pass';
+    attempts = 0;
+    var onErrorCallback = ( err, arg ) =>
+    {
+      test.true( _.error.is( err ) );
+      test.identical( arg, undefined );
+      test.identical( _.strCount( err.message, 'Wrong attempt' ), 2 );
+      test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 0 );
+      return null;
+    };
+    return _.retry
+    ({
+      routine : () => routine(),
+      onError : ( err ) => { _.errAttend( err ); return undefined },
+      attemptLimit : 4
+    });
+  });
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op, true );
+    return null;
+  });
+
+  /* - */
+
+  return a.ready;
+}
+
+//
+
+function retryCheckOptionOnSucces( test )
+{
+  let context = this;
+  let a = context.assetFor( test, false );
+  a.fileProvider.dirMake( a.abs( '.' ) );
+
+  /* */
+
+  let attempts = 0;
+  const routine = ( arg ) =>
+  {
+    if( attempts < 3 )
+    {
+      ++attempts;
+      throw _.err( 'Wrong attempt' );
+    }
+    return arg || true;
+  }
+  const onError = ( err ) => { _.errAttend( err ); return true };
+  const onSuccess = ( arg ) =>
+  {
+    if( attempts < 4 )
+    {
+      ++attempts;
+      return false;
+    }
+    return true;
+  };
+
+  /* - */
+
+  a.ready.then( () =>
+  {
+    test.case = 'check option onSuccess, attemptLimit === wrong attempts, should throw error';
+    attempts = 0;
+    var onErrorCallback = ( err, arg ) =>
+    {
+      test.true( _.error.is( err ) );
+      test.identical( arg, undefined );
+      test.identical( _.strCount( err.message, 'Wrong attempt' ), 2 );
+      test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 1 );
+      return null;
+    };
+    return test.shouldThrowErrorAsync
+    (
+      () => _.retry({ routine : () => routine(), onError, onSuccess, attemptLimit : 4 }), onErrorCallback
+    );
+  });
+
+  a.ready.then( () =>
+  {
+    test.case = 'check option onSuccess, attemptLimit > wrong attempts, should return result';
+    attempts = 0;
+    return _.retry({ routine : () => routine( 'arg' ), onError, onSuccess, attemptLimit : 5 });
+  });
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op, 'arg' );
+    return null;
+  });
+
+  /* - */
+
+  return a.ready;
+}
 
 //
 
@@ -1464,6 +1665,10 @@ const Proto =
   {
 
     retry,
+    retryCheckOptionAttemptLimit,
+    retryCheckOptionAttemptDelay,
+    retryCheckOptionOnError,
+    retryCheckOptionOnSucces,
 
     uncaughtSyncErrorOnExit,
     uncaughtAsyncErrorOnExit,
