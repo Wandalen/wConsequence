@@ -928,7 +928,7 @@ function retry( o )
   function _run( o )
   {
     if( attempt > o.attemptLimit )
-    return con.error( _.err( o.err, `Attempts is exhausted, made ${ attempt - 1 } attempts` ) );
+    return con.error( _.err( o.err, `\nAttempts is exhausted, made ${ attempt - 1 } attempts` ) );
 
     con.Try( () => o.routine.apply( null, o.args ) )
     .give( ( err, arg ) =>
@@ -937,12 +937,12 @@ function retry( o )
       {
         o.err = err;
         let shouldRetry = false;
-        if( o.onError && o.onError( err ) );
+        if( o.onError && o.onError( err ) )
         shouldRetry = true;
 
         if( shouldRetry )
         return _retry( o );
-        con.error( _.err( err ) );
+        return con.error( _.err( err ) );
       }
       if( o.onSuccess && !o.onSuccess( arg ) )
       return _retry( o );
