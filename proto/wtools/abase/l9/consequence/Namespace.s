@@ -897,6 +897,92 @@ sessionsRun_body.defaults =
 
 let sessionsRun = _.routine.uniteCloning_replaceByUnite( sessionsRun_head, sessionsRun_body ); /* qqq for junior : cover */
 
+//
+
+function retry( o )
+{
+  _.assert( arguments.length === 1, 'Expects exactly one argument.' );
+  _.routine.options( retry, o );
+  _.assert( _.routine.is( o.routine ), 'Expects routine {-o.routine-} to run.' );
+  _.assert( o.attemptLimit > 0 );
+  _.assert( o.attemptDelay >= 0 );
+
+  o.onError = o.onError || onError;
+  let attempt = 1;
+  const con = new _.Consequence();
+  const ready = _.take( null );
+  ready.then( () => _run( o ) );
+  ready.finally( ( err, arg ) =>
+  {
+    if( err )
+    throw _.err( err );
+    return arg;
+  });
+
+  return ready;
+
+  /* */
+
+  function _run( o )
+  {
+    if( attempt > o.attemptLimit )
+    return con.error( _.err( o.err, `\nAttempts is exhausted, made ${ attempt - 1 } attempts` ) );
+
+    con.Try( o.routine )
+    .give( ( err, arg ) =>
+    {
+      if( err )
+      {
+        o.err = err;
+        let shouldRetry = false;
+        try
+        {
+          if( o.onError( err ) !== false )
+          shouldRetry = true;
+        }
+        catch( _err )
+        {
+          return con.error( _.err( err, '\nThe error thown in callback {-onError-}' ) );
+        }
+
+        if( shouldRetry )
+        return _retry( o );
+        return con.error( _.err( err ) );
+      }
+      if( o.onSuccess && !o.onSuccess( arg ) )
+      return _retry( o );
+      con.take( arg );
+    });
+
+    return con;
+  }
+
+  /* */
+
+  function _retry( o )
+  {
+    attempt += 1;
+    _.time.begin( o.attemptDelay, () => _run( o ) );
+  }
+
+  /* */
+
+  function onError( err )
+  {
+    _.error.attend( err );
+    return true;
+  }
+}
+
+retry.defaults = /* aaa : cover */ /* Dmytro : covered */
+{
+  routine : null,
+  onError : null,
+  onSuccess : null,
+  attemptLimit : 3,
+  attemptDelay : 100,
+};
+
 // --
 // meta
 // --
@@ -1022,6 +1108,7 @@ let ToolsExtension =
   // before : Before,
   stagesRun,
   sessionsRun,
+  retry,
 };
 
 let TimeExtension =
