@@ -930,7 +930,7 @@ function retry( o )
     if( attempt > o.attemptLimit )
     return con.error( _.err( o.err, `\nAttempts is exhausted, made ${ attempt - 1 } attempts` ) );
 
-    con.Try( () => o.routine.apply( null, o.args ) )
+    con.Try( o.routine )
     .give( ( err, arg ) =>
     {
       if( err )
@@ -964,7 +964,6 @@ function retry( o )
 retry.defaults = /* qqq : cover */
 {
   routine : null,
-  args : null,
   onError : null,
   onSuccess : null,
   attemptLimit : 3,

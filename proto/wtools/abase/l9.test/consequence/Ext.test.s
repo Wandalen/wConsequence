@@ -123,7 +123,7 @@ function retry( test )
       test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 0 );
       return null;
     };
-    return test.shouldThrowErrorAsync( () => _.retry({ routine, attemptLimit : 4 }), onErrorCallback );
+    return test.shouldThrowErrorAsync( () => _.retry({ routine : () => routine(), attemptLimit : 4 }), onErrorCallback );
   });
 
   a.ready.then( () =>
@@ -138,7 +138,7 @@ function retry( test )
       test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 0 );
       return null;
     };
-    var o = { routine, onError : ( err ) => { _.errAttend( err ); return false }, attemptLimit : 4 };
+    var o = { routine : () => routine(), onError : ( err ) => { _.errAttend( err ); return false }, attemptLimit : 4 };
     return test.shouldThrowErrorAsync( () => _.retry( o ), onErrorCallback );
   });
 
@@ -156,7 +156,7 @@ function retry( test )
       test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 1 );
       return null;
     };
-    return test.shouldThrowErrorAsync( () => _.retry({ routine, onError, attemptLimit : 2 }), onErrorCallback );
+    return test.shouldThrowErrorAsync( () => _.retry({ routine : () => routine(), onError, attemptLimit : 2 }), onErrorCallback );
   });
 
   a.ready.then( () =>
@@ -171,14 +171,14 @@ function retry( test )
       test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 1 );
       return null;
     };
-    return test.shouldThrowErrorAsync( () => _.retry({ routine, onError, attemptLimit : 3 }), onErrorCallback );
+    return test.shouldThrowErrorAsync( () => _.retry({ routine : () => routine(), onError, attemptLimit : 3 }), onErrorCallback );
   });
 
   a.ready.then( () =>
   {
     test.case = 'attemptLimit > wrong attempts, should return result, no args';
     attempts = 0;
-    return _.retry({ routine, onError, attemptLimit : 4 });
+    return _.retry({ routine : () => routine(), onError, attemptLimit : 4 });
   });
   a.ready.then( ( op ) =>
   {
@@ -192,7 +192,7 @@ function retry( test )
   {
     test.case = 'attemptLimit > wrong attempts, should return result, with args';
     attempts = 0;
-    return _.retry({ routine, onError, attemptLimit : 4, args : [ [ 1, 2 ] ] });
+    return _.retry({ routine : () => routine([ 1, 2 ]), onError, attemptLimit : 4 });
   });
   a.ready.then( ( op ) =>
   {
@@ -204,7 +204,7 @@ function retry( test )
   {
     test.case = 'attemptLimit > wrong attempts, should return result, with args';
     attempts = 0;
-    return _.retry({ routine, onError, attemptLimit : 4, args : [ [ 3, 4 ] ] });
+    return _.retry({ routine : () => routine([ 3, 4 ]), onError, attemptLimit : 4 });
   });
   a.ready.then( ( op ) =>
   {
@@ -220,7 +220,7 @@ function retry( test )
     test.case = 'check option attemptDelay';
     attempts = 0;
     start = _.time.now();
-    return _.retry({ routine, onError, attemptLimit : 4, attemptDelay : 1000 });
+    return _.retry({ routine : () => routine(), onError, attemptLimit : 4, attemptDelay : 1000 });
   });
   a.ready.then( ( op ) =>
   {
@@ -244,14 +244,14 @@ function retry( test )
       test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 1 );
       return null;
     };
-    return test.shouldThrowErrorAsync( () => _.retry({ routine, onError, onSuccess, attemptLimit : 4 }), onErrorCallback );
+    return test.shouldThrowErrorAsync( () => _.retry({ routine : () => routine(), onError, onSuccess, attemptLimit : 4 }), onErrorCallback );
   });
 
   a.ready.then( () =>
   {
     test.case = 'check option onSuccess, attemptLimit > wrong attempts, should return result';
     attempts = 0;
-    return _.retry({ routine, onError, onSuccess, attemptLimit : 5, args : [ 'arg' ] });
+    return _.retry({ routine : () => routine( 'arg' ), onError, onSuccess, attemptLimit : 5 });
   });
   a.ready.then( ( op ) =>
   {
@@ -282,10 +282,6 @@ function retry( test )
 
       test.case = 'wrong type of o.routine';
       var o = { routine : 'wrong', onError : ( err ) => _.errAttend( err ), attemptLimit : 3 };
-      test.shouldThrowErrorSync( () => _.retry( o ) );
-
-      test.case = 'wrong type of o.args';
-      var o = { routine : () => 1, onError : ( err ) => _.errAttend( err ), attemptLimit : 3, args : 'wrong' };
       test.shouldThrowErrorSync( () => _.retry( o ) );
 
       test.case = 'wrong type of o.attemptLimit';
