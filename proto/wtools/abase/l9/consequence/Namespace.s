@@ -937,8 +937,18 @@ function retry( o )
       {
         o.err = err;
         let shouldRetry = false;
-        if( o.onError && o.onError( err ) !== false )
-        shouldRetry = true;
+        if( o.onError )
+        {
+          try
+          {
+            if( o.onError( err ) !== false )
+            shouldRetry = true;
+          }
+          catch( _err )
+          {
+            return con.error( _.err( err, '\nThe error thown in callback {-onError-}' ) )
+          }
+        }
 
         if( shouldRetry )
         return _retry( o );

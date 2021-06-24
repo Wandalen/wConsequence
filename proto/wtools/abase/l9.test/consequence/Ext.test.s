@@ -435,6 +435,37 @@ function retryCheckOptionOnError( test )
     return null;
   });
 
+  /* */
+
+  a.ready.then( () =>
+  {
+    test.case = 'attemptLimit > wrong attempts, onError throws error, should not retry';
+    attempts = 0;
+    var onErrorCallback = ( err, arg ) =>
+    {
+      test.true( _.error.is( err ) );
+      test.identical( arg, undefined );
+      test.identical( _.strCount( err.message, 'Wrong attempt' ), 2 );
+      test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 0 );
+      test.identical( _.strCount( err.message, 'The error thown in callback {-onError-}' ), 1 );
+      test.identical( attempts, 1 );
+      return null;
+    };
+    return test.shouldThrowErrorAsync
+    (
+      () =>
+      {
+        return _.retry
+        ({
+          routine : () => routine(),
+          onError : ( err ) => { throw _.err( 'from onError' ) },
+          attemptLimit : 4
+        });
+      },
+      onErrorCallback
+    );
+  });
+
   /* - */
 
   return a.ready;
