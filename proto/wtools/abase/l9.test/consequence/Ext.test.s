@@ -99,15 +99,6 @@ function retry( test )
     return arg || true;
   }
   const onError = ( err ) => { _.errAttend( err ); return true };
-  const onSuccess = ( arg ) =>
-  {
-    if( attempts < 4 )
-    {
-      ++attempts;
-      return false;
-    }
-    return true;
-  };
 
   /* - */
 
@@ -203,15 +194,6 @@ function retryCheckOptionAttemptLimit( test )
     return arg || true;
   }
   const onError = ( err ) => { _.errAttend( err ); return true };
-  const onSuccess = ( arg ) =>
-  {
-    if( attempts < 4 )
-    {
-      ++attempts;
-      return false;
-    }
-    return true;
-  };
 
   /* - */
 
@@ -299,15 +281,6 @@ function retryCheckOptionAttemptDelay( test )
     return arg || true;
   }
   const onError = ( err ) => { _.errAttend( err ); return true };
-  const onSuccess = ( arg ) =>
-  {
-    if( attempts < 4 )
-    {
-      ++attempts;
-      return false;
-    }
-    return true;
-  };
 
   /* - */
 
@@ -354,15 +327,6 @@ function retryCheckOptionOnError( test )
     return arg || true;
   }
   const onError = ( err ) => { _.errAttend( err ); return true };
-  const onSuccess = ( arg ) =>
-  {
-    if( attempts < 4 )
-    {
-      ++attempts;
-      return false;
-    }
-    return true;
-  };
 
   /* - */
 
@@ -529,6 +493,42 @@ function retryCheckOptionOnSucces( test )
   {
     test.identical( op, 'arg' );
     return null;
+  });
+
+  /* - */
+
+  return a.ready;
+}
+
+//
+
+function retryCheckNotBlocking( test )
+{
+  let context = this;
+  let a = context.assetFor( test, false );
+  a.fileProvider.dirMake( a.abs( '.' ) );
+
+  /* */
+
+  let attempts = 0;
+  let ready = _.take( null );
+  let shell = __.process.starter({ ready, mode : 'shell' });
+  const routine = () => shell( 'wrong command' );
+
+  /* - */
+
+  a.ready.then( () =>
+  {
+    test.case = 'attemptLimit > wrong attempts, onError handle error, returns false, should throw error';
+    attempts = 0;
+    var onErrorCallback = ( err, arg ) =>
+    {
+      test.true( _.error.is( err ) );
+      test.identical( arg, undefined );
+      test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 1 );
+      return null;
+    };
+    return test.shouldThrowErrorAsync( () => _.retry({ routine }), onErrorCallback );
   });
 
   /* - */
@@ -1697,6 +1697,7 @@ const Proto =
     retryCheckOptionAttemptDelay,
     retryCheckOptionOnError,
     retryCheckOptionOnSucces,
+    retryCheckNotBlocking,
 
     uncaughtSyncErrorOnExit,
     uncaughtAsyncErrorOnExit,
