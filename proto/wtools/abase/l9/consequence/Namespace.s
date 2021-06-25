@@ -929,7 +929,7 @@ function retry( o )
     return con.error( _.err( o.err, `\nAttempts is exhausted, made ${ attempt - 1 } attempts` ) );
 
     con.Try( o.routine )
-    .give( ( err, arg ) =>
+    .tap( ( err, arg ) =>
     {
       if( err )
       {
