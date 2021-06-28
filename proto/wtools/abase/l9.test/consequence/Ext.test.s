@@ -70,7 +70,7 @@ function assetFor( test, ... args )
     if( !o.locals.consequencePath )
     o.locals.consequencePath = a.path.nativize( a.path.join( __dirname, '../../l9/consequence/Namespace.s' ) );
     let r = oprogram.body.call( a, o );
-    r.programPath = a.path.nativize( r.programPath );
+    r.filePath/*programPath*/ = a.path.nativize( r.filePath/*programPath*/ );
     return r;
   }
 
@@ -542,9 +542,9 @@ function uncaughtSyncErrorOnExit( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ entry : program }).programPath;
+  let filePath/*programPath*/ = a.program({ entry : program }).filePath/*programPath*/;
 
-  a.appStartNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : filePath/*programPath*/ })
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
@@ -581,9 +581,9 @@ function uncaughtAsyncErrorOnExit( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ entry : program }).programPath;
+  let filePath/*programPath*/ = a.program({ entry : program }).filePath/*programPath*/;
 
-  a.appStartNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : filePath/*programPath*/ })
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
@@ -617,9 +617,9 @@ function uncaughtAsyncErrorOnExitBefore( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ entry : program }).programPath;
+  let filePath/*programPath*/ = a.program({ entry : program }).filePath/*programPath*/;
 
-  a.appStartNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : filePath/*programPath*/ })
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
@@ -653,9 +653,9 @@ function AndKeepErrorAttend( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ entry : program }).programPath;
+  let filePath/*programPath*/ = a.program({ entry : program }).filePath/*programPath*/;
 
-  a.appStartNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : filePath/*programPath*/ })
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
@@ -710,9 +710,9 @@ function AndKeepErrorNotAttend( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ entry : program }).programPath;
+  let filePath/*programPath*/ = a.program({ entry : program }).filePath/*programPath*/;
 
-  a.appStartNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : filePath/*programPath*/ })
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
@@ -765,11 +765,11 @@ function asyncStackWithTimeOut( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ entry : program }).programPath;
+  let filePath/*programPath*/ = a.program({ entry : program }).filePath/*programPath*/;
 
   /* */
 
-  a.appStartNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : filePath/*programPath*/ })
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
@@ -821,11 +821,11 @@ function asyncStackWithConsequence( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ entry : program }).programPath;
+  let filePath/*programPath*/ = a.program({ entry : program }).filePath/*programPath*/;
 
   /* */
 
-  a.appStartNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : filePath/*programPath*/ })
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
@@ -878,11 +878,11 @@ function asyncStackInConsequenceTrivial( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ entry : program }).programPath;
+  let filePath/*programPath*/ = a.program({ entry : program }).filePath/*programPath*/;
 
   /* */
 
-  a.appStartNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : filePath/*programPath*/ })
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
@@ -924,11 +924,11 @@ function asyncStackInConsequenceThen( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ entry : program }).programPath;
+  let filePath/*programPath*/ = a.program({ entry : program }).filePath/*programPath*/;
 
   /* */
 
-  a.appStartNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : filePath/*programPath*/ })
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
@@ -983,11 +983,11 @@ function syncMaybeError( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ entry : program }).programPath;
+  let filePath/*programPath*/ = a.program({ entry : program }).filePath/*programPath*/;
 
   /* */
 
-  a.appStartNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : filePath/*programPath*/ })
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
@@ -1032,7 +1032,7 @@ function symbolAsError( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ entry : program }).programPath;
+  let filePath/*programPath*/ = a.program({ entry : program }).filePath/*programPath*/;
   let ready = _.take( null );
 
   /* */
@@ -1041,7 +1041,7 @@ function symbolAsError( test )
   {
     return a.appStartNonThrowing
     ({
-      execPath : programPath,
+      execPath : filePath/*programPath*/,
       args : [ 'symbol:0' ],
     })
     .then( ( op ) =>
@@ -1060,7 +1060,7 @@ function symbolAsError( test )
   {
     return a.appStartNonThrowing
     ({
-      execPath : programPath,
+      execPath : filePath/*programPath*/,
       args : [ 'symbol:1' ],
     })
     .then( ( op ) =>
@@ -1109,11 +1109,11 @@ function tester( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ entry : program }).programPath;
+  let filePath/*programPath*/ = a.program({ entry : program }).filePath/*programPath*/;
 
   /* */
 
-  a.appStartNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : filePath/*programPath*/ })
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
@@ -1169,11 +1169,11 @@ function timeLimit( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ entry : program }).programPath;
+  let filePath/*programPath*/ = a.program({ entry : program }).filePath/*programPath*/;
 
   /* */
 
-  a.appStartNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : filePath/*programPath*/ })
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
@@ -1213,11 +1213,11 @@ function timeLimitWaitingEnough( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ entry : program }).programPath;
+  let filePath/*programPath*/ = a.program({ entry : program }).filePath/*programPath*/;
 
   /* */
 
-  a.appStartNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : filePath/*programPath*/ })
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
@@ -1282,11 +1282,11 @@ function timeLimitWaitingNotEnough( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ entry : program }).programPath;
+  let filePath/*programPath*/ = a.program({ entry : program }).filePath/*programPath*/;
 
   /* */
 
-  a.appStartNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : filePath/*programPath*/ })
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
@@ -1351,11 +1351,11 @@ function timeCancelBefore( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ entry : program }).programPath;
+  let filePath/*programPath*/ = a.program({ entry : program }).filePath/*programPath*/;
 
   /* */
 
-  a.appStartNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : filePath/*programPath*/ })
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
@@ -1409,11 +1409,11 @@ function timeCancelAfter( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ entry : program }).programPath;
+  let filePath/*programPath*/ = a.program({ entry : program }).filePath/*programPath*/;
 
   /* */
 
-  a.appStartNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : filePath/*programPath*/ })
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
@@ -1468,11 +1468,11 @@ function timeOutExternalMessage( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ entry : program }).programPath;
+  let filePath/*programPath*/ = a.program({ entry : program }).filePath/*programPath*/;
 
   /* */
 
-  a.appStartNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : filePath/*programPath*/ })
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
@@ -1570,11 +1570,11 @@ function timeBegin( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ entry : program }).programPath;
+  let filePath/*programPath*/ = a.program({ entry : program }).filePath/*programPath*/;
 
   /* */
 
-  a.appStartNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : filePath/*programPath*/ })
   .then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
@@ -1625,11 +1625,11 @@ function timeOutCancelWithErrorNotSymbol( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let programPath = a.program({ entry : program1 }).programPath;
+  let filePath/*programPath*/ = a.program({ entry : program1 }).filePath/*programPath*/;
 
   /* */
 
-  a.appStartNonThrowing({ execPath : programPath })
+  a.appStartNonThrowing({ execPath : filePath/*programPath*/ })
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
