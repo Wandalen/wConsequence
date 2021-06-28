@@ -910,16 +910,13 @@ function retry( o )
   o.onError = o.onError || onError;
   let attempt = 1;
   const con = new _.Consequence();
-  const ready = _.take( null );
-  ready.then( () => _run( o ) );
-  ready.finally( ( err, arg ) =>
+  return _run( o )
+  .finally( ( err, arg ) =>
   {
     if( err )
     throw _.err( err );
     return arg;
   });
-
-  return ready;
 
   /* */
 
@@ -928,8 +925,8 @@ function retry( o )
     if( attempt > o.attemptLimit )
     return con.error( _.err( o.err, `\nAttempts is exhausted, made ${ attempt - 1 } attempts` ) );
 
-    con.Try( o.routine )
-    .give( ( err, arg ) =>
+    _.take( null ).then( () => _.Consequence.Try( o.routine ) )
+    .finally( ( err, arg ) =>
     {
       if( err )
       {
@@ -951,7 +948,7 @@ function retry( o )
       }
       if( o.onSuccess && !o.onSuccess( arg ) )
       return _retry( o );
-      con.take( arg );
+      return con.take( arg );
     });
 
     return con;
@@ -962,7 +959,7 @@ function retry( o )
   function _retry( o )
   {
     attempt += 1;
-    _.time.begin( o.attemptDelay, () => _run( o ) );
+    return _.time.out( o.attemptDelay, () => _run( o ) );
   }
 
   /* */
