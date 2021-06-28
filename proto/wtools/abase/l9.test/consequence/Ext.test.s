@@ -120,8 +120,8 @@ function retry( test )
     {
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
-      test.identical( _.strCount( err.message, 'Wrong attempt' ), 2 );
-      test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 1 );
+      var exp = `Wrong attempt\nAttempts is exhausted, made ${ _.retry.defaults.attemptLimit } attempts`;
+      test.identical( err.originalMessage, exp );
       return null;
     };
     return test.shouldThrowErrorAsync( () => _.retry({ routine : () => { throw _.err( 'Wrong attempt' ) } }), onErrorCallback );
@@ -205,8 +205,8 @@ function retryCheckOptionAttemptLimit( test )
     {
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
-      test.identical( _.strCount( err.message, 'Wrong attempt' ), 2 );
-      test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 1 );
+      var exp = `Wrong attempt\nAttempts is exhausted, made 2 attempts`;
+      test.identical( err.originalMessage, exp );
       test.identical( attempts, 2 );
       return null;
     };
@@ -221,8 +221,8 @@ function retryCheckOptionAttemptLimit( test )
     {
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
-      test.identical( _.strCount( err.message, 'Wrong attempt' ), 2 );
-      test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 1 );
+      var exp = `Wrong attempt\nAttempts is exhausted, made 3 attempts`;
+      test.identical( err.originalMessage, exp );
       test.identical( attempts, 3 );
       return null;
     };
@@ -363,8 +363,8 @@ function retryCheckOptionOnError( test )
     {
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
-      test.identical( _.strCount( err.message, 'Wrong attempt' ), 2 );
-      test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 0 );
+      var exp = `Wrong attempt`;
+      test.identical( err.originalMessage, exp );
       return null;
     };
     var o = { routine : () => routine(), onError : ( err ) => { _.errAttend( err ); return false }, attemptLimit : 4 };
@@ -379,8 +379,8 @@ function retryCheckOptionOnError( test )
     {
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
-      test.identical( _.strCount( err.message, 'Wrong attempt' ), 2 );
-      test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 0 );
+      var exp = `Wrong attempt`;
+      test.identical( err.originalMessage, exp );
       return null;
     };
     return _.retry
@@ -406,9 +406,8 @@ function retryCheckOptionOnError( test )
     {
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
-      test.identical( _.strCount( err.message, 'Wrong attempt' ), 2 );
-      test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 0 );
-      test.identical( _.strCount( err.message, 'The error thown in callback {-onError-}' ), 1 );
+      var exp = `Wrong attempt\nThe error thown in callback {-onError-}`;
+      test.identical( err.originalMessage, exp );
       test.identical( attempts, 1 );
       return null;
     };
@@ -473,8 +472,8 @@ function retryCheckOptionOnSucces( test )
     {
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
-      test.identical( _.strCount( err.message, 'Wrong attempt' ), 2 );
-      test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 1 );
+      var exp = `Wrong attempt\nAttempts is exhausted, made 4 attempts`;
+      test.identical( err.originalMessage, exp );
       return null;
     };
     return test.shouldThrowErrorAsync
@@ -523,7 +522,9 @@ function retryCheckNotBlocking( test )
     {
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
-      test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 1 );
+      test.identical( _.strCount( err.originalMessage, 'Launched as "wrong command"' ), 1 );
+      var exp = `Attempts is exhausted, made ${ _.retry.defaults.attemptLimit } attempts`;
+      test.identical( _.strCount( err.originalMessage, exp ), 1 );
       return null;
     };
     return test.shouldThrowErrorAsync( () => _.retry({ routine }), onErrorCallback );
@@ -556,7 +557,8 @@ function retryHandleExternalConsequenceError( test )
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
       console.log( err.originalMessage );
-      test.identical( err.originalMessage, `wrong command\nAttempts is exhausted, made ${ _.retry.defaults.attemptLimit } attempts` );
+      var exp = `wrong command\nAttempts is exhausted, made ${ _.retry.defaults.attemptLimit } attempts`;
+      test.identical( err.originalMessage, exp );
       return null;
     };
     return test.shouldThrowErrorAsync( () => _.retry({ routine }), onErrorCallback );
