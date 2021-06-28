@@ -182,8 +182,6 @@ function init( o )
   {
     self.Counter += 1;
     self.id = self.Counter;
-    // if( self.id === 2 )
-    // debugger;
   }
 
   _.assert( arguments.length === 0 || arguments.length === 1 );
@@ -4192,8 +4190,6 @@ function __handleResourceNow()
       competitor.procedure.end();
 
       // if( !competitor.instant && competitor.keeping )
-      // debugger;
-      // if( !competitor.instant && competitor.keeping )
       // competitor.competitorRoutine._competitorAppend
       // ({
       //   competitorRoutine : self,
@@ -5313,7 +5309,6 @@ function _toPrimitive()
 //
 // function _onDebug( err, arg )
 // {
-//   debugger;
 //   if( err )
 //   throw _.err( err );
 //   return arg;

@@ -515,8 +515,6 @@ function retryCheckNotBlocking( test )
   let shell = __.process.starter({ ready, mode : 'shell' });
   const routine = () => shell( 'wrong command' );
 
-  /* - */
-
   a.ready.then( () =>
   {
     test.case = 'attemptLimit > wrong attempts, onError handle error, returns false, should throw error';
@@ -526,6 +524,39 @@ function retryCheckNotBlocking( test )
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
       test.identical( _.strCount( err.message, /Attempts is exhausted, made . attempts/ ), 1 );
+      return null;
+    };
+    return test.shouldThrowErrorAsync( () => _.retry({ routine }), onErrorCallback );
+  });
+
+  /* - */
+
+  return a.ready;
+}
+
+//
+
+function retryHandleExternalConsequenceError( test )
+{
+  let context = this;
+  let a = context.assetFor( test, false );
+  a.fileProvider.dirMake( a.abs( '.' ) );
+
+  /* */
+
+  let attempts = 0;
+  const routine = () => new _.Consequence().error( 'wrong command' );
+
+  a.ready.then( () =>
+  {
+    test.case = 'attemptLimit > wrong attempts, onError handle error, returns false, should throw error';
+    attempts = 0;
+    var onErrorCallback = ( err, arg ) =>
+    {
+      test.true( _.error.is( err ) );
+      test.identical( arg, undefined );
+      console.log( err.originalMessage );
+      test.identical( err.originalMessage, `wrong command\nAttempts is exhausted, made ${ _.retry.defaults.attemptLimit } attempts` );
       return null;
     };
     return test.shouldThrowErrorAsync( () => _.retry({ routine }), onErrorCallback );
@@ -1698,6 +1729,7 @@ const Proto =
     retryCheckOptionOnError,
     retryCheckOptionOnSucces,
     retryCheckNotBlocking,
+    retryHandleExternalConsequenceError,
 
     uncaughtSyncErrorOnExit,
     uncaughtAsyncErrorOnExit,
