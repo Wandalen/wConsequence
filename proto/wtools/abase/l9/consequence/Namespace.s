@@ -909,6 +909,7 @@ function retry( o )
 
   o.onError = o.onError || onError;
   let attempt = 1;
+  let attemptDelay = o.attemptDelay;
   const con = new _.Consequence();
   return _run( o )
   .finally( ( err, arg ) =>
@@ -958,8 +959,10 @@ function retry( o )
 
   function _retry( o )
   {
+    if( attempt >= 2 )
+    attemptDelay = attemptDelay * o.attemptDelayMultiplier;
     attempt += 1;
-    return _.time.out( o.attemptDelay, () => _run( o ) );
+    return _.time.out( attemptDelay, () => _run( o ) );
   }
 
   /* */
@@ -978,6 +981,7 @@ retry.defaults = /* aaa : cover */ /* Dmytro : covered */
   onSuccess : null,
   attemptLimit : 3,
   attemptDelay : 100,
+  attemptDelayMultiplier : 1,
 };
 
 // --
