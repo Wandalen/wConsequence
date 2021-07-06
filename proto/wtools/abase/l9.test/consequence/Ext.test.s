@@ -308,6 +308,52 @@ function retryCheckOptionAttemptDelay( test )
 
 //
 
+function retryCheckOptionAttemptDelayMultiplier( test )
+{
+  let context = this;
+  let a = context.assetFor( test, false );
+  a.fileProvider.dirMake( a.abs( '.' ) );
+
+  /* */
+
+  let attempts = 0;
+  const routine = ( arg ) =>
+  {
+    if( attempts < 3 )
+    {
+      ++attempts;
+      throw _.err( 'Wrong attempt' );
+    }
+    return arg || true;
+  }
+  const onError = ( err ) => { _.errAttend( err ); return true };
+
+  /* - */
+
+  let start;
+  a.ready.then( () =>
+  {
+    test.case = 'check option attemptDelay';
+    attempts = 0;
+    start = _.time.now();
+    return _.retry({ routine : () => routine(), onError, attemptLimit : 4, attemptDelayMultiplier : 3 });
+  });
+  a.ready.then( ( op ) =>
+  {
+    var spent = _.time.now() - start;
+    test.ge( spent, 3250 );
+    test.identical( op, true );
+    test.identical( attempts, 3 );
+    return null;
+  });
+
+  /* - */
+
+  return a.ready;
+}
+
+//
+
 function retryCheckOptionOnError( test )
 {
   let context = this;
@@ -1728,6 +1774,7 @@ const Proto =
     retry,
     retryCheckOptionAttemptLimit,
     retryCheckOptionAttemptDelay,
+    retryCheckOptionAttemptDelayMultiplier,
     retryCheckOptionOnError,
     retryCheckOptionOnSucces,
     retryCheckNotBlocking,
