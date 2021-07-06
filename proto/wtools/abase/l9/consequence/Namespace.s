@@ -959,8 +959,9 @@ function retry( o )
 
   function _retry( o )
   {
-    attempt += 1;
+    if( attempt >= 2 )
     attemptDelay = attemptDelay * o.attemptDelayMultiplier;
+    attempt += 1;
     return _.time.out( attemptDelay, () => _run( o ) );
   }
 

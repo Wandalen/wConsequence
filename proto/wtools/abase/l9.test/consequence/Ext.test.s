@@ -653,6 +653,7 @@ function uncaughtSyncErrorOnExit( test )
   }
 }
 
+uncaughtSyncErrorOnExit.timeOut = 10000;
 uncaughtSyncErrorOnExit.description =
 `
 Uncaught synchronous error on temrination caught and handled
