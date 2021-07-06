@@ -306,6 +306,8 @@ function retryCheckOptionAttemptDelay( test )
   return a.ready;
 }
 
+retryCheckOptionAttemptDelay.timeOut = 10000;
+
 //
 
 function retryCheckOptionAttemptDelayMultiplier( test )
@@ -336,7 +338,7 @@ function retryCheckOptionAttemptDelayMultiplier( test )
     test.case = 'check option attemptDelay';
     attempts = 0;
     start = _.time.now();
-    return _.retry({ routine : () => routine(), onError, attemptLimit : 4, attemptDelayMultiplier : 3 });
+    return _.retry({ routine : () => routine(), onError, attemptLimit : 4, attemptDelay : 250, attemptDelayMultiplier : 3 });
   });
   a.ready.then( ( op ) =>
   {
@@ -351,6 +353,8 @@ function retryCheckOptionAttemptDelayMultiplier( test )
 
   return a.ready;
 }
+
+retryCheckOptionAttemptDelayMultiplier.timeOut = 10000;
 
 //
 
