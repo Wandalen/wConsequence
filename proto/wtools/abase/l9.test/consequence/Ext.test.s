@@ -690,6 +690,7 @@ function uncaughtAsyncErrorOnExit( test )
   }
 }
 
+uncaughtAsyncErrorOnExit.timeOut = 10000;
 uncaughtAsyncErrorOnExit.description =
 `
 Uncaught synchronous error on temrination caught and handled
