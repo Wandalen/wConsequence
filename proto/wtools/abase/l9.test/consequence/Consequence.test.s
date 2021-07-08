@@ -5477,7 +5477,7 @@ function timeLimitRoutine( test )
   let t = context.t1/4;
   let ready = new _.Consequence().take( null )
 
-  /* */
+  /* - */
 
   .then( function timeLimit1( arg )
   {
@@ -5503,7 +5503,7 @@ function timeLimitRoutine( test )
       test.identical( con.competitorsCount(), 3 );
     });
 
-    _.time.out( t*7, function()
+    _.time.out( t*10, function()
     {
       test.identical( con.argumentsCount(), 1 );
       test.identical( con.errorsCount(), 0 );
@@ -5744,7 +5744,7 @@ function timeLimitRoutine( test )
     })
   })
 
-  /* */
+  /* - */
 
   return ready;
 }
