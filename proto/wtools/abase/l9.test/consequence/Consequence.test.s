@@ -5009,7 +5009,7 @@ function timeLimitErrorSplit( test )
   {
     test.case = 'timeOutError, not enough time';
 
-    var con = _.time.outError( t*8 );
+    var con = _.time.outError( t*10 );
     var con2 = con.timeLimitErrorSplit( t*4 );
 
     test.identical( con.argumentsCount(), 0 );
@@ -5035,7 +5035,7 @@ function timeLimitErrorSplit( test )
       test.true( arg === undefined );
     });
 
-    _.time.out( t*6, function()
+    _.time.out( t*8, function()
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 0 );
@@ -17588,7 +17588,7 @@ function orTakingWithLater( test )
     test.identical( con2.argumentsCount(), 0 );
     test.identical( con2.competitorsCount(), 0 );
 
-    con1.takeLater( context.t1*2, 1 );
+    con1.takeLater( context.t1*4, 1 );
     con2.takeLater( context.t1/2, 2 );
 
     con.finallyGive( ( err, arg ) =>
@@ -17614,7 +17614,7 @@ function orTakingWithLater( test )
       return null;
     });
 
-    return _.time.out( context.t1*2, function( timer )
+    return _.time.out( context.t1*8, function( timer )
     {
       test.identical( got, 0 );
       test.identical( con.errorsCount(), 0 );
@@ -17670,7 +17670,7 @@ function orTakingWithLater( test )
     test.identical( con2.argumentsCount(), 0 );
     test.identical( con2.competitorsCount(), 1 );
 
-    con1.takeLater( context.t1, 1 );
+    con1.takeLater( context.t1*4, 1 );
     con2.takeLater( context.t1/2, 2 );
 
     con.finallyGive( ( err, arg ) =>
@@ -17698,7 +17698,7 @@ function orTakingWithLater( test )
 
     con.take( 0 );
 
-    return _.time.out( context.t1*2, function( timer )
+    return _.time.out( context.t1*8, function( timer )
     {
       test.identical( got, 0 );
       test.identical( con.errorsCount(), 0 );
@@ -17748,7 +17748,7 @@ function orTakingWithLater( test )
     test.identical( con2.argumentsCount(), 0 );
     test.identical( con2.competitorsCount(), 1 );
 
-    con1.takeLater( context.t1, 1 );
+    con1.takeLater( context.t1*4, 1 );
     con2.takeLater( context.t1/2, 2 );
 
     con.finallyGive( ( err, arg ) =>
@@ -17785,9 +17785,9 @@ function orTakingWithLater( test )
       return got;
     });
 
-    con.takeLater( context.t1*3/2, 0 );
+    con.takeLater( context.t1*8, 0 );
 
-    return _.time.out( context.t1*2, function( timer )
+    return _.time.out( context.t1*12, function( timer )
     {
       test.identical( got, 102 );
       test.identical( con.errorsCount(), 0 );
@@ -17802,7 +17802,7 @@ function orTakingWithLater( test )
       test.true( _.timerIs( timer ) );
       con.competitorsCancel();
     });
-  })
+  });
 
   /* */
 
