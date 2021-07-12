@@ -12275,7 +12275,7 @@ function alsoKeepThrowingBeforeAsync( test )
         throw _.errAttend( 'error1' );
       }
       else
-      return _.time.out( context.t1, () =>
+      return _.time.out( context.t1*2, () =>
       {
         track.push( 'error1' );
         throw _.errAttend( 'error1' );
@@ -12284,14 +12284,14 @@ function alsoKeepThrowingBeforeAsync( test )
 
     ready[ methodName ]( () =>
     {
-      return _.time.out( context.t1*5, () =>
+      return _.time.out( context.t1*10, () =>
       {
         track.push( 'a' );
         return 'a'
       });
     });
 
-    let b = _.time.out( context.t1/20, () =>
+    let b = _.time.out( context.t1/10, () =>
     {
       track.push( 'b' );
       return 'b'
@@ -12300,7 +12300,7 @@ function alsoKeepThrowingBeforeAsync( test )
 
     ready[ methodName ]( () =>
     {
-      return _.time.out( context.t1*5/2, () =>
+      return _.time.out( context.t1*5, () =>
       {
         track.push( 'context' );
         return 'context'
@@ -12324,7 +12324,7 @@ function alsoKeepThrowingBeforeAsync( test )
     ready.take( 0 );
     track.push( '2' );
 
-    return _.time.out( context.t1*10, () =>
+    return _.time.out( context.t1*20, () =>
     {
       test.true( _.errIs( thenArg ) );
       if( syncThrowing )
@@ -12334,7 +12334,6 @@ function alsoKeepThrowingBeforeAsync( test )
       test.identical( b.resourcesCount(), methodName === 'alsoKeep' ? 1 : 0 );
       test.identical( b.errorsCount(), 0 );
     });
-
   }
 
 }
