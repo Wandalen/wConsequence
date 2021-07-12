@@ -653,7 +653,7 @@ function uncaughtSyncErrorOnExit( test )
   }
 }
 
-uncaughtSyncErrorOnExit.timeOut = 10000;
+uncaughtSyncErrorOnExit.timeOut = 20000;
 uncaughtSyncErrorOnExit.description =
 `
 Uncaught synchronous error on temrination caught and handled
@@ -690,7 +690,7 @@ function uncaughtAsyncErrorOnExit( test )
   }
 }
 
-uncaughtAsyncErrorOnExit.timeOut = 10000;
+uncaughtAsyncErrorOnExit.timeOut = 20000;
 uncaughtAsyncErrorOnExit.description =
 `
 Uncaught synchronous error on temrination caught and handled
