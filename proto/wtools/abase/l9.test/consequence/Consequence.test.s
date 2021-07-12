@@ -4858,7 +4858,7 @@ function timeLimitErrorSplit( test )
     test.case = 'timeOut, enough time';
 
     var con = _.time.out( t, 'a' );
-    var con2 = con.timeLimitErrorSplit( t*3 );
+    var con2 = con.timeLimitErrorSplit( t*4 );
 
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
@@ -4875,7 +4875,7 @@ function timeLimitErrorSplit( test )
       test.true( arg === 'a' );
     });
 
-    _.time.out( t, function()
+    _.time.out( t*2, function()
     {
       test.identical( con.argumentsCount(), 1 );
       test.identical( con.errorsCount(), 0 );
@@ -4885,7 +4885,7 @@ function timeLimitErrorSplit( test )
       test.identical( con2.competitorsCount(), 0 );
     });
 
-    return _.time.out( t*5, function()
+    return _.time.out( t*8, function()
     {
       test.true( con.argumentsGet()[ 0 ] === 'a' );
       test.true( con2.argumentsGet()[ 0 ] === 'a' );
@@ -4923,7 +4923,7 @@ function timeLimitErrorSplit( test )
       test.true( arg === undefined );
     });
 
-    _.time.out( t*4, function()
+    _.time.out( t*6, function()
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 0 );
@@ -4954,7 +4954,7 @@ function timeLimitErrorSplit( test )
     test.case = 'timeOutError, enough time';
 
     var con = _.time.outError( t );
-    var con2 = con.timeLimitErrorSplit( t*3 );
+    var con2 = con.timeLimitErrorSplit( t*4 );
 
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
@@ -4979,7 +4979,7 @@ function timeLimitErrorSplit( test )
       test.true( arg === undefined );
     });
 
-    _.time.out( t, function()
+    _.time.out( t*2, function()
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 1 );
@@ -4989,7 +4989,7 @@ function timeLimitErrorSplit( test )
       test.identical( con2.competitorsCount(), 0 );
     });
 
-    return _.time.out( t*5, function()
+    return _.time.out( t*8, function()
     {
       test.identical( con.errorsGet()[ 0 ].reason, 'time out' );
       test.identical( con.argumentsCount(), 0 );
@@ -5035,7 +5035,7 @@ function timeLimitErrorSplit( test )
       test.true( arg === undefined );
     });
 
-    _.time.out( t*4, function()
+    _.time.out( t*6, function()
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 0 );
@@ -5063,6 +5063,8 @@ function timeLimitErrorSplit( test )
 
   return ready;
 }
+
+timeLimitErrorSplit.timeOut = 10000;
 
 //
 
