@@ -5754,7 +5754,7 @@ function timeLimitRoutine( test )
 function timeLimitErrorRoutine( test )
 {
   let context = this;
-  let t = context.t1/4;
+  let t = context.t1/2;
   let ready = new _.Consequence().take( null )
 
   /* */
@@ -5783,7 +5783,7 @@ function timeLimitErrorRoutine( test )
       test.identical( con.competitorsCount(), 3 );
     });
 
-    _.time.out( t*7, function()
+    _.time.out( t*10, function()
     {
       test.identical( con.argumentsCount(), 1 );
       test.identical( con.errorsCount(), 0 );
@@ -5828,7 +5828,7 @@ function timeLimitErrorRoutine( test )
       test.identical( con.competitorsCount(), 3 );
     });
 
-    _.time.out( t*10, function()
+    _.time.out( t*12, function()
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 1 );
@@ -5866,21 +5866,21 @@ function timeLimitErrorRoutine( test )
       _.errAttend( err );
     });
 
-    _.time.out( t*10, function()
+    _.time.out( t*8, function()
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 0 );
       test.identical( con.competitorsCount(), 5 );
     });
 
-    _.time.out( t*20, function()
+    _.time.out( t*22, function()
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 0 );
       test.identical( con.competitorsCount(), 3 );
     });
 
-    return _.time.out( t*50, function()
+    return _.time.out( t*30, function()
     {
       test.identical( con.errorsGet()[ 0 ].reason, 'time limit' );
       test.identical( con.argumentsCount(), 0 );
@@ -5918,7 +5918,7 @@ function timeLimitErrorRoutine( test )
       test.identical( con.competitorsCount(), 0 );
     });
 
-    _.time.out( t*7, function()
+    _.time.out( t*8, function()
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 1 );
@@ -5963,7 +5963,7 @@ function timeLimitErrorRoutine( test )
       test.identical( con.competitorsCount(), 0 );
     });
 
-    _.time.out( t*10, function()
+    _.time.out( t*12, function()
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 1 );
@@ -6001,21 +6001,21 @@ function timeLimitErrorRoutine( test )
       test.true( arg === undefined );
     });
 
-    _.time.out( t*10, function()
+    _.time.out( t*12, function()
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 0 );
       test.identical( con.competitorsCount(), 5 );
     });
 
-    _.time.out( t*20, function()
+    _.time.out( t*22, function()
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 1 );
       test.identical( con.competitorsCount(), 0 );
     });
 
-    return _.time.out( t*50, function()
+    return _.time.out( t*30, function()
     {
       test.identical( con.errorsGet()[ 0 ].reason, 'time out' );
       test.identical( con.argumentsCount(), 0 );
