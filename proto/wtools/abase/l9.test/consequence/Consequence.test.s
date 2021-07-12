@@ -4858,7 +4858,7 @@ function timeLimitErrorSplit( test )
     test.case = 'timeOut, enough time';
 
     var con = _.time.out( t, 'a' );
-    var con2 = con.timeLimitErrorSplit( t*3 );
+    var con2 = con.timeLimitErrorSplit( t*4 );
 
     test.identical( con.argumentsCount(), 0 );
     test.identical( con.errorsCount(), 0 );
@@ -4875,7 +4875,7 @@ function timeLimitErrorSplit( test )
       test.true( arg === 'a' );
     });
 
-    _.time.out( t, function()
+    _.time.out( t*2, function()
     {
       test.identical( con.argumentsCount(), 1 );
       test.identical( con.errorsCount(), 0 );
@@ -4885,7 +4885,7 @@ function timeLimitErrorSplit( test )
       test.identical( con2.competitorsCount(), 0 );
     });
 
-    return _.time.out( t*5, function()
+    return _.time.out( t*8, function()
     {
       test.true( con.argumentsGet()[ 0 ] === 'a' );
       test.true( con2.argumentsGet()[ 0 ] === 'a' );
@@ -4923,7 +4923,7 @@ function timeLimitErrorSplit( test )
       test.true( arg === undefined );
     });
 
-    _.time.out( t*4, function()
+    _.time.out( t*6, function()
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 0 );
@@ -4954,62 +4954,6 @@ function timeLimitErrorSplit( test )
     test.case = 'timeOutError, enough time';
 
     var con = _.time.outError( t );
-    var con2 = con.timeLimitErrorSplit( t*3 );
-
-    test.identical( con.argumentsCount(), 0 );
-    test.identical( con.errorsCount(), 0 );
-    test.identical( con.competitorsCount(), 2 );
-    test.identical( con2.argumentsCount(), 0 );
-    test.identical( con2.errorsCount(), 0 );
-    test.identical( con2.competitorsCount(), 2 );
-
-    con.tap( ( err, arg ) =>
-    {
-      if( err )
-      _.errAttend( err );
-      test.true( _.errIs( err ) );
-      test.true( arg === undefined );
-    });
-
-    con2.tap( ( err, arg ) =>
-    {
-      if( err )
-      _.errAttend( err );
-      test.true( _.errIs( err ) );
-      test.true( arg === undefined );
-    });
-
-    _.time.out( t, function()
-    {
-      test.identical( con.argumentsCount(), 0 );
-      test.identical( con.errorsCount(), 1 );
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con2.argumentsCount(), 0 );
-      test.identical( con2.errorsCount(), 1 );
-      test.identical( con2.competitorsCount(), 0 );
-    });
-
-    return _.time.out( t*5, function()
-    {
-      test.identical( con.errorsGet()[ 0 ].reason, 'time out' );
-      test.identical( con.argumentsCount(), 0 );
-      test.identical( con.errorsCount(), 1 );
-      test.identical( con.competitorsCount(), 0 );
-      test.identical( con2.errorsGet()[ 0 ].reason, 'time out' );
-      test.identical( con2.argumentsCount(), 0 );
-      test.identical( con2.errorsCount(), 1 );
-      test.identical( con2.competitorsCount(), 0 );
-      return null;
-    })
-  })
-
-  /* */
-
-  .then( function timeLimit2( arg )
-  {
-    test.case = 'timeOutError, not enough time';
-
-    var con = _.time.outError( t*8 );
     var con2 = con.timeLimitErrorSplit( t*4 );
 
     test.identical( con.argumentsCount(), 0 );
@@ -5035,7 +4979,63 @@ function timeLimitErrorSplit( test )
       test.true( arg === undefined );
     });
 
-    _.time.out( t*4, function()
+    _.time.out( t*2, function()
+    {
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.errorsCount(), 1 );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con2.argumentsCount(), 0 );
+      test.identical( con2.errorsCount(), 1 );
+      test.identical( con2.competitorsCount(), 0 );
+    });
+
+    return _.time.out( t*8, function()
+    {
+      test.identical( con.errorsGet()[ 0 ].reason, 'time out' );
+      test.identical( con.argumentsCount(), 0 );
+      test.identical( con.errorsCount(), 1 );
+      test.identical( con.competitorsCount(), 0 );
+      test.identical( con2.errorsGet()[ 0 ].reason, 'time out' );
+      test.identical( con2.argumentsCount(), 0 );
+      test.identical( con2.errorsCount(), 1 );
+      test.identical( con2.competitorsCount(), 0 );
+      return null;
+    })
+  })
+
+  /* */
+
+  .then( function timeLimit2( arg )
+  {
+    test.case = 'timeOutError, not enough time';
+
+    var con = _.time.outError( t*10 );
+    var con2 = con.timeLimitErrorSplit( t*4 );
+
+    test.identical( con.argumentsCount(), 0 );
+    test.identical( con.errorsCount(), 0 );
+    test.identical( con.competitorsCount(), 2 );
+    test.identical( con2.argumentsCount(), 0 );
+    test.identical( con2.errorsCount(), 0 );
+    test.identical( con2.competitorsCount(), 2 );
+
+    con.tap( ( err, arg ) =>
+    {
+      if( err )
+      _.errAttend( err );
+      test.true( _.errIs( err ) );
+      test.true( arg === undefined );
+    });
+
+    con2.tap( ( err, arg ) =>
+    {
+      if( err )
+      _.errAttend( err );
+      test.true( _.errIs( err ) );
+      test.true( arg === undefined );
+    });
+
+    _.time.out( t*8, function()
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 0 );
@@ -5078,8 +5078,8 @@ function timeLimitConsequence( test )
   {
     test.case = 'timeOut a timeLimit timeLimit-enough';
 
-    var con = _.time.out( t*3 );
-    var con0 = _.time.out( t*5, 'a' );
+    var con = _.time.out( t*2 );
+    var con0 = _.time.out( t*4, 'a' );
     con.timeLimit( t*10, con0 );
 
     test.identical( con0.argumentsCount(), 0 );
@@ -5134,9 +5134,9 @@ function timeLimitConsequence( test )
   {
     test.case = 'timeOut a timeLimit-not-enough';
 
-    var con = _.time.out( t*3 );
+    var con = _.time.out( t*2 );
     var con0 = _.time.out( t*10, 'a' );
-    con.timeLimit( t*3, con0 );
+    con.timeLimit( t*4, con0 );
 
     test.identical( con0.argumentsCount(), 0 );
     test.identical( con0.errorsCount(), 0 );
@@ -5202,8 +5202,8 @@ function timeLimitConsequence( test )
   {
     test.case = 'timeOut a-timeOutError timeLimit-enough';
 
-    var con = _.time.out( t*3 );
-    var con0 = _.time.outError( t*5 );
+    var con = _.time.out( t*2 );
+    var con0 = _.time.outError( t*4 );
     con.timeLimit( t*10, con0 );
 
     test.identical( con0.argumentsCount(), 0 );
@@ -5260,9 +5260,9 @@ function timeLimitConsequence( test )
   {
     test.case = 'timeOut a-timeOutError timeLimit-not-enough';
 
-    var con = _.time.out( t*3 );
+    var con = _.time.out( t*2 );
     var con0 = _.time.outError( t*10 );
-    con.timeLimit( t*3, con0 );
+    con.timeLimit( t*4, con0 );
 
     test.identical( con0.argumentsCount(), 0 );
     test.identical( con0.errorsCount(), 0 );
@@ -5336,8 +5336,8 @@ function timeLimitConsequence( test )
   {
     test.case = 'timeOutError a timeLimit-enough';
 
-    var con = _.time.outError( t*3 );
-    var con0 = _.time.out( t*5, 'a' );
+    var con = _.time.outError( t*2 );
+    var con0 = _.time.out( t*4, 'a' );
     con.timeLimit( t*10, con0 );
 
     test.identical( con0.argumentsCount(), 0 );
@@ -5394,9 +5394,9 @@ function timeLimitConsequence( test )
   {
     test.case = 'timeOutError a timeLimit-not-enough';
 
-    var con = _.time.outError( t*3 );
+    var con = _.time.outError( t*2 );
     var con0 = _.time.out( t*10 );
-    con.timeLimit( t*3, con0 );
+    con.timeLimit( t*4, con0 );
 
     test.identical( con0.argumentsCount(), 0 );
     test.identical( con0.errorsCount(), 0 );
@@ -5754,7 +5754,7 @@ function timeLimitRoutine( test )
 function timeLimitErrorRoutine( test )
 {
   let context = this;
-  let t = context.t1/4;
+  let t = context.t1/2;
   let ready = new _.Consequence().take( null )
 
   /* */
@@ -5783,7 +5783,7 @@ function timeLimitErrorRoutine( test )
       test.identical( con.competitorsCount(), 3 );
     });
 
-    _.time.out( t*7, function()
+    _.time.out( t*10, function()
     {
       test.identical( con.argumentsCount(), 1 );
       test.identical( con.errorsCount(), 0 );
@@ -5828,7 +5828,7 @@ function timeLimitErrorRoutine( test )
       test.identical( con.competitorsCount(), 3 );
     });
 
-    _.time.out( t*10, function()
+    _.time.out( t*12, function()
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 1 );
@@ -5866,21 +5866,21 @@ function timeLimitErrorRoutine( test )
       _.errAttend( err );
     });
 
-    _.time.out( t*10, function()
+    _.time.out( t*8, function()
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 0 );
       test.identical( con.competitorsCount(), 5 );
     });
 
-    _.time.out( t*20, function()
+    _.time.out( t*22, function()
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 0 );
       test.identical( con.competitorsCount(), 3 );
     });
 
-    return _.time.out( t*50, function()
+    return _.time.out( t*30, function()
     {
       test.identical( con.errorsGet()[ 0 ].reason, 'time limit' );
       test.identical( con.argumentsCount(), 0 );
@@ -5918,7 +5918,7 @@ function timeLimitErrorRoutine( test )
       test.identical( con.competitorsCount(), 0 );
     });
 
-    _.time.out( t*7, function()
+    _.time.out( t*8, function()
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 1 );
@@ -5963,7 +5963,7 @@ function timeLimitErrorRoutine( test )
       test.identical( con.competitorsCount(), 0 );
     });
 
-    _.time.out( t*10, function()
+    _.time.out( t*12, function()
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 1 );
@@ -6001,21 +6001,21 @@ function timeLimitErrorRoutine( test )
       test.true( arg === undefined );
     });
 
-    _.time.out( t*10, function()
+    _.time.out( t*12, function()
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 0 );
       test.identical( con.competitorsCount(), 5 );
     });
 
-    _.time.out( t*20, function()
+    _.time.out( t*22, function()
     {
       test.identical( con.argumentsCount(), 0 );
       test.identical( con.errorsCount(), 1 );
       test.identical( con.competitorsCount(), 0 );
     });
 
-    return _.time.out( t*50, function()
+    return _.time.out( t*30, function()
     {
       test.identical( con.errorsGet()[ 0 ].reason, 'time out' );
       test.identical( con.argumentsCount(), 0 );
@@ -12275,7 +12275,7 @@ function alsoKeepThrowingBeforeAsync( test )
         throw _.errAttend( 'error1' );
       }
       else
-      return _.time.out( context.t1, () =>
+      return _.time.out( context.t1*2, () =>
       {
         track.push( 'error1' );
         throw _.errAttend( 'error1' );
@@ -12284,14 +12284,14 @@ function alsoKeepThrowingBeforeAsync( test )
 
     ready[ methodName ]( () =>
     {
-      return _.time.out( context.t1*5, () =>
+      return _.time.out( context.t1*10, () =>
       {
         track.push( 'a' );
         return 'a'
       });
     });
 
-    let b = _.time.out( context.t1/20, () =>
+    let b = _.time.out( context.t1/10, () =>
     {
       track.push( 'b' );
       return 'b'
@@ -12300,7 +12300,7 @@ function alsoKeepThrowingBeforeAsync( test )
 
     ready[ methodName ]( () =>
     {
-      return _.time.out( context.t1*5/2, () =>
+      return _.time.out( context.t1*5, () =>
       {
         track.push( 'context' );
         return 'context'
@@ -12324,7 +12324,7 @@ function alsoKeepThrowingBeforeAsync( test )
     ready.take( 0 );
     track.push( '2' );
 
-    return _.time.out( context.t1*10, () =>
+    return _.time.out( context.t1*20, () =>
     {
       test.true( _.errIs( thenArg ) );
       if( syncThrowing )
@@ -12334,7 +12334,6 @@ function alsoKeepThrowingBeforeAsync( test )
       test.identical( b.resourcesCount(), methodName === 'alsoKeep' ? 1 : 0 );
       test.identical( b.errorsCount(), 0 );
     });
-
   }
 
 }
@@ -17589,7 +17588,7 @@ function orTakingWithLater( test )
     test.identical( con2.argumentsCount(), 0 );
     test.identical( con2.competitorsCount(), 0 );
 
-    con1.takeLater( context.t1*2, 1 );
+    con1.takeLater( context.t1*4, 1 );
     con2.takeLater( context.t1/2, 2 );
 
     con.finallyGive( ( err, arg ) =>
@@ -17615,7 +17614,7 @@ function orTakingWithLater( test )
       return null;
     });
 
-    return _.time.out( context.t1*2, function( timer )
+    return _.time.out( context.t1*8, function( timer )
     {
       test.identical( got, 0 );
       test.identical( con.errorsCount(), 0 );
@@ -17671,7 +17670,7 @@ function orTakingWithLater( test )
     test.identical( con2.argumentsCount(), 0 );
     test.identical( con2.competitorsCount(), 1 );
 
-    con1.takeLater( context.t1, 1 );
+    con1.takeLater( context.t1*4, 1 );
     con2.takeLater( context.t1/2, 2 );
 
     con.finallyGive( ( err, arg ) =>
@@ -17699,7 +17698,7 @@ function orTakingWithLater( test )
 
     con.take( 0 );
 
-    return _.time.out( context.t1*2, function( timer )
+    return _.time.out( context.t1*8, function( timer )
     {
       test.identical( got, 0 );
       test.identical( con.errorsCount(), 0 );
@@ -17749,7 +17748,7 @@ function orTakingWithLater( test )
     test.identical( con2.argumentsCount(), 0 );
     test.identical( con2.competitorsCount(), 1 );
 
-    con1.takeLater( context.t1, 1 );
+    con1.takeLater( context.t1*4, 1 );
     con2.takeLater( context.t1/2, 2 );
 
     con.finallyGive( ( err, arg ) =>
@@ -17786,9 +17785,9 @@ function orTakingWithLater( test )
       return got;
     });
 
-    con.takeLater( context.t1*3/2, 0 );
+    con.takeLater( context.t1*8, 0 );
 
-    return _.time.out( context.t1*2, function( timer )
+    return _.time.out( context.t1*12, function( timer )
     {
       test.identical( got, 102 );
       test.identical( con.errorsCount(), 0 );
@@ -17803,7 +17802,7 @@ function orTakingWithLater( test )
       test.true( _.timerIs( timer ) );
       con.competitorsCancel();
     });
-  })
+  });
 
   /* */
 
