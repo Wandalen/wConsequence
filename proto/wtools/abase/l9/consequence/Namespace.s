@@ -902,6 +902,9 @@ let sessionsRun = _.routine.uniteCloning_replaceByUnite( sessionsRun_head, sessi
 function retry( o )
 {
   _.assert( arguments.length === 1, 'Expects exactly one argument.' );
+
+  if( o.defaults )
+  _.mapSupplementNulls( o, o.defaults );
   _.routine.options( retry, o );
   _.assert( _.routine.is( o.routine ), 'Expects routine {-o.routine-} to run.' );
   _.assert( o.attemptLimit > 0 );
@@ -982,6 +985,7 @@ retry.defaults = /* aaa : cover */ /* Dmytro : covered */
   attemptLimit : 3,
   attemptDelay : 100,
   attemptDelayMultiplier : 1,
+  defaults : null,
 };
 
 // --
