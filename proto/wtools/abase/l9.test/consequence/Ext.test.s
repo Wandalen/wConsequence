@@ -621,6 +621,118 @@ function retryHandleExternalConsequenceError( test )
 
 //
 
+function retryCheckOptionDefaults( test )
+{
+  let context = this;
+  let a = context.assetFor( test, false );
+  a.fileProvider.dirMake( a.abs( '.' ) );
+
+  /* - */
+
+  let attempts = 0;
+  const routine = ( arg ) =>
+  {
+    if( attempts < 3 )
+    {
+      ++attempts;
+      throw _.err( 'Wrong attempt' );
+    }
+    return arg || true;
+  }
+  const onError = ( err ) => { _.errAttend( err ); return true };
+
+  /* */
+
+  a.ready.then( () =>
+  {
+    test.case = 'attemptLimit from option';
+    attempts = 0;
+    var onErrorCallback = ( err, arg ) =>
+    {
+      test.true( _.error.is( err ) );
+      test.identical( arg, undefined );
+      console.log( err.originalMessage );
+      var exp = `Wrong attempt\nAttempts is exhausted, made 2 attempts`;
+      test.identical( err.originalMessage, exp );
+      return null;
+    };
+    var defaults =
+    {
+      attemptLimit : 5,
+      attemptDelay : 500,
+    };
+    return test.shouldThrowErrorAsync( () => _.retry({ routine, attemptLimit : 2, defaults }), onErrorCallback );
+  });
+
+  /* */
+
+  a.ready.then( () =>
+  {
+    test.case = 'attemptLimit from map `defaults`';
+    attempts = 0;
+    var onErrorCallback = ( err, arg ) =>
+    {
+      test.true( _.error.is( err ) );
+      test.identical( arg, undefined );
+      console.log( err.originalMessage );
+      var exp = `Wrong attempt\nAttempts is exhausted, made 2 attempts`;
+      test.identical( err.originalMessage, exp );
+      return null;
+    };
+    var defaults =
+    {
+      attemptLimit : 2,
+      attemptDelay : 500,
+    };
+    return test.shouldThrowErrorAsync( () => _.retry({ routine, defaults }), onErrorCallback );
+  });
+
+  /* */
+
+  a.ready.then( () =>
+  {
+    test.case = 'attemptLimit from routine defaults';
+    attempts = 0;
+    var onErrorCallback = ( err, arg ) =>
+    {
+      test.true( _.error.is( err ) );
+      test.identical( arg, undefined );
+      console.log( err.originalMessage );
+      var exp = `Wrong attempt\nAttempts is exhausted, made ${ _.retry.defaults.attemptLimit } attempts`;
+      test.identical( err.originalMessage, exp );
+      return null;
+    };
+    var defaults =
+    {
+      attemptDelay : 500,
+    };
+    return test.shouldThrowErrorAsync( () => _.retry({ routine, defaults }), onErrorCallback );
+  });
+
+  /* */
+
+  if( Config.debug )
+  {
+    a.ready.then( () =>
+    {
+      test.case = 'defaults has wrong value';
+      var defaults = { attemptLimit : null };
+      test.shouldThrowErrorSync( () => _.retry({ routine, defaults }) );
+
+      test.case = 'defaults has unknown option';
+      var defaults = { attemptLimit : 3, unknown : 1 };
+      test.shouldThrowErrorSync( () => _.retry({ routine, defaults }) );
+      return null;
+    });
+  }
+
+  /* - */
+
+  return a.ready;
+}
+
+//
+
 function uncaughtSyncErrorOnExit( test )
 {
   let context = this;
@@ -1785,6 +1897,7 @@ const Proto =
     retryCheckOptionOnSucces,
     retryCheckNotBlocking,
     retryHandleExternalConsequenceError,
+    retryCheckOptionDefaults,
 
     uncaughtSyncErrorOnExit,
     uncaughtAsyncErrorOnExit,
