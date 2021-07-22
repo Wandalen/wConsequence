@@ -1075,11 +1075,11 @@ function asyncStackInConsequenceTrivial( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let filePath/*programPath*/ = a.program({ entry : program }).filePath/*programPath*/;
+  let filePath = a.program({ entry : program }).filePath;
 
-  /* */
+  /* - */
 
-  a.appStartNonThrowing({ execPath : filePath/*programPath*/ })
+  a.appStartNonThrowing({ execPath : filePath })
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
@@ -1091,14 +1091,16 @@ function asyncStackInConsequenceTrivial( test )
     return null;
   });
 
-  /* */
+  /* - */
 
   return a.ready;
+
+  /* */
 
   function program()
   {
     const _ = require( toolsPath );
-    _.include( 'wFiles' );
+    _.include( 'wProcess' );
     _.include( 'wConsequence' );
     _.time.out( context.t1*3/2, () =>
     {
@@ -1106,14 +1108,13 @@ function asyncStackInConsequenceTrivial( test )
       return null;
     });
   }
-
 }
 
 asyncStackInConsequenceTrivial.timeOut = 30000;
 asyncStackInConsequenceTrivial.description =
 `
 stack has async substack
-`
+`;
 
 //
 
@@ -1121,11 +1122,11 @@ function asyncStackInConsequenceThen( test )
 {
   let context = this;
   let a = context.assetFor( test, false );
-  let filePath/*programPath*/ = a.program({ entry : program }).filePath/*programPath*/;
+  let filePath = a.program({ entry : program }).filePath;
 
-  /* */
+  /* - */
 
-  a.appStartNonThrowing({ execPath : filePath/*programPath*/ })
+  a.appStartNonThrowing({ execPath : filePath })
   .then( ( op ) =>
   {
     test.notIdentical( op.exitCode, 0 );
@@ -1134,14 +1135,16 @@ function asyncStackInConsequenceThen( test )
     return null;
   });
 
-  /* */
+  /* - */
 
   return a.ready;
+
+  /* */
 
   function program()
   {
     const _ = require( toolsPath );
-    _.include( 'wFiles' );
+    _.include( 'wProcess' );
     _.include( 'wConsequence' );
 
     var con = _.Consequence()
@@ -1163,16 +1166,14 @@ function asyncStackInConsequenceThen( test )
       console.log( 'sourcePath::timeout ' + _.Procedure.ActiveProcedure._sourcePath );
       con.take( 'timeout1' );
     });
-
   }
-
 }
 
 asyncStackInConsequenceThen.timeOut = 30000;
 asyncStackInConsequenceThen.description =
 `
 each callback has its own stack
-`
+`;
 
 //
 
