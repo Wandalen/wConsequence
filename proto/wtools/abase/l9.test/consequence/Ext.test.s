@@ -606,7 +606,6 @@ function retryHandleExternalConsequenceError( test )
     {
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
-      console.log( err.originalMessage );
       var exp = `wrong command\nAttempts is exhausted, made ${ _.retry.defaults.attemptLimit } attempts`;
       test.identical( err.originalMessage, exp );
       return null;
@@ -651,7 +650,6 @@ function retryCheckOptionDefaults( test )
     {
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
-      console.log( err.originalMessage );
       var exp = `Wrong attempt\nAttempts is exhausted, made 2 attempts`;
       test.identical( err.originalMessage, exp );
       return null;
@@ -674,7 +672,6 @@ function retryCheckOptionDefaults( test )
     {
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
-      console.log( err.originalMessage );
       var exp = `Wrong attempt\nAttempts is exhausted, made 2 attempts`;
       test.identical( err.originalMessage, exp );
       return null;
@@ -697,7 +694,6 @@ function retryCheckOptionDefaults( test )
     {
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
-      console.log( err.originalMessage );
       var exp = `Wrong attempt\nAttempts is exhausted, made ${ _.retry.defaults.attemptLimit } attempts`;
       test.identical( err.originalMessage, exp );
       return null;
@@ -730,6 +726,90 @@ function retryCheckOptionDefaults( test )
 
   return a.ready;
 }
+
+//
+
+function retryCheckOptionLogger( test )
+{
+  let context = this;
+  let a = context.assetFor( test, false );
+  let filePath;
+
+  /* - */
+
+  a.ready.then( () =>
+  {
+    test.case = 'verbosity < 4';
+    filePath = a.program({ entry : testApp, locals : { logger : 2 } }).filePath;
+    return null;
+  });
+  a.shell( `node ${ filePath }` );
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op.exitCode, 0 );
+    test.identical( op.output, '' );
+    return null;
+  });
+
+  /* */
+
+  a.ready.then( () =>
+  {
+    test.case = 'verbosity === 4';
+    filePath = a.program({ entry : testApp, locals : { logger : 4 } }).filePath;
+    return null;
+  });
+  a.shell( `node ${ filePath }` );
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, 'Attempt runned at : ' ), 4 );
+    var lines = op.output.split( '\n' );
+    var time1 = _.number.from( lines[ 0 ].match( /\d+/ )[ 0 ] );
+    var time2 = _.number.from( lines[ 1 ].match( /\d+/ )[ 0 ] );
+    var time3 = _.number.from( lines[ 2 ].match( /\d+/ )[ 0 ] );
+    var time4 = _.number.from( lines[ 3 ].match( /\d+/ )[ 0 ] );
+    test.ge( time2 - time1, 2000 );
+    test.ge( time3 - time2, 2000 );
+    test.ge( time4 - time3, 2000 );
+    return null;
+  });
+
+  /* - */
+
+  return a.ready;
+
+  /* */
+
+  function testApp()
+  {
+    const _ = require( toolsPath );
+    _.include( 'wConsequence' );
+
+    let attempts = 0;
+
+    function routine( arg )
+    {
+      if( attempts < 3 )
+      {
+        ++attempts;
+        throw _.err( 'Wrong attempt' );
+      }
+      return arg || true;
+    };
+
+    const onError = ( err ) => { _.errAttend( err ); return true };
+    return _.retry
+    ({
+      routine,
+      attemptLimit : 4,
+      attemptDelay : 2000,
+      logger,
+    });
+  }
+}
+
+retryCheckOptionLogger.timeOut = 30000;
 
 //
 
@@ -1899,6 +1979,7 @@ const Proto =
     retryCheckNotBlocking,
     retryHandleExternalConsequenceError,
     retryCheckOptionDefaults,
+    retryCheckOptionLogger,
 
     uncaughtSyncErrorOnExit,
     uncaughtAsyncErrorOnExit,
