@@ -909,6 +909,7 @@ function retry( o )
   _.assert( _.routine.is( o.routine ), 'Expects routine {-o.routine-} to run.' );
   _.assert( o.attemptLimit > 0 );
   _.assert( o.attemptDelay >= 0 );
+  _.assert( o.logger >= 0 );
 
   o.onError = o.onError || onError;
   let attempt = 1;
@@ -928,6 +929,9 @@ function retry( o )
   {
     if( attempt > o.attemptLimit )
     return con.error( _.err( o.err, `\nAttempts is exhausted, made ${ attempt - 1 } attempts` ) );
+
+    if( o.logger >= 4 )
+    console.log( `Attempt runned at : ${ _.time.now() }` );
 
     _.take( null ).then( () => _.Consequence.Try( o.routine ) )
     .finally( ( err, arg ) =>
@@ -986,6 +990,7 @@ retry.defaults = /* aaa : cover */ /* Dmytro : covered */
   attemptDelay : 100,
   attemptDelayMultiplier : 1,
   defaults : null,
+  logger : 2,
 };
 
 // --
