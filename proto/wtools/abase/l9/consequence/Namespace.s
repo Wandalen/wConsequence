@@ -909,7 +909,15 @@ function retry( o )
   _.assert( _.routine.is( o.routine ), 'Expects routine {-o.routine-} to run.' );
   _.assert( o.attemptLimit > 0 );
   _.assert( o.attemptDelay >= 0 );
-  _.assert( o.logger >= 0 );
+  const loggerIs = _.logger.is( o.logger );
+  _.assert( loggerIs || o.logger >= 0 );
+
+  let log = () => {};
+  if( loggerIs )
+  log = log_functor( o.logger );
+  else if( o.logger >= 4 )
+  log = log_functor( console );
+
 
   o.onError = o.onError || onError;
   let attempt = 1;
@@ -930,8 +938,7 @@ function retry( o )
     if( attempt > o.attemptLimit )
     return con.error( _.err( o.err, `\nAttempts is exhausted, made ${ attempt - 1 } attempts` ) );
 
-    if( o.logger >= 4 )
-    console.log( `Attempt runned at : ${ _.time.now() }` );
+    log();
 
     _.take( null ).then( () => _.Consequence.Try( o.routine ) )
     .finally( ( err, arg ) =>
@@ -978,6 +985,16 @@ function retry( o )
   {
     _.error.attend( err );
     return true;
+  }
+
+  /* */
+
+  function log_functor( _logger )
+  {
+    return function log()
+    {
+      _logger.log( `Attempt runned at : ${ _.time.now() }` );
+    }
   }
 }
 
