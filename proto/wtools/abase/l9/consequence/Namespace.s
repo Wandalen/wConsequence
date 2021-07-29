@@ -913,6 +913,7 @@ function retry( o )
   _.assert( loggerIs || o.logger >= 0 );
 
   let log = () => {};
+  let attemptLogArray = _.array.make( o.attemptLimit );
   if( loggerIs )
   log = log_functor( o.logger );
   else if( o.logger >= 4 )
@@ -935,10 +936,12 @@ function retry( o )
 
   function _run( o )
   {
+    const attemptN = attempt - 1;
     if( attempt > o.attemptLimit )
-    return con.error( _.err( o.err, `\nAttempts is exhausted, made ${ attempt - 1 } attempts` ) );
+    return con.error( _.err( o.err, `\nAttempts is exhausted, made ${ attemptN } attempts : \n`, attemptLogArray.join( '\n' ) ) );
 
-    log();
+    const msg = attemptLogArray[ attemptN ] = `Attempt #${ attempt } runned at : ${ new Date().toTimeString() }`;
+    log( msg );
 
     _.take( null ).then( () => _.Consequence.Try( o.routine ) )
     .finally( ( err, arg ) =>
@@ -991,9 +994,9 @@ function retry( o )
 
   function log_functor( _logger )
   {
-    return function log()
+    return function log( src )
     {
-      _logger.log( `Attempt runned at : ${ _.time.now() }` );
+      _logger.log( src );
     }
   }
 }
