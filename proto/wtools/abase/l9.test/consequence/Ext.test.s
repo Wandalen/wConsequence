@@ -769,8 +769,11 @@ function retryCheckOptionLogger( test )
     var time2 = _.number.from( lines[ 1 ].match( /(\d+):(\d+):(\d+)/ )[ 3 ] );
     var time3 = _.number.from( lines[ 2 ].match( /(\d+):(\d+):(\d+)/ )[ 3 ] );
     var time4 = _.number.from( lines[ 3 ].match( /(\d+):(\d+):(\d+)/ )[ 3 ] );
-    test.ge( time2 - time1, 2 );
-    test.ge( time3 - time2, 2 );
+    var timeDelta1 = time2 - time1 < 0 ? 60 - time1 + time2 : time2 - time1;
+    test.ge( timeDelta1, 2 );
+    var timeDelta2 = time3 - time2 < 0 ? 60 - time2 + time3 : time3 - time2;
+    test.ge( timeDelta2, 2 );
+    var timeDelta3 = time4 - time3 < 0 ? 60 - time3 + time4 : time4 - time3;
     test.ge( time4 - time3, 2 );
     return null;
   });
