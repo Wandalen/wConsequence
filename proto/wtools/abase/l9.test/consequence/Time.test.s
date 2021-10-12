@@ -1031,6 +1031,8 @@ function timeOutCancelOutsideOfCallback( test )
   });
 }
 
+timeOutCancelOutsideOfCallback.timeOut = 10000;
+
 //
 
 function timeOutCancelZeroDelayInsideOfCallback( test )
