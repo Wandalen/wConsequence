@@ -1504,8 +1504,11 @@ function timeLimitWaitingEnough( test )
     test.identical( op.exitCode, 0 );
     test.identical( _.strCount( op.output, 'ncaught' ), 0 );
     test.identical( _.strCount( op.output, 'nhandled' ), 0 );
-    test.identical( _.strCount( op.output, 'Waiting for' ), 1 );
-    test.identical( _.strCount( op.output, 'Waiting for 7 procedure(s)' ), 1 );
+    var exp1 = _.strCount( op.output, 'Waiting for' );
+    test.ge( exp1, 1 );
+    var exp2 = _.strCount( op.output, 'Waiting for 7 procedure(s)' );
+    test.ge( exp2, 1 );
+    test.identical( exp1, exp2 );
     test.identical( _.strCount( op.output, 'procedure::' ), 7 );
     test.identical( _.strCount( op.output, 'program:10' ), 5 );
     test.identical( _.strCount( op.output, 'program:13' ), 2 );
@@ -1528,10 +1531,10 @@ function timeLimitWaitingEnough( test )
 
     console.log( 'v0', _.time.spent( _.setup.startTime ) );
 
-    con.timeLimit( context.t2*6, () =>
+    con.timeLimit( context.t2*8, () =>
     {
       console.log( 'v2', _.time.spent( _.setup.startTime ) );
-      return _.time.out( context.t2*4, () =>
+      return _.time.out( context.t2*6, () =>
       {
         console.log( 'v4', _.time.spent( _.setup.startTime ) );
         return 'a';
