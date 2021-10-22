@@ -774,7 +774,7 @@ function retryCheckOptionLogger( test )
     var timeDelta2 = time3 - time2 < 0 ? 60 - time2 + time3 : time3 - time2;
     test.ge( timeDelta2, 2 );
     var timeDelta3 = time4 - time3 < 0 ? 60 - time3 + time4 : time4 - time3;
-    test.ge( time4 - time3, 2 );
+    test.ge( timeDelta3, 2 );
     return null;
   });
 
