@@ -5078,8 +5078,8 @@ function timeLimitConsequence( test )
   {
     test.case = 'timeOut a timeLimit timeLimit-enough';
 
-    var con = _.time.out( t*2 );
-    var con0 = _.time.out( t*4, 'a' );
+    var con = _.time.out( t*3 );
+    var con0 = _.time.out( t*6, 'a' );
     con.timeLimit( t*10, con0 );
 
     test.identical( con0.argumentsCount(), 0 );
@@ -5105,7 +5105,7 @@ function timeLimitConsequence( test )
       test.identical( con.competitorsCount(), 5 );
     });
 
-    _.time.out( t*6, function()
+    _.time.out( t*8, function()
     {
       test.identical( con0.argumentsCount(), 1 );
       test.identical( con0.errorsCount(), 0 );
