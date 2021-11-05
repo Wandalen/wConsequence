@@ -938,9 +938,9 @@ function retry( o )
   {
     const attemptN = attempt - 1;
     if( attempt > o.attemptLimit )
-    return con.error( _.err( o.err, `\nAttempts is exhausted, made ${ attemptN } attempts : \n`, attemptLogArray.join( '\n' ) ) );
+    return con.error( _.err( o.err, `\nAttempts exhausted, made ${ attemptN } attempts : \n`, attemptLogArray.join( '\n' ) ) );
 
-    const msg = attemptLogArray[ attemptN ] = `Attempt #${ attempt } runned at : ${ new Date().toTimeString() }`;
+    const msg = attemptLogArray[ attemptN ] = `Attempt #${ attempt } started at : ${ new Date().toTimeString() }`;
     log( msg );
 
     _.take( null ).then( () => _.Consequence.Try( o.routine ) )
