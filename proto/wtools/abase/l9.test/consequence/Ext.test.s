@@ -120,7 +120,7 @@ function retry( test )
     {
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
-      var exp = `Wrong attempt\nAttempts is exhausted, made ${ _.retry.defaults.attemptLimit } attempts`;
+      var exp = `Wrong attempt\nAttempts exhausted, made ${ _.retry.defaults.attemptLimit } attempts`;
       test.true( _.strBegins( err.originalMessage, exp ) );
       return null;
     };
@@ -205,7 +205,7 @@ function retryCheckOptionAttemptLimit( test )
     {
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
-      var exp = `Wrong attempt\nAttempts is exhausted, made 2 attempts`;
+      var exp = `Wrong attempt\nAttempts exhausted, made 2 attempts`;
       test.true( _.strBegins( err.originalMessage, exp ) );
       test.identical( attempts, 2 );
       return null;
@@ -221,7 +221,7 @@ function retryCheckOptionAttemptLimit( test )
     {
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
-      var exp = `Wrong attempt\nAttempts is exhausted, made 3 attempts`;
+      var exp = `Wrong attempt\nAttempts exhausted, made 3 attempts`;
       test.true( _.strBegins( err.originalMessage, exp ) );
       test.identical( attempts, 3 );
       return null;
@@ -522,7 +522,7 @@ function retryCheckOptionOnSucces( test )
     {
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
-      var exp = `Wrong attempt\nAttempts is exhausted, made 4 attempts`;
+      var exp = `Wrong attempt\nAttempts exhausted, made 4 attempts`;
       test.true( _.strBegins( err.originalMessage, exp ) );
       return null;
     };
@@ -573,7 +573,7 @@ function retryCheckNotBlocking( test )
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
       test.identical( _.strCount( err.originalMessage, 'Launched as "wrong command"' ), 1 );
-      var exp = `Attempts is exhausted, made ${ _.retry.defaults.attemptLimit } attempts`;
+      var exp = `Attempts exhausted, made ${ _.retry.defaults.attemptLimit } attempts`;
       test.identical( _.strCount( err.originalMessage, exp ), 1 );
       return null;
     };
@@ -606,7 +606,7 @@ function retryHandleExternalConsequenceError( test )
     {
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
-      var exp = `wrong command\nAttempts is exhausted, made ${ _.retry.defaults.attemptLimit } attempts`;
+      var exp = `wrong command\nAttempts exhausted, made ${ _.retry.defaults.attemptLimit } attempts`;
       test.true( _.strBegins( err.originalMessage, exp ) );
       return null;
     };
@@ -650,7 +650,7 @@ function retryCheckOptionDefaults( test )
     {
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
-      var exp = `Wrong attempt\nAttempts is exhausted, made 2 attempts`;
+      var exp = `Wrong attempt\nAttempts exhausted, made 2 attempts`;
       test.true( _.strBegins( err.originalMessage, exp ) );
       return null;
     };
@@ -672,7 +672,7 @@ function retryCheckOptionDefaults( test )
     {
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
-      var exp = `Wrong attempt\nAttempts is exhausted, made 2 attempts`;
+      var exp = `Wrong attempt\nAttempts exhausted, made 2 attempts`;
       test.true( _.strBegins( err.originalMessage, exp ) );
       return null;
     };
@@ -694,7 +694,7 @@ function retryCheckOptionDefaults( test )
     {
       test.true( _.error.is( err ) );
       test.identical( arg, undefined );
-      var exp = `Wrong attempt\nAttempts is exhausted, made ${ _.retry.defaults.attemptLimit } attempts`;
+      var exp = `Wrong attempt\nAttempts exhausted, made ${ _.retry.defaults.attemptLimit } attempts`;
       test.true( _.strBegins( err.originalMessage, exp ) );
       return null;
     };
@@ -763,7 +763,7 @@ function retryCheckOptionLogger( test )
   a.ready.then( ( op ) =>
   {
     test.identical( op.exitCode, 0 );
-    test.identical( _.strCount( op.output, /Attempt #. runned at : / ), 4 );
+    test.identical( _.strCount( op.output, /Attempt #. started at : / ), 4 );
     var lines = op.output.split( '\n' );
     var time1 = _.number.from( lines[ 0 ].match( /(\d+):(\d+):(\d+)/ )[ 3 ] );
     var time2 = _.number.from( lines[ 1 ].match( /(\d+):(\d+):(\d+)/ )[ 3 ] );
