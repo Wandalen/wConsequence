@@ -3,8 +3,8 @@ root:
   - wConsequence.out
 consistency:
   ../will.yml: &ref_0
-    hash: ecd15e951b50bb301c6c3d3848a627bd
-    size: 7917
+    hash: 4734e5483e64f8ba541fe1162b85286c
+    size: 7925
 module:
   wConsequence.out:
     about:
@@ -1523,5 +1523,5 @@ module:
           - 'build::npm'
     consistency:
       ../will.yml:
-        hash: ecd15e951b50bb301c6c3d3848a627bd
-        size: 7917
+        hash: 4734e5483e64f8ba541fe1162b85286c
+        size: 7925
